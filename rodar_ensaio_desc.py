@@ -22,8 +22,8 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
     print(f"### DEGRAU {angulo} | inicio {time.strftime('%H:%M:%S')}"
           f" | fim {time.strftime('%H:%M:%S', time.localtime(t0 + DURACAO))} ###",
           flush=True)
-    subprocess.Popen(["ssh", PI, "python3 /home/alunos/teste_throttle.py",
-                      str(angulo), str(DURACAO)])
+    proc = subprocess.Popen(["ssh", PI, "python3 /home/alunos/teste_throttle.py",
+                             str(angulo), str(DURACAO)])
     fim = t0 + DURACAO
     while time.time() < fim:
         linha = ser.readline().decode(errors="replace")
@@ -32,6 +32,8 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
             csv.write(f"{time.time() - t_ensaio:.1f};{time.time() - t0:.1f};"
                       f"{angulo};{corrente}\n")
             csv.flush()
+    proc.wait(timeout=20)   # garante que o Pi terminou (ESC no neutro)
+    time.sleep(3)           # folga: bateria/ESC/mecanica se recuperam
     print(f"### fim do degrau {angulo} ###", flush=True)
 
 csv.close()
