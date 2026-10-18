@@ -1,0 +1,74 @@
+\chapter{Resultados}
+\label{chap:resultados}
+
+% TODO(ensaio definitivo): substituir as secoes 4.2-4.4 pelos resultados
+% das series finais (bateria nova, 21 degraus, 3 repeticoes, subida+descida).
+
+\section{Atividades do Projeto}
+\label{sec:atividades}
+
+As atividades desenvolvidas compreenderam: (i) estudo do sistema de
+propulsao e do ESC; (ii) selecao e validacao em bancada do sensor de
+corrente; (iii) construcao da bancada de tracao; (iv) implementacao da
+aquisicao automatica (Arduino Due + Raspberry Pi); (v) ensaios preliminares
+de caracterizacao; e (vi) analise dos dados com tratamento de incertezas.
+
+\section{Validação do Sensor de Corrente}
+\label{sec:resultsensor}
+
+Em bancada, com fonte de 0 a 6 A e multimetro de referencia, o sistema de
+aquisicao com ACS758 apresentou relacao linear com a corrente aplicada em
+toda a faixa, com regressao $y = 1{,}0742\,x$ entre os valores medidos pelo
+multimetro ($x$) e pelo sistema ($y$). Os desvios sistematicos de $\pm$7\%
+sao compensaveis por fator de correcao em software, validando o sensor para
+monitoramento.
+
+\section{Curva Característica Torque $\times$ Corrente (Ensaios Preliminares)}
+\label{sec:curva}
+
+O ensaio preliminar de tração (escada de 97$^\circ$ a 115$^\circ$,
+superficie com EVA) caracterizou a curva na faixa de 3,6 a 18,2 A. Na
+janela estacionaria (7--10 s de cada degrau), o ajuste por minimos
+quadrados resultou em
+\begin{equation}
+T \;[\text{N$\cdot$m}] = 0{,}185 \; I_{ef} \;[\text{A}] + 0{,}48,
+\qquad r = 0{,}92,
+\end{equation}
+com torque crescente de aproximadamente 1,3 N$\cdot$m (3,6 A) a
+3,5 N$\cdot$m (18,2 A). A forca de tracao nao apresentou saturacao por
+aderencia ate o ultimo degrau, indicando que a escada pode ser estendida
+para caracterizacao da faixa de correntes maiores.
+
+\subsection{Validação Cruzada com o Modelo do Powertrain}
+
+Comparando degrau a degrau com o modelo teorico
+($K_t$ do motor de 2100 KV, reducao $i \approx 11{,}5$, $\eta$ estimado),
+os desvios ficaram dentro de $\pm$5\% nos degraus de 104$^\circ$ a
+115$^\circ$, incluindo concordancia exata (0,0\%) no degrau maximo,
+confirmando a consistencia da cadeia de medicao e do modelo fisico.
+Degraus proximos ao neutro foram excluidos da comparacao pela incerteza do
+\emph{duty cycle} efetivo na regiao nao-linear do ESC.
+
+\section{Testes}
+\label{sec:testes}
+
+Os ensaios preliminares revelaram efeitos sistematicos tratados no
+protocolo: (i) corte de baixa tensao do ESC por bateria degradada
+(sesssao descartada e repetida com bateria saudavel); (ii) perda de aderencia
+na descida (resolvida com massa adicional e limpeza dos pneus); e
+(iii) dessincronizacao entre comando e registro (eliminada com espera de
+finalizacao do comando em cada degrau).
+
+% TODO(ensaio definitivo):
+% \section{Analise dos Resultados} -> regressao final, resíduos,
+% repetitividade (t-Student), incerteza expandida, linearidade, histerese.
+% Incluir figuras: curva T x I com banda de incerteza; residuos.
+
+\section{Resumo do Capítulo}
+
+O sensor de corrente foi validado em bancada e a metodologia de medicao
+indireta de torque produziu uma curva caracteristica coerente com o modelo
+do powertrain na faixa preliminar. Os ensaios definitivos ampliarao a faixa
+de corrente e completarao a caracterizacao metrologica.
+
+\clearpage

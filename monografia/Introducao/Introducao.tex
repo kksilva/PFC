@@ -1,0 +1,95 @@
+\chapter{Introdução}
+\label{chap:intro}
+
+Automodelos radiocontrolados de competicao possuem sistemas de propulsao de
+elevada potencia especifica, porém operam tipicamente em malha aberta: o
+operador envia um comando de aceleracao via radio e o controlador eletronico de
+velocidade (ESC) aplica ao motor uma tensao correspondente, sem qualquer
+realimentacao das variaveis de estado do sistema. No veiculo utilizado neste
+projeto, um monster truck eletrico Kyosho Mad Force Kruiser 2.0 VE com motor
+brushless de 2100 KV e ESC de 120 A, essa configuracao impede que estrategias
+de controle dinamico de velocidade em malha fechada sejam aplicadas e deixa o
+sistema desprotegido contra esforcos mecanicos e eletricos excessivos.
+
+A aceleracao do veiculo influencia diretamente sua resposta transitoria: o
+controle de velocidade define o valor final a ser atingido, enquanto o controle
+de aceleracao define o perfil da curva, determinando a rapidez e a suavidade
+com que o regime de operacao e alcancado. Esse tipo de controle relaciona-se
+diretamente aos problemas classicos de seguimento de referencia (PSR) e de
+rejeicao de perturbacoes (PRP), uma vez que atua sobre a dinamica do veiculo.
+Alem disso, variacoes abruptas de esforco estao associadas a picos de corrente,
+elevacao de temperatura e desgaste prematuro dos componentes eletromecanicos,
+de modo que o monitoramento do consumo eletrico em tempo real tambem se
+configura como mecanismo de protecao.
+
+Este projeto propoe, desenvolve e valida a instrumentacao eletronica do
+veiculo de forma a viabilizar o controle da aceleracao em malha fechada e o
+monitoramento do consumo eletrico. Como etapa central, busca-se estabelecer
+experimentalmente a curva caracteristica torque versus corrente do sistema de
+propulsao completo, permitindo estimar indiretamente o torque entregue as
+rodas a partir da corrente medida por um sensor de efeito Hall ACS758,
+sem sensores mecanicos dedicados.
+
+\section{Motivação e Justificativa}
+\label{sec:motivacao}
+
+O Departamento de Engenharia Eletronica (DELT) da UFMG oferece a disciplina
+Veiculos Autonomos como optativa do curso de Engenharia de Controle e
+Automacao, utilizando automodelos como plataformas experimentais. Em sua
+configuracao original, o veiculo opera em malha aberta, o que limita seu uso
+como ferramenta de ensino e pesquisa em controle. A instrumentacao proposta
+transforma o automodelo em uma bancada movel para estudos de controle
+dinamico, estimacao de variaveis mecanicas a partir de grandezas eletricas e
+protecao de atuadores, consolidando-o como ferramenta experimental para a
+disciplina e para grupos de pesquisa em robotica e sistemas inteligentes.
+
+A estimacao de torque a partir da corrente e particularmente atraente por
+dispensar torquimetros e dinamometros, equipamentos de elevado custo e de
+difícil integracao ao conjunto compacto motor--transmissao do veiculo. A
+caracterizacao da relacao torque--corrente para o sistema de propulsao
+completo (motor, ESC, transmissao e perdas), em vez do motor isolado, ainda
+é pouco documentada na literatura para plataformas de pequeno porte, o que
+configura a contribuicao tecnica deste trabalho.
+
+\section{Objetivos do Projeto}
+\label{sec:objetivos}
+
+Tendo em vista o exposto acima, este projeto tem por objetivos:
+
+\begin{enumerate}[a)]
+\item projetar e integrar a instrumentacao eletronica do automodelo
+      (sensor de corrente, aquisicao embarcada e geracao de comandos),
+      permitindo o monitoramento do consumo eletrico em tempo real;
+\item desenvolver e executar um metodo experimental de baixo custo para
+      obtencao da curva caracteristica torque versus corrente do sistema de
+      propulsao completo, com tratamento de incertezas;
+\item validar a curva obtida por concordancia com o modelo teorico do
+      powertrain e quantificar suas caracteristicas estaticas
+      (sensibilidade, linearidade, repetibilidade e histerese);
+\item estabelecer as bases para o controle de aceleracao em malha fechada
+      do veiculo, a ser implementado em trabalho futuro.
+\end{enumerate}
+
+\section{Local de Realização}
+\label{sec:empresa}
+
+As atividades foram desenvolvidas no Laboratorio de Sistemas Inteligentes
+(LSI), localizado na Sala 2515 do Bloco 1 da Escola de Engenharia da
+Universidade Federal de Minas Gerais, no campus Pampulha. O LSI e um
+laboratorio pluridisciplinar e compartilhado, voltado ao desenvolvimento de
+sistemas embarcados, automacao, robotica e controle para solucoes
+inteligentes e autonomas.
+
+\section{Estrutura da Monografia}
+\label{sec:organizacao}
+
+O trabalho esta dividido em cinco capitulos. Este capitulo apresentou a
+introducao, a motivacao e os objetivos do projeto. O Capitulo 2 descreve o
+sistema de propulsao do automodelo e a instrumentacao eletronica empregada,
+incluindo a revisao das alternativas de sensores. O Capitulo 3 apresenta a
+metodologia experimental para obtencao da curva caracteristica
+torque--corrente. O Capitulo 4 apresenta os resultados experimentais e sua
+analise, incluindo o tratamento de incertezas. O Capitulo 5 conclui o trabalho
+e propoe continuacoes.
+
+\clearpage

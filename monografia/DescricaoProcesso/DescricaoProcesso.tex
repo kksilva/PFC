@@ -1,0 +1,119 @@
+\chapter[Descrição do Sistema]{Descrição do Sistema de Propulsão e da Instrumentação}
+\label{chap:descricaoproblema}
+
+Este capítulo descreve o sistema de propulsao do automodelo (a ``planta''
+sob estudo) e a instrumentacao eletronica empregada para medir sua corrente
+de alimentacao e comandar seu acelerador.
+
+\section{Sistema de Propulsão do Veículo}
+\label{sec:sistema}
+
+O veiculo e um monster truck eletrico Kyosho Mad Force Kruiser 2.0 VE,
+escala 1/8, tracao nas quatro rodas (4WD) com transmissao por corrente,
+vendido na configuracao \emph{readyset}. Os componentes do sistema de
+propulsao relevantes a este trabalho sao \cite{kyosho}:
+
+\begin{itemize}
+\item \textbf{Motor brushless:} Team Orion Vortex 8, 1/8, 2100 KV
+      (constante de velocidade, rpm/V), sem escovas e sem sensores de efeito
+      Hall internos;
+\item \textbf{ESC:} Team Orion Vortex R8, corrente maxima continua de 120 A
+      (pico de 760 A), alimentacao de 6 a 14,4 V (Ni-MH) ou 2 a 4 celulas
+      LiPo (7,4 a 14,8 V), com corte de baixa tensao programavel e protecao
+      termica;
+\item \textbf{Baterias:} neste trabalho, uma bateria LiPo 2S (7,4 V,
+      5200 mAh), em substituicao a configuracao original de dois packs
+      Ni-MH de 7,2 V;
+\item \textbf{Transmissao:} pinhao de 11 dentes e coroa de 42 dentes na caixa
+      central, com diferenciais dianteiro e traseiro; a reducao total medida
+      em ensaio pelo orientador e de aproximadamente 11,5:1;
+\item \textbf{Radio:} transmissor Kyosho Syncro KT-231P (2,4 GHz) com
+      receptor KR-331, cujo canal de acelerador e interceptado por um
+      gerador de PWM neste trabalho.
+\end{itemize}
+
+Em operacao normal, o sinal de acelerador do radio e um trem de pulsos PWM
+cuja largura varia de aproximadamente 1 a 2 ms (mapeado aqui como angulo de
+servo de 0 a 180$^\circ$, com neutro em 95$^\circ$); o ESC converte esse
+comando em tensao media aplicada as fases do motor. O veiculo, portanto,
+opera em malha aberta: nenhuma variavel de estado (velocidade, aceleracao,
+corrente) e realimentada.
+
+% TODO: incluir figura do conjunto motor--ESC--bateria com foto do veiculo
+% (DescricaoProcesso/Figuras/), com legenda auto-contida.
+
+\section{Sensor de Corrente ACS758}
+\label{sec:sensor}
+
+A grandeza eletrica de interesse e a corrente consumida pelo sistema de
+propulsao, medida em serie entre a bateria e o ESC. Dentre as alternativas
+estudadas \cite{ti_ina240,invensense_mpu}:
+
+\begin{itemize}
+\item \textbf{IMU MPU6050} (acelerometro + giroscopio): mede grandezas
+      dinamicas, mas nao o consumo eletrico; sensivel a vibracao; descartada
+      como sensor de corrente;
+\item \textbf{Amplificador INA240 com resistor shunt} (1 m$\Omega$,
+      15 W): alta precisao e boa rejeicao ao PWM, porem sem isolacao
+      galvanica e com dissipacao significativa sob 120 A;
+\item \textbf{Sensor de efeito Hall ACS758} (Allegro): isolacao galvanica
+      entre circuito de potencia e de medicao, baixa dissipacao (resistencia
+      interna de 100 $\mu\Omega$) e robustez a correntes elevadas.
+\end{itemize}
+
+Escolheu-se o ACS758ECB-200B (faixa de $\pm$200 A, saida bidirecional com
+offset igual a metade da alimentacao, sensibilidade ratiometrica de
+10 mV/A a 5 V, largura de banda de 120 kHz e nao-linearidade de $\pm$1\%
+\cite{allegro}). O sensor e alimentado diretamente pelos 3,3 V do
+microcontrolador Arduino Due; por ser ratiometrico, a sensibilidade efetiva
+passa a 6,6 mV/A e o offset a 1,65 V, coincidindo com a referencia do
+conversor A/D de 12 bits do Due. A rotina embarcada calibra o offset no
+inicio de cada sessao (media de 500 amostras com o motor desligado) e
+transmite a corrente calculada pela porta serial a cada 500 ms, com media de
+100 amostras por leitura \cite{arduino_due}.
+
+\section{Geração de Comando e Aquisição}
+\label{sec:comando}
+
+O comando de acelerador e gerado por um Raspberry Pi equipado com
+controlador PWM PCA9685, que emula o sinal de servo do radio (canal de
+acelerador). Um notebook executa o script mestre, que aplica uma escada de
+comandos (degraus de 1$^\circ$ no angulo de servo, de 95$^\circ$ a
+130$^\circ$, com duracao de 10 s por degrau), aciona o Raspberry via
+\emph{ssh} e registra simultaneamente a corrente transmitida pelo Arduino
+Due em arquivo CSV, com resolucao de 0,5 s. A corrente de vazio
+($I_0$), obtida em ensaio com o veiculo suspenso e rodas livres, e
+subtraida da corrente medida em cada ponto de operacao.
+
+\section{Revisão da Literatura: Medição Indireta de Torque}
+\label{sec:revisao}
+
+A determinacao do torque desenvolvido pelo sistema de propulsao pode ser
+direta ou indireta. Torquimetros rotativos oferecem medicao direta, mas
+exigiriam interposicao mecanica no conjunto motor--transmissao, alterando a
+configuracao original do veiculo \cite{borges2016}. Dinamometros permitem
+caracterizacao completa de motores, porem com custo e porte incompatíveis
+com a proposta de uma metodologia reproduzivel em laboratorios de ensino
+\cite{nakashima2021}. Optou-se pela determinacao indireta do torque a partir
+da forca de tracao medida por uma balanca digital de mala (celula de carga
+de tração), com o veiculo impedido de se deslocar e os pneus em contato com
+a superficie, metodologia simples e de baixo custo ja empregada em
+caracterizacoes de tracao \cite{ccdm2021}. O torque e calculado por
+$T = F \cdot R_{ef}$, onde $R_{ef}$ e o raio efetivo da roda (80 mm).
+
+Relaciona-se ainda a fundamentacao do metodo: para o motor brushless,
+$T_{motor} = K_t \cdot I_{fase}$; com a reducao $i$ e rendimento $\eta$,
+$T_{roda} = K_t \cdot I_{fase} \cdot i \cdot \eta$; pela conservacao de
+potencia no conversor do ESC, $I_{fase} \approx I_{bat}/D$, onde $D$ e o
+\emph{duty cycle} do comando. Cada degrau do ensaio fixa um $D$, de modo que
+espera-se relacao linear entre torque e corrente de bateria na condicao de
+rotacao aproximadamente nula do veiculo impedido.
+
+\section{Resumo do Capítulo}
+
+O capitulo apresentou o sistema de propulsao do automodelo, justificou a
+escolha do sensor de corrente ACS758 e enquadrou o metodo de medicao
+indireta de torque por forca de tracao, com a fundamentacao fisica que sera
+detalhada metodologicamente no capitulo seguinte.
+
+\clearpage
