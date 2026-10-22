@@ -1,6 +1,7 @@
 import serial
 import subprocess
 import time
+import os
 
 ANGULO_INICIAL = 115
 ANGULO_FINAL = 95
@@ -9,12 +10,14 @@ NOME_CSV = "ensaio_descida.csv"
 
 PI = "alunos@raspberrypi.local"
 
+os.chdir(os.path.dirname(os.path.abspath(__file__)))  # CSV sempre na pasta do script
+
 ser = serial.Serial("/dev/ttyACM0", 115200, timeout=3)
 time.sleep(2)
 ser.reset_input_buffer()
 
 t_ensaio = time.time()
-csv = open(NOME_CSV, "w")
+csv = open(NOME_CSV, "w", buffering=1)   # linha a linha: cada medida vai pro disco na hora
 csv.write("t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
