@@ -17,8 +17,11 @@ time.sleep(2)
 ser.reset_input_buffer()
 
 t_ensaio = time.time()
-csv = open(NOME_CSV, "w", buffering=1)   # linha a linha: cada medida vai pro disco na hora
-csv.write("t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
+if not os.path.exists(NOME_CSV) or os.path.getsize(NOME_CSV) == 0:
+    csv = open(NOME_CSV, "w", buffering=1)   # linha a linha: cada medida vai pro disco na hora
+    csv.write("t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
+else:
+    csv = open(NOME_CSV, "a", buffering=1)   # continua no arquivo existente, nao apaga nada
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL + 1):
     t0 = time.time()
