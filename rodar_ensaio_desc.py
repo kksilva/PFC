@@ -32,6 +32,8 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
             csv.write(f"{time.time() - t_ensaio:.1f};{time.time() - t0:.1f};"
                       f"{angulo};{corrente}\n")
             csv.flush()
+            print(f"  degrau {angulo} | t={time.time() - t0:.1f}s | I={corrente:.2f} A",
+                  flush=True)
     proc.wait(timeout=20)   # garante que o Pi terminou (ESC no neutro)
     time.sleep(3)           # folga: bateria/ESC/mecanica se recuperam
     print(f"### fim do degrau {angulo} ###", flush=True)
