@@ -6,7 +6,7 @@ import os
 ANGULO_INICIAL = 98
 ANGULO_FINAL = 105
 DURACAO = 15
-NOME_CSV = "ensaio.csv"
+NOME_CSV = "ensaio_subida.csv"
 
 PI = "alunos@raspberrypi.local"
 
@@ -38,12 +38,20 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL + 1):
         linha = ser.readline().decode(errors="replace")
         if "Corrente:" in linha:
             corrente = float(linha.split("Corrente:")[1].split()[0])
-            csv.write(f"{SERIE};{time.time() - t_ensaio:.1f};{time.time() - t0:.1f};"
-                      f"{angulo};{corrente}\n")
-            csv.flush()
-            print(f"  degrau {angulo} | t={time.time() - t0:.1f}s | I={corrente:.2f} A",
-                  flush=True)
-    proc.wait(timeout=20)   # garante que o Pi terminou (ESC no neutro)
+        elif "ADC:" in linha:
+            corrente = (float(linha.split("ADC:")[1].split()[0]) * 3.3 / 4095
+                        - 1.65) / 0.0066
+        else:
+            continue
+        csv.write(f"{SERIE};{time.time() - t_ensaio:.1f};{time.time() - t0:.1f};"
+                  f"{angulo};{corrente:.2f}\n")
+        csv.flush()
+        print(f"  degrau {angulo} | t={time.time() - t0:.1f}s | I={corrente:.2f} A",
+              flush=True)
+    try:
+        proc.wait(timeout=60)   # garante que o Pi terminou (ESC no neutro)
+    except subprocess.TimeoutExpired:
+        print("AVISO: Pi demorou > 60 s, seguindo mesmo assim", flush=True)
     time.sleep(3)           # folga: bateria/ESC/mecanica se recuperam
     print(f"### fim do degrau {angulo} ###", flush=True)
 
