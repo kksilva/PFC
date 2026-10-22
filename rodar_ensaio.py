@@ -1,6 +1,7 @@
 import serial
 import subprocess
 import time
+import os
 
 ANGULO_INICIAL = 98
 ANGULO_FINAL = 105
@@ -13,10 +14,17 @@ ser = serial.Serial("/dev/ttyACM0", 115200, timeout=3)
 time.sleep(2)
 ser.reset_input_buffer()
 
+SERIE = 1
+vazio = not os.path.exists(NOME_CSV) or os.path.getsize(NOME_CSV) == 0
+if not vazio:
+    with open(NOME_CSV) as f:
+        SERIE = sum(1 for linha in f if linha.startswith("#")) + 1
+
 t_ensaio = time.time()
 csv = open(NOME_CSV, "a")
-if csv.tell() == 0:
-    csv.write("t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
+csv.write(f"# SERIE {SERIE} | inicio {time.strftime('%d/%m/%Y %H:%M:%S')}\n")
+if vazio:
+    csv.write("serie;t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL + 1):
     t0 = time.time()
@@ -30,7 +38,7 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL + 1):
         linha = ser.readline().decode(errors="replace")
         if "Corrente:" in linha:
             corrente = float(linha.split("Corrente:")[1].split()[0])
-            csv.write(f"{time.time() - t_ensaio:.1f};{time.time() - t0:.1f};"
+            csv.write(f"{SERIE};{time.time() - t_ensaio:.1f};{time.time() - t0:.1f};"
                       f"{angulo};{corrente}\n")
             csv.flush()
             print(f"  degrau {angulo} | t={time.time() - t0:.1f}s | I={corrente:.2f} A",
