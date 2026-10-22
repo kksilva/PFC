@@ -9,6 +9,7 @@ ANGULO_INICIAL = 115
 ANGULO_FINAL = 95
 DURACAO = 15
 NOME_CSV = "ensaio_descida.csv"
+RETENTATIVAS = 3        # quantas vezes reenvia o comando antes de pular o degrau
 
 PI = "alunos@raspberrypi.local"
 
@@ -19,6 +20,8 @@ SSH_CMD = ["ssh",
            "-o", "ControlPersist=600",
            "-o", "ControlPath=/tmp/pfc-ssh.sock",
            "-o", "ConnectTimeout=10",
+           "-o", "ServerAliveInterval=5",
+           "-o", "ServerAliveCountMax=2",
            "-o", "BatchMode=yes",
            PI, "python3 /home/alunos/teste_throttle.py"]
 
@@ -31,6 +34,17 @@ try:
 except OSError:
     print("ERRO: outra instancia do script ja esta rodando. Feche-a antes.")
     raise SystemExit(1)
+
+# aquece o tunel ssh antes do primeiro degrau (paga o custo da conexao aqui)
+print("Conectando com o Raspberry Pi...", flush=True)
+subprocess.run(["ssh", "-Nf",
+                "-o", "ControlMaster=auto",
+                "-o", "ControlPersist=600",
+                "-o", "ControlPath=/tmp/pfc-ssh.sock",
+                "-o", "ConnectTimeout=10",
+                "-o", "BatchMode=yes",
+                PI], timeout=20)
+print("Conectado.", flush=True)
 
 ser = serial.Serial("/dev/ttyACM0", 115200, timeout=3)
 time.sleep(2)
@@ -45,25 +59,32 @@ else:
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
     print(f"### DEGRAU {angulo} | enviado {time.strftime('%H:%M:%S')} ###", flush=True)
-    proc = subprocess.Popen(SSH_CMD + [str(angulo), str(DURACAO)],
-                            stdout=subprocess.PIPE, text=True)
 
     # sincroniza com o Pi: so comeca a contar o degrau quando ele confirmar o throttle
+    # (ate RETENTATIVAS tentativas com conexao nova; o Wi-Fi costuma recuperar no 2o passe)
     t0 = None
-    limite = time.time() + 25
-    while time.time() < limite and t0 is None:
-        prontos, _, _ = select.select([proc.stdout], [], [], 1)
-        if not prontos:
-            continue
-        saida = proc.stdout.readline()
-        if not saida:
+    for tentativa in range(1, RETENTATIVAS + 1):
+        proc = subprocess.Popen(SSH_CMD + [str(angulo), str(DURACAO)],
+                                stdout=subprocess.PIPE, text=True)
+        limite = time.time() + 25
+        while time.time() < limite and t0 is None:
+            prontos, _, _ = select.select([proc.stdout], [], [], 1)
+            if not prontos:
+                continue
+            saida = proc.stdout.readline()
+            if not saida:
+                break
+            print(f"  pi> {saida.strip()}", flush=True)
+            if "Throttle:" in saida:
+                t0 = time.time()
+        if t0 is not None:
             break
-        print(f"  pi> {saida.strip()}", flush=True)
-        if "Throttle:" in saida:
-            t0 = time.time()
-    if t0 is None:
         proc.kill()
-        print("AVISO: Pi nao confirmou o degrau; neutro enviado e degrau pulado", flush=True)
+        print(f"AVISO: tentativa {tentativa} falhou; reenviando comando", flush=True)
+        time.sleep(2)
+    if t0 is None:
+        print("AVISO: Pi nao confirmou apos "
+              f"{RETENTATIVAS} tentativas; neutro enviado e degrau pulado", flush=True)
         subprocess.run(SSH_CMD + ["95", "2"])   # garante ESC no neutro
         time.sleep(3)
         continue
