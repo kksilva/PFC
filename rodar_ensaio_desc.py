@@ -11,6 +11,16 @@ NOME_CSV = "ensaio_descida.csv"
 
 PI = "alunos@raspberrypi.local"
 
+# conexao reutilizada entre degraus (ControlMaster): a 1a abre o tunel,
+# as demais sao instantaneas; falha rapida se a rede cair (nao trava 60 s)
+SSH_CMD = ["ssh",
+           "-o", "ControlMaster=auto",
+           "-o", "ControlPersist=600",
+           "-o", "ControlPath=/tmp/pfc-ssh.sock",
+           "-o", "ConnectTimeout=10",
+           "-o", "BatchMode=yes",
+           PI, "python3 /home/alunos/teste_throttle.py"]
+
 os.chdir(os.path.dirname(os.path.abspath(__file__)))  # CSV sempre na pasta do script
 
 # so uma instancia por vez: se outro rodar_ensaio estiver vivo, aborta
@@ -38,8 +48,7 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
     print(f"### DEGRAU {angulo} | inicio {time.strftime('%H:%M:%S')}"
           f" | fim {time.strftime('%H:%M:%S', time.localtime(t0 + DURACAO))} ###",
           flush=True)
-    proc = subprocess.Popen(["ssh", PI, "python3 /home/alunos/teste_throttle.py",
-                             str(angulo), str(DURACAO)])
+    proc = subprocess.Popen(SSH_CMD + [str(angulo), str(DURACAO)])
     fim = t0 + DURACAO
     while time.time() < fim:
         linha = ser.readline().decode(errors="replace")
@@ -55,9 +64,11 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
         csv.flush()
         print(f"  t={time.time() - t0:.1f}s | I={corrente:.2f} A", flush=True)
     try:
-        proc.wait(timeout=60)   # garante que o Pi terminou (ESC no neutro)
+        proc.wait(timeout=DURACAO + 30)   # garante que o Pi terminou (ESC no neutro)
     except subprocess.TimeoutExpired:
-        print("AVISO: Pi demorou > 60 s, seguindo mesmo assim", flush=True)
+        proc.kill()
+        print("AVISO: Pi nao respondeu; comando de neutro reenviado", flush=True)
+        subprocess.run(SSH_CMD + ["95", "2"])   # forca neutro antes do proximo degrau
     time.sleep(3)           # folga: bateria/ESC/mecanica se recuperam
     print(f"### fim do degrau {angulo} ###", flush=True)
 
