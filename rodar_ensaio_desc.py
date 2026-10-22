@@ -14,8 +14,9 @@ time.sleep(2)
 ser.reset_input_buffer()
 
 t_ensaio = time.time()
-csv = open(NOME_CSV, "x") 
-csv.write("t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
+csv = open(NOME_CSV, "a")
+if csv.tell() == 0:
+    csv.write("t_ensaio_s;t_degrau_s;angulo;corrente_a\n")
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
     t0 = time.time()
