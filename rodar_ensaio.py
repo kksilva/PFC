@@ -2,15 +2,24 @@ import serial
 import subprocess
 import time
 import os
+import fcntl
 
-ANGULO_INICIAL = 98
-ANGULO_FINAL = 105
+ANGULO_INICIAL = 95
+ANGULO_FINAL = 115
 DURACAO = 15
 NOME_CSV = "ensaio_subida_2.csv"
 
 PI = "alunos@raspberrypi.local"
 
 os.chdir(os.path.dirname(os.path.abspath(__file__)))  # CSV sempre na pasta do script
+
+# so uma instancia por vez: se outro rodar_ensaio estiver vivo, aborta
+lock = open(".rodar_ensaio.lock", "w")
+try:
+    fcntl.flock(lock, fcntl.LOCK_EX | fcntl.LOCK_NB)
+except OSError:
+    print("ERRO: outra instancia do script ja esta rodando. Feche-a antes.")
+    raise SystemExit(1)
 
 ser = serial.Serial("/dev/ttyACM0", 115200, timeout=3)
 time.sleep(2)
@@ -25,6 +34,7 @@ else:
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL + 1):
     t0 = time.time()
+    ser.reset_input_buffer()   # descarta linhas velhas: so le o que for deste degrau
     print(f"### DEGRAU {angulo} | inicio {time.strftime('%H:%M:%S')}"
           f" | fim {time.strftime('%H:%M:%S', time.localtime(t0 + DURACAO))} ###",
           flush=True)
