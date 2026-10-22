@@ -3,6 +3,7 @@ import subprocess
 import time
 import os
 import fcntl
+import select
 
 ANGULO_INICIAL = 115
 ANGULO_FINAL = 95
@@ -12,7 +13,7 @@ NOME_CSV = "ensaio_descida.csv"
 PI = "alunos@raspberrypi.local"
 
 # conexao reutilizada entre degraus (ControlMaster): a 1a abre o tunel,
-# as demais sao instantaneas; falha rapida se a rede cair (nao trava 60 s)
+# as demais sao instantaneas; falha rapida se a rede cair (nao trava)
 SSH_CMD = ["ssh",
            "-o", "ControlMaster=auto",
            "-o", "ControlPersist=600",
@@ -43,12 +44,31 @@ else:
     csv = open(NOME_CSV, "a", buffering=1)   # continua no arquivo existente, nao apaga nada
 
 for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
-    t0 = time.time()
+    print(f"### DEGRAU {angulo} | enviado {time.strftime('%H:%M:%S')} ###", flush=True)
+    proc = subprocess.Popen(SSH_CMD + [str(angulo), str(DURACAO)],
+                            stdout=subprocess.PIPE, text=True)
+
+    # sincroniza com o Pi: so comeca a contar o degrau quando ele confirmar o throttle
+    t0 = None
+    limite = time.time() + 25
+    while time.time() < limite and t0 is None:
+        prontos, _, _ = select.select([proc.stdout], [], [], 1)
+        if not prontos:
+            continue
+        saida = proc.stdout.readline()
+        if not saida:
+            break
+        print(f"  pi> {saida.strip()}", flush=True)
+        if "Throttle:" in saida:
+            t0 = time.time()
+    if t0 is None:
+        proc.kill()
+        print("AVISO: Pi nao confirmou o degrau; neutro enviado e degrau pulado", flush=True)
+        subprocess.run(SSH_CMD + ["95", "2"])   # garante ESC no neutro
+        time.sleep(3)
+        continue
+
     ser.reset_input_buffer()   # descarta linhas velhas: so le o que for deste degrau
-    print(f"### DEGRAU {angulo} | inicio {time.strftime('%H:%M:%S')}"
-          f" | fim {time.strftime('%H:%M:%S', time.localtime(t0 + DURACAO))} ###",
-          flush=True)
-    proc = subprocess.Popen(SSH_CMD + [str(angulo), str(DURACAO)])
     fim = t0 + DURACAO
     while time.time() < fim:
         linha = ser.readline().decode(errors="replace")
@@ -63,12 +83,13 @@ for angulo in range(ANGULO_INICIAL, ANGULO_FINAL - 1, -1):
                   f"{angulo};{corrente:.2f}\n")
         csv.flush()
         print(f"  t={time.time() - t0:.1f}s | I={corrente:.2f} A", flush=True)
+
     try:
-        proc.wait(timeout=DURACAO + 30)   # garante que o Pi terminou (ESC no neutro)
+        proc.wait(timeout=30)   # garante que o Pi voltou ao neutro
     except subprocess.TimeoutExpired:
         proc.kill()
-        print("AVISO: Pi nao respondeu; comando de neutro reenviado", flush=True)
-        subprocess.run(SSH_CMD + ["95", "2"])   # forca neutro antes do proximo degrau
+        print("AVISO: Pi nao confirmou o neutro; reenviando", flush=True)
+        subprocess.run(SSH_CMD + ["95", "2"])
     time.sleep(3)           # folga: bateria/ESC/mecanica se recuperam
     print(f"### fim do degrau {angulo} ###", flush=True)
 
