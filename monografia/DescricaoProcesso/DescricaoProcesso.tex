@@ -52,10 +52,9 @@ de caracterizar seu funcionamento e seu comportamento dinâmico. Para atender os
 diferentes alternativas de medição, como a velocidade de rotação do motor, a velocidade linear do
 veículo, a aceleração, a corrente elétrica consumida e a força de tração desenvolvida. A escolha
 depende de fatores como precisão, complexidade de implementação, custo e adequação às condições experimentais.
-Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento das técnicas baseadas em
-grandezas cinemáticas e elétricas, discutem sua aplicabilidade na caracterização do sistema de
-propulsão e fundamentam, ao final, a seleção efetivamente utilizada, que inclui, adicionalmente, a
-medição direta da força de tração, discutida na Síntese Comparativa.
+Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento de cada técnica considerada,
+discutem sua aplicabilidade na caracterização do sistema de propulsão e fundamentam, ao final, a
+seleção efetivamente utilizada.
 
 \subsection{Sensor Inercial (IMU)}
 \label{sec:imu}
@@ -204,10 +203,8 @@ V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
 em que $G$ é o ganho fixo do amplificador. O componente possui largura de banda de 400 kHz e
 rejeição reforçada a transientes de modo comum, justamente os produzidos pelo chaveamento de um
-ESC \cite{ti_ina240_2}. Em altas frequências, no entanto, a impedância do resistor deixa de ser
-dominada pela resistência e passa a depender de sua indutância parasita $L_s$, de modo que a
-tensão sobre o shunt deixa de ser proporcional à corrente instantânea e a leitura se distorce
-durante as variações rápidas impostas pelo chaveamento.
+ESC \cite{ti_ina240_2}. Em altas frequências, a indutância parasita do resistor faz com que a
+tensão deixe de ser proporcional à corrente instantânea, distorcendo a leitura durante o chaveamento.
 
 A dissipação de potência no resistor cresce com o quadrado da corrente, de modo que, sob correntes
 elevadas, o shunt aquece e consome parte da energia destinada ao motor. Vale observar, ainda, que
@@ -259,19 +256,9 @@ Com conversor de 12 bits e referência de 3,3 V, a variante de ±200 A resulta, 
 trabalho, em resolução de cerca de 122 mA. Para correntes de dezenas de ampères, essa resolução é
 suficiente, embora limite a medida de variações pequenas em torno do repouso.
 
-A folha de dados (\emph{datasheet}) especifica tempo de subida de 3 µs para um degrau de corrente, atraso de propagação
-de 1 µs, tempo de resposta total de 4 µs e largura de banda interna de 120 kHz \cite{allegro}. A
-largura de banda se relaciona ao tempo de subida pela aproximação usual
-\begin{equation}\label{eq:acs_banda}
-BW_i \approx \frac{0{,}35}{t_r},
-\end{equation}
-e o tempo de resposta total é a soma do atraso de propagação e do tempo de subida,
-\begin{equation}\label{eq:acs_resposta}
-t_\mathrm{resp} = t_\mathrm{prop} + t_r.
-\end{equation}
-Com $t_r = 3\,\mu\mathrm{s}$, a Equação \eqref{eq:acs_banda} resulta em cerca de 117 kHz, em
-concordância com o valor especificado. Essa banda é bem superior à faixa de 8 kHz a 16 kHz de
-chaveamento típica de ESCs sensorless \cite{yge_esc}, o que indica margem para acompanhar as
+A folha de dados (\emph{datasheet}) especifica tempo de resposta de 4 µs e largura de banda
+interna de 120 kHz \cite{allegro}, valor bem superior à faixa de 8 kHz a 16 kHz de chaveamento
+típica de ESCs sensorless \cite{yge_esc}. O sensor dispõe, portanto, de margem para acompanhar as
 variações de corrente impostas pela comutação, sem subamostrá-las.
 
 Esse tipo de sensor já foi empregado em um motor brushless do tipo \emph{hub}, relacionando a
@@ -346,25 +333,35 @@ do sistema de propulsão, mas o modelo precisa ser recalibrado para cada motor, 
 mecânica utilizados. Sua viabilidade para o automodelo depende, portanto, da variabilidade entre
 configurações de transmissão e regimes de carga, a ser avaliada no Capítulo 3.
 
-Há, finalmente, a possibilidade de medir a força de tração diretamente, instalando-se uma célula
-de carga na linha de tração entre o veículo e uma âncora. Essa é a configuração do ensaio de
-\emph{drawbar pull}, empregado na caracterização de veículos planetários
-\cite{creager2017drawbar} e de robôs terrestres de pequeno porte \cite{johnson2012ugv}. Nessa
-abordagem, a grandeza medida é a própria força desenvolvida pelo veículo, de modo que o torque na
-roda é obtido diretamente por $T_\mathrm{roda} = F_t\,r$, com um único parâmetro geométrico.
-Implementações de baixo custo substituem a célula de carga por balanças digitais de gancho
-\cite{peterson2021pulley}, o que torna a alternativa acessível a montagens de bancada. Por medir
-apenas o esforço mecânico resultante, contudo, ela não acompanha a corrente elétrica e,
-isoladamente, não atende ao objetivo de monitoramento do esforço elétrico do sistema.
+Assim, a corrente elétrica é a grandeza com a cadeia de dependências mais curta até o torque, e,
+entre os sensores de corrente, o Hall linear oferece o melhor equilíbrio entre isolamento, custo e
+simplicidade de montagem para as correntes e frequências deste sistema. A forma de combiná-lo a
+uma medição direta do esforço de tração constitui a proposta de instrumentação deste trabalho,
+apresentada na Seção~\ref{sec:proposta}.
 
-Diante desse quadro, duas conclusões se impõem. Primeiro, a força de tração é a grandeza de
-caminho mais curto até o torque mecânico, e a corrente elétrica é a que viabiliza o
-monitoramento do esforço elétrico do sistema, de modo que nenhuma delas, isoladamente, cobre os
-dois objetivos deste trabalho. Segundo, entre os sensores de corrente, o Hall linear oferece o
-melhor equilíbrio entre isolamento, custo e simplicidade de montagem para as correntes e
-frequências deste sistema. A instrumentação efetiva, que combina o sensor Hall linear na
-alimentação do ESC com a medição de força por balança na linha de tração, e a sua justificativa
-experimental são desenvolvidas no Capítulo 3.
+\section{Proposta do Projeto}
+\label{sec:proposta}
+
+Com base na comparação apresentada na Seção~\ref{sec:sintese}, este trabalho propõe a
+caracterização do sistema de propulsão do automodelo por meio de sua curva característica torque
+versus corrente. Para tanto, emprega-se uma instrumentação combinada: o sensor de efeito Hall
+linear ACS758 de ±200 A, instalado no ramo de alimentação do ESC, fornece a corrente elétrica
+consumida, e uma balança digital de gancho, instalada na linha de tração do veículo, fornece a
+força desenvolvida.
+
+A medição da força de tração segue a configuração do ensaio de \emph{drawbar pull}, empregado na
+caracterização de veículos planetários \cite{creager2017drawbar}, de robôs terrestres de pequeno
+porte \cite{johnson2012ugv, richmond2009mobility} e de protótipos de baixo custo que substituem a
+célula de carga por balanças digitais de gancho \cite{peterson2021pulley}. Nessa configuração, o
+veículo é ancorado e a balança, instalada na linha de tração, mede a própria força desenvolvida,
+de modo que o torque na roda é obtido diretamente por $T_\mathrm{roda} = F_t\,r$, com um único
+parâmetro geométrico. A escolha da balança digital de mala em lugar de uma célula de carga
+dedicada segue o mesmo princípio de baixo custo já adotado na seleção do sensor de corrente.
+
+A combinação das duas medições permite construir a curva característica torque versus corrente
+ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. A
+montagem experimental, o procedimento de ensaio por degraus de comando e o tratamento das
+incertezas são apresentados no Capítulo 3.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
@@ -373,7 +370,7 @@ Este capítulo apresentou o sistema de propulsão do automodelo e comparou as pr
 mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e força de
 tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
 \eqref{eq:torque_motor}, \eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A
-comparação indicou que a força de tração e a corrente elétrica oferecem os caminhos mais diretos
-e complementares até o esforço do sistema de propulsão, de modo que a instrumentação efetiva
-combina o sensor de corrente ACS758 com a medição de força por balança. A montagem experimental e
-a justificativa da escolha são apresentadas no Capítulo 3.
+comparação evidenciou o sensor de efeito Hall linear como a melhor opção para a corrente, e a
+proposta de instrumentação que combina o sensor ACS758 com a balança digital na linha de tração
+foi apresentada na Seção~\ref{sec:proposta}. A montagem experimental e o procedimento de ensaio
+são detalhados no Capítulo 3.
