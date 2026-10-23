@@ -3,16 +3,16 @@
 
 Este capítulo apresenta o sistema de propulsão do automodelo utilizado como objeto de estudo
 e discute as abordagens de instrumentação consideradas para a caracterização de sua dinâmica.
-Para cada abordagem, são apresentados o princípio de funcionamento, as vantagens e as
-limitações, de modo a fundamentar a escolha da instrumentação.
+Para cada abordagem, são apresentados o princípio de funcionamento, a proposta de controle em malha fechada,
+as vantagens e as limitações, de modo a fundamentar a escolha da instrumentação.
 
 \section{O Automodelo e seu Sistema de Propulsão}
 \label{sec:automodelo}
 O automodelo Kyosho Mad Force Kruiser 2.0 VE é equipado com um motor brushless Orion Ori28188, cuja
-constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- velocidade de rotação aproximada do motor,
-em rotações por minuto por volt aplicado, em condições próximas à operação sem carga mecânica significativa.
+constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- rotações por minuto por volt aplicado, 
+em condições próximas à operação sem carga mecânica significativa.
 O motor é constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
-enrolamentos de fio de cobre, e por um rotor, componente móvel com ímãs permanentes fixados na
+enrolamentos de fio de cobre; e por um rotor, componente móvel com ímãs permanentes fixados na
 carcaça. No rotor, os ímãs produzem seu próprio campo magnético em razão das propriedades do
 material, enquanto no estator a passagem de corrente elétrica pelos enrolamentos gera um campo
 magnético. A interação entre esses campos gera forças eletromagnéticas que produzem
@@ -30,19 +30,25 @@ A continuidade desse movimento depende da comutação eletrônica, processo pelo
 do motor é alternada em uma sequência que modifica continuamente a orientação do campo magnético resultante do estator,
 produzindo um campo girante. Essa função é realizada pelo Controlador Eletrônico de Velocidade (\emph{Electronic
 Speed Controller} — ESC) Orion Vortex R8, que recebe do receptor de rádio o comando de aceleração e controla a energia
-elétrica transferida da bateria para os enrolamentos do motor. Como o motor é do tipo \emph{sensorless}, o ESC estima o
-movimento do rotor a partir da força contraeletromotriz (\emph{back-EMF}), que é a tensão induzida nos enrolamentos pela variação
-do fluxo magnético causada pela rotação dos ímãs permanentes do rotor. Durante a comutação, uma das fases permanece
-temporariamente sem alimentação, permitindo ao ESC monitorar a tensão induzida com menor interferência da tensão
-aplicada pelo próprio controlador. A identificação dos cruzamentos por zero dessa tensão fornece referências temporais
-que permitem estimar os instantes adequados para a próxima comutação. Com base nessas informações, o ESC sincroniza a
-alimentação das fases com o movimento do rotor, mantendo a produção de torque e possibilitando a conversão da energia
-elétrica fornecida pela bateria em energia mecânica de rotação.
+elétrica transferida da bateria para os enrolamentos do motor. Como o motor é do tipo \emph{sensorless}, o ESC estima sua
+posição a partir da força contraeletromotriz (\emph{back-EMF}) --- a tensão induzida nos enrolamentos pela rotação dos
+ímãs permanentes do rotor. Para isso, uma das fases permanece temporariamente sem alimentação durante a comutação,
+permitindo ao controlador detectar os cruzamentos por zero dessa tensão e estimar os instantes adequados para a
+próxima etapa. Dessa forma, o ESC mantém o campo do estator sincronizado com o movimento do rotor, possibilitando
+a conversão contínua da energia elétrica em energia mecânica.
 
-Além disso, o ESC regula a energia elétrica transferida da bateria ao motor em função do comando de aceleração recebido.
 Segundo o manual do fabricante, o controlador suporta corrente contínua de até 120 A e corrente de pico de até 760 A.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
-capacidade de 5200 mAh e taxa de descarga de 60C.
+capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
+preexistentes, com vários anos de uso --- inclusive uma unidade estufada, com descarga facilitada ---,
+cujo efeito sobre os ensaios é discutido no Capítulo 4.
+
+O comando de aceleração aplicado ao ESC pode ter duas origens, selecionadas por uma chave de
+comutação: o sinal PWM proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
+gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
+\emph{step-down} para alimentação em 5 V. Essa segunda origem viabiliza a aplicação automatizada
+dos degraus de comando utilizados no ensaio.
+
 
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
@@ -357,7 +363,11 @@ veículo é ancorado e a balança, instalada na linha de tração, mede a própr
 de modo que o torque na roda é obtido diretamente por $T_\mathrm{roda} = F_t\,r$, com um único
 parâmetro geométrico. A escolha da balança digital de mala em lugar de uma célula de carga
 dedicada segue o mesmo princípio de baixo custo já adotado na seleção do sensor de corrente.
-Automodelos instrumentados têm sido empregados em trabalhos recentes, tanto em ensaios dinâmicos para o ensino de engenharia \cite{weaver2024imece} quanto em plataformas de aquisição de dados off-road na mesma escala 1/8 do veículo utilizado neste trabalho \cite{elsermans2025truggy}. Nesses casos, contudo, a instrumentação visa a dinâmica de movimento, e não o ensaio de tração estacionário com medição simultânea de força e corrente proposto aqui.
+Automodelos instrumentados têm sido empregados em trabalhos recentes, tanto em ensaios dinâmicos
+para o ensino de engenharia \cite{weaver2024imece} quanto em plataformas de aquisição de dados
+off-road na mesma escala 1/8 do veículo utilizado neste trabalho \cite{elsermans2025truggy}.
+Nesses casos, contudo, a instrumentação visa a dinâmica de movimento, e não o ensaio de tração
+estacionário com medição simultânea de força e corrente proposto aqui.
 
 A combinação das duas medições permite construir a curva característica torque versus corrente
 ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. A
