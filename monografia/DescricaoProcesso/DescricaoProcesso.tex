@@ -60,25 +60,13 @@ seleção efetivamente utilizada.
 
 A Unidade de Medição Inercial (\emph{Inertial Measurement Unit} — IMU) reúne, em um único
 dispositivo, um acelerômetro e um giroscópio triaxiais, capazes de medir a aceleração linear e a
-velocidade angular ao longo dos eixos $x$, $y$ e $z$ do chassi. Em módulos de baixo custo, o
-acelerômetro é do tipo MEMS (sistema microeletromecânico), em que uma massa inercial,
-microfabricada e suspensa por molas flexíveis, se desloca em relação à carcaça. O nome descreve
-exatamente a física do sensor: a massa resiste a qualquer mudança em seu movimento, de modo que,
-quando a carcaça acelera, ela tende a permanecer no lugar.
-
-Pela primeira lei de Newton, um corpo mantém seu estado de movimento enquanto nenhuma força
-resultante atua sobre ele. A carcaça é empurrada pelo chassi, mas a massa inercial, ligada a ela
-apenas por molas, é arrastada pelas molas e, por inércia, se atrasa em relação à carcaça. Em
-regime permanente, o deslocamento relativo $x$ satisfaz
-\begin{equation}\label{eq:massa_prova}
-m_p\,\ddot{x} + c\,\dot{x} + k\,x = -m_p\,a,
-\qquad x_\mathrm{perm} = -\frac{m_p}{k}\,a,
-\end{equation}
-em que $m_p$ é a massa inercial, $k$ a rigidez das molas e $c$ o amortecimento. O deslocamento é,
-portanto, diretamente proporcional à aceleração. Essa variação altera a capacitância entre placas
-fixas e móveis, que é convertida em tensão elétrica. O giroscópio, por sua vez, mede a velocidade
-angular em torno de cada eixo pela força de Coriolis que atua sobre uma massa vibrante quando o
-dispositivo gira.
+velocidade angular ao longo dos eixos $x$, $y$ e $z$ do chassi. Em módulos de baixo custo, ambos
+são fabricados pela tecnologia MEMS (sistema microeletromecânico): o acelerômetro é, em
+essência, uma pequena massa suspensa por molas, que permanece no lugar por inércia quando a
+carcaça acelera, de modo que o deslocamento relativo entre a massa e a carcaça — convertido
+eletronicamente em sinal elétrico — é diretamente proporcional à aceleração. O giroscópio mede a
+velocidade angular em torno de cada eixo pela força de Coriolis que surge sobre uma massa
+vibrante quando o dispositivo gira.
 
 A aceleração longitudinal $a$ se relaciona à força de tração $F_t$ pela segunda lei de Newton,
 \begin{equation}\label{eq:newton}
