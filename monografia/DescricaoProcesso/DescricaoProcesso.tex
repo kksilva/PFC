@@ -73,7 +73,7 @@ A aceleração longitudinal $a$ se relaciona à força de tração $F_t$ pela se
 m\,a = F_t - F_r,
 \end{equation}
 em que $m$ é a massa do veículo e $F_r$ agrega as forças resistivas, como o atrito de rolamento
-e o arrasto aerodinâmico. Na roda, a força de tração é $F_t = T_\mathrm{roda}/r$, sendo $r$ o
+e o arrasto aerodinâmico. Na roda, a força de tração é dada por $F_t = T_\mathrm{roda}/r$, sendo $r$ o
 raio efetivo da roda, e o torque nas rodas é o torque do motor multiplicado pela redução $i$ e
 pelo rendimento $\eta$ da transmissão,
 \begin{equation}\label{eq:transmissao}
@@ -85,47 +85,27 @@ estimado a partir da aceleração \cite{mascarenhas2006},
 T_m = \frac{r\,(m\,a + F_r)}{i\,\eta}.
 \end{equation}
 
-A aceleração, portanto, é uma consequência do torque, mas não é diretamente o torque. O sensor
-mede o efeito líquido da tração menos as resistências, e não a força produzida pelo motor. A
-relação é essencialmente indireta, pois a aceleração já incorpora as perdas da transmissão, do
-atrito e do arrasto. Para recuperar o torque, é preciso conhecer $m$, $F_r$, $r$ e $\eta$,
+Essa relação é indireta porque há uma cadeia de causas e efeitos entre a grandeza medida e o
+torque: o torque do motor é a causa, que se transforma em força de tração na roda e se manifesta,
+líquida das resistências, como aceleração do veículo — o efeito final que o sensor efetivamente
+captura. A IMU mede apenas esse efeito final, já filtrado pelas perdas de cada etapa intermediária.
+Para recuperar a causa, portanto, é preciso desfazer a cadeia, conhecendo $m$, $F_r$, $r$ e $\eta$,
 parâmetros que a IMU não mede e que variam com as condições do ensaio, como o tipo de pista e a
-pressão dos pneus. Essa dependência introduz incertezas próprias na estimativa, que crescem com a
-imprecisão de cada parâmetro adotado.
+pressão dos pneus. Quanto maior a imprecisão de cada parâmetro adotado, maior a incerteza da
+estimativa resultante.
 
 Para obter a velocidade do veículo, a aceleração medida $a_m$ é integrada no tempo,
 \begin{equation}\label{eq:integral}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_m(\tau)\,d\tau.
 \end{equation}
-Se o sensor apresentar um viés constante $b$ (\emph{offset}), tem-se $a_m = a + b$, e, com
-$\hat{v}(0) = v(0)$, o erro de velocidade resultante é
-\begin{equation}\label{eq:erro_integral}
-e_v(t) = \hat{v}(t) - v(t) = b\,t + \varepsilon(t),
-\end{equation}
-em que $\varepsilon(t)$ é o erro acumulado pelo ruído do sensor. Na teoria de controle, a
-integração corresponde a uma função de transferência $1/s$, com polo na origem. Esse polo torna
-o sistema marginalmente estável, de modo que uma entrada constante $b$ produz a saída $b/s^2$ no
-domínio de Laplace, ou seja, a rampa $b\,t$ da Equação \eqref{eq:erro_integral}, que cresce sem
-limite. O ruído branco agrava o problema, pois sua integração produz um passeio aleatório
-(\emph{random walk}), cuja variância cresce continuamente com o tempo.
 
-Por isso, a integração isolada não é confiável por muito tempo, e a estimativa é normalmente
-corrigida por um filtro complementar \cite{bueno_romano}. Esse filtro combina a integração da IMU
-com uma medida de velocidade de outra natureza, $v_\mathrm{ref}$, como a leitura de um encoder de
-roda. A integração da IMU é confiável em frequências altas, em que o sensor responde bem às
-variações rápidas, e a referência é confiável em frequências baixas, em que a integração diverge.
-O filtro realiza essa divisão em frequência,
-\begin{equation}\label{eq:complementar}
-\hat{V}(s) = \underbrace{\frac{1}{\tau s + 1}}_{\text{passa-baixas}}\,V_\mathrm{ref}(s)
-+ \underbrace{\frac{\tau s}{\tau s + 1}\,\frac{A_m(s)}{s}}_{\text{passa-altas}},
-\end{equation}
-em que $\tau$ é a constante de tempo de corte. Como os dois ganhos somam 1, o sinal estimado
-segue a referência em regime permanente e a IMU nas variações rápidas. Na implementação digital,
-com período de amostragem $T_s$, a mesma ideia se escreve, de forma usual, como
-\begin{equation}\label{eq:complementar_discreto}
-\hat{v}_k = \alpha\,(\hat{v}_{k-1} + a_{m,k}\,T_s) + (1-\alpha)\,v_{\mathrm{ref},k},
-\qquad \alpha = \frac{\tau}{\tau + T_s}.
-\end{equation}
+Na teoria de controle, a integração acumula o erro de medida, de modo que a estimativa $\hat{v}$ 
+diverge da velocidade real $v$ ao longo do tempo, assim, a estimativa é normalmente
+corrigida por um filtro complementar \cite{bueno_romano}. A fixação deve ser feita em uma placa rígida 
+do chassi, o mais próximo possível do centro de massa e o mais longe possível do ESC, do motor e da transmissão 
+-- fontes de alta vibração --, com seus eixos alinhados aos eixos longitudinal, 
+lateral e vertical. A vibração que chega ao acelerômetro adiciona ruído à medida, e a etapa de filtragem de
+baixa frequência descrita acima reduz esse efeito parcialmente.
 
 Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
 
@@ -137,28 +117,18 @@ Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
     \item a aceleração resultante é medida pela IMU, e o filtro atualiza $\hat{v}$.
 \end{enumerate}
 
-Nessa malha, a bateria e o ESC são atuadores, e não sensores. O controlador rodaria no
-microcontrolador, que lê a IMU e envia o comando ao ESC por um sinal PWM, sem se conectar
-diretamente ao motor. A comunicação com o microcontrolador se faz tipicamente por I$^2$C.
-
-A IMU deve ser fixada em uma placa rígida do chassi, no centro do veículo e o mais próximo
-possível do centro de massa, com seus eixos alinhados aos eixos longitudinal, lateral e vertical.
-Ela não deve ficar presa ao motor, ao ESC nem à transmissão, que são as principais fontes de
-vibração. Por isso, a fixação usa, normalmente, coxins de borracha ou espuma entre o módulo e a
-placa, que atenuam a vibração de alta frequência sem alterar a aceleração de baixa frequência do
-veículo. A vibração que chega ao acelerômetro adiciona ruído à medida, e a etapa de filtragem de
-baixa frequência descrita acima reduz esse efeito parcialmente.
+O controlador rodaria no microcontrolador, que lê a IMU e envia o comando ao ESC por um sinal
+PWM gerado pela Raspberry Pi, sem se conectar diretamente ao motor; a comunicação com a IMU se dá
+por I$^2$C.
 
 O giroscópio mede a velocidade angular do chassi, sobretudo a guinada (rotação
 em torno do eixo vertical), que pode ser usada em malha fechada para controle de direção ou de
 estabilidade. Ele não mede a rotação das rodas nem do motor, de modo que não informa
-diretamente sobre a propulsão. A IMU, por sua vez, não mede a corrente consumida e, portanto,
-não protege os componentes eletrônicos contra picos de corrente. Ela pode, ainda, contribuir para
-a proteção mecânica: como mede a aceleração, o microcontrolador pode detectar picos e limitar a
-taxa de variação do comando $u$, suavizando a aceleração e reduzindo os picos de torque na
-transmissão. Essa ação é apenas parcialmente preventiva, pois atua depois que o pico começa a ser
-medido. Assim, a IMU cumpre o objetivo de realimentação de velocidade, mas não o de proteção
-elétrica dos componentes.
+diretamente sobre a propulsão. Para a proteção do sistema, o microcontrolador pode detectar picos
+e limitar a taxa de variação do comando $u$, suavizando a aceleração e reduzindo os picos de torque
+na transmissão, sendo essa ação apenas parcialmente preventiva, pois atua depois que o pico já
+começou a ser medido. Assim, a IMU cumpre o objetivo de realimentação de velocidade, mas não o de
+proteção elétrica dos componentes.
 
 Em síntese, as vantagens e desvantagens da IMU são as seguintes.
 
@@ -174,10 +144,11 @@ preciso olhar para a cadeia elétrica ou rotacional, o que conduz às abordagens
 \subsection{Sensor Magnético de Efeito Hall SS41F/41G}
 \label{sec:ss41f}
 
-O SS41F/41G é um sensor digital de efeito Hall do tipo bipolar. Sua saída assume nível alto na
-presença do polo norte de um ímã e nível baixo na presença do polo sul, de modo que cada troca
+O SS41F/41G é um sensor digital de efeito Hall do tipo bipolar com saída em nível alto na
+presença do polo norte de um ímã e em nível baixo na presença do polo sul, de modo que cada troca
 de polos sob o sensor gera uma transição digital. Quando um anel magnetizado, com $N$
-alternâncias de polos ao longo da circunferência, gira solidário à roda ou ao eixo, o sensor
+alternâncias de polos ao longo da circunferência, gira solidário à roda ou ao eixo — isto é,
+rigidamente acoplado a ela e girando com ela —, o sensor
 produz $N$ transições por revolução. Essa é a base dos encoders de roda usualmente empregados
 em robótica, nos quais o microcontrolador conta as transições em uma janela de tempo e estima,
 a partir delas, a rotação.
@@ -186,32 +157,6 @@ Para uma rotação de $n$ rotações por minuto, a frequência dos pulsos é
 \begin{equation}\label{eq:freq_pulsos}
 f_p = \frac{N\,n}{60}.
 \end{equation}
-Ao contar $c$ pulsos em uma janela de duração $T_m$, a velocidade angular estimada é
-\begin{equation}\label{eq:omega_estimada}
-\hat{\omega} = \frac{2\pi\,c}{N\,T_m},
-\end{equation}
-e a resolução dessa medida, dada pela incerteza de quantização de uma contagem, é
-\begin{equation}\label{eq:resolucao_encoder}
-\Delta\omega = \frac{2\pi}{N\,T_m}.
-\end{equation}
-A resolução absoluta é constante ao longo de toda a faixa de velocidades, mas o erro relativo
-$\Delta\omega/\omega$ cresce à medida que a velocidade diminui, simplesmente porque a janela passa
-a conter poucos pulsos. Em baixas rotações, a estimativa de velocidade torna-se, portanto,
-progressivamente mais grosseira.
-
-A posição do sensor define a grandeza efetivamente obtida. Com o anel no eixo do motor, a leitura
-fornece a velocidade $\omega_m$; com o anel na roda, fornece a velocidade $\omega_\mathrm{roda}$.
-As duas se relacionam pela redução de transmissão $i$,
-\begin{equation}\label{eq:reducao_velocidade}
-\omega_m = i\,\omega_\mathrm{roda},
-\end{equation}
-e a velocidade linear do veículo, para um raio efetivo $r$, é
-\begin{equation}\label{eq:velocidade_linear}
-v = r\,\omega_\mathrm{roda}.
-\end{equation}
-Dessa forma, a velocidade do veículo ou do motor é obtida a partir de uma única leitura contável,
-sem integração, o que distingue essa abordagem da aceleração medida pela IMU, que exige
-integração e filtragem para produzir a mesma informação.
 
 Estimar torque a partir da velocidade, contudo, exige a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de

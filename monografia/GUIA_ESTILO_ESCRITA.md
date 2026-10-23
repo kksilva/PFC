@@ -1,213 +1,242 @@
 # Guia de Estilo de Escrita Técnica — Karine Giselle de Souza Silva
 
-Este guia consolida duas fontes:
+Este guia consolida três fontes, nesta ordem de prevalência em caso de conflito:
 
 1. **`modelo_PFC_latex.pdf`** (nesta pasta) — o modelo oficial de monografia do curso, que
-   inclui um manual de escrita técnica completo (Capítulo 3, "Metodologia", Seções 3.1 a 3.7).
-   Esta é a **fonte normativa**: em caso de conflito, prevalece sobre qualquer outra observação
-   deste guia.
-2. A análise do estilo já praticado nos seus relatórios (Proposta de Projeto, Relatórios
-   Parciais 1–3, Relatório Experimental), que mostra como você aplica esses princípios na
-   prática e serve de referência de tom e terminologia.
+   inclui um manual de escrita técnica completo. É a **fonte normativa**: regras de precisão,
+   citações, honestidade e apresentação vêm dele.
+2. **O estilo efetivamente praticado** nos seus relatórios (Proposta de Projeto, Relatórios
+   Parciais 1–3, Relatório Experimental) e na monografia (Introdução e Descrição do Processo),
+   analisado em outubro/2026. As Seções 3, 11 e 12 deste guia descrevem esse estilo e prevalecem
+   sobre as recomendações genéricas do modelo sempre que houver divergência de tom e ritmo.
+3. Observações de banca/orientador, quando houver.
 
 Use este guia ao redigir ou revisar qualquer capítulo em `PFC_monografia/`.
 
 ---
 
-## 1. Estrutura esperada por capítulo (conforme o modelo)
+## 1. O estilo em uma frase
+
+**Formal-técnico, impessoal e explicativo: cada parágrafo conduz o leitor do princípio físico ao
+mecanismo e daí à implicação de engenharia, com períodos fluidos amarrados por conectivos e
+advérbios, fechando em uma sentença de síntese.**
+
+O texto deve ser **coeso** (as ideias se encadeiam, nada fica solto), **coerente** (conceito,
+nomenclatura e linha de raciocínio consistentes do início ao fim), **fluido** (o leitor atravessa
+o parágrafo sem tropeços) e **dinâmico** (o parágrafo avança: sempre sai de um estágio de
+entendimento para um estágio maior).
+
+## 2. Estrutura esperada por capítulo (conforme o modelo)
 
 | Capítulo | Seções |
 |---|---|
 | 1. Introdução | 1.1 Motivação e Justificativa · 1.2 Objetivos do Projeto · 1.3 Local de Realização · 1.4 Estrutura da Monografia |
-| 2. Descrição do Processo | 2.1 Processo/sistema estudado · 2.2 Instrumentação do Processo · 2.3 Situação Atual/Estado da Arte/Revisão da Literatura (2.3.1 Como elaborar) · 2.4 Resumo do Capítulo |
+| 2. Descrição do Processo | 2.1 Processo/sistema estudado · 2.2 Instrumentação do Processo · 2.3 Situação Atual/Estado da Arte · 2.4 Resumo do Capítulo |
 | 3. Metodologia | Descrição dos métodos utilizados, com justificativa das escolhas e discussão de alternativas |
 | 4. Resultados | 4.1 Atividades do Projeto · 4.2 Requisitos do Sistema · 4.3 Desenvolvimento e Implementação · 4.4 Testes · 4.5 Análise dos Resultados · 4.6 Resumo do Capítulo |
 | 5. Conclusões | 5.1 Considerações Finais · 5.2 Propostas de Continuidade |
 | — | Referências Bibliográficas · Apêndices |
 
-Os títulos de seção podem ser adaptados ao contexto do projeto (o próprio modelo autoriza isso:
-*"você pode preferir usar títulos mais pertinentes ao seu contexto"*), mas **cada capítulo deve
-conter os pontos listados**, mesmo que sob outro nome.
+Os títulos podem ser adaptados ao contexto (o próprio modelo autoriza), mas **cada capítulo deve
+conter os pontos listados**, mesmo sob outro nome.
 
-- **Resumo:** no máximo **duas páginas, no máximo dois parágrafos**: (i) objetivos do projeto e
-  descrição sucinta do local onde foi desenvolvido; (ii) metodologia utilizada e resultados
-  alcançados. Linguagem acessível, limitando jargões — é, junto da Introdução e da Conclusão, o
-  trecho que decide se o leitor avançará no texto, então merece um esforço extra de convencimento.
-- **Abstract:** tradução fiel do Resumo, nunca literal — cuidado especial com termos técnicos.
+- **Resumo:** no máximo **duas páginas, no máximo dois parágrafos**: (i) objetivos e descrição
+  sucinta do local; (ii) metodologia e resultados alcançados. Linguagem acessível, limitando
+  jargões — merece esforço extra de convencimento.
+- **Abstract:** tradução fiel do Resumo, cuidado especial com termos técnicos.
 
----
+## 3. Ritmo de frases e uso de advérbios (o seu jeito)
 
-## 2. Precisão
+Esta seção codifica o estilo praticado e **prevalece sobre a regra genérica do modelo de frases
+curtas**.
 
-- Use as palavras corretas: não escreva "redondo" se é esférico, "igual" se é aproximado,
-  "sistema" se é função de transferência.
-- Não use "grande", "pequeno", "máximo", "mínimo", "ótimo" sem uma escala que defina o conceito.
-- Prefira números que deem noção de escala a adjetivos difíceis de precisar.
-- Evite generalidades: troque *"o processo tem alto custo"* por *"o processo possui custo
-  operacional X% maior que o processo Y"*.
+- **Períodos fluidos de raciocínio.** Frases que encadeiam causa e consequência podem e devem
+  ter 25–35 palavras, com orações subordinadas ligadas por *"que"*, *"nas quais"*, *"de modo a"*,
+  *"uma vez que"*, *"de forma que"*. O raciocínio técnico ganha naturalidade quando a relação
+  lógica é feita dentro da frase. Ex.: *"A interação entre os campos gera forças eletromagnéticas
+  que produzem o torque responsável pela rotação do eixo."*
+- **Frases curtas para fatos e comandos.** Afirmações pontuais, valores e instruções ficam em
+  frases de 8–15 palavras. Alternar período longo (raciocínio) e frase curta (fato) é o que dá
+  dinamismo ao texto.
+- **Advérbios são bem-vindos** quando qualificam o raciocínio, não quando embelezam: *"normalmente"*
+  (condição típica), *"tipicamente"* (valor representativo), *"diretamente"* (relação sem
+  intermediário), *"portanto"* (conclusão), *"assim"* (consequência), *"aproximadamente"*,
+  *"usualmente"*, *"essencialmente"*, *"parcialmente"*. Proibidos os que fingem certeza sem
+  base: *"obviamente"*, *"certamente"*, *"naturalmente"*, *"evidentemente"*.
+- **O parágrafo fecha com síntese.** Ao final de cada bloco, uma frase-síntese curta e contundente
+  declara o veredito do raciocínio: *"A aceleração, portanto, é uma consequência do torque, mas
+  não é diretamente o torque."* / *"Dessa forma, a utilização de X não se mostra adequada para a
+  metodologia proposta."*
+- **Ponte entre blocos.** A última frase de um parágrafo prepara o próximo tópico, e a primeira
+  frase do parágrafo seguinte retoma a ideia: nunca dois parágrafos começam do zero.
 
-## 3. Clareza
+## 4. Arquitetura do parágrafo expositivo
 
-- **Evite frases longas.** Nunca mais de 20 palavras por frase; a média deve ficar perto de 12.
-- Não deixe ideias subentendidas — explicite todos os passos do raciocínio lógico. Pular etapas
-  é a causa mais comum de confusão na leitura.
-- Defina todo conceito antes de usá-lo.
-- Cuidado com pronomes ("esse", "este", "isso", "ele") sem referente claro — prefira repetir o
-  substantivo a deixar margem para dúvida.
-- Repetição de palavras não é problema em texto técnico; o que importa é a clareza, não a
-  variação estilística. Se uma frase ficar confusa, repita a ideia com outras palavras ou dê um
-  exemplo, em vez de tentar reformular de forma mais "elegante".
-- Domine o significado de toda palavra usada — nunca use um termo sobre o qual haja dúvida.
+Sequência padrão dos seus textos comparativos e explicativos — manter:
 
-## 4. Objetividade
+1. **Contextualização/definição** do conceito ou componente, com termo estrangeiro em itálico
+   entre parênteses e sigla em travessão quando aplicável: *(*Electronic Speed Controller* — ESC)*.
+2. **Princípio físico ou técnico**: lei física, mecanismo de funcionamento, equação numerada.
+3. **Mecanismo/causa**: como o princípio se realiza no caso concreto (a sequência de eventos).
+4. **Implicação de engenharia**: o que isso significa para o projeto — vantagem, limitação ou
+   consequência para a escolha em discussão.
+5. **Síntese ou transição** (ver Seção 3).
 
-- Texto direto ao ponto, sem rodeios, livre de opiniões.
-- **Nunca use hipérboles.** Cuidado com "otimizar", "muito grande", "enorme", "muito bom". Use
-  números para quantificar, mesmo que seja só uma estimativa — especial atenção a "muito" e
-  "muitos".
-- Tom impessoal, apresentando fatos, não opiniões. A voz passiva é o instrumento mais comum para
-  isso em português, mas prefira a voz ativa ou a passiva sintética (*"obteve-se"*, *"optou-se
-  por"*) quando possível, para manter o texto fluido.
-- Prefira palavras concretas a abstratas: troque *"a máquina processou as amostras"* por *"a
-  centrífuga girou as amostras"*.
-- Controle o tom: sem linguagem coloquial, sem clichês, sem arrogância ("obviamente", "como é
-  sabido", "é claro que").
+**Definições embutidas**: ao introduzir um termo ou valor, explique-o no próprio período com aposto
+após travessão ou "é de": *"cuja constante de velocidade é de 2100 rpm/V — velocidade de rotação
+aproximada do motor, em rotações por minuto por volt aplicado, em condições próximas à operação
+sem carga mecânica significativa."*
 
-## 5. Concisão
+**Equações** são anunciadas no texto ("satisfaz", "tem-se", "pode ser estimado por"), numeradas, e
+comentadas imediatamente abaixo com *"em que $x$ é..., $k$ a..., e $c$ o..."*. Equação entra na
+frase com pontuação própria.
 
-- Tão curto quanto possível sem perder clareza ou precisão.
-- Não escreva para encher página. Se um trecho não for relevante, corte-o, mova-o para um
-  apêndice ou substitua por uma referência.
-- Evite redundâncias como "opinião pessoal" e "garantia absoluta".
+## 5. Precisão
 
-## 6. Vícios comuns (evitar sempre)
+- Use as palavras corretas: não escreva "redondo" se é esférico, "igual" se é aproximado.
+- Não use "grande", "pequeno", "máximo", "ótimo" sem uma escala que defina o conceito.
+- Prefira números que deem noção de escala a adjetivos difíceis de precisar: *"o processo possui
+  custo operacional X% maior que o processo Y"*.
+- Qualificadores quantitativos são obrigatórios junto a advérbios como "aproximadamente": dê o
+  valor ou o intervalo.
 
-- Estrangeirismos sem necessidade — quando usados, em itálico e com tradução entre parênteses.
-- Linguagem rebuscada.
-- Alternar tempo verbal entre passado e presente — escolha um e mantenha.
+## 6. Clareza e objetividade
+
+- Explicite todos os passos do raciocínio lógico — pular etapas é a causa mais comum de confusão.
+- Defina todo conceito antes de usá-lo; nunca invoque para frente.
+- Cuidado com pronomes sem referente claro — prefira repetir o substantivo (repetição não é
+  problema em texto técnico).
+- Tom impessoal: o sujeito é o objeto de estudo ou "o presente trabalho" — nunca "eu"/"nós".
+  Prefira voz ativa ou passiva sintética (*"obteve-se"*, *"optou-se por"*).
+- Sem opiniões, hipérboles, clichês ou arrogância (*"como é sabido"*, *"é claro que"*).
+- Palavras concretas no lugar de abstratas: *"a centrífuga girou as amostras"* em vez de *"a
+  máquina processou as amostras"*.
+- Tão conciso quanto possível sem perder o encadeamento: cortar palavra morta, não conectivo que
+  carrega relação lógica.
+
+## 7. Vícios comuns (evitar sempre)
+
+- Estrangeirismo sem necessidade — quando usado, em itálico e com tradução entre parênteses.
+- Alternar tempo verbal entre passado e presente — o padrão do trabalho é o **presente**.
 - Iniciar frase com verbo deixando o sujeito implícito.
-- Inserir citações no meio da frase — a citação vai sempre ao final.
-- Usar siglas sem defini-las por extenso na primeira ocorrência.
-- "Como sabemos", "como é sabido", "por razões óbvias", "é evidente que", "talvez seja verdade
-  que" — frases que só revelam que o autor não sabe explicar o que afirma.
-- Definir um conceito só por meio de exemplo — primeiro defina, depois exemplifique.
+- Citação no meio da frase — a citação vai sempre ao final, antes do ponto:
+  *"... estimado a partir da aceleração \cite{mascarenhas2006}."*
+- Sigla sem definição por extenso na primeira ocorrência do documento inteiro.
+- Definir conceito só por exemplo — primeiro defina, depois exemplifique.
+- Duas frases-síntese consecutivas, dois conectivos iguais em sequência, ou parágrafos que
+  começam todos com a mesma construção (monotonia destrói a fluidez).
 
-## 7. Boas práticas
+## 8. Coesão textual
+
+- Anáforas que retomam o substantivo: *"Essa abordagem..."*, *"Esse deslocamento..."*.
+- Conectivos variados, amarrando causa, contraste, adição e conclusão: *"Além disso"*, *"Além de"*,
+  *"Dessa forma"*, *"Assim"*, *"Por isso"*, *"Portanto"*, *"Entretanto"*, *"Embora"*,
+  *"Uma vez que"*, *"Conforme"*, *"À medida que"*, *"Nesse contexto"*, *"Nesse sentido"*,
+  *"De modo a"*, *"De forma que"*, *"Por fim"*.
+- Transição de seção recapitula antes de avançar: *"Após a análise comparativa dos métodos de
+  medição, optou-se por..."*.
+- Nomenclatura consistente do início ao fim: sempre "sistema de propulsão", "curva característica
+  torque versus corrente", "sensor ACS758" (não variar sinônimos para o mesmo objeto).
+
+## 9. Boas práticas
 
 - Defina a estrutura do texto **antes** de começar a escrever.
-- Nunca invoque um conceito antes de defini-lo; evite referências "para frente" no texto.
-- Antes de um trecho longo com ideias diversas, adiante ao leitor o que será discutido; ao final,
-  declare explicitamente a conclusão alcançada. Vale especialmente para seções e capítulos.
+- Antes de um trecho longo, adiante ao leitor o que será discutido; ao final, declare a conclusão
+  alcançada.
 - Destaque termos novos em itálico na primeira ocorrência, como marca de definição.
-- Releia a cada parágrafo; releia rapidamente cada seção para checar o encadeamento das ideias.
-- Corte palavras sempre que possível.
-- Use corretor ortográfico e peça para alguém ler o texto.
+- Releia a cada parágrafo; releia cada seção para checar o encadeamento.
+- Use corretor ortográfico e leia em voz baixa os trechos críticos — a fluidez se testa no ouvido.
 
-## 8. Uso de referências
+## 10. Uso de referências
 
-Toda afirmação em texto técnico se enquadra em um de três casos:
+Toda afirmação se enquadra em três casos: (a) conhecimento geral → sem citação (evite excesso);
+(b) ideia original → deixe claro no texto; (c) origem em outro trabalho → **sempre** citar.
 
-- **(a)** conhecimento geral da área → em geral não precisa de citação (evite excesso; se um
-  parágrafo inteiro se baseia numa referência, basta citá-la no início do parágrafo);
-- **(b)** ideia original do autor → deixe isso claro no texto, para não parecer (a) ou (c);
-- **(c)** origem em outro trabalho (inclusive de autoria própria anterior) → **sempre** citar.
+- Nunca copie frases das referências — reescreva com suas palavras.
+- Prefira revisão por pares > teses > anais > relatórios > páginas genéricas.
+- Pesquise em bases confiáveis (Google Scholar, Scopus, Web of Science).
+- Evite citação de segunda mão — rastreie a fonte original.
+- Datasheets e manuais são citáveis pelo fabricante: *"Segundo o manual do fabricante..."*
+  com entrada no `.bib`.
 
-Regras práticas:
+## 11. Honestidade
 
-- Nunca copie frases das referências — reescreva com suas próprias palavras; se precisar manter
-  o texto original, use aspas e itálico.
-- Prefira fontes com revisão por pares (artigos, livros) a teses/dissertações, depois anais de
-  congresso e por último relatórios; evite páginas de internet genéricas.
-- Pesquise em bases confiáveis (Web of Science, Scopus, Google Scholar), não em buscadores
-  genéricos.
-- Prefira referências recentes em temas de fronteira; prefira referências consolidadas (muitas
-  citações) em temas já maduros.
-- Evite citação de segunda mão — rastreie a fonte original sempre que possível.
+- Nunca maqueie resultados nem mostre só as melhores amostras.
+- Não escreva de forma vague para mascarar o que não foi compreendido — descreva a limitação.
+- Com poucas repetições, qualifique a conclusão como preliminar.
 
-## 9. Honestidade e plágio
+## 12. Gramática
 
-- Nunca "maqueie" resultados nem mostre apenas as melhores amostras para parecer bem-sucedido.
-- Não escreva de forma vaga para mascarar o que não foi bem compreendido.
-- Dê crédito a quem o merece: toda vez que usar trabalho de terceiros, cite. Nunca assuma crédito
-  pelo trabalho de outra pessoa — tem implicações legais e acadêmicas.
-
-## 10. Gramática
-
-- Erros gramaticais prejudicam a credibilidade do texto.
-- Use a vírgula corretamente — nunca para "marcar uma pausa"; nunca separando sujeito e verbo.
-
----
-
-## 11. Estrutura de parágrafo observada nos seus relatórios
-
-Nas seções comparativas (escolha de sensores, de método de medição de torque etc.), seus
-relatórios já seguem um padrão lógico consistente com as regras acima — mantenha-o:
-
-1. **Contextualização/definição** do conceito ou componente.
-2. **Princípio físico ou técnico** envolvido (lei física, equação quando aplicável).
-3. **Vantagens** relevantes ao objetivo do trabalho.
-4. **Desvantagens/limitações.**
-5. **Conclusão parcial**, retomando a discussão e apontando a decisão ou a transição para o
-   próximo tópico (ex.: *"Dessa forma, a utilização de X não se mostra adequada para a
-   metodologia proposta devido a..."*).
-
-## 12. Coesão textual
-
-- Anáforas que retomam o substantivo da frase anterior: *"Essa abordagem..."*, *"Esse
-  deslocamento..."* — mas sem abusar de pronomes ambíguos (ver Seção 3).
-- Conectores lógicos variados, nunca repetidos em sequência: *"Entretanto"*, *"Dessa forma"*,
-  *"Assim"*, *"Além disso"*, *"Por fim"*, *"Embora"*, *"No entanto"*, *"Uma vez que"*,
-  *"Conforme"*, *"Nesse sentido"*.
-- Transições entre seções recapitulam o que veio antes de introduzir o próximo passo: *"Após a
-  análise comparativa dos métodos..., optou-se por..."*.
-- Sigla definida por extenso só na primeira ocorrência do documento inteiro, entre parênteses:
-  *"Controlador Eletrônico de Velocidade (ESC)"*.
+- Erros gramaticais prejudicam a credibilidade.
+- Vírgula nunca separa sujeito e verbo, nem "marca pausa"; travessão introduz aposto explicativo.
+- Decimal com vírgula: 0,08 m; 2100 rpm/V.
 
 ## 13. Apresentação de resultados
 
-- Apresente os resultados sem adulteração, com análise objetiva do que os dados mostram.
-- Gráfico quando a tendência/forma importa; tabela quando os valores exatos importam ou o
-  gráfico fica difícil de ler.
-- Nunca inclua gráfico/tabela sem uma conclusão associada no texto.
-- Sempre reporte a incerteza quando significativa (resolução do instrumento, desvio-padrão entre
-  repetições etc.).
-- Avalie o tamanho da amostra antes de generalizar — com poucas repetições, qualifique a
-  conclusão como preliminar (caso atual da curva T×I em `Resultados.tex`, que aguarda o ensaio
-  definitivo).
-- Nunca termine um capítulo de forma abrupta ou genérica; o "Resumo do Capítulo" deve sintetizar
-  o que foi de fato mostrado.
+- Sem adulteração, com análise objetiva do que os dados mostram.
+- Gráfico quando a forma importa; tabela quando os valores exatos importam.
+- Nunca figura/tabela sem conclusão associada no texto — toda figura encerra com uma frase do
+  tipo *"Observa-se que..."* que extrai o que a figura prova.
+- Sempre reporte incerteza quando significativa (resolução, desvio-padrão entre repetições,
+  incerteza expandida).
+- Nunca termine capítulo de forma abrupta: o "Resumo do Capítulo" sintetiza o que foi de fato
+  mostrado.
 
 ## 14. Unidades e notação matemática
 
-- Todo número tem unidade. Não escreva a unidade em itálico no ambiente matemático e respeite
-  maiúsculas/minúsculas (`22 kN`, nunca `22 KN`).
+- Todo número tem unidade, sem itálico, maiúsculas/minúsculas corretas (`22 kN`, nunca `KN`).
 - Defina toda variável antes de usá-la ou imediatamente depois da equação.
-- Trate equações como parte da frase, com pontuação ao final (`\enspace,` ou `\enspace.`).
-- Marque definições explicitamente com `\triangleq` ou `:=`.
-- Cite equações numeradas como "Equação (N)".
-- Variáveis em itálico, operadores não — por isso toda expressão matemática fica no ambiente
-  `$...$`, mesmo uma letra isolada.
-- Nunca reaproveite um símbolo para duas variáveis diferentes no mesmo documento.
+- Equações como parte da frase, com pontuação.
+- Definições com `\triangleq`; equações citadas como "Equação (N)".
+- Variáveis em itálico via ambiente matemático, operadores em romano.
+- Nunca reaproveite símbolo para duas variáveis diferentes no documento.
 
-## 15. Convenções práticas do LaTeX do projeto
+## 15. Revisão: lições práticas (outubro/2026)
 
-- Fonte **Times**, exigida pela norma do PFC/UFMG.
-- Compile sempre mais de uma vez (`pdflatex` → `bibtex` → `pdflatex` → `pdflatex`, ou simplesmente
-  `./compilar.sh`) para resolver referências cruzadas.
-- Toda figura/tabela com `\caption` e `\label`.
-- Toda referência no `.bib` citada com `\cite{}` no texto, e toda citação com entrada no `.bib`.
+Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
+
+- **Um símbolo, um significado, em todo o documento — e a checagem é grep, não memória.**
+  $T_m$ como duração da janela de contagem colidia com $T_m$ = torque do motor nas equações
+  vizinhas: o olho leu torque, não tempo. Convenção adotada: janela de contagem é $T_j$;
+  subscritos sempre semânticos e únicos. Antes de fechar um capítulo, varrer o `.tex` pelos
+  símbolos usados e conferir colisões entre seções, não apenas dentro delas.
+- **Perguntas entre parênteses são marcações de revisão, não texto.** Responder uma pergunta
+  como "(e por quê é indireta?)" ou "(solitário?)" é reescrever a passagem de modo que a dúvida
+  desapareça e então apagar a pergunta. A versão final nunca carrega parêntese de dúvida.
+- **Quando a conclusão não é óbvia, mostre a cadeia causal em vez de afirmar.** "A relação é
+  indireta" só convence se o texto desenhar a cadeia: causa (torque do motor) → efeitos
+  intermediários (tração na roda, perdas de transmissão e resistências) → grandeza medida
+  (aceleração líquida). Afirmações avaliativas ("indireto", "grosseiro", "sensível") exigem o
+  encadeamento explícito logo no parágrafo em que aparecem.
+- **Alternativas rejeitadas recebem detalhe mínimo.** A revisão removeu as equações do filtro
+  complementar e o parágrafo dos coxins de borracha da IMU: o que não muda a decisão entre
+  alternativas não precisa de equação numerada nem de parágrafo próprio. Em comparação de
+  alternativas, o essencial é princípio → o que mede → o que falta para o objetivo → veredito.
+- **Registro formal sem exceção, inclusive nas revisões rápidas.** "Pra" → "Para a"; nomes
+  próprios conferidos letra a letra (Raspberry Pi). Coloquialismo e nome próprio errado passam
+  despercebidos na tela do editor e saltam aos olhos no PDF.
+- **Palavras que se parecem, mas não são.** "solidário" (rigidamente acoplado, gira junto) ≠
+  "solitário". Quando o termo técnico tem um vizinho comum no vocabulário, a definição
+  embutida com travessão elimina a ambiguidade na primeira ocorrência.
+
+## 16. Convenções LaTeX do projeto
+
+- Fonte Times (norma PFC/UFMG); `book` 12pt, `abntex2`.
+- Compile com `./compilar.sh` (ou `pdflatex` → `bibtex` → `pdflatex` ×2).
+- Toda figura/tabela com `\caption` + `\label`; fonte da figura indicada em `\footnotesize`.
+- Toda entrada do `.bib` citada no texto; toda `\cite` com entrada no `.bib`.
 
 ---
 
-## 16. Checklist rápido antes de finalizar uma seção
+## 17. Checklist rápido antes de finalizar uma seção
 
-- [ ] Nenhuma frase passa de ~20 palavras; a média está perto de 12?
-- [ ] Toda sigla foi definida por extenso na primeira ocorrência do documento?
-- [ ] Nenhuma opinião, hipérbole ou clichê — só fatos e números?
-- [ ] Toda afirmação de terceiros está citada, e a citação está ao final da frase?
-- [ ] O parágrafo contextualiza antes de concluir, e fecha retomando a ideia central?
-- [ ] Há conectores lógicos variados amarrando as frases, sem repetição em sequência?
-- [ ] Toda figura/tabela tem `\caption`+`\label` e uma conclusão associada no texto?
-- [ ] O texto está impessoal (sem "eu"/"nós"), em voz ativa ou passiva sintética?
-- [ ] A terminologia é consistente com o resto do trabalho (ex.: sempre "sistema de propulsão",
-  "sensor ACS758", "curva característica torque versus corrente")?
+- [ ] Cada parágrafo segue contextualização → princípio → mecanismo → implicação → síntese?
+- [ ] Os períodos longos carregam raciocínio encadeado e as frases curtas, fatos? (ritmo fluido)
+- [ ] Advérbios qualificam condições e conclusões (normalmente, tipicamente, portanto, diretamente) — sem "obviamente/evidentemente"?
+- [ ] Cada bloco fecha com frase-síntese e abre ponte para o próximo?
+- [ ] Toda sigla definida por extenso na primeira ocorrência do documento?
+- [ ] Citações ao final das frases; citações de terceiros em todo conceito que não é seu?
+- [ ] Terminologia consistente do início ao fim?
+- [ ] Toda figura/tabela com `\caption`+`\label` e conclusão associada no texto?
+- [ ] Impessoal, presente do indicativo, sem hipérbole ou coloquialismo?
+- [ ] Incertezas reportadas junto aos resultados?
