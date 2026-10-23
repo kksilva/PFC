@@ -204,46 +204,21 @@ caminho da corrente. Pela Lei de Ohm, a queda de tensão sobre ele é
 V_s = R_s\,I.
 \end{equation}
 Essa tensão, tipicamente da ordem de milivolts, é amplificada pelo circuito integrado INA240, cuja
-saída, referenciada a uma tensão de polarização $V_\mathrm{ref}$, é
+saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
 \begin{equation}\label{eq:shunt_ganho}
-V_\mathrm{out} = G\,R_s\,I + V_\mathrm{ref},
+V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
-em que $G$ é o ganho fixo do amplificador, selecionável entre 20, 50, 100 e 200 V/V. O
-amplificador possui largura de banda de 400 kHz e rejeição reforçada a transientes de modo comum,
-que são justamente os produzidos pelo chaveamento de um ESC \cite{ti_ina240_2}. ESCs brushless
-sensorless dessa classe costumam chavear entre 8 kHz e 16 kHz \cite{yge_esc}, de modo que tanto o
-amplificador quanto o próprio resistor precisam responder a variações de corrente bem mais
-rápidas que a frequência fundamental de comutação do motor.
+em que $G$ é o ganho fixo do amplificador. O componente possui largura de banda de 400 kHz e
+rejeição reforçada a transientes de modo comum --- justamente os produzidos pelo chaveamento de um
+ESC \cite{ti_ina240_2}. Em altas frequências, no entanto, a impedância do resistor deixa de ser
+dominada pela resistência e passa a depender de sua indutância parasita $L_s$, de modo que a
+tensão sobre o shunt deixa de ser proporcional à corrente instantânea e a leitura se distorce
+durante as variações rápidas impostas pelo chaveamento.
 
-Em altas frequências, no entanto, a impedância do resistor deixa de ser dominada pela resistência
-e passa a depender de sua indutância parasita $L_s$,
-\begin{equation}\label{eq:shunt_impedancia}
-Z_s(\omega) = R_s + j\,\omega\,L_s.
-\end{equation}
-Para componentes de resistência muito baixa, o termo indutivo pode superar o resistivo
-precisamente na faixa de frequências do chaveamento do ESC. Nessa condição, a tensão sobre o
-shunt deixa de ser proporcional à corrente instantânea, e a leitura se distorce durante variações
-rápidas. Vale notar que essa limitação está associada ao resistor, e não ao amplificador em si.
-
-A dissipação de potência no resistor cresce com o quadrado da corrente,
-\begin{equation}\label{eq:shunt_potencia}
-P_{R_s} = R_s\,I^2,
-\end{equation}
-o que impõe um compromisso inerente à escolha de $R_s$ \cite{goncalves2019}. Ele deve ser baixo
-para não reduzir a tensão disponível à carga, mas precisa ser suficientemente não nulo para
-produzir um sinal mensurável. Como ilustração, com $R_s = 0{,}5\,\mathrm{m\Omega}$ e corrente de
-120 A, a queda de tensão é de 60 mV e a potência dissipada é de 7,2 W. A resolução da medida,
-limitada pelo conversor analógico-digital de $n$ bits e tensão de referência $V_\mathrm{ref}$, é
-\begin{equation}\label{eq:shunt_resolucao}
-\Delta I = \frac{V_\mathrm{ref}}{2^{n}\,G\,R_s}.
-\end{equation}
-Para um conversor de 12 bits com referência de 3,3 V e $G = 20$, a resolução resultante é de
-cerca de 81 mA --- valor que atende bem a correntes da ordem das dezenas de ampères, mas que se
-torna grosseiro perto do zero.
-
-O shunt instalado na alimentação do ESC mede a corrente média de entrada, e não a corrente de
-fase do motor, que é chaveada pelo PWM. Em uma aproximação simplificada, que considera apenas o
-ramo conduzindo em cada instante, a corrente de entrada se relaciona à corrente de fase pela
+A dissipação de potência no resistor cresce com o quadrado da corrente, de modo que, sob correntes
+elevadas, o shunt aquece e consome parte da energia destinada ao motor. Vale observar, ainda, que
+o shunt instalado na alimentação do ESC mede a corrente média de entrada, e não a corrente de
+fase do motor, que é chaveada pelo PWM; assim, a corrente de entrada se relaciona à corrente de fase pela
 razão cíclica $D$ do chaveamento,
 \begin{equation}\label{eq:corrente_bateria}
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
@@ -252,15 +227,18 @@ A leitura precisa ser interpretada, portanto, considerando o ciclo de trabalho v
 diretamente como corrente de fase. Essa ressalva se aplica igualmente a qualquer sensor instalado
 no ramo de alimentação, como se verá adiante.
 
-Como vantagens, o arranjo fornece uma medida direta da corrente, com boa linearidade e ampla
-largura de banda a baixo custo. Como limitações, o circuito não possui isolamento galvânico entre
-o sensor e o circuito de potência, o resistor dissipa potência sob correntes elevadas e o
-desempenho dinâmico se degrada diante do chaveamento em alta frequência típico de motores
-brushless. Trabalhos nacionais sobre medição de corrente com shunt apontam, de forma consistente,
+Em síntese, as vantagens e desvantagens do arranjo com shunt e INA240 são as seguintes.
+
+\begin{enumerate}
+    \item Vantagens: fornece uma medida direta da corrente, com boa linearidade e ampla largura de banda a baixo custo.
+    \item Desvantagens: o resistor dissipa potência sob correntes elevadas e sua indutância parasita distorce a leitura durante o chaveamento em alta frequência típico dos ESCs brushless, conforme descrito acima; além disso, por não haver isolamento galvânico, o circuito de medição fica em contato elétrico direto com o circuito de potência.
+\end{enumerate}
+
+Trabalhos nacionais sobre instrumentação de corrente apontam, de forma consistente,
 a queda de tensão e a degradação da relação sinal-ruído em correntes altas como as principais
 dificuldades dessa topologia \cite{goncalves2019}.
 
-Em síntese, o shunt com INA240 mede corrente com fidelidade e simplicidade elétrica, ao preço de
+Em conclusão, o shunt com INA240 mede corrente com fidelidade e simplicidade elétrica, ao preço de
 inserir perda e contato direto com o circuito de potência. A alternativa natural é buscar o mesmo
 sinal sem esses dois custos, o que conduz ao sensor de efeito Hall linear.
 
@@ -287,8 +265,8 @@ respectivamente \cite{allegro}. Como a saída é ratiométrica, tanto a tensão 
 sensibilidade escalam linearmente com a alimentação efetivamente utilizada. Assim, na operação a
 3,3 V adotada neste trabalho, a variante de ±200 A empregada apresenta sensibilidade efetiva de
 aproximadamente 6,6 mV/A. Uma faixa maior implica, em qualquer alimentação, menor sensibilidade e,
-consequentemente, menor resolução para a mesma conversão. A resolução do conjunto segue a forma da
-Equação \eqref{eq:shunt_resolucao}, com a sensibilidade substituindo o produto $G\,R_s$,
+consequentemente, menor resolução para a mesma conversão. A resolução do conjunto é limitada
+pela conversão analógico-digital de $n$ bits e por sua tensão de referência $V_\mathrm{ref}$,
 \begin{equation}\label{eq:acs_resolucao}
 \Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
 \end{equation}
