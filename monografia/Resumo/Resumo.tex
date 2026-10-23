@@ -1,0 +1,25 @@
+\chapter*{Resumo}
+\addcontentsline{toc}{chapter}{Resumo}
+
+Este trabalho tem como objetivo caracterizar experimentalmente o sistema de propulsão do
+automodelo radiocontrolado Kyosho Mad Force Kruiser 2.0 VE, equipado com motor brushless e
+Controlador Eletrônico de Velocidade (\emph{Electronic Speed Controller} -- ESC). Busca-se
+desenvolver e validar um método de baixo custo para a estimação indireta do torque produzido
+pelo conjunto motor--ESC--transmissão, de modo a fornecer subsídios para o desenvolvimento de
+estratégias de controle de velocidade em malha fechada.
+
+A metodologia emprega um sensor de
+corrente ACS758, conectado a um microcontrolador Arduino Due para a aquisição dos sinais
+elétricos, e uma balança digital para a medição da força de tração durante ensaios com o
+automodelo imobilizado e as rodas em contato com o solo. A partir da força medida e do raio
+efetivo da roda motriz, calcula-se o torque desenvolvido pelo sistema de propulsão, permitindo
+estabelecer sua relação com a corrente elétrica consumida. Os dados obtidos são analisados
+quanto à concordância com o modelo teórico do \emph{powertrain} e submetidos a um tratamento
+das incertezas de medição, de forma a determinar a faixa de validade e a confiabilidade do
+método de estimação proposto. Os resultados indicam uma relação aproximadamente linear entre
+torque e corrente na faixa de operação avaliada, além de evidenciarem limitações associadas à
+região próxima ao neutro do ESC e às condições de alimentação da bateria.
+
+\vspace{0.5cm}
+\noindent\textbf{Palavras-chave}: Automodelo radiocontrolado. Sensor de corrente. Estimação de
+torque. Controle em malha fechada. Instrumentação eletrônica. Incerteza de medição.
