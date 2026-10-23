@@ -48,8 +48,7 @@ a fonte/valor correto.
 - [ ] Bateria LiPo 2S saudável, carregada; verificar tensão por célula antes
 - [ ] Halteres 1 kg ×2 fixados sobre o CG (fita/velcro), massa total anotada (~7,1 kg)
 - [ ] Tarar balança 1× por série, em repouso (nunca entre degraus)
-- [ ] Verificar geometria do θ: medir h₁ (gaveta) e h₂ (gancho) + L; |Δh| ≤ 2 cm
-  (ou prumo caseiro + foto) — pendência da evidência formal, ver `PLANEJAMENTO_MONOGRAFIA.md` §3.3
+- [x] θ: DESPREZÍVEL por decisão (balança suspensa pela alça alinha o eixo à linha de tração; θ residual só da geometria de engate) — ver `PLANEJAMENTO_MONOGRAFIA.md` §3.3, marcado RESOLVIDO em 22/10/2026
 - [ ] Notebook na rede do Raspberry; testar `ssh alunos@raspberrypi.local` sem senha
 - [ ] ≥3 séries (subida + descida) para repetibilidade/histerese
 - [ ] Anotar força da balança nos últimos 3 s de cada degrau (janela 7–10 s)
