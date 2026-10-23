@@ -120,7 +120,23 @@ Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
 
 O controlador rodaria no microcontrolador, que lê a IMU e envia o comando ao ESC por um sinal
 PWM gerado pela Raspberry Pi, sem se conectar diretamente ao motor; a comunicação com a IMU se dá
-por I$^2$C.
+por I$^2$C. Essa interface exige apenas quatro ligações: alimentação ($V_{CC}$ e GND) e os dois
+sinais do barramento --- SDA (\emph{Serial Data}), por onde transitam os dados, e SCL
+(\emph{Serial Clock}), que sincroniza a troca. Os resistores de \emph{pull-up} do barramento já
+vêm integrados ao módulo, de modo que nenhum componente externo é necessário, e cada dispositivo é
+reconhecido por um endereço fixo --- o do MPU-6050 é 0x68 ---, o que permite compartilhar os mesmos
+dois fios com outros sensores. A Figura~\ref{fig:imu_i2c} ilustra a ligação com um Arduino Nano;
+no Arduino Due, os sinais SDA e SCL dispõem de pinos dedicados, com o mesmo princípio de conexão.
+Observa-se que a simplicidade elétrica dessa ligação é uma das razões da adoção ampla desses
+módulos em projetos de baixo custo.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.75\textwidth]{DescricaoProcesso/Figuras/imu_mpu6050_i2c.png}
+\caption{Ligação do MPU-6050 a um microcontrolador Arduino via I$^2$C: quatro fios conectam a alimentação e os sinais SDA e SCL do barramento.}
+\label{fig:imu_i2c}
+\footnotesize{Fonte: RudraNarayanG, via Instructables (s.d.). Disponível em: \url{https://www.instructables.com/Accelerometer-MPU-6050-Communication-With-AVR-MCU/}.}
+\end{figure}
 
 O giroscópio mede a velocidade angular do chassi, sobretudo a guinada (rotação
 em torno do eixo vertical), que pode ser usada em malha fechada para controle de direção ou de
