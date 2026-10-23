@@ -78,19 +78,26 @@ e do arrasto aerodinâmico. Na roda, a força de tração é dada por $F_{\text{
 raio efetivo da roda, e o torque nas rodas é o torque do motor multiplicado pela redução $i$ e
 pelo rendimento $\eta$ da transmissão,
 \begin{equation}\label{eq:transmissao}
-T_\mathrm{roda} = i\,\eta\,T_motor.
+T_\mathrm{roda} = i\,\eta\,T_{\text{motor}}.
 \end{equation}
 Combinando as Equações \eqref{eq:newton} e \eqref{eq:transmissao}, o torque do motor pode ser
 estimado a partir da aceleração \cite{mascarenhas2006},
 \begin{equation}\label{eq:torque_motor}
-T_motor = \frac{r\,(m\,a + F_{\text{resistivos}})}{i\,\eta}.
+T_{\text{motor}} = \frac{r\,(m\,a + F_{\text{resistivos}})}{i\,\eta}.
 \end{equation}
 
-A relação é indireta porque o torque é a causa, e a aceleração é o efeito líquido que chega ao
-sensor, já descontadas as perdas de cada etapa. Para desfazer a cadeia, é preciso conhecer $m$,
-$F_{\text{resistivos}}$, $r$ e $\eta$, parâmetros que a IMU não mede e que variam com as condições do ensaio, como
-o tipo de pista e a pressão dos pneus. A incerteza da estimativa cresce com a imprecisão de cada
-um deles.
+A relação é indireta porque há uma cadeia de causas e efeitos entre a grandeza medida e o torque
+que se deseja obter. O torque do motor é a causa: ele se transforma em força de tração na roda,
+essa força vence parcialmente as resistências, e o resultado líquido se manifesta como aceleração
+do veículo --- o efeito final que o sensor captura. A Equação \eqref{eq:torque_motor} percorre o
+caminho inverso: a partir da aceleração medida, recupera-se a força de tração ao somar as
+resistências e, dela, o torque do motor. Cada etapa dessa operação inversa, porém, requer um
+parâmetro que a IMU não mede: a massa $m$ e as resistências $F_{\text{resistivos}}$ na passagem da
+aceleração à força; o raio da roda $r$ e o rendimento da transmissão $\eta$ na passagem da força ao
+torque. Esses parâmetros ainda variam com as condições do ensaio --- a resistência ao rolamento
+muda com o piso e a pressão dos pneus, e o rendimento, com o estado da transmissão ---, e adotá-los
+com valores fixos introduz erro. Quanto maior a imprecisão de cada parâmetro, maior a incerteza da
+estimativa de torque.
 
 Para obter a velocidade do veículo, a aceleração medida $a_m$ é integrada no tempo,
 \begin{equation}\label{eq:integral}
@@ -165,7 +172,7 @@ Estimar torque a partir da velocidade, contudo, requer a dinâmica rotacional do
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
 carga $T_L$, a segunda lei de Newton para a rotação resulta em
 \begin{equation}\label{eq:dinamica_rotacional}
-T_motor = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
+T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
 O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
 que precisariam ser identificados separadamente. Há, ainda, um limite de resolução inerente ao
@@ -294,7 +301,7 @@ corrente elétrica por princípios físicos distintos.
 Para os sensores de corrente, a relação entre o torque eletromagnético e a corrente é dada pela
 constante de torque $K_t$,
 \begin{equation}\label{eq:torque_corrente}
-T_motor = K_t\,I.
+T_{\text{motor}} = K_t\,I.
 \end{equation}
 Em motores brushless, a constante de torque, em N·m/A, é numericamente igual à constante de
 força contraeletromotriz, em V·s/rad. A constante de velocidade $K_v$, dada em rpm/V, se
