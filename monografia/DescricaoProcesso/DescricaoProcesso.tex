@@ -65,31 +65,30 @@ acelerômetro, uma pequena massa suspensa por molas permanece no lugar por inér
 carcaça acelera, e o deslocamento relativo entre a massa e a carcaça --- convertido
 eletronicamente em sinal elétrico --- é diretamente proporcional à aceleração. O giroscópio, por
 sua vez, mede a velocidade angular em torno de cada eixo pela força de Coriolis que surge sobre
-uma massa vibrante quando o dispositivo gira. Dessa forma, a IMU descreve o movimento do chassi;
-para a propulsão, porém, apenas a aceleração linear se conecta ao esforço do sistema, enquanto a
-velocidade angular --- útil ao controle de direção e de estabilidade --- não informa diretamente
-sobre o torque.
+uma massa vibrante quando o dispositivo gira. Dessa forma, para a propulsão, apenas a aceleração 
+linear se conecta ao esforço do sistema, já que a
+velocidade angular não se relaciona diretamente com o torque.
 
-A aceleração longitudinal $a$ se relaciona à força de tração $F_t$ pela segunda lei de Newton,
+A aceleração longitudinal $a$ se relaciona à força de tração $F_{\text{tração}}$ pela segunda lei de Newton,
 \begin{equation}\label{eq:newton}
-m\,a = F_t - F_r,
+m\,a = F_{\text{tração}} - F_{\text{resistivos}},
 \end{equation}
-em que $m$ é a massa do veículo e $F_r$ agrega as forças resistivas, como o atrito de rolamento
-e o arrasto aerodinâmico. Na roda, a força de tração é dada por $F_t = T_\mathrm{roda}/r$, sendo $r$ o
+em que $m$ é a massa do veículo e $F_{\text{resistivos}}$ reúne as contribuições do atrito de rolamento
+e do arrasto aerodinâmico. Na roda, a força de tração é dada por $F_{\text{tração}} = T_\mathrm{roda}/r$, sendo $r$ o
 raio efetivo da roda, e o torque nas rodas é o torque do motor multiplicado pela redução $i$ e
 pelo rendimento $\eta$ da transmissão,
 \begin{equation}\label{eq:transmissao}
-T_\mathrm{roda} = i\,\eta\,T_m.
+T_\mathrm{roda} = i\,\eta\,T_motor.
 \end{equation}
 Combinando as Equações \eqref{eq:newton} e \eqref{eq:transmissao}, o torque do motor pode ser
 estimado a partir da aceleração \cite{mascarenhas2006},
 \begin{equation}\label{eq:torque_motor}
-T_m = \frac{r\,(m\,a + F_r)}{i\,\eta}.
+T_motor = \frac{r\,(m\,a + F_{\text{resistivos}})}{i\,\eta}.
 \end{equation}
 
 A relação é indireta porque o torque é a causa, e a aceleração é o efeito líquido que chega ao
 sensor, já descontadas as perdas de cada etapa. Para desfazer a cadeia, é preciso conhecer $m$,
-$F_r$, $r$ e $\eta$, parâmetros que a IMU não mede e que variam com as condições do ensaio, como
+$F_{\text{resistivos}}$, $r$ e $\eta$, parâmetros que a IMU não mede e que variam com as condições do ensaio, como
 o tipo de pista e a pressão dos pneus. A incerteza da estimativa cresce com a imprecisão de cada
 um deles.
 
@@ -166,7 +165,7 @@ Estimar torque a partir da velocidade, contudo, requer a dinâmica rotacional do
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
 carga $T_L$, a segunda lei de Newton para a rotação resulta em
 \begin{equation}\label{eq:dinamica_rotacional}
-T_m = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
+T_motor = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
 O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
 que precisariam ser identificados separadamente. Há, ainda, um limite de resolução inerente ao
@@ -295,7 +294,7 @@ corrente elétrica por princípios físicos distintos.
 Para os sensores de corrente, a relação entre o torque eletromagnético e a corrente é dada pela
 constante de torque $K_t$,
 \begin{equation}\label{eq:torque_corrente}
-T_m = K_t\,I.
+T_motor = K_t\,I.
 \end{equation}
 Em motores brushless, a constante de torque, em N·m/A, é numericamente igual à constante de
 força contraeletromotriz, em V·s/rad. A constante de velocidade $K_v$, dada em rpm/V, se
@@ -316,7 +315,7 @@ elétricos caracterizam essa relação por meio de curvas de torque e de corrent
 \cite{rangel2015}.
 
 A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A IMU e o
-SS41F/41G exigem a identificação prévia de parâmetros mecânicos ($m$, $F_r$, $J$, $B$ e $T_L$). A corrente elétrica dispensa esses parâmetros, mas sua relação com o torque
+SS41F/41G exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$). A corrente elétrica dispensa esses parâmetros, mas sua relação com o torque
 depende da posição do sensor no circuito, conforme a Equação \eqref{eq:corrente_bateria}.
 
 Entre os sensores de corrente, a escolha envolve o compromisso entre isolamento elétrico, dissipação
@@ -353,7 +352,7 @@ caracterização de veículos planetários \cite{creager2017drawbar}, de robôs 
 porte \cite{johnson2012ugv, richmond2009mobility} e de protótipos de baixo custo que substituem a
 célula de carga por balanças digitais de gancho \cite{peterson2021pulley}. Nessa configuração, o
 veículo é ancorado e a balança, instalada na linha de tração, mede a própria força desenvolvida,
-e o torque na roda é obtido diretamente por $T_\mathrm{roda} = F_t\,r$, com um único
+e o torque na roda é obtido diretamente por $T_\mathrm{roda} = F_{\text{tração}}\,r$, com um único
 parâmetro geométrico. A escolha da balança digital de mala em lugar de uma célula de carga
 dedicada segue o mesmo princípio de baixo custo já adotado na seleção do sensor de corrente.
 Automodelos instrumentados têm sido empregados em trabalhos recentes, tanto em ensaios dinâmicos
