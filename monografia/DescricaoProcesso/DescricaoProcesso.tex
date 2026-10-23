@@ -30,51 +30,45 @@ A continuidade desse movimento depende da comutação eletrônica, processo pelo
 do motor é alternada em uma sequência que modifica continuamente a orientação do campo magnético resultante do estator,
 produzindo um campo girante. Essa função é realizada pelo Controlador Eletrônico de Velocidade (\emph{Electronic
 Speed Controller} — ESC) Orion Vortex R8, que recebe do receptor de rádio o comando de aceleração e controla a energia
-elétrica transferida da bateria para os enrolamentos do motor. Como o motor é do tipo \emph{sensorless}, o ESC estima sua
+elétrica transferida da bateria para os enrolamentos. Como o motor é do tipo \emph{sensorless}, o ESC estima sua
 posição a partir da força contraeletromotriz (\emph{back-EMF}) --- a tensão induzida nos enrolamentos pela rotação dos
 ímãs permanentes do rotor. Para isso, uma das fases permanece temporariamente sem alimentação durante a comutação,
-permitindo ao controlador detectar os cruzamentos por zero dessa tensão e estimar os instantes adequados para a
-próxima etapa. Dessa forma, o ESC mantém o campo do estator sincronizado com o movimento do rotor, possibilitando
-a conversão contínua da energia elétrica em energia mecânica.
+mantendo o campo do estator sincronizado com o movimento do rotor e, consequentemente, possibilitando a conversão 
+de energia elétrica em energia mecânica.
 
-Segundo o manual do fabricante, o controlador suporta corrente contínua de até 120 A e corrente de pico de até 760 A.
+Segundo o manual do fabricante, o ESC suporta corrente 
+contínua de até 120 A e corrente de pico de até 760 A.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
-preexistentes, com vários anos de uso --- inclusive uma unidade estufada, com descarga facilitada ---,
-cujo efeito sobre os ensaios é discutido no Capítulo 4.
-
-O comando de aceleração aplicado ao ESC pode ter duas origens, selecionadas por uma chave de
-comutação: o sinal PWM proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
+preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC pode ter duas origens, selecionadas por uma chave liga/desliga: o sinal 
+PWM proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
-\emph{step-down} para alimentação em 5 V. Essa segunda origem viabiliza a aplicação automatizada
-dos degraus de comando utilizados no ensaio.
+\emph{step-down} para alimentação em 5 V.
 
 
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
 
-A instrumentação do sistema de propulsão requer a identificação das grandezas físicas capazes
-de caracterizar seu funcionamento e seu comportamento dinâmico. Para atender os objetivos, podem ser consideradas
-diferentes alternativas de medição, como a velocidade de rotação do motor, a velocidade linear do
-veículo, a aceleração, a corrente elétrica consumida e a força de tração desenvolvida. A escolha
-depende de fatores como precisão, complexidade de implementação, custo e adequação às condições experimentais.
+Para atender os objetivos, podem ser consideradas
+diferentes alternativas de medição, sendo assim, a escolha da abordagem mais adequada depende de fatores 
+como precisão, complexidade de implementação, custo e adequação às condições experimentais.
 Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento de cada técnica considerada,
-discutem sua aplicabilidade na caracterização do sistema de propulsão e fundamentam, ao final, a
-seleção efetivamente utilizada.
+discutem sua aplicabilidade na caracterização do sistema de propulsão e fundamentam a opção adotada.
 
 \subsection{Sensor Inercial (IMU)}
 \label{sec:imu}
 
 A Unidade de Medição Inercial (\emph{Inertial Measurement Unit} — IMU) reúne, em um único
-dispositivo, um acelerômetro e um giroscópio triaxiais, capazes de medir a aceleração linear e a
-velocidade angular ao longo dos eixos $x$, $y$ e $z$ do chassi. Em módulos de baixo custo, ambos
-são fabricados pela tecnologia MEMS (sistema microeletromecânico). No acelerômetro, uma pequena
-massa suspensa por molas permanece no lugar por inércia quando a carcaça acelera, de modo que o
-deslocamento relativo entre a massa e a carcaça, convertido eletronicamente em sinal elétrico, é
-diretamente proporcional à aceleração. O giroscópio mede a velocidade angular em torno de cada
-eixo pela força de Coriolis que surge sobre uma massa vibrante quando o dispositivo gira. Essa
-grandeza serve ao controle de direção e de estabilidade, mas não informa diretamente sobre a
-propulsão.
+dispositivo, um acelerômetro e um giroscópio triaxiais, capazes de medir, respectivamente, a
+aceleração linear e a velocidade angular do chassi ao longo dos eixos $x$, $y$ e $z$. No
+acelerômetro, uma pequena massa suspensa por molas permanece no lugar por inércia quando a
+carcaça acelera, de modo que o deslocamento relativo entre a massa e a carcaça --- convertido
+eletronicamente em sinal elétrico --- é diretamente proporcional à aceleração. O giroscópio, por
+sua vez, mede a velocidade angular em torno de cada eixo pela força de Coriolis que surge sobre
+uma massa vibrante quando o dispositivo gira. Dessa forma, a IMU descreve o movimento do chassi;
+para a propulsão, porém, apenas a aceleração linear se conecta ao esforço do sistema, enquanto a
+velocidade angular --- útil ao controle de direção e de estabilidade --- não informa diretamente
+sobre o torque.
 
 A aceleração longitudinal $a$ se relaciona à força de tração $F_t$ pela segunda lei de Newton,
 \begin{equation}\label{eq:newton}
