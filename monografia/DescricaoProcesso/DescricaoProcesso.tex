@@ -9,7 +9,7 @@ limitações, de modo a fundamentar a escolha da instrumentação.
 \section{O Automodelo e seu Sistema de Propulsão}
 \label{sec:automodelo}
 O automodelo Kyosho Mad Force Kruiser 2.0 VE é equipado com um motor brushless Orion Ori28188, cuja
-constante de velocidade é de \(2100\,\mathrm{rpm/V}\) -- velocidade de rotação aproximada do motor,
+constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- velocidade de rotação aproximada do motor,
 em rotações por minuto por volt aplicado, em condições próximas à operação sem carga mecânica significativa.
 O motor é constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
 enrolamentos de fio de cobre, e por um rotor, componente móvel com ímãs permanentes fixados na
@@ -52,9 +52,10 @@ de caracterizar seu funcionamento e seu comportamento dinâmico. Para atender os
 diferentes alternativas de medição, como a velocidade de rotação do motor, a velocidade linear do
 veículo, a aceleração, a corrente elétrica consumida e a força de tração desenvolvida. A escolha
 depende de fatores como precisão, complexidade de implementação, custo e adequação às condições experimentais.
-Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento de cada técnica considerada,
-discutem sua aplicabilidade na caracterização do sistema de propulsão e fundamentam, ao final, a
-seleção efetivamente utilizada.
+Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento das técnicas baseadas em
+grandezas cinemáticas e elétricas, discutem sua aplicabilidade na caracterização do sistema de
+propulsão e fundamentam, ao final, a seleção efetivamente utilizada, que inclui, adicionalmente, a
+medição direta da força de tração, discutida na Síntese Comparativa.
 
 \subsection{Sensor Inercial (IMU)}
 \label{sec:imu}
@@ -116,7 +117,7 @@ Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
 \end{enumerate}
 
 O controlador rodaria no microcontrolador, que lê a IMU por I$^2$C e envia o comando ao ESC por
-um sinal PWM, sem se conectar diretamente ao motor. Para a proteção do sistema, o microcontrolador
+um sinal PWM, sem acionar o motor diretamente --- função que permanece do ESC. Para a proteção do sistema, o microcontrolador
 pode detectar picos de aceleração e limitar a taxa de variação do comando $u$, suavizando a
 aceleração e reduzindo os picos de torque na transmissão. Essa ação é apenas parcialmente
 preventiva, pois atua depois que o pico já começou a ser medido. Assim, a IMU cumpre o objetivo de
@@ -184,7 +185,7 @@ sinais servindo à comutação e à realimentação de velocidade \cite{santin20
 Em síntese, as vantagens e desvantagens do SS41F/41G são as seguintes.
 
 \begin{enumerate}
-    \item Vantagens: baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz segundo o fabricante \cite{honeywell_ss41f}, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns; a velocidade é obtida por contagem direta dos pulsos, sem integração nem filtragem.
+    \item Vantagens: baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz segundo o fabricante \cite{honeywell_ss41f}, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns; e fornece a velocidade por contagem direta dos pulsos.
     \item Desvantagens: fornece apenas pulsos associados à posição angular, sem informação sobre corrente elétrica ou torque; a estimativa de torque exige a identificação prévia de $J$, $B$ e $T_L$, conforme a Equação \eqref{eq:dinamica_rotacional}; e a instalação demanda alinhamento mecânico preciso entre o sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
 \end{enumerate}
 
@@ -223,7 +224,7 @@ Em síntese, as vantagens e desvantagens do arranjo com shunt e INA240 são as s
 
 \begin{enumerate}
     \item Vantagens: fornece uma medida direta da corrente, com boa linearidade e ampla largura de banda a baixo custo.
-    \item Desvantagens: dissipação de potência sob correntes elevadas, distorção da leitura em alta frequência, conforme descrito acima, e ausência de isolamento galvânico, de modo que o circuito de medição fica em contato elétrico direto com o circuito de potência.
+    \item Desvantagens: dissipação de potência sob correntes elevadas, distorção da leitura em alta frequência decorrente da indutância parasita do resistor e ausência de isolamento galvânico, de modo que o circuito de medição fica em contato elétrico direto com o circuito de potência.
 \end{enumerate}
 
 \subsection{Sensor de Efeito Hall Linear (ACS758/ACS712)}
@@ -258,7 +259,7 @@ Com conversor de 12 bits e referência de 3,3 V, a variante de ±200 A resulta, 
 trabalho, em resolução de cerca de 122 mA. Para correntes de dezenas de ampères, essa resolução é
 suficiente, embora limite a medida de variações pequenas em torno do repouso.
 
-O datasheet especifica tempo de subida de 3 µs para um degrau de corrente, atraso de propagação
+A folha de dados (\emph{datasheet}) especifica tempo de subida de 3 µs para um degrau de corrente, atraso de propagação
 de 1 µs, tempo de resposta total de 4 µs e largura de banda interna de 120 kHz \cite{allegro}. A
 largura de banda se relaciona ao tempo de subida pela aproximação usual
 \begin{equation}\label{eq:acs_banda}
@@ -345,16 +346,34 @@ do sistema de propulsão, mas o modelo precisa ser recalibrado para cada motor, 
 mecânica utilizados. Sua viabilidade para o automodelo depende, portanto, da variabilidade entre
 configurações de transmissão e regimes de carga, a ser avaliada no Capítulo 3.
 
-Assim, a corrente elétrica é a grandeza com a cadeia de dependências mais curta até o torque, e,
-entre os sensores de corrente, o Hall linear oferece o melhor equilíbrio entre isolamento, custo e
-simplicidade de montagem para as correntes e frequências deste sistema. A escolha efetiva e sua
-justificativa experimental são desenvolvidas no Capítulo 3.
+Há, finalmente, a possibilidade de medir a força de tração diretamente, instalando-se uma célula
+de carga na linha de tração entre o veículo e uma âncora. Essa é a configuração do ensaio de
+\emph{drawbar pull}, empregado na caracterização de veículos planetários
+\cite{creager2017drawbar} e de robôs terrestres de pequeno porte \cite{johnson2012ugv}. Nessa
+abordagem, a grandeza medida é a própria força desenvolvida pelo veículo, de modo que o torque na
+roda é obtido diretamente por $T_\mathrm{roda} = F_t\,r$, com um único parâmetro geométrico.
+Implementações de baixo custo substituem a célula de carga por balanças digitais de gancho
+\cite{peterson2021pulley}, o que torna a alternativa acessível a montagens de bancada. Por medir
+apenas o esforço mecânico resultante, contudo, ela não acompanha a corrente elétrica e,
+isoladamente, não atende ao objetivo de monitoramento do esforço elétrico do sistema.
+
+Diante desse quadro, duas conclusões se impõem. Primeiro, a força de tração é a grandeza de
+caminho mais curto até o torque mecânico, e a corrente elétrica é a que viabiliza o
+monitoramento do esforço elétrico do sistema, de modo que nenhuma delas, isoladamente, cobre os
+dois objetivos deste trabalho. Segundo, entre os sensores de corrente, o Hall linear oferece o
+melhor equilíbrio entre isolamento, custo e simplicidade de montagem para as correntes e
+frequências deste sistema. A instrumentação efetiva, que combina o sensor Hall linear na
+alimentação do ESC com a medição de força por balança na linha de tração, e a sua justificativa
+experimental são desenvolvidas no Capítulo 3.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
 
-Este capítulo apresentou o sistema de propulsão do automodelo e comparou quatro grandezas
-mensuráveis. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
-\eqref{eq:torque_motor}, \eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A escolha
-entre elas é fundamentada no Capítulo 3, a partir dos objetivos do trabalho e das restrições de custo
-e de montagem do experimento.
+Este capítulo apresentou o sistema de propulsão do automodelo e comparou as principais grandezas
+mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e força de
+tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
+\eqref{eq:torque_motor}, \eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A
+comparação indicou que a força de tração e a corrente elétrica oferecem os caminhos mais diretos
+e complementares até o esforço do sistema de propulsão, de modo que a instrumentação efetiva
+combina o sensor de corrente ACS758 com a medição de força por balança. A montagem experimental e
+a justificativa da escolha são apresentadas no Capítulo 3.

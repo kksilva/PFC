@@ -1,64 +1,93 @@
-@manual{kyosho,
-  author = {{Kyosho Corporation}},
-  title = {Mad Force Kruiser VE Readyset: Instruction Manual},
-  address = {Chiba},
-  year = {n.d.}
-}
 @manual{allegro,
   author = {{Allegro MicroSystems}},
-  title = {ACS758: Thermally Enhanced, Fully Integrated Hall-Effect-Based Linear Current Sensor IC},
+  title = {ACS758: Thermally Enhanced, Fully Integrated, Hall Effect-Based Linear Current Sensor IC with 100 $\mu\Omega$ Current Conductor},
   address = {Worcester},
-  year = {2024}
+  note = {Datasheet ACS758-DS, Rev. 6},
+  year = {2012}
 }
-@article{borges2016,
-  author = {Borges, J. C. S. and Sobrinho, C. A. N. and Lima Filho, A. C. and Belo, F. A.},
-  title = {Métodos e técnicas de medição de torque diretamente em eixos rotativos},
-  journal = {Revista Principia -- Divulgação Científica e Tecnológica do IFPB},
-  number = {28},
-  pages = {121--129},
-  year = {2016}
+@misc{honeywell_ss41f,
+  author = {{Honeywell}},
+  title = {SS41F/SS41G: Low-Cost Digital Bipolar Hall-Effect Sensor ICs},
+  address = {Charlotte},
+  year = {2015}
 }
-@manual{ccdm2021,
-  author = {{Centro de Caracterização e Desenvolvimento de Materiais (CCDM)}},
-  title = {Ensaio de tração},
-  address = {São Carlos},
-  organization = {CCDM/UFSCar},
-  year = {2021}
-}
-@manual{arduino_due,
-  author = {{Arduino}},
-  title = {Arduino Due: Product Reference Manual},
-  organization = {Arduino AG},
-  year = {n.d.}
-}
-@manual{ti_ina240,
+@misc{ti_ina240_2,
   author = {{Texas Instruments}},
-  title = {INA240 Current-Sense Amplifiers},
+  title = {INA240: Bidirectional, Current-Sense Amplifier with Enhanced PWM Rejection},
+  howpublished = {Página de produto, ti.com},
+  year = {n.d.},
+  note = {Largura de banda de 400 kHz. Disponível em: \url{https://www.ti.com/product/INA240}. Acesso em: 20 out. 2026}
+}
+@manual{yge_esc,
+  author = {{YGE}},
+  title = {YGE Brushless Electronic Speed Controllers: Operating Instructions for the RC-Setup},
+  howpublished = {Manual do fabricante},
+  year = {n.d.},
+  note = {Taxa de chaveamento PWM de 8 a 16 kHz. Disponível em: \url{https://www.baronerosso.it/forum/attachments/aeromodellismo-volo-elettrico/336971d1446379992-regolatore-yep-60amp-rc-setup-english.pdf}. Acesso em: 21 out. 2026}
+}
+@misc{bldynomega,
+  author = {{truglodite}},
+  title = {BLDynoMega: Open-Source Brushless Motor Dynamometer Firmware},
+  howpublished = {Repositório de código aberto, GitHub},
+  year = {n.d.},
+  note = {Disponível em: \url{https://github.com/truglodite/BLDynoMega}. Acesso em: 20 out. 2026}
+}
+@inproceedings{sharma2019,
+  author = {Sharma, A. and Pal, S. and Mahalle, P. and Botre, B. A. and Akbar, S. A.},
+  title = {The Development of Current, Speed and Torque Measurement System for Low Power Electric Vehicle Motion Control Applications},
+  booktitle = {4th International Conference on Emerging Technologies: Micro to Nano (ETMN-2019)},
+  address = {Pune},
+  year = {2019},
+  note = {Disponível em: \url{https://ceeri.csircentral.net/531/}. Acesso em: 19 out. 2026}
+}
+@article{theys2021,
+  author = {Theys, Bart and De Schutter, Joris},
+  title = {Virtual Motor Torque Sensing for Multirotor Propulsion Systems},
+  journal = {IEEE Robotics and Automation Letters},
+  pages = {4149--4155},
+  year = {2021},
+  note = {DOI: 10.1109/LRA.2021.3068068}
+}
+@article{santin2018,
+  author = {Santin, Marcio and Bueno, Eduardo},
+  title = {Sistema para controle de velocidade de motor brushless em malha fechada},
+  journal = {Ignis},
+  volume = {7},
+  number = {3},
+  pages = {119--127},
+  year = {2018}
+}
+@misc{goncalves2019,
+  author = {Gon{\c{c}}alves, Thieplo de Benites Bertola},
+  title = {Implementação de amperímetro por sensor magnético de efeito Hall aplicado a instrumentação de carregadores de baterias tipo íon-lítio},
+  howpublished = {Trabalho de conclusão de curso (Graduação em Engenharia Elétrica)},
+  school = {Pontifícia Universidade Católica do Rio de Janeiro (PUC-Rio)},
+  year = {2019},
+  note = {Orientador: Alan C. Kubrusly}
+}
+@misc{rangel2015,
+  author = {Rangel, Dionatan {\'A}vila},
+  title = {Modelagem e controle de velocidade do motor CC sem escovas aplicado a veículos elétricos},
+  howpublished = {Trabalho de conclusão de curso (Graduação em Engenharia Elétrica)},
+  school = {Universidade Federal do Pampa (UNIPAMPA)},
+  address = {Alegrete},
+  year = {2015},
+  note = {Orientador: Felipe Bovolini Grigoletto}
+}
+@misc{bueno_romano,
+  author = {Bueno, Aline Grotewold and Romano, Rodrigo Alvite},
+  title = {Filtro complementar aplicado à medida de inclinação de plataformas móveis},
+  howpublished = {Trabalho acadêmico, Escola de Engenharia Mauá (EEM/CEUN-IMT)},
   year = {n.d.}
 }
-@misc{invensense_mpu,
-  author = {{InvenSense}},
-  title = {MPU-6050 Six-Axis MEMS MotionTracking Device},
-  year = {n.d.}
+@phdthesis{mascarenhas2006,
+  author = {Mascarenhas, Alberto Willian},
+  title = {Dispositivo baseado em acelerômetros capacitivos para monitoração de máquinas rotativas},
+  school = {Universidade Federal de Campina Grande (UFCG)},
+  address = {Campina Grande},
+  year = {2006}
 }
-@misc{braga2020a,
-  author = {Braga, C. and Michel, H.},
-  title = {Aula 04 -- Incerteza de Medição},
-  organization = {DELT/EE-UFMG},
-  year = {2020}
-}
-@misc{braga2020b,
-  author = {Braga, C. and Michel, H.},
-  title = {Aula 05 -- Caracterização Estática e Calibração},
-  organization = {DELT/EE-UFMG},
-  year = {2020}
-}
-@misc{nakashima2021,
-  author = {Nakashima, G. Y. C.},
-  title = {Análise do motor CC sem escovas},
-  organization = {UNESP -- Faculdade de Engenharia de Ilha Solteira},
-  year = {2021}
-}
+
 
 @techreport{creager2017drawbar,
   author = {Creager, Colin and Asnani, Vivake and Oravec, Heather and Woodward, Adam},
@@ -69,26 +98,18 @@
   url = {https://ntrs.nasa.gov/citations/20170010706},
 }
 
-@techreport{peterson2021pulley,
-  author = {Peterson, Kevin and Lacy, Scott and Love, Cameron and Navrozali, Shabana and Escalera, Gabriela and Fournet, Cole and Gonzales, Kathryn and Aung, Kendrick and Zhou, Jenny},
-  title = {Compact Electric Bi-directional Pulley Actuator},
-  institution = {Lamar University -- Moon to Mars Exploration Systems and Habitation (M2M XHAB) Academic Innovation Challenge},
-  year = {2021},
-  url = {https://ntrs.nasa.gov/citations/20210020040},
-}
-
-@mastersthesis{barnett2005tow,
-  author = {Barnett, Shane},
-  title = {Development of a Tow Capacity Test Device for Small Unmanned Vehicles},
-  school = {Virginia Polytechnic Institute and State University},
-  year = {2005},
-  url = {https://vtechworks.lib.vt.edu/handle/10919/30968},
-}
-
 @mastersthesis{johnson2012ugv,
   author = {Johnson, Christopher P.},
   title = {Comparative Analysis of Lightweight Robotic Wheeled and Tracked Vehicles},
   school = {Virginia Polytechnic Institute and State University},
   year = {2012},
   url = {https://vtechworks.lib.vt.edu/handle/10919/76994},
+}
+
+@techreport{peterson2021pulley,
+  author = {Peterson, Kevin and Lacy, Scott and Love, Cameron and Navrozali, Shabana and Escalera, Gabriela and Fournet, Cole and Gonzales, Kathryn and Aung, Kendrick and Zhou, Jenny},
+  title = {Compact Electric Bi-directional Pulley Actuator},
+  institution = {Lamar University -- Moon to Mars Exploration Systems and Habitation (M2M XHAB) Academic Innovation Challenge},
+  year = {2021},
+  url = {https://ntrs.nasa.gov/citations/20210020040},
 }
