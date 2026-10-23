@@ -90,12 +90,12 @@ Legenda de status: **[OK]** já existe material pronto (relatórios/dados) · **
   - **Balança suspensa pela alça** → linha de tração horizontal → θ ≈ 0 por construção (decisão final que elimina a medição/correção de θ)
   - Massa adicional sobre o veículo: **função dos pesos** — aumentar aderência/normal (N = m·g, atrito disponível) para evitar patinagem; é condição de ensaio documentada, NÃO entra no cálculo do torque (T = F × R_ef independe da massa); mencionar patinagem observada (carro "levantando" na suspensão sob torque) e como a massa mitigou
   - Taragem da balança 1× por série, em repouso, nunca entre degraus
-- [ ] **3.3 Interferência do ângulo θ (estudo obrigatório)**
+- [x] **3.3 Interferência do ângulo θ (RESOLVIDO — decisão 22/10/2026: θ desprezível, sem correção)**
   - Erro cos θ na medida: F_medida = F_real × cos θ
-  - Evolução do método: balança apoiada/inclinada (erro) → corda compensadora (rejeitada) → **suspensão pela alça** (θ ≈ 0 por construção)
-  - Evidência experimental: 5,140 kg (vertical, suspensa) vs. 5,130 kg (horizontal) → desvio 0,19% < resolução da balança (10 g) → correção desprezível
-  - **Pendência de evidência:** teste horizontal foi feito puxando com a mão (audita transmissão, não exatidão). Complementar com: foto de nível de bolha/app na balança **OU** teste com roldana (quina de mesa) com peso padrão — registrar como evidência de θ ≈ 0
-  - Declarar no texto: erro residual de θ < resolução do instrumento, portanto não corrigido
+  - Montagem final: balança **suspensa pela alça** entre armário (ancoragem) e gancho no para-choque — a suspensão alinha o eixo do instrumento à linha de tração (sem erro interno de alinhamento)
+  - O θ residual depende só da geometria dos pontos de engate: θ = arctan(|h1 − h2| / L). Como a balança pende livre, a linha de tração permanece horizontal enquanto os pontos estiverem em alturas próximas — erro < 0,5% mesmo com Δh de alguns cm em L ≈ 1 m
+  - Evidência: 5,140 kg (vertical) vs. 5,130 kg (horizontal) = 0,19% < resolução da balança (10 g)
+  - Redação para a monografia: declarar θ desprezível com justificativa em 2 níveis (suspensão pela alça + geometria de engate) — sem correção trigonométrica aplicada
 - [ ] **3.4 Procedimento do ensaio**
   - Escada de degraus: subida 95→115° (rodar_ensaio.py) e descida 115→95° (rodar_ensaio_desc.py), passo 1°, duração 10 s por degrau, pausa 60 s
   - Janela de leitura: últimos 3 s (7–10 s) para amortecer transientes — **função da pausa/janela**: deixar o transiente mecânico dissipar e evitar o sag cumulativo da bateria
