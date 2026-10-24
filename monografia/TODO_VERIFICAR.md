@@ -103,3 +103,12 @@ a fonte/valor correto.
   veiculo ancorado identifica-se o subsistema ESC+motor+tração, nao a dinamica
   longitudinal do veiculo (que exige velocidade — IMU/encoder das alternativas do
   Cap. 2). Citar \cite{ljung1999system, astrom1997computer, franklin1998digital}.
+- [ ] **8. Pipeline identificacao -> controlador (Cap. 4/5)** —
+  (1) curva estatica T x I/u (escada 1 Hz — CONCLUIDA 24/10, ensaio_cego_subida.csv);
+  (2) G1(s)=I/u em bancada ancorada a 100 Hz (firmware fast, pulsos 1-2 s,
+  100-110°); (3) G2(s)=v/u com carro livre, pulsos 100-110°, velocidade por
+  IMU/encoder (secao 2.2.1) — ou fallback: malha fechada de CORRENTE/torque na
+  bancada (Pi + PI + ACS758), que demonstra PSR sem medicao de velocidade;
+  (4) ajuste FOPDT (Ljung 1999), PI com ganho programado pela curva estatica,
+  anti-windup e rate-limit da referencia (ligar com a "protecao" da sec. 2.2.1);
+  validar PSR/PRP em simulacao e, se possivel, malha fechada real com o Pi.
