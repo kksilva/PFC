@@ -30,8 +30,8 @@ NOME_CSV = "ensaio_teste.csv"
 RETENTATIVAS = 3              # tentativas de confirmacao do Pi antes de pular o degrau
 INICIO_JANELA_S = 7           # t_degrau a partir do qual o regime e valido (media final)
 JANELA_MM = 10                # leituras da media movel exibida ao lado de cada I
-PRINT_A_CADA = 10             # no terminal, imprime 1 a cada N leituras
-                              # (CSV sempre grava tudo; 10 => 100 Hz vira 1 print/s)
+PRINT_A_CADA = 20             # no terminal, imprime 1 a cada N leituras
+                              # (CSV sempre grava tudo; a 200 Hz real, 20 => 1 print/s)
 LIMIAR_PATINAGEM = 0.3        # corrente < 30% do pico apos t>=2 s => patinagem
 ESPERA_PI_S = 90              # tempo maximo aguardando o Pi voltar (ex.: apos reboot)
 
