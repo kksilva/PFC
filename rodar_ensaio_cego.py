@@ -12,12 +12,10 @@ Uso: python3 rodar_ensaio_cego.py
 import csv
 import os
 import time
-from collections import deque
 from serial import Serial
 
 from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
-                          JANELA_MM, LOCK_PATH, NEUTRO_GRAUS, PORTA_SERIAL,
-                          PRINT_A_CADA,
+                          LOCK_PATH, NEUTRO_GRAUS, PORTA_SERIAL,
                           enviar_comando, extrair_corrente, garantir_neutro,
                           instancia_unica, limpar_pi, log, media,
                           medir_latencia, resumo_degrau)
@@ -80,26 +78,28 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
     log.info(">> DEGRAU %d: resposta em %.1f s (I=%.2f A); medindo %d s",
              angulo, t0 - t_ensaio0, primeira, DURACAO_S)
     leituras = [(0.0, primeira)]
-    mm = deque(maxlen=JANELA_MM)
-    mm.append(primeira)
     csv_writer.writerow([f"{t0 - t_ensaio0:.1f}", "0.0", angulo,
                          f"{primeira:.2f}"])
-    print(f"  t=0.0s | I={primeira:.2f} A", flush=True)
+    print(f"  t=0s | I={primeira:.2f} A (resposta)", flush=True)
 
     fim = t0 + DURACAO_S
-    n_leitura = 0
+    seg_ant, soma_seg, n_seg = 0, 0.0, 0
     while time.time() < fim:
         i = le_corrente(ser)
         if i is None:
             continue
-        mm.append(i)
-        n_leitura += 1
         t = time.time() - t0
         csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}", f"{t:.1f}",
                              angulo, f"{i:.2f}"])
         leituras.append((t, i))
-        if n_leitura % PRINT_A_CADA == 0:
-            print(f"  t={t:.1f}s | I={i:.2f} A | MM={media(mm):.2f} A", flush=True)
+        soma_seg += i
+        n_seg += 1
+        seg = int(t)
+        if seg > seg_ant:
+            print(f"  t={seg_ant}s | I={soma_seg / n_seg:.2f} A", flush=True)
+            seg_ant, soma_seg, n_seg = seg, 0.0, 0
+    if n_seg:
+        print(f"  t={seg_ant}s | I={soma_seg / n_seg:.2f} A", flush=True)
 
     garantir_neutro() if medir_latencia() is not None else enviar_comando(NEUTRO_GRAUS, 2)
     resumo_degrau(angulo, leituras)

@@ -47,7 +47,11 @@ a fonte/valor correto.
   (força não saturou em 115°; platô esperado ~120–125°)
 - [ ] Bateria LiPo 2S saudável, carregada; verificar tensão por célula antes
 - [ ] Halteres 1 kg ×2 fixados sobre o CG (fita/velcro), massa total anotada (~7,1 kg)
-- [ ] Tarar balança 1× por série, em repouso (nunca entre degraus)
+- [ ] **Tara da balança a cada degrau** — registrar a leitura de repouso (ex.:
+  0,202 kg) ANTES de tarar, depois zerar e anotar a força. O conjunto
+  corda/suspensão relaxa a cada puxada (drift tipo passeio aleatório, ~0,1–0,2
+  kg entre degraus); tarar a cada degrau elimina o erro acumulado na força
+  (decisão 24/10, rigor). Nunca tarar durante o degrau.
 - [x] θ: DESPREZÍVEL por decisão (balança suspensa pela alça alinha o eixo à linha de tração; θ residual só da geometria de engate) — ver `PLANEJAMENTO_MONOGRAFIA.md` §3.3, marcado RESOLVIDO em 22/10/2026
 - [ ] Notebook na rede do Raspberry; testar `ssh alunos@raspberrypi.local` sem senha
 - [ ] ≥3 séries (subida + descida) para repetibilidade/histerese
