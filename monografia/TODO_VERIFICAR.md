@@ -83,3 +83,23 @@ a fonte/valor correto.
   o Cap. 4 deve declarar como limitação a subamostragem do regime de patinagem
   cíclica (ciclos ~2 s > Nyquist de 0,5 Hz) — com proposta de continuidade
   (aquisição a maior taxa para caracterizar o stick-slip).
+
+## Decisao de taxa de amostragem (auditoria 24/10)
+
+- [ ] **7. Duas taxas, dois objetivos** — O dado a 1 Hz (ensaio de escada) serve
+  para a curva estatica torque x corrente e para o envelope da patinagem, mas NAO
+  para identificacao de função de transferencia: o stick-slip (~2 s de periodo)
+  fica no limiar de Nyquist (0,5 Hz) e a resposta de corrente do ESC (~10-100 ms)
+  e invisivel. Para a dinamica, protocolo dedicado a ~100 Hz (20 amostras ADC por
+  ponto, `Sensor_de_Corrente_ACS758_fast`, delay 5 ms), pulsos de 1-2 s entre
+  100-110° (regime de aderencia; TF e linear), neutro de 1 s entre pulsos, >=5
+  pulsos com amplitudes variadas. Regras de decisao: 10-30x a banda
+  (Åström & Wittenmark 1997; Franklin 1998) e 10-20 amostras no tempo de subida
+  (Clarke 1984 em Ljung 1999): banda de interesse ~5-10 Hz (ciclos de patinagem +
+  transientes de corrente) -> fs ~100 Hz; o filtro RC de 24 Hz assume o papel de
+  anti-aliasing (fc ~ Nyquist/2). **Limitacoes a declarar no Cap. 4:** (a) forca
+  da balanca so existe a 1 valor/degrau (display) — a dinamica u->F exigiria celula
+  de carga com registrador (proposta de continuidade: HX711, ~R$30); (b) com o
+  veiculo ancorado identifica-se o subsistema ESC+motor+tração, nao a dinamica
+  longitudinal do veiculo (que exige velocidade — IMU/encoder das alternativas do
+  Cap. 2). Citar \cite{ljung1999system, astrom1997computer, franklin1998digital}.
