@@ -178,11 +178,18 @@ def limpar_pi():
 
 
 def garantir_neutro():
-    """Forca o ESC de volta ao neutro (seguranca do veiculo)."""
-    garantir_tunel()
-    limpar_pi()
-    subprocess.run(["ssh"] + SSH_TUNNEL_OPTS + [PI, COMANDO_PI,
-                                                str(NEUTRO_GRAUS), "2"])
+    """Forca o ESC de volta ao neutro (seguranca), melhor esforco com
+    limite curto — nunca bloqueia o Ctrl+C por mais de ~12 s. Se a rede
+    estiver morta, o teste_throttle.py retorna ao neutro sozinho ao fim
+    do degrau."""
+    try:
+        subprocess.run(["ssh"] + SSH_TUNNEL_OPTS + [PI, COMANDO_PI,
+                                                    str(NEUTRO_GRAUS), "2"],
+                       capture_output=True, timeout=12)
+        log.info("neutro enviado")
+    except subprocess.TimeoutExpired:
+        log.warning("neutro NAO enviado (rede morta); o Pi retorna ao "
+                    "neutro sozinho ao fim do degrau")
 
 
 # ---------------------------------------------------------------- nucleo do ensaio

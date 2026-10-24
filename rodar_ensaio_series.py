@@ -54,14 +54,18 @@ def medir_baseline(ser, csv_writer, angulo, t_ensaio0):
         n_seg += 1
         seg = int(time.time() - t_ini)
         if seg > seg_ant:
+            m_seg = soma_seg / n_seg
             csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}",
                                  f"{float(seg_ant):.1f}", angulo,
-                                 f"{soma_seg / n_seg:.2f}"])
+                                 f"{m_seg:.2f}"])
+            print(f"  t={seg_ant}s | I={m_seg:.2f} A", flush=True)
             seg_ant, soma_seg, n_seg = seg, 0.0, 0
     if n_seg:
+        m_seg = soma_seg / n_seg
         csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}",
                              f"{float(seg_ant):.1f}", angulo,
-                             f"{soma_seg / n_seg:.2f}"])
+                             f"{m_seg:.2f}"])
+        print(f"  t={seg_ant}s | I={m_seg:.2f} A", flush=True)
     log.info(">> baseline %d gravado (15 pontos/s)", angulo)
 
 
