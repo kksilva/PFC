@@ -62,7 +62,10 @@ a fonte/valor correto.
   principal descoberta posteriormente: a bateria dedicada do Raspberry Pi estava
   descarregada** — o Pi sofria brown-out e a rede (WiFi e Ethernet) sumia até ele voltar
   (ou não voltava). A correlação com degraus altos foi coincidência acumulada, não
-  causa. **Para o relatório (Cap. 3 Metodologia / Cap. 4 Dificuldades):** registrar como
+  causa. **Evidência elétrica (24/10):** tensão medida na saída do *step-down* do Pi
+  caiu para **4,0 V** (valor esperado ≈ **5,3 V**) — abaixo do mínimo operacional do
+  Raspberry Pi (~4,75 V), condição suficiente para os resets e a queda da rede.
+  **Para o relatório (Cap. 3 Metodologia / Cap. 4 Dificuldades):** registrar como
   fonte de falha da telemetria — autonomia da bateria do computador de bordo; medida
   corretiva: verificar/caregar a bateria do Pi no checklist pré-ensaio + script `rodar_
   ensaio_cego.py` (dispara sem rede e ancora a janela na resposta elétrica da corrente).
