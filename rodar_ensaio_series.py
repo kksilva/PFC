@@ -29,6 +29,7 @@ from serial import Serial
 from rodar_ensaio import (BAUD, LOCK_PATH, MM_SEGUNDOS, PORTA_SERIAL,
                           extrair_corrente, instancia_unica, log, media,
                           resumo_degrau)
+from rodar_ensaio_cego import LIMIAR_RESPOSTA_A
 
 # ---------------------------------------------------------------- config
 REPETICOES = 3
@@ -37,6 +38,8 @@ ANGULO_MAX = 117
 DURACAO_S = 15               # throttle por degrau (o exemplo usava 3: ajuste aqui)
 EXTRAS_S = 4                 # cobre o neutro de armamento do ESC antes do throttle
 PAUSA_S = 3                  # folga entre degraus
+TENTATIVAS = 3               # disparos por degrau se a corrente nao responder
+ESPERA_RESPOSTA_S = 6        # janela para detectar a resposta de cada disparo
 NOME_CSV = "ensaio_series.csv"
 PI = "alunos@raspberrypi.local"
 COMANDO = "python3 /home/alunos/teste_throttle.py"
@@ -78,13 +81,36 @@ def medir_janela(ser, csv_writer, angulo, t0, t_ensaio0, duracao):
     return leituras
 
 
+def aguardar_resposta(ser, timeout_s):
+    """True se a corrente passar do limiar dentro da janela (throttle rodando)."""
+    fim = time.time() + timeout_s
+    while time.time() < fim:
+        i = extrair_corrente(ser.readline().decode(errors="replace"))
+        if i is not None and i >= LIMIAR_RESPOSTA_A:
+            return True
+    return False
+
+
 def executar_degrau(ser, csv_writer, angulo, t_ensaio0):
-    """Dispara o comando ssh original e mede a janela."""
+    """Dispara o comando ssh original (ate TENTATIVAS) e mede a janela."""
     log.info("### DEGRAU %d ###", angulo)
-    ser.reset_input_buffer()
-    t0 = time.time()
-    proc = subprocess.Popen(["ssh", PI, f"{COMANDO} {angulo} {DURACAO_S}"],
-                            stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+    executou = (angulo <= 95)   # o neutro nao produz corrente: nao se verifica
+    for tentativa in range(1, TENTATIVAS + 1):
+        ser.reset_input_buffer()
+        t0 = time.time()
+        proc = subprocess.Popen(["ssh", PI, f"{COMANDO} {angulo} {DURACAO_S}"],
+                                stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        if executou or aguardar_resposta(ser, ESPERA_RESPOSTA_S):
+            executou = True
+            break
+        proc.kill()
+        log.warning("degrau %d sem resposta; re-disparando (%d/%d)",
+                    angulo, tentativa, TENTATIVAS)
+        time.sleep(2)
+    if not executou:
+        log.error("DEGRAU %d NAO executado apos %d tentativas; pulado",
+                  angulo, TENTATIVAS)
+        return
     leituras = medir_janela(ser, csv_writer, angulo, t0, t_ensaio0,
                             DURACAO_S + EXTRAS_S)
     try:
