@@ -181,20 +181,33 @@ def garantir_neutro():
 
 # ---------------------------------------------------------------- nucleo do ensaio
 def resumo_degrau(angulo, leituras):
-    """Reporta a media da janela e, se houver, a patinagem e a media pre-queda."""
-    regime = [i for t, i in leituras if t >= INICIO_JANELA_S]
-    pico = max((i for t, i in leituras if t >= 1), default=float("nan"))
-    t_patinagem = next((t for t, i in leituras
-                        if t >= 2 and i < LIMIAR_PATINAGEM * pico), None)
+    """Reporta a media da janela, a fase de aderencia e a patinagem.
+
+    Patinagem = queda SUSTENTADA no meio da janela (o fim do degrau, em
+    que o throttle termina e I->0, nao conta). Em regime de patinagem
+    ciclica (aderencia alternando com deslizamento), a media da janela e
+    sem sentido: usa-se a fase de aderencia (pontos >= 60% do pico)."""
+    dur = max((t for t, _ in leituras), default=DURACAO_S)
+    pico = max((i for t, i in leituras if 1 <= t <= dur - 1), default=float("nan"))
+    t_patinagem = None
+    for k, (t, i) in enumerate(leituras):
+        if t < 2 or t > dur - 2:
+            continue
+        if i < LIMIAR_PATINAGEM * pico:
+            seguintes = [j for _, j in leituras[k:k + 4]]
+            if media(seguintes) < 0.4 * pico:
+                t_patinagem = t
+                break
+    aderencia = [i for _, i in leituras if i >= 0.6 * pico]
     if t_patinagem is not None:
         validas = [i for t, i in leituras if t < t_patinagem]
-        log.info(">> DEGRAU %d: PATINAGEM em t=%.1fs | media pre-patinagem = %.2f A "
-                 "(t<%.1f, n=%d) | media janela %d-%ds = %.2f A (n=%d)",
-                 angulo, t_patinagem, media(validas), t_patinagem, len(validas),
-                 INICIO_JANELA_S, DURACAO_S, media(regime), len(regime))
+        log.info(">> DEGRAU %d: PATINAGEM sustentada em t=%.1fs | media pre-patinagem "
+                 "= %.2f A | fase de aderencia = %.2f A (n=%d)", angulo, t_patinagem,
+                 media(validas), media(aderencia), len(aderencia))
     else:
-        log.info(">> DEGRAU %d: media janela %d-%ds = %.2f A (n=%d)",
-                 angulo, INICIO_JANELA_S, DURACAO_S, media(regime), len(regime))
+        log.info(">> DEGRAU %d: media janela = %.2f A | fase de aderencia = %.2f A "
+                 "(n=%d, pico %.1f A)", angulo, media([i for _, i in leituras]),
+                 media(aderencia), len(aderencia), pico)
 
 
 def rodar_degrau(ser, csv_writer, angulo, t_ensaio0):

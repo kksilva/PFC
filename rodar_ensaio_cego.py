@@ -23,7 +23,7 @@ from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
 
 # ---------------------------------------------------------------- config
 ANGULO_INICIAL = 98
-ANGULO_FINAL = 120
+ANGULO_FINAL = 117
 DIRECAO = "subida"            # "subida" | "descida"
 NOME_CSV = "ensaio_cego_subida.csv"
 LIMIAR_RESPOSTA_A = 0.8       # |I| acima disso = throttle respondeu
@@ -62,7 +62,7 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
         limite = time.time() + ESPERA_RESPOSTA_S
         while time.time() < limite:
             i = le_corrente(ser)
-            if i is not None and abs(i) >= LIMIAR_RESPOSTA_A:
+            if i is not None and i >= LIMIAR_RESPOSTA_A:
                 t0, primeira = time.time(), i
                 break
         if t0 is not None:
