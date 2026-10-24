@@ -17,6 +17,7 @@ import select
 import subprocess
 import sys
 import time
+from collections import deque
 from contextlib import contextmanager
 from serial import Serial
 
@@ -30,12 +31,13 @@ RETENTATIVAS = 3              # tentativas de confirmacao do Pi antes de pular o
 INICIO_JANELA_S = 7           # t_degrau a partir do qual o regime e valido (media final)
 # (o terminal imprime 1 linha por segundo: a media da corrente naquele segundo;
 #  o CSV grava todas as leituras, sem filtro)
+MM_SEGUNDOS = 5               # janela da media movel exibida no terminal (segundos)
 LIMIAR_PATINAGEM = 0.3        # corrente < 30% do pico apos t>=2 s => patinagem
 ESPERA_PI_S = 90              # tempo maximo aguardando o Pi voltar (ex.: apos reboot)
 
 # ---------------------------------------------------------------- hardware
 PORTA_SERIAL = "/dev/ttyACM0"
-BAUD = 115200
+BAUD = 250000               # firmware rapido usa 250000; a 115200 a serial transborda
 PI = "alunos@raspberrypi.local"
 COMANDO_PI = "python3 -u /home/alunos/teste_throttle.py"   # -u: sem buffer de saida
 NEUTRO_GRAUS = 95             # angulo de neutro do ESC
@@ -80,12 +82,16 @@ def instancia_unica(caminho_lock):
 
 
 def extrair_corrente(linha):
-    """Converte uma linha da serial em amperes; None se nao for leitura."""
-    if "Corrente:" in linha:
-        return float(linha.split("Corrente:")[1].split()[0])
-    if "ADC:" in linha:
-        adc = float(linha.split("ADC:")[1].split()[0])
-        return (adc * V_REF / ADC_MAX - OFFSET_V) / SENSIBILIDADE_V_A
+    """Converte uma linha da serial em amperes; None se nao for leitura
+    ou se a linha estiver corrompida (descarta sem derrubar o ensaio)."""
+    try:
+        if "Corrente:" in linha:
+            return float(linha.split("Corrente:")[1].split()[0])
+        if "ADC:" in linha:
+            adc = float(linha.split("ADC:")[1].split()[0])
+            return (adc * V_REF / ADC_MAX - OFFSET_V) / SENSIBILIDADE_V_A
+    except (ValueError, IndexError):
+        return None
     return None
 
 
@@ -239,6 +245,7 @@ def rodar_degrau(ser, csv_writer, angulo, t_ensaio0):
     ser.reset_input_buffer()   # so le o que for deste degrau
     leituras = []              # (t_degrau, corrente) para o resumo final
     seg_ant, soma_seg, n_seg = 0, 0.0, 0
+    mm_seg = deque(maxlen=MM_SEGUNDOS)
     fim = t0 + DURACAO_S
     while time.time() < fim:
         corrente = extrair_corrente(ser.readline().decode(errors="replace"))
@@ -252,10 +259,16 @@ def rodar_degrau(ser, csv_writer, angulo, t_ensaio0):
         n_seg += 1
         seg = int(t_degrau)
         if seg > seg_ant:      # fechou um segundo: imprime a media dele
-            print(f"  t={seg_ant}s | I={soma_seg / n_seg:.2f} A", flush=True)
+            m_seg = soma_seg / n_seg
+            mm_seg.append(m_seg)
+            print(f"  t={seg_ant}s | I={m_seg:.2f} A | MM={media(mm_seg):.2f} A",
+                  flush=True)
             seg_ant, soma_seg, n_seg = seg, 0.0, 0
     if n_seg:                  # ultimo segundo parcial
-        print(f"  t={seg_ant}s | I={soma_seg / n_seg:.2f} A", flush=True)
+        m_seg = soma_seg / n_seg
+        mm_seg.append(m_seg)
+        print(f"  t={seg_ant}s | I={m_seg:.2f} A | MM={media(mm_seg):.2f} A",
+              flush=True)
 
     try:
         proc.wait(timeout=30)
