@@ -33,7 +33,7 @@ from rodar_ensaio_cego import (CABECALHO_CSV, aguardar_repouso,
 
 # ---------------------------------------------------------------- config
 REPETICOES = 3
-ANGULO_MIN = 95
+ANGULO_MIN = 98
 ANGULO_MAX = 117
 NOME_CSV = "ensaio_series.csv"
 PAUSA_S = 3                    # folga minima entre degraus (bateria/ESC)

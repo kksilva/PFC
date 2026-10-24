@@ -107,8 +107,17 @@ def tunel_ok():
     return r.returncode == 0
 
 
+def soquete_saudavel():
+    """Remove o soquete mestre se estiver podre (apos crash/reboot do Pi, o
+    soquete fica apontando para conexao morta e TODO ssh posterior falha ou
+    engasga ate o arquivo ser removido — sintoma: 'rede morta' permanente)."""
+    if os.path.exists(SOQUETE_SSH) and not tunel_ok():
+        subprocess.run(["rm", "-f", SOQUETE_SSH])
+
+
 def medir_latencia():
     """Tempo de uma execucao trivial no Pi; None se inalcancavel."""
+    soquete_saudavel()
     t = time.time()
     try:
         r = subprocess.run(["ssh"] + SSH_TUNNEL_OPTS + [PI, "true"],
@@ -149,6 +158,7 @@ def aquecer_tunel():
 
 def enviar_comando(angulo, duracao_s):
     """Lanca o comando no Pi; retorna o processo ssh (stdout capturado)."""
+    soquete_saudavel()
     return subprocess.Popen(["ssh"] + SSH_TUNNEL_OPTS + [PI, COMANDO_PI,
                                                          str(angulo), str(duracao_s)],
                             stdout=subprocess.PIPE, text=True)
