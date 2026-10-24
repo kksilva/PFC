@@ -22,10 +22,10 @@ from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
                           medir_latencia, resumo_degrau)
 
 # ---------------------------------------------------------------- config
-ANGULO_INICIAL = 105
-ANGULO_FINAL = 115
+ANGULO_INICIAL = 98
+ANGULO_FINAL = 120
 DIRECAO = "subida"            # "subida" | "descida"
-NOME_CSV = "ensaio_cego.csv"
+NOME_CSV = "ensaio_cego_subida.csv"
 LIMIAR_RESPOSTA_A = 0.8       # |I| acima disso = throttle respondeu
 TENTATIVAS_CEGAS = 8          # disparos por degrau (cobre reboot ~60 s do Pi)
 ESPERA_RESPOSTA_S = 10        # janela para a corrente responder apos cada disparo
