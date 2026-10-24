@@ -53,7 +53,12 @@ a fonte/valor correto.
   kg entre degraus); tarar a cada degrau elimina o erro acumulado na força
   (decisão 24/10, rigor). Nunca tarar durante o degrau.
 - [x] θ: DESPREZÍVEL por decisão (balança suspensa pela alça alinha o eixo à linha de tração; θ residual só da geometria de engate) — ver `PLANEJAMENTO_MONOGRAFIA.md` §3.3, marcado RESOLVIDO em 22/10/2026
-- [ ] Notebook na rede do Raspberry; testar `ssh alunos@raspberrypi.local` sem senha
+- [ ] **Notebook na rede do Raspberry — verificar ANTES de cada série** —
+  comando `iwgetid -r` deve retornar o SSID do Pi (se retornar outra rede, ex.:
+  "UFMG", o notebook saltou de rede e o ssh falha com "could not resolve
+  hostname", imitando uma queda do Pi — episódio de 24/10, descida). Confirmar
+  também com `ssh alunos@raspberrypi.local` sem senha. Se o soquete ssh estiver
+  velho: `rm -f /tmp/pfc-ssh.sock`.
 - [ ] ≥3 séries (subida + descida) para repetibilidade/histerese
 - [ ] Anotar força da balança nos últimos 3 s de cada degrau (janela 7–10 s)
 
