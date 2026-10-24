@@ -66,7 +66,8 @@ def avaliar(exec_, taxa_alta):
     plato = media([i for t, i in L if 5 <= t <= min(12, dur - 1)])
     ader = media([i for _, i in L if i >= 0.6 * pico]) if pico > 0 else 0.0
     deltas = sorted(L[k + 1][0] - L[k][0] for k in range(len(L) - 1))
-    dt = deltas[len(deltas) // 2] if deltas else 0.05
+    nz = [d for d in deltas if d > 0]          # ignora deltas 0 (arred. de 0,1 s)
+    dt = nz[len(nz) // 2] if nz else 0.05
     gaps = sum(d - dt for d in deltas if d > 3 * dt)
     motivos = []
     if dur < 10:
