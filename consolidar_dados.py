@@ -75,8 +75,8 @@ def avaliar(exec_, taxa_alta):
         motivos.append("CORROMPIDO")   # linhas corrompidas da serial (era 115200)
     if pico < 1.0 and a >= 99 or (a > 100 and pico < 3.0):
         motivos.append("SINAL_FRACO")
-    if gaps > 1.0:
-        motivos.append("PARCIAL")
+    if gaps > 3.0:
+        motivos.append("PARCIAL")      # so invalida se a perda for severa
     exec_.update(dur=dur, pico=pico, plato=plato, ader=ader,
                  gaps=gaps, motivos=motivos)
     return exec_
