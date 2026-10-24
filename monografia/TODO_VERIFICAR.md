@@ -169,14 +169,12 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
 - Suficiencia da curva plotada: estatica SIM (depende das forcas anotadas 98-117:
   da ganhos, zona morta, saturacao e eta); dinamica NAO — falta apenas o ensaio de
   pulsos a 100 Hz (firmware ja compilado; ~1 tarde).
-- [ ] **9. Raio efetivo da roda (r em T = F*r)** — Nominal (fabricante, pneu
+- [x] **9. Raio efetivo da roda (r em T = F*r)** — Nominal (fabricante, pneu
   novo sem carga): diametro 160 mm -> r_nom = 80 mm (pag. oficial Kyosho 30888,
-  "Tire(F/R) 160 x 100 mm"). Usar o RAIO EFETIVO (de rolamento), menor que o
-  geometrico por deformacao do pneu sob carga (tip. 2-5 %): medir por roll-out —
-  marcar pneu e chao, rolar o carro em linha reta SEM patinar por 10 voltas,
-  medir L, r_ef = L/(10*2*pi), 3 repeticoes, com os halteres (mesma carga normal
-  do ensaio). Reportar os tres valores (nominal, carregado, efetivo) no Cap. 3;
-  incerteza do roll-out < 0,5 %.
+  "Tire(F/R) 160 x 100 mm"). **MEDIDO por roll-out (24/10): L = 236 cm em
+  5 voltas -> r_ef = 75,1 mm** (deflexao de 6,1% sob carga, esperada para
+  pneu macio; incerteza < 0,5%). USAR r_ef = 0,0751 m em T_roda = F*r_ef.
+  Reportar os tres valores (nominal, efetivo, condicao de carga) no Cap. 3.
 - [ ] **10. Ensaio em vazio com SS41F** — Registrar no relatorio (Cap. 3
   metodologia/limitacoes ou Cap. 5 propostas) que o sensor magnetico SS41F
   (alternativa ja discutida na sec. 2.2.2) viabilizaria o ENSAIO EM VAZIO:
