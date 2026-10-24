@@ -23,9 +23,9 @@ from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
 
 # ---------------------------------------------------------------- config
 ANGULO_INICIAL = 98
-ANGULO_FINAL = 117
-DIRECAO = "subida"            # "subida" | "descida"
-NOME_CSV = "ensaio_cego_subida.csv"
+ANGULO_FINAL = 114
+DIRECAO = "descida"            # "subida" | "descida"
+NOME_CSV = "ensaio_cego_descida.csv"
 LIMIAR_RESPOSTA_A = 0.8       # |I| acima disso = throttle respondeu
 TENTATIVAS_CEGAS = 8          # disparos por degrau (cobre reboot ~60 s do Pi)
 ESPERA_RESPOSTA_S = 10        # janela para a corrente responder apos cada disparo
@@ -52,12 +52,14 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
     partir da resposta. Retorna True se o degrau foi executado."""
     ser.reset_input_buffer()
     t0 = primeira = None
+    probar = True                # so sonda a rede ate ela falhar; depois dispara direto
     for tentativa in range(1, TENTATIVAS_CEGAS + 1):
-        if medir_latencia() is not None:
-            limpar_pi()            # rede viva: garante que so ha este throttle
-        else:
-            log.warning("rede morta; disparando no escuro (tentativa %d/%d)",
-                        tentativa, TENTATIVAS_CEGAS)
+        if probar:
+            if medir_latencia() is not None:
+                limpar_pi()      # rede viva: garante que so ha este throttle
+            else:
+                log.warning("rede morta; disparando no escuro ate ela voltar")
+                probar = False
         enviar_comando(angulo, DURACAO_S)
         limite = time.time() + ESPERA_RESPOSTA_S
         while time.time() < limite:
@@ -69,6 +71,7 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
             break
         log.warning("degrau %d sem resposta na corrente; re-disparando (%d/%d)",
                     angulo, tentativa, TENTATIVAS_CEGAS)
+        probar = True            # nova tentativa reavalia a rede
         time.sleep(3)
 
     if t0 is None:
