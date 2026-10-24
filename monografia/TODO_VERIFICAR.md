@@ -188,3 +188,10 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   tensao efetiva via razao ciclica), incertezas, e o que a dinamica u->omega
   em vazio agregaria ao modelo (comparacao com a dinamica sob carga, estimativa
   de J e B da Eq. dinamica rotacional).
+- [x] **11. Consolidacao dos dados de ensaio (24/10)** — `ensaios/consolidar_
+  dados.py` gera `ensaio_consolidado.csv`: 58 execucoes VALIDADAS (subida
+  98-120 com 1-2 repeticoes; descida 113-120 com 114 5x; histerese completa
+  na faixa alta). Regras: pico>60 A = CORROMPIDO (era serial 115200);
+  degrau>100 com pico<3 A ou degrau>=99 com pico<1 A = SINAL_FRACO; dur<10 s
+  = CURTO. **Cap 4 deve usar apenas o consolidado.** Lacunas declaradas:
+  descida 101-112, dinamica (FOPDT por priors + robustez ate nova sessao).
