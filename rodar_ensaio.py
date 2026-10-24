@@ -52,12 +52,12 @@ SENSIBILIDADE_V_A = 0.0066
 SSH_TUNNEL_OPTS = ["-o", "ControlMaster=auto",
                    "-o", "ControlPersist=600",
                    "-o", "ControlPath=/tmp/pfc-ssh.sock",
-                   "-o", "ConnectTimeout=10",
-                   "-o", "ServerAliveInterval=5",
-                   "-o", "ServerAliveCountMax=2",
+                   "-o", "ConnectTimeout=20",      # cobre TCP + troca de banner (link lento)
+                   "-o", "ServerAliveInterval=15", # nao matar o tunel em rajadas de perda
+                   "-o", "ServerAliveCountMax=3",
                    "-o", "BatchMode=yes"]
 SOQUETE_SSH = "/tmp/pfc-ssh.sock"
-TIMEOUT_CONFIRMACAO_S = 25
+TIMEOUT_CONFIRMACAO_S = 45     # paciencia p/ confirmacao em link lento
 LOCK_PATH = ".rodar_ensaio.lock"
 CABECALHO_CSV = "t_ensaio_s;t_degrau_s;angulo;corrente_a"
 

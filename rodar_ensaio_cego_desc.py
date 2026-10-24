@@ -7,4 +7,4 @@ from rodar_ensaio_cego import main
 
 if __name__ == "__main__":
     main(direcao="descida", nome_csv="ensaio_cego_descida.csv",
-         angulo_inicial=120, angulo_final=98)
+         angulo_inicial=117, angulo_final=98)
