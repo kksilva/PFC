@@ -69,7 +69,10 @@ uma massa vibrante quando o dispositivo gira. Dessa forma, para a propulsão, ap
 linear se conecta ao esforço do sistema, já que a
 velocidade angular não se relaciona diretamente com o torque.
 
-A aceleração longitudinal $a$ se relaciona à força de tração $F_{\text{tração}}$ pela segunda lei de Newton,
+O torque do motor se transforma em força de tração na roda, que deve vencer as forças resistivas ao 
+movimento para reultar na aceleração do veículo. Assim, a aceleração longitudinal $a$ se relaciona 
+à força de tração $F_{\text{tração}}$ pela segunda lei de Newton:
+
 \begin{equation}\label{eq:newton}
 m\,a = F_{\text{tração}} - F_{\text{resistivos}},
 \end{equation}
@@ -80,38 +83,34 @@ pelo rendimento $\eta$ da transmissão,
 \begin{equation}\label{eq:transmissao}
 T_\mathrm{roda} = i\,\eta\,T_{\text{motor}}.
 \end{equation}
+
 Combinando as Equações \eqref{eq:newton} e \eqref{eq:transmissao}, o torque do motor pode ser
-estimado a partir da aceleração \cite{mascarenhas2006},
+estimado a partir da aceleração:
 \begin{equation}\label{eq:torque_motor}
 T_{\text{motor}} = \frac{r\,(m\,a + F_{\text{resistivos}})}{i\,\eta}.
 \end{equation}
 
-A relação é indireta porque há uma cadeia de causas e efeitos entre a grandeza medida e o torque
-que se deseja obter. O torque do motor é a causa: ele se transforma em força de tração na roda,
-essa força vence parcialmente as resistências, e o resultado líquido se manifesta como aceleração
-do veículo --- o efeito final que o sensor captura. A Equação \eqref{eq:torque_motor} percorre o
-caminho inverso: a partir da aceleração medida, recupera-se a força de tração ao somar as
-resistências e, dela, o torque do motor. Cada etapa dessa operação inversa, porém, requer um
+Cada etapa dessa operação, porém, requer um
 parâmetro que a IMU não mede: a massa $m$ e as resistências $F_{\text{resistivos}}$ na passagem da
 aceleração à força; o raio da roda $r$ e o rendimento da transmissão $\eta$ na passagem da força ao
-torque. Esses parâmetros ainda variam com as condições do ensaio --- a resistência ao rolamento
-muda com o piso e a pressão dos pneus, e o rendimento, com o estado da transmissão ---, e adotá-los
-com valores fixos introduz erro. Quanto maior a imprecisão de cada parâmetro, maior a incerteza da
-estimativa de torque.
+torque. 
 
 Para obter a velocidade do veículo, a aceleração medida $a_m$ é integrada no tempo,
 \begin{equation}\label{eq:integral}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_m(\tau)\,d\tau.
 \end{equation}
+
 Na prática, a integração acumula o erro de medida e a estimativa $\hat{v}$ se afasta da
-velocidade real $v$ ao longo do tempo. Por isso, a estimativa é normalmente corrigida por um filtro
-complementar \cite{bueno_romano}. Quanto à fixação, a IMU deve ser instalada em uma placa rígida
+velocidade real $v$ ao longo do tempo. Quanto à fixação, a IMU deve ser instalada em uma placa rígida
 do chassi, o mais próximo possível do centro de massa e o mais afastado possível do ESC, do motor
 e da transmissão, que são as principais fontes de vibração, com seus eixos alinhados aos eixos
-longitudinal, lateral e vertical. A vibração que chega ao acelerômetro adiciona ruído à medida,
-e a filtragem de baixa frequência reduz esse efeito apenas parcialmente.
-
-Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
+longitudinal, lateral e vertical. Cabe notar que a malha poderia, em princípio, ser fechada
+diretamente sobre a aceleração medida, dispensando a integração e sua deriva. Essa alternativa
+rejeita perturbações que alteram o torque do conjunto --- como variações de carga e de inclinação
+---, mas não garante o seguimento de uma referência de velocidade, uma vez que nenhuma
+realimentação atua sobre essa grandeza \cite{mascarenhas2006}. Para o objetivo de controlar a
+velocidade do veículo, a estimativa por integração permanece necessária. Com a velocidade estimada,
+a malha de controle se fecha na seguinte sequência:
 
 \begin{enumerate}
     \item a velocidade de referência $v_\mathrm{ref}$ é comparada à velocidade estimada $\hat{v}$, gerando o erro $e = v_\mathrm{ref} - \hat{v}$;
@@ -121,22 +120,14 @@ Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
     \item a aceleração resultante é medida pela IMU, e o filtro atualiza $\hat{v}$.
 \end{enumerate}
 
-O controlador rodaria no microcontrolador, que lê a IMU por I$^2$C e envia o comando ao ESC por
-um sinal PWM, sem acionar o motor diretamente --- função que permanece do ESC. Para a proteção do sistema, o microcontrolador
+O controlador rodaria (tempo verbal?) no microcontrolador, que lê a IMU por I$^2$C e envia o comando ao ESC por
+um sinal PWM, sem acionar o motor diretamente. A Figura~\ref{fig:imu_i2c} ilustra a ligação com um Arduino: alimentação ($V_{CC}$
+e GND) e os dois sinais do barramento -- SDA (\emph{Serial Data}), por onde transitam as informações, e
+SCL (\emph{Serial Clock}), que sincroniza a troca de dados. Para a proteção do sistema, o microcontrolador
 pode detectar picos de aceleração e limitar a taxa de variação do comando $u$, suavizando a
 aceleração e reduzindo os picos de torque na transmissão. Essa ação é apenas parcialmente
-preventiva, pois atua depois que o pico já começou a ser medido. Desse modo, a IMU cumpre o objetivo de
+preventiva, pois atua depois que o pico já começou a ser medido, desse modo, o sensor cumpre o objetivo de
 realimentação de velocidade, mas não o de proteção elétrica direta dos componentes.
-
-No que diz respeito à comunicação I$^2$C, ela emprega apenas quatro ligações: alimentação ($V_{CC}$
-e GND) e os dois sinais do barramento --- SDA (\emph{Serial Data}), por onde transitam os dados, e
-SCL (\emph{Serial Clock}), que sincroniza a troca. Os resistores de \emph{pull-up} já vêm integrados
-ao módulo, dispensando componentes externos; cada dispositivo é reconhecido por
-um endereço fixo --- o do MPU-6050 é 0x68 ---, o que permite compartilhar os mesmos dois fios com
-outros sensores. A Figura~\ref{fig:imu_i2c} ilustra a ligação com um Arduino Nano; no Arduino
-Due, os sinais SDA e SCL dispõem de pinos dedicados, com o mesmo princípio de conexão. Observa-se
-que a simplicidade elétrica dessa ligação é uma das razões da adoção ampla desses módulos em
-projetos de baixo custo.
 
 \begin{figure}[htb]
 \centering
@@ -164,28 +155,29 @@ de roda usualmente empregados em robótica, nos quais o microcontrolador conta a
 janela de tempo para estimar a rotação.
 
 Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
-anel é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem fornece diretamente a
-velocidade $\omega_m$. Com o anel na roda, fornece $\omega_\mathrm{roda}$, que se converte em
+anel (anel? ferromagnetico?) é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem fornece diretamente a
+velocidade $\omega_m$, enqaunto o anel na roda fornece $\omega_\mathrm{roda}$, que se converte em
 $\omega_m$ pela redução $i$ da transmissão.
 
-Estimar torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
+A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
 carga $T_L$, a segunda lei de Newton para a rotação resulta em
 \begin{equation}\label{eq:dinamica_rotacional}
 T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
+
 O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
 que precisariam ser identificados separadamente. Há, ainda, um limite de resolução inerente ao
-método. Como a velocidade é obtida por contagem de pulsos discretos, a menor variação detectável
-é de um único pulso na janela. Em baixas rotações, poucos pulsos são contados e a estimativa se
+método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
 torna progressivamente mais grosseira. A derivada exigida pela Equação
 \eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
 torque sensível à resolução do sensor e, em última instância, ao número de polos do anel.
 
-Em malha fechada, por outro lado, a velocidade medida pode realimentar diretamente um controlador
+Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
 de velocidade, sem nenhum modelo de torque, da mesma forma que a velocidade estimada pela IMU.
 Motores brushless com sensores Hall integrados já são controlados dessa maneira, com os mesmos
 sinais servindo à comutação e à realimentação de velocidade \cite{santin2018}.
+(desenvolver citação)
 
 Em síntese, as vantagens e desvantagens do SS41F/41G são as seguintes.
 
@@ -199,27 +191,35 @@ Em síntese, as vantagens e desvantagens do SS41F/41G são as seguintes.
 
 No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série com o
 caminho da corrente. Pela Lei de Ohm, a queda de tensão sobre ele é
+
 \begin{equation}\label{eq:shunt_ohm}
 V_s = R_s\,I.
 \end{equation}
+
 Essa tensão, tipicamente da ordem de milivolts, é amplificada pelo circuito integrado INA240, cuja
 saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
 \begin{equation}\label{eq:shunt_ganho}
 V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
-em que $G$ é o ganho fixo do amplificador. O componente possui largura de banda de 400 kHz e
-rejeição reforçada a transientes de modo comum, justamente os produzidos pelo chaveamento de um
+em que $G$ é o ganho fixo do amplificador. 
+
+(inserir imagem do relatorio 1 sobre esse snsor)
+
+O componente possui largura de banda de 400 kHz e
+rejeição reforçada a transientes de modo comum, justamente os produzidos pelo chaveamento do
 ESC \cite{ti_ina240_2}. Em altas frequências, a indutância parasita do resistor faz com que a
 tensão deixe de ser proporcional à corrente instantânea, distorcendo a leitura durante o chaveamento.
 
-A dissipação de potência no resistor cresce com o quadrado da corrente; sob correntes
+A dissipação de potência no resistor cresce com o quadrado da corrente, com isso, sob correntes
 elevadas, o shunt aquece e consome parte da energia destinada ao motor. Vale observar, ainda, que
 o shunt instalado na alimentação do ESC mede a corrente média de entrada, e não a corrente de
 fase do motor, que é chaveada pelo PWM. Em uma aproximação simplificada, a corrente de entrada se
 relaciona à corrente de fase pela razão cíclica $D$ do chaveamento,
+
 \begin{equation}\label{eq:corrente_bateria}
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
 \end{equation}
+
 Consequentemente, a leitura precisa ser interpretada considerando o ciclo de trabalho vigente. Essa ressalva
 se aplica igualmente a qualquer sensor instalado no ramo de alimentação, como se verá adiante.
 
@@ -233,39 +233,18 @@ Em síntese, as vantagens e desvantagens do arranjo com shunt e INA240 são as s
 \subsection{Sensor de Efeito Hall Linear (ACS758/ACS712)}
 \label{sec:acshall}
 
-Sensores de efeito Hall lineares, como as famílias ACS758 e ACS712, medem a corrente de forma
+Os sensores de efeito Hall lineares, como as famílias ACS758 e ACS712, medem a corrente de forma
 indireta e sem contato elétrico com o circuito de potência. O campo magnético gerado pela corrente,
-ao atravessar um condutor interno ao sensor, é detectado por elementos Hall e convertido em
+ao atravessar um condutor interno ao sensor, é detectado por elementos Hall (elemento hall? explique melhor esse paragarfo) e convertido em
 tensão proporcional. Na variante bidirecional do ACS758, a saída é
+
 \begin{equation}\label{eq:acs_saida}
 V_\mathrm{out} = \frac{V_{CC}}{2} + S\,I,
 \end{equation}
-em que $S$ é a sensibilidade, em V/A, e $V_{CC}/2$ é a tensão de repouso, correspondente a
-corrente nula. A corrente é recuperada por
+em que $S$ é a sensibilidade, em V/A, e $V_{CC}/2$ é a tensão de corrente nula, especificada pelo fabricante. Assim:
 \begin{equation}\label{eq:acs_corrente}
 I = \frac{V_\mathrm{out} - V_{CC}/2}{S}.
 \end{equation}
-
-A sensibilidade é definida pela variante escolhida, que determina também a faixa de medição. Na
-família ACS758 bidirecional, as variantes de ±50 A, ±100 A, ±150 A e ±200 A apresentam, com
-alimentação nominal de 5 V, sensibilidades típicas de 40 mV/A, 20 mV/A, 13,3 mV/A e 10 mV/A,
-respectivamente \cite{allegro}. Como a saída é ratiométrica, tanto a tensão de repouso quanto a
-sensibilidade escalam com a alimentação efetivamente utilizada. Na operação a 3,3 V adotada
-neste trabalho, a variante de ±200 A apresenta sensibilidade efetiva de aproximadamente 6,6 mV/A.
-Em qualquer alimentação, uma faixa maior implica menor sensibilidade e, consequentemente, menor
-resolução para a mesma conversão. A resolução do conjunto é limitada pela conversão
-analógico-digital de $n$ bits e por sua tensão de referência $V_\mathrm{ref}$,
-\begin{equation}\label{eq:acs_resolucao}
-\Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
-\end{equation}
-Com conversor de 12 bits e referência de 3,3 V, a variante de ±200 A resulta, na prática deste
-trabalho, em resolução de cerca de 122 mA. Para correntes de dezenas de ampères, essa resolução é
-suficiente, embora limite a medida de variações pequenas em torno do repouso.
-
-A folha de dados (\emph{datasheet}) especifica tempo de resposta de 4 µs e largura de banda
-interna de 120 kHz \cite{allegro}, valor bem superior à faixa de 8 kHz a 16 kHz de chaveamento
-típica de ESCs sensorless \cite{yge_esc}. Logo, o sensor dispõe de margem para acompanhar as
-variações de corrente impostas pela comutação, sem subamostrá-las.
 
 Esse tipo de sensor já foi empregado em um motor brushless do tipo \emph{hub}, relacionando a
 corrente de fase medida à força de tração, à potência e à eficiência de um veículo elétrico de
@@ -344,6 +323,21 @@ simplicidade de montagem para as correntes e frequências deste sistema. A forma
 uma medição direta do esforço de tração constitui a proposta de instrumentação deste trabalho,
 apresentada na Seção~\ref{sec:proposta}.
 
+Como a saída é ratiométrica, tanto a tensão de repouso quanto a
+sensibilidade escalam com a alimentação efetivamente utilizada. A resolução do conjunto é limitada pela conversão
+analógico-digital de $n$ bits e por sua tensão de referência $V_\mathrm{ref}$,
+\begin{equation}\label{eq:acs_resolucao}
+\Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
+\end{equation}
+Com conversor de 12 bits e referência de 3,3 V, a variante de ±200 A resulta, na prática deste
+trabalho, em resolução de cerca de 122 mA. Para correntes de dezenas de ampères, essa resolução é
+suficiente, embora limite a medida de variações pequenas em torno do repouso.
+
+A folha de dados (\emph{datasheet}) especifica tempo de resposta de 4 µs e largura de banda
+interna de 120 kHz \cite{allegro}, valor bem superior à faixa de 8 kHz a 16 kHz de chaveamento
+típica de ESCs sensorless \cite{yge_esc}. Logo, o sensor dispõe de margem para acompanhar as
+variações de corrente impostas pela comutação, sem subamostrá-las.
+
 \section{Proposta do Projeto}
 \label{sec:proposta}
 
@@ -367,6 +361,15 @@ para o ensino de engenharia \cite{weaver2024imece} quanto em plataformas de aqui
 off-road na mesma escala 1/8 do veículo utilizado neste trabalho \cite{elsermans2025truggy}.
 Nesses casos, contudo, a instrumentação visa a dinâmica de movimento, e não o ensaio de tração
 estacionário com medição simultânea de força e corrente proposto aqui.
+
+O ensaio é conduzido com o veículo acrescido de dois halteres de 1 kg fixados próximo ao centro de
+massa, totalizando 7,14 kg, condição adotada para elevar a aderência disponível entre pneus e
+piso. A massa não entra no equilíbrio estático da medição --- na configuração ancorada, a força
+registrada na balança iguala a tração desenvolvida, independentemente da massa do veículo ---, mas
+define o limite de patinagem: a tração máxima transferida cresce com a carga normal sobre as rodas
+motrizes \cite{wong2008ground}, e a especificação da massa do veículo integra a condição de ensaio
+em procedimentos de \emph{drawbar pull} \cite{creager2017drawbar}. A curva característica obtida é,
+portanto, uma propriedade do conjunto propulsor, referida a essa condição de carregamento.
 
 A combinação das duas medições permite construir a curva característica torque versus corrente
 ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. A
