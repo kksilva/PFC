@@ -73,3 +73,13 @@ a fonte/valor correto.
   carregada e observar o link permanecer estável (latência reportada pelo script).
   Fonte: logs do ensaio de 24/10/2026 (conversa, seção "auditoria do túnel").
 
+- [ ] **6. Cadeia de aquisição: relatos vs. firmware real** — Os relatórios
+  descrevem três cadeias diferentes: Parcial 2 (média de 500 amostras com 2 ms
+  de intervalo = integração de ~1 s); Relatório Experimental (filtro RC de
+  ~24 Hz + média móvel digital de 200 amostras em 100 ms, Nyquist citado em
+  1 kHz); firmware efetivamente gravado no Due (`Sensor_de_Corrente_ACS758.ino`:
+  100 leituras ADC consecutivas ~1 ms + `delay(1000)` = 1 ponto/s). **Cap. 3 deve
+  documentar a cadeia as-built** (100 amostras/ponto, 1 Hz, filtro RC 24 Hz) e
+  o Cap. 4 deve declarar como limitação a subamostragem do regime de patinagem
+  cíclica (ciclos ~2 s > Nyquist de 0,5 Hz) — com proposta de continuidade
+  (aquisição a maior taxa para caracterizar o stick-slip).
