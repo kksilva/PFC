@@ -146,3 +146,11 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
 - Suficiencia da curva plotada: estatica SIM (depende das forcas anotadas 98-117:
   da ganhos, zona morta, saturacao e eta); dinamica NAO — falta apenas o ensaio de
   pulsos a 100 Hz (firmware ja compilado; ~1 tarde).
+- [ ] **9. Raio efetivo da roda (r em T = F*r)** — Nominal (fabricante, pneu
+  novo sem carga): diametro 160 mm -> r_nom = 80 mm (pag. oficial Kyosho 30888,
+  "Tire(F/R) 160 x 100 mm"). Usar o RAIO EFETIVO (de rolamento), menor que o
+  geometrico por deformacao do pneu sob carga (tip. 2-5 %): medir por roll-out —
+  marcar pneu e chao, rolar o carro em linha reta SEM patinar por 10 voltas,
+  medir L, r_ef = L/(10*2*pi), 3 repeticoes, com os halteres (mesma carga normal
+  do ensaio). Reportar os tres valores (nominal, carregado, efetivo) no Cap. 3;
+  incerteza do roll-out < 0,5 %.
