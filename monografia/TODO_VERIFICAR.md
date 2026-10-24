@@ -53,3 +53,20 @@ a fonte/valor correto.
 - [ ] ≥3 séries (subida + descida) para repetibilidade/histerese
 - [ ] Anotar força da balança nos últimos 3 s de cada degrau (janela 7–10 s)
 
+## Registro do problema de rede caindo em degraus altos (ensaio 24/10)
+
+- [ ] **5. Causa das quedas do túnel ssh / Pi inalcançável em degraus 105–107** —
+  Sintomas: `Connection to 10.42.0.1 port 22 timed out`, soquete mestre quebrado,
+  "sem confirmacao" em 3 tentativas, com o carro rodando. Hipótese inicial: EMI/queda
+  de tensão no pico de corrente (bateria LiPo nova entregando mais corrente). **Causa
+  principal descoberta posteriormente: a bateria dedicada do Raspberry Pi estava
+  descarregada** — o Pi sofria brown-out e a rede (WiFi e Ethernet) sumia até ele voltar
+  (ou não voltava). A correlação com degraus altos foi coincidência acumulada, não
+  causa. **Para o relatório (Cap. 3 Metodologia / Cap. 4 Dificuldades):** registrar como
+  fonte de falha da telemetria — autonomia da bateria do computador de bordo; medida
+  corretiva: verificar/caregar a bateria do Pi no checklist pré-ensaio + script `rodar_
+  ensaio_cego.py` (dispara sem rede e ancora a janela na resposta elétrica da corrente).
+  **Condição para confirmar a causa:** refazer um degrau alto com a bateria do Pi
+  carregada e observar o link permanecer estável (latência reportada pelo script).
+  Fonte: logs do ensaio de 24/10/2026 (conversa, seção "auditoria do túnel").
+
