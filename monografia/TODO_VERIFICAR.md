@@ -164,3 +164,14 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   medir L, r_ef = L/(10*2*pi), 3 repeticoes, com os halteres (mesma carga normal
   do ensaio). Reportar os tres valores (nominal, carregado, efetivo) no Cap. 3;
   incerteza do roll-out < 0,5 %.
+- [ ] **10. Ensaio em vazio com SS41F** — Registrar no relatorio (Cap. 3
+  metodologia/limitacoes ou Cap. 5 propostas) que o sensor magnetico SS41F
+  (alternativa ja discutida na sec. 2.2.2) viabilizaria o ENSAIO EM VAZIO:
+  anel magnetizado no eixo/roda + SS41F mediriam a rotacao com o veiculo
+  suspenso/ancorado-sem-carga, permitindo medir Kv real do motor
+  (n = Kv * E), a corrente de vazio I0, a curva rpm x throttle e a dinamica
+  u -> omega (identificacao do motor livre, sem carga de tracao). PESQUISAR
+  DEPOIS: metodologia de medicao de Kv com ESC no caminho (estimativa da
+  tensao efetiva via razao ciclica), incertezas, e o que a dinamica u->omega
+  em vazio agregaria ao modelo (comparacao com a dinamica sob carga, estimativa
+  de J e B da Eq. dinamica rotacional).
