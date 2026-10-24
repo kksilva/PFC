@@ -45,7 +45,11 @@ a fonte/valor correto.
   antigos têm 4 colunas e não combinam com o novo formato (5 colunas + série/marcador)
 - [ ] Ajustar `ANGULO_INICIAL`/`ANGULO_FINAL`: subida 95→~125°, descida 125→95°
   (força não saturou em 115°; platô esperado ~120–125°)
-- [ ] Bateria LiPo 2S saudável, carregada; verificar tensão por célula antes
+- [ ] **Bateria LiPo 2S: MEDIR a tensão em repouso antes de cada série** —
+  <= 7,0 V (2S) = descarregada: o LVC do ESC bloqueia o motor e o sintoma
+  e' indistinguível de falha de rede/throttle (pico < 0,3 A, 'sem resposta'
+  em todos os degraus — episodio 24/10 ~15:44). Cheia = 8,4 V, meia carga
+  ~7,7-7,8 V. Recarregar em modo balance (2S). (Antigo item: verificar tensão por célula antes
 - [ ] Halteres 1 kg ×2 fixados sobre o CG (fita/velcro), massa total anotada (~7,1 kg)
 - [ ] **Tara da balança a cada degrau** — registrar a leitura de repouso (ex.:
   0,202 kg) ANTES de tarar, depois zerar e anotar a força. O conjunto
