@@ -112,3 +112,37 @@ a fonte/valor correto.
   (4) ajuste FOPDT (Ljung 1999), PI com ganho programado pela curva estatica,
   anti-windup e rate-limit da referencia (ligar com a "protecao" da sec. 2.2.1);
   validar PSR/PRP em simulacao e, se possivel, malha fechada real com o Pi.
+
+## VALORES FECHADOS para o modelo teorico (24/10, pos-auditoria)
+
+Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = max;
+1 unidade = faixa inteira do ESC, coerente com o PWM 1-2 ms da sec. 2.2.1).
+
+- Regiao de identificacao: angulo 100-110 graus. Embasamento: regressao linear da
+  fase de aderencia sobre ensaio_cego_subida.csv da I(angulo): r2 = 0,970, residuos
+  <= +-/10% (tipico 3-5%). Abaixo de 100: curvatura de partida (transiente de
+  engate); de 110 em diante: stick-slip (nao-linear, fora do modelo linear).
+- Ponto nominal: angulo0 = 105 graus (centro da faixa), u0 = 0,118, I0 = 12,2 A
+  (medido). Modelo em desvios: I_til = I - 12,2; u_til = u - 0,118.
+- Ganho estatico: K = 120 A/u (= 1,42 A/grau, regressao 100-110). Confirmar com o
+  ensaio dinamico (pulsos).
+- Dinamica (PENDENTE - ensaio 100 Hz): FOPDT G1(s) = K exp(-theta_a s)/(tau s + 1);
+  priors a confirmar: theta_a em [0,02; 0,1] s, tau em [0,05; 0,3] s (resposta
+  tipica de ESC + constante eletrica L/R). Protocolo: pulsos de 2 s, neutro 1 s,
+  amplitudes {100,102,104,105,106,108,110} em ordem embaralhada, >= 3 repeticoes;
+  2 s = 6-40 tau (garante regime); 100 Hz = 14x a banda do transitorio mais rapido
+  (subida ~50 ms -> 7 Hz), atende 10-30x (Astrom/Franklin).
+- Nao linearidades (do proprio dado estatico): zona morta u <= ~0,03 (angulo <= 97,
+  I ~ 0); saturacao de aderencia a partir de angulo ~110 -> u_sat ~ 0,18; T_max =
+  F_max * r (F_max = maior forca anotada nos picos de 115-116; I associada 29-33 A).
+- Rendimento: eta = F*r/(i*Kt*I) ponto a ponto (Kt = 4,55 mN m/A do 2100 KV,
+  i = 11,5) — fecha a validacao teorica; esperado 0,8-0,9.
+- Controlador (teorico, simulacao): PI-IMC com Kp = tau/(K(lambda+theta_a)),
+  Ti = tau, lambda = 0,2 s (=> ts ~ 0,6 s; coerente com a protecao da transmissao,
+  sec. 2.2.1); Ts = 10 ms; anti-windup por clamp + rate-limit |du/dt| <= 1 u/s.
+- Validacao em simulacao: PSR (degrau): Mp <= 10 %, ts ~ 0,6 s, ess = 0;
+  PRP (degrau de perturbacao +20 % na planta, t = 5 s): desvio max e recuperacao;
+  robustez: GM >= 6 dB, PM >= 30 graus com K +-/20 %, tau +-/30 %.
+- Suficiencia da curva plotada: estatica SIM (depende das forcas anotadas 98-117:
+  da ganhos, zona morta, saturacao e eta); dinamica NAO — falta apenas o ensaio de
+  pulsos a 100 Hz (firmware ja compilado; ~1 tarde).
