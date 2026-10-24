@@ -132,6 +132,16 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   amplitudes {100,102,104,105,106,108,110} em ordem embaralhada, >= 3 repeticoes;
   2 s = 6-40 tau (garante regime); 100 Hz = 14x a banda do transitorio mais rapido
   (subida ~50 ms -> 7 Hz), atende 10-30x (Astrom/Franklin).
+  PROTOCOLO REVISADO (24/10, pos-questionamento da autora): em vez de pulsos
+  separados, REFAZER A ESCADA 100-110 com os MESMOS degraus de 15 s, so que a
+  100 Hz: cada borda de subida e uma resposta ao degrau (identifica zona morta +
+  FOPDT, estrutura Hammerstein) e cada plato (media dos ultimos 5 s) e o ponto
+  estatico com a forca da balanca. ACRESCENTAR pulsos curtos de +/-2-3 graus em
+  torno de 105 (ex.: 105->108->105, 105->102->105, >= 3 repeticoes, 1-2 s) para o
+  modelo LINEAR em desvios usado no projeto do PI. Racionalidade: ponto fixo
+  precisa de >= 5-10 tau (0,5-3 s); alem de ~10 tau a duracao extra nao agrega
+  dinamica, so repeticoes agregam estatistica; K pode vir da curva estatica se o
+  pulso for mais curto que o assentamento.
 - Nao linearidades (do proprio dado estatico): zona morta u <= ~0,03 (angulo <= 97,
   I ~ 0); saturacao de aderencia a partir de angulo ~110 -> u_sat ~ 0,18; T_max =
   F_max * r (F_max = maior forca anotada nos picos de 115-116; I associada 29-33 A).
