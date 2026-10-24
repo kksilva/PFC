@@ -26,7 +26,9 @@ ANGULO_INICIAL = 98
 ANGULO_FINAL = 114
 DIRECAO = "descida"            # "subida" | "descida"
 NOME_CSV = "ensaio_cego_descida.csv"
-LIMIAR_RESPOSTA_A = 0.8       # |I| acima disso = throttle respondeu
+LIMIAR_RESPOSTA_A = 0.3       # I acima disso = throttle respondeu (96-98 da
+                              # ~0,5-1,5 A; ruído de repouso e +/-0,15 A)
+LIMIAR_REPOUSO_A = 0.5        # |I| abaixo disso = repouso entre degraus
 TENTATIVAS_CEGAS = 8          # disparos por degrau (cobre reboot ~60 s do Pi)
 ESPERA_RESPOSTA_S = 10        # janela para a corrente responder apos cada disparo
 PAUSA_ENTRE_DEGRAUS_S = 5
@@ -42,7 +44,7 @@ def aguardar_repouso(ser, timeout_s=20):
     fim = time.time() + timeout_s
     while time.time() < fim:
         i = le_corrente(ser)
-        if i is not None and abs(i) < LIMIAR_RESPOSTA_A:
+        if i is not None and abs(i) < LIMIAR_REPOUSO_A:
             return True
     return False
 
