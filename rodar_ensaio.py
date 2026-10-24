@@ -16,6 +16,7 @@ import os
 import select
 import subprocess
 import sys
+import threading
 import time
 from collections import deque
 from contextlib import contextmanager
@@ -202,6 +203,30 @@ def garantir_neutro():
                     "neutro sozinho ao fim do degrau")
 
 
+@contextmanager
+def rede_acordada():
+    """Pinga o Pi a cada 2 s em segundo plano durante o ensaio.
+
+    Sem trafego, o WiFi do notebook (Power Management: on) cochila entre
+    os disparos esparsos e o proximo ssh dispara com o adaptador dormindo
+    — sintoma: 'sem resposta' seguido de comando manual que funciona.
+    """
+    parar = threading.Event()
+
+    def loop():
+        while not parar.is_set():
+            subprocess.run(["ping", "-c", "1", "-W", "2", PI],
+                           capture_output=True)
+            parar.wait(2)
+
+    fio = threading.Thread(target=loop, daemon=True)
+    fio.start()
+    try:
+        yield
+    finally:
+        parar.set()
+
+
 # ---------------------------------------------------------------- nucleo do ensaio
 def resumo_degrau(angulo, leituras):
     """Reporta a media da janela, a fase de aderencia e a patinagem.
@@ -212,6 +237,10 @@ def resumo_degrau(angulo, leituras):
     sem sentido: usa-se a fase de aderencia (pontos >= 60% do pico)."""
     dur = max((t for t, _ in leituras), default=DURACAO_S)
     pico = max((i for t, i in leituras if 1 <= t <= dur - 1), default=float("nan"))
+    if pico < 1.0:
+        log.warning(">> DEGRAU %d: sinal fraco (pico %.2f A < 1 A) — throttle "
+                    "provavelmente NAO rodou; descarte este degrau", angulo, pico)
+        return
     t_patinagem = None
     for k, (t, i) in enumerate(leituras):
         if t < 2 or t > dur - 2:

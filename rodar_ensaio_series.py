@@ -28,12 +28,12 @@ from serial import Serial
 
 from rodar_ensaio import (BAUD, LOCK_PATH, MM_SEGUNDOS, PORTA_SERIAL,
                           extrair_corrente, instancia_unica, log, media,
-                          resumo_degrau)
+                          rede_acordada, resumo_degrau)
 from rodar_ensaio_cego import LIMIAR_RESPOSTA_A
 
 # ---------------------------------------------------------------- config
 REPETICOES = 3
-ANGULO_MIN = 95
+ANGULO_MIN = 97
 ANGULO_MAX = 117
 DURACAO_S = 15               # throttle por degrau (o exemplo usava 3: ajuste aqui)
 EXTRAS_S = 4                 # cobre o neutro de armamento do ESC antes do throttle
@@ -143,7 +143,7 @@ def main(repeticoes=REPETICOES, nome_csv=NOME_CSV):
     log.info("Plano: %d ciclos | %d degraus | ~%.0f min", repeticoes, n,
              n * (DURACAO_S + EXTRAS_S + PAUSA_S + 1) / 60)
 
-    with instancia_unica(LOCK_PATH):
+    with instancia_unica(LOCK_PATH), rede_acordada():
         with Serial(PORTA_SERIAL, BAUD, timeout=3) as ser:
             time.sleep(2)
             ser.reset_input_buffer()

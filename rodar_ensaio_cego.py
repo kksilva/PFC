@@ -19,7 +19,7 @@ from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
                           LOCK_PATH, MM_SEGUNDOS, NEUTRO_GRAUS, PORTA_SERIAL,
                           enviar_comando, extrair_corrente, garantir_neutro,
                           instancia_unica, limpar_pi, log, media,
-                          medir_latencia, resumo_degrau)
+                          medir_latencia, rede_acordada, resumo_degrau)
 
 # ---------------------------------------------------------------- config
 ANGULO_INICIAL = 98
@@ -142,7 +142,7 @@ def main(direcao=DIRECAO, nome_csv=NOME_CSV,
         escada = range(angulo_inicial, angulo_final + 1)
 
     os.chdir(os.path.dirname(os.path.abspath(__file__)))
-    with instancia_unica(LOCK_PATH):
+    with instancia_unica(LOCK_PATH), rede_acordada():
         with Serial(PORTA_SERIAL, BAUD, timeout=3) as ser:
             time.sleep(2)
             ser.reset_input_buffer()
