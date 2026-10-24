@@ -17,6 +17,7 @@ from serial import Serial
 
 from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
                           JANELA_MM, LOCK_PATH, NEUTRO_GRAUS, PORTA_SERIAL,
+                          PRINT_A_CADA,
                           enviar_comando, extrair_corrente, garantir_neutro,
                           instancia_unica, limpar_pi, log, media,
                           medir_latencia, resumo_degrau)
@@ -86,16 +87,19 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
     print(f"  t=0.0s | I={primeira:.2f} A", flush=True)
 
     fim = t0 + DURACAO_S
+    n_leitura = 0
     while time.time() < fim:
         i = le_corrente(ser)
         if i is None:
             continue
         mm.append(i)
+        n_leitura += 1
         t = time.time() - t0
         csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}", f"{t:.1f}",
                              angulo, f"{i:.2f}"])
         leituras.append((t, i))
-        print(f"  t={t:.1f}s | I={i:.2f} A | MM={media(mm):.2f} A", flush=True)
+        if n_leitura % PRINT_A_CADA == 0:
+            print(f"  t={t:.1f}s | I={i:.2f} A | MM={media(mm):.2f} A", flush=True)
 
     garantir_neutro() if medir_latencia() is not None else enviar_comando(NEUTRO_GRAUS, 2)
     resumo_degrau(angulo, leituras)

@@ -30,6 +30,8 @@ NOME_CSV = "ensaio_teste.csv"
 RETENTATIVAS = 3              # tentativas de confirmacao do Pi antes de pular o degrau
 INICIO_JANELA_S = 7           # t_degrau a partir do qual o regime e valido (media final)
 JANELA_MM = 10                # leituras da media movel exibida ao lado de cada I
+PRINT_A_CADA = 10             # no terminal, imprime 1 a cada N leituras
+                              # (CSV sempre grava tudo; 10 => 100 Hz vira 1 print/s)
 LIMIAR_PATINAGEM = 0.3        # corrente < 30% do pico apos t>=2 s => patinagem
 ESPERA_PI_S = 90              # tempo maximo aguardando o Pi voltar (ex.: apos reboot)
 
@@ -239,18 +241,21 @@ def rodar_degrau(ser, csv_writer, angulo, t_ensaio0):
     ser.reset_input_buffer()   # so le o que for deste degrau
     leituras = []              # (t_degrau, corrente) para o resumo final
     mm = deque(maxlen=JANELA_MM)
+    n_leitura = 0
     fim = t0 + DURACAO_S
     while time.time() < fim:
         corrente = extrair_corrente(ser.readline().decode(errors="replace"))
         if corrente is None:
             continue
         mm.append(corrente)
+        n_leitura += 1
         t_degrau = time.time() - t0
         csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}", f"{t_degrau:.1f}",
                              angulo, f"{corrente:.2f}"])
         leituras.append((t_degrau, corrente))
-        print(f"  t={t_degrau:.1f}s | I={corrente:.2f} A | MM={media(mm):.2f} A",
-              flush=True)
+        if n_leitura % PRINT_A_CADA == 0:
+            print(f"  t={t_degrau:.1f}s | I={corrente:.2f} A | MM={media(mm):.2f} A",
+                  flush=True)
 
     try:
         proc.wait(timeout=30)
