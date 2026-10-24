@@ -47,9 +47,14 @@ def aguardar_repouso(ser, timeout_s=20):
     return False
 
 
-def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
+def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0, gravar_por_segundo=False):
     """Dispara (fogo-e-esqueca) ate a corrente responder; mede a janela a
-    partir da resposta. Retorna True se o degrau foi executado."""
+    partir da resposta. Retorna True se o degrau foi executado.
+
+    gravar_por_segundo=False: CSV recebe TODA leitura (~100 Hz).
+    gravar_por_segundo=True : CSV recebe so a media de cada segundo
+                              (15 pontos por degrau; a aquisicao continua
+                              a 100 Hz e o resumo usa todas as leituras)."""
     ser.reset_input_buffer()
     t0 = primeira = None
     probar = True                # so sonda a rede ate ela falhar; depois dispara direto
@@ -82,8 +87,9 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
     log.info(">> DEGRAU %d: resposta em %.1f s (I=%.2f A); medindo %d s",
              angulo, t0 - t_ensaio0, primeira, DURACAO_S)
     leituras = [(0.0, primeira)]
-    csv_writer.writerow([f"{t0 - t_ensaio0:.1f}", "0.0", angulo,
-                         f"{primeira:.2f}"])
+    if not gravar_por_segundo:
+        csv_writer.writerow([f"{t0 - t_ensaio0:.1f}", "0.0", angulo,
+                             f"{primeira:.2f}"])
     print(f"  t=0s | I={primeira:.2f} A (resposta)", flush=True)
 
     fim = t0 + DURACAO_S
@@ -94,8 +100,9 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
         if i is None:
             continue
         t = time.time() - t0
-        csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}", f"{t:.1f}",
-                             angulo, f"{i:.2f}"])
+        if not gravar_por_segundo:
+            csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}", f"{t:.1f}",
+                                 angulo, f"{i:.2f}"])
         leituras.append((t, i))
         soma_seg += i
         n_seg += 1
@@ -103,12 +110,20 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0):
         if seg > seg_ant:
             m_seg = soma_seg / n_seg
             mm_seg.append(m_seg)
+            if gravar_por_segundo:
+                csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}",
+                                     f"{float(seg_ant):.1f}", angulo,
+                                     f"{m_seg:.2f}"])
             print(f"  t={seg_ant}s | I={m_seg:.2f} A | MM={media(mm_seg):.2f} A",
                   flush=True)
             seg_ant, soma_seg, n_seg = seg, 0.0, 0
     if n_seg:
         m_seg = soma_seg / n_seg
         mm_seg.append(m_seg)
+        if gravar_por_segundo:
+            csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}",
+                                 f"{float(seg_ant):.1f}", angulo,
+                                 f"{m_seg:.2f}"])
         print(f"  t={seg_ant}s | I={m_seg:.2f} A | MM={media(mm_seg):.2f} A",
               flush=True)
 

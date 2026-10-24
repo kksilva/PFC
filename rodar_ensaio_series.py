@@ -8,6 +8,11 @@ O angulo 95 (neutro) e' gravado como linha de base, sem exigir resposta
 na corrente — o neutro nao produz corrente, e exigir resposta so' geraria
 retentativas em vao.
 
+A aquisicao roda na frequencia do firmware (~100 Hz), mas o CSV recebe
+apenas 1 ponto por segundo (a media daquele segundo) — 15 pontos por
+degrau, mesmo formato dos dados antigos de 1 Hz. O resumo (patinagem,
+media pre-patinagem, fase de aderencia) continua usando todas as leituras.
+
 CSV: mesmas 4 colunas dos demais ensaios (a direcao, subida ou descida,
 e' inferida na analise pela ordem dos angulos). Modo append: interrompeu,
 recarregou a bateria e rodou de novo — os dados se acumulam como series
@@ -35,22 +40,29 @@ PAUSA_S = 3                    # folga minima entre degraus (bateria/ESC)
 
 
 def medir_baseline(ser, csv_writer, angulo, t_ensaio0):
-    """Neutro (95): grava a linha de base sem exigir resposta na corrente."""
+    """Neutro (95): grava a linha de base, 1 ponto/s (media do segundo)."""
     log.info(">> DEGRAU %d (neutro): gravando linha de base", angulo)
     enviar_comando(angulo, DURACAO_S)
-    fim = time.time() + DURACAO_S
-    soma, n, seg_ant = 0.0, 0, 0
+    t_ini = time.time()
+    fim = t_ini + DURACAO_S
+    seg_ant, soma_seg, n_seg = 0, 0.0, 0
     while time.time() < fim:
         i = le_corrente(ser)
         if i is None:
             continue
+        soma_seg += i
+        n_seg += 1
+        seg = int(time.time() - t_ini)
+        if seg > seg_ant:
+            csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}",
+                                 f"{float(seg_ant):.1f}", angulo,
+                                 f"{soma_seg / n_seg:.2f}"])
+            seg_ant, soma_seg, n_seg = seg, 0.0, 0
+    if n_seg:
         csv_writer.writerow([f"{time.time() - t_ensaio0:.1f}",
-                             f"{time.time() - t_ensaio0:.1f}",
-                             angulo, f"{i:.2f}"])
-        soma += i
-        n += 1
-    if n:
-        log.info(">> baseline %d: media %.2f A (n=%d)", angulo, soma / n, n)
+                             f"{float(seg_ant):.1f}", angulo,
+                             f"{soma_seg / n_seg:.2f}"])
+    log.info(">> baseline %d gravado (15 pontos/s)", angulo)
 
 
 def main(repeticoes=REPETICOES, nome_csv=NOME_CSV):
@@ -85,7 +97,9 @@ def main(repeticoes=REPETICOES, nome_csv=NOME_CSV):
                         if angulo <= 95:
                             medir_baseline(ser, csv_writer, angulo, t_ensaio0)
                         else:
-                            disparar_e_medir(ser, csv_writer, angulo, t_ensaio0)
+                            disparar_e_medir(ser, csv_writer, angulo,
+                                             t_ensaio0,
+                                             gravar_por_segundo=True)
                         time.sleep(PAUSA_S)
                 except KeyboardInterrupt:
                     log.warning("Interrompido; enviando neutro e fechando CSV.")
