@@ -4,7 +4,7 @@
 Este capítulo apresenta o sistema de propulsão do automodelo utilizado como objeto de estudo
 e discute as abordagens de instrumentação consideradas para a caracterização de sua dinâmica.
 Para cada abordagem, são apresentados o princípio de funcionamento, a proposta de controle em
-malha fechada, as vantagens e as limitações, de modo a fundamentar a escolha da instrumentação.
+malha fechada, as vantagens e as limitações, de modo a fundamentar as decisões do projeto.
 
 \section{O Automodelo e seu Sistema de Propulsão}
 \label{sec:automodelo}
@@ -14,15 +14,15 @@ constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- rotações por minuto
 em condições próximas à operação sem carga mecânica significativa.
 Esse motor é constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
 enrolamentos de fio de cobre, e por um rotor, componente móvel com ímãs permanentes fixados na
-carcaça. Nele, os ímãs produzem seu próprio campo magnético em razão das propriedades do
-material; naquele, a passagem de corrente elétrica pelos enrolamentos gera um campo
-magnético. A interação entre esses campos gera forças eletromagnéticas que produzem
+carcaça. No rotor, os ímãs permanentes produzem campo magnético próprio em razão das
+propriedades do material; no estator, a corrente elétrica que percorre os enrolamentos gera um
+campo eletromagnético. A interação entre esses dois campos produz
 o torque responsável pela rotação do eixo.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.8\textwidth]{DescricaoProcesso/Figuras/motor_brushless.png}
-\caption{Princípio de funcionamento de um motor brushless --- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
+\caption{Partes de um motor brushless --- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
 \label{fig:motorbrushless}
 \footnotesize{Fonte: (a definir)}
 \end{figure}
