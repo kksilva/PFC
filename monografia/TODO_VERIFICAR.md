@@ -185,10 +185,30 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   tensao efetiva via razao ciclica), incertezas, e o que a dinamica u->omega
   em vazio agregaria ao modelo (comparacao com a dinamica sob carga, estimativa
   de J e B da Eq. dinamica rotacional).
-- [x] **11. Consolidacao dos dados de ensaio (24/10)** — `ensaios/consolidar_
-  dados.py` gera `ensaio_consolidado.csv`: 58 execucoes VALIDADAS (subida
-  98-120 com 1-2 repeticoes; descida 113-120 com 114 5x; histerese completa
-  na faixa alta). Regras: pico>60 A = CORROMPIDO (era serial 115200);
-  degrau>100 com pico<3 A ou degrau>=99 com pico<1 A = SINAL_FRACO; dur<10 s
-  = CURTO. **Cap 4 deve usar apenas o consolidado.** Lacunas declaradas:
-  descida 101-112, dinamica (FOPDT por priors + robustez ate nova sessao).
+- [x] **11. Consolidacao dos dados de ensaio (24/10, corrigido 25/10)** — `ensaios/consolidar_
+  dados.py` gera `ensaio_consolidado.csv`: **54 execucoes VALIDADAS** (subida
+  98-119 com 1-2 repeticoes; descida 113-120 com 114 5x). **Correcao 25/10 (commit
+  `131dc79`):** o script rotulava a primeira execucao de cada arquivo como "subida";
+  o degrau 120 do arquivo `ensaio_cego_descida.csv` (primeiro bloco) estava gravado
+  como "subida 120" — corrigido para inferir o sentido pelo nome do arquivo.
+  **Cobertura real apos correcao:** subida 98-119, descida 113-120; degraus comuns
+  aos dois sentidos = 113-119 (histerese so verificavel nessa faixa; subida nunca
+  chegou a 120 e a descida nunca passou de 113 ate a queda da rede). Regras de
+  validacao: pico>60 A = CORROMPIDO (era serial 115200); degrau>100 com pico<3 A
+  ou degrau>=99 com pico<1 A = SINAL_FRACO; dur<10 s = CURTO. **Cap 4 deve usar
+  apenas o consolidado.** Lacunas declaradas: descida 98-112, dinamica (FOPDT
+  por priors + robustez ate nova sessao).
+- [ ] **12. Analise F x I — constancia da forca por ampere (para o Cap. 4)** —
+  Quando as forcas da balanca forem transcritas (planilha degrau x forca,
+  subida/descida), parear cada forca com `aderencia_a` (corrente da FASE DE
+  ADERENCIA do consolidado), **nunca** com `plato_a` (inclui patinagem). Verificar
+  e reportar no Cap. 4: (a) **regiao 100-110°:** F/I aproximadamente constante
+  ponto a ponto = validacao do Kt efetivo (resultado forte, destacar); (b)
+  **acima de ~110°:** queda de F/I = entrada na patinagem (forca limitada por
+  mu*N, corrente excedente so acelera a roda) — marcar a transicao explicitamente;
+  (c) **degraus baixos (<100°):** F/I menor, atribuir a I0(u) (fracao sem torque
+  pesa mais em corrente baixa — T = Kt*(I - I0), I0 medido 0,7-2,9 A no ensaio
+  em vazio) e a comutacao imperfeita do ESC sensorless em baixo duty; (d) nenhum
+  degrau acima de 113° tem os dois sentidos — nao reivindicar histerese na faixa
+  alta. Cuidado com forca anotada como PICO: overshoot de stick-slip infla a
+  leitura nos degraus altos.
