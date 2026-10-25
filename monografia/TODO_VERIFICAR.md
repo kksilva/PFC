@@ -14,13 +14,13 @@ a fonte/valor correto.
   contínua máxima ≈ 312 A (60 × 5,2 Ah), acima do limite de 120 A do ESC — portanto o ESC é
   o fator limitante, não a bateria. Já incluído em `DescricaoProcesso.tex`, Seção 2.1.
 
-- [ ] **3. Fonte da Figura do motor (Cap. 2)** — A figura `motor_explode.jpeg`
-  (corte esquemático, rótulos em inglês) substituiu a anterior em 24/10. A
-  procedência ainda é desconhecida ("a definir") — avaliar licença/permissão
-  ou substituir por diagrama próprio (TikZ), já que a legenda trata o desenho
-  como genérico (não mostra a topologia inrunner específica do motor do
-  automodelo). O arquivo antigo `motor_brushless.png` (Gator Lamination)
-  ficou sem uso na pasta de figuras.
+- [ ] **3. Licença da Figura do motor (Cap. 2)** — Fonte identificada em
+  24/10: DIGI Electronics, blog "Stator vs Rotor: Construction, Functions
+  and Maintenance" (s.d.), ja na legenda com URL. **Pendência:** imagem de
+  blog comercial de terceiro, sem licença explícita de uso — avaliar permissão
+  antes da entrega ou substituir por diagrama próprio (TikZ), ja que a legenda
+  trata o desenho como genérico. O arquivo antigo `motor_brushless.png`
+  (Gator Lamination) ficou sem uso na pasta de figuras.
 
 ## Registro do problema de degraus sobrepostos (ensaio)
 
