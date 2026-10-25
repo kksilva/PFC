@@ -100,10 +100,17 @@ def main():
         execs = separar_execs(rows)
         print(f"\n## {nome}: {len(rows)} linhas (~{taxa:.0f}/s), "
               f"{len(execs)} execucoes")
-        sentido = "subida"
+        fixo = None
+        if "descida" in nome:
+            fixo = "descida"
+        elif "subida" in nome:
+            fixo = "subida"
+        sentido = fixo or "subida"
         ult_a = None
         for e in execs:
-            if ult_a is not None:
+            if fixo:
+                sentido = fixo
+            elif ult_a is not None:
                 sentido = "subida" if e["ang"] > ult_a else "descida"
             ult_a = e["ang"]
             avaliar(e, taxa > 10)
