@@ -212,6 +212,55 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   degrau acima de 113° tem os dois sentidos — nao reivindicar histerese na faixa
   alta. Cuidado com forca anotada como PICO: overshoot de stick-slip infla a
   leitura nos degraus altos.
+  **EXECUTADO 26/10** (planilha `ensaios/pfc kaka.xlsx`: 4 repeticoes subida
+  98-117 + 4 descida 99-117, forca em kgf): modelo validado —
+  F = eta*Kt*i*(I - I0(u))/(u*r_ef), com I0(u) = 0,54 + 9,36*u (r2 = 0,97, do
+  ensaio em vazio; valida D = u). Regressao sem intercepto de y = F*r*u/(Kt*i)
+  vs x = (I - I0): **DESCIDA eta = 0,579, r2 = 0,962 (n=56, 100-113°);
+  SUBIDA eta = 0,596, r2 = 0,784 (n=44, 100-110°)** — ver item 14 para a
+  interpretacao do ruido da subida. Kt_efetivo = 2,5-2,7 mN.m/A = 4,55*eta
+  (coerente, NAO valida o 2100 KV sozinho — falta rotacao, item 10). F max =
+  5,32 kgf (52 N) em 114° descida; F satura em ~3,2-3,3 kgf na subida 105-110°
+  (adesao com pneu frio). Eta > 1 acima de 114° confirma D!=u na saturacao —
+  validacao limitada a <=113°. Laco subida x descida (+7 a +45% em 104-115°) =
+  histerese aparente por memoria termica do pneu (NAO histerese do powertrain);
+  pontos 116-117 da descida contaminados pelo corte do ESC (item 13).
+- [ ] **14. Interpretacao do ruido da subida (stick-slip)** — O r2 menor da
+  subida (0,78 vs 0,96 da descida) NAO e falha do modelo: e a assinatura do
+  stick-slip na fase de adesao com pneu frio. Mecanismo: o pneu sem aquecimento
+  tem aderencia marginal no limite, entao a roda alterna travamento (corrente
+  sobe, torque acumula na transmissao como mola) e deslizamento (forca
+  contra-eletromotriz sobe, corrente cai); a energia elastica acumulada e
+  liberada a cada ciclo oscila a balanca e bagunca a media de corrente da
+  janela. Consequencia nos dados: a FORCA fica presa no limite de aderencia
+  (pouco ruido) enquanto a CORRENTE oscila (muito ruido) — pontos com mesma F
+  e I diferentes derrubam o r2 da regressao F x I. Na descida o pneu esta
+  aquecido da subida inteira (mu do borracha sobe com a temperatura), a roda
+  trava de forma sustentada e os pontos alinham. Texto ja acordado para o
+  Cap. 4: validar o modelo pela descida (r2 = 0,96) e apresentar a subida como
+  evidencia do regime de stick-slip, nao como contraexemplo.
+- [ ] **15. Planejamento da identificacao dinamica (FOPDT) — o que falta** —
+  **Ja temos (estatico, SUFICIENTE para o TCC):** zona morta, I0(u), K = 120
+  A/u, saturacao u_sat ~ 0,18, eta = 0,58-0,60, ponto nominal (105°, I0 = 12,2
+  A), r_ef = 0,0751 m, i = 11,5, specs do controlador. Com isso ja e possivel
+  montar o modelo estatico completo (Hammerstein), projetar o PI-IMC por
+  PRIORS (theta_a em [0,02; 0,1] s, tau em [0,05; 0,3] s) e validar em
+  simulacao com cenarios de robustez (K +/-20%, tau +/-30%) — "erro em degrau"
+  (Mp, ts, ess) e PRP sao avaliados NESTA simulacao.
+  **Falta para fechar a dinamica MEDIDA:** os parametros theta_a (atraso) e tau
+  (constante de tempo) de G1(s) = K*exp(-theta_a*s)/(tau*s+1), de u ate I. O
+  dado a 1 Hz NAO contem dinamica util: a resposta do ESC+eletromagnetico
+  (~50-100 ms) fica abaixo do periodo de amostragem (1 s), sobrando apenas o
+  valor de regime. Falta portanto: (1) ensaio a ~100 Hz (firmware fast JA
+  gravado no Due, 250000 baud) refazendo a escada 100-110° com os MESMOS
+  degraus de 15 s — cada borda de subida e uma resposta ao degrau; ACRESCENTAR
+  pulsos curtos de +/-2-3° em torno de 105° (1-2 s, >=3 repeticoes) para o
+  modelo linear em desvios; (2) ajustar FOPDT aos dados (minimos quadrados ou
+  metodo da area); (3) refazer o PI-IMC com theta/tau medidos e comparar com
+  o projeto por priors. Estimativa: 1 tarde. **Opcional (continuidade):** malha
+  fechada real de corrente no Raspberry (PI + leitura do ACS758), ja que a
+  forca nao e mensuravel online (balanca so tem display) — para o TCC basta a
+  simulacao.
 - [ ] **13. Comportamento "engasga e volta" nos degraus >118° (relato da autora, 25/10)** —
   Observado em bancada: acima de ~118° o carrinho acelera por um tempo, **corta
   (engasga), para e acelera de novo**, ciclicamente. Suspeita principal: **corte de
