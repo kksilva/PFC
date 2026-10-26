@@ -147,16 +147,6 @@ de conversão. A amostragem propriamente dita, com seus dois regimes, é descrit
 \section{Aquisição e Registro de Dados}
 \label{sec:cadeia}
 
-\subsection{Amostragem da corrente}
-\label{sec:amostragem}
-
-Dois firmwares foram empregados na aquisição. O firmware básico realiza cem leituras do ADC em
-sequência, em cerca de $1$ ms, e emite um ponto por segundo; ele apoia o ensaio com forças
-anotadas. O firmware rápido amostra com período de $10$ ms, a aproximadamente $100$ Hz, e
-registra a corrente ao longo de todo o degrau; ele viabiliza a identificação da dinâmica entre
-o comando e a corrente. A escolha das taxas segue as regras clássicas de amostragem, de dez a
-trinta vezes a banda do fenômeno de interesse.
-
 \subsection{Verificação em bancada}
 \label{sec:bancada}
 
@@ -166,24 +156,29 @@ linear em toda a faixa, com regressão $y = 1{,}0742\,x$ entre os valores do mul
 os do sistema ($y$). Os desvios sistemáticos, de até $\pm 7\%$, são compensáveis por um fator
 de correção em software, o que valida o sensor para o monitoramento da corrente do ensaio.
 
-\subsection{Geração dos degraus e registro em CSV}
+\subsection{Ensaio de degraus a 100 Hz}
 \label{sec:degraus}
 
-O comando dos degraus parte de um script disponibilizado pelo orientador, que executa no
-Raspberry Pi embarcado no veículo e é acionado remotamente pelo notebook, por meio de
-\texttt{ssh alunos@raspberrypi.local "python3 teste\_throttle.py <ângulo> <duração>"}. O
-script coloca o ESC em neutro ($95^\circ$), aplica o degrau de comando pela duração programada
-e retorna ao neutro ao final. O neutro, no padrão de rádio-controle, é o comando para o qual o
-ESC mantém o motor parado --- no sinal de servo, o pulso de $1{,}5$ ms. Os pulsos são gerados
-pelo circuito PCA9685, na faixa de $90^\circ$ a $180^\circ$; ao longo do trabalho, o comando é
-usado na forma normalizada $u = (\theta - 95)/85$.
+O ensaio aquisitou a corrente em alta taxa ao longo de cada degrau de comando, por meio de um
+\emph{firmware} dedicado que amostra o ADC com período de $10$ ms --- aproximadamente $100$ Hz
+--- e transmite cada leitura pela serial. A taxa segue as regras clássicas de amostragem, de
+dez a trinta vezes a banda do fenômeno de interesse, e viabiliza a identificação da dinâmica
+entre o comando e a corrente.
 
-A automação do ensaio reside em um script local que percorre a escala de degraus em um laço:
-a cada iteração, substituem-se o ângulo e a duração e dispara-se o comando remoto
-correspondente. Em paralelo, a leitura da serial do Arduino é registrada continuamente em
-arquivo CSV --- tempo de ensaio, tempo dentro do degrau, ângulo e corrente ---, um bloco de
-dados por degrau. No terminal, mesmo com a aquisição a $100$ Hz, imprime-se somente a média de
-cada segundo: o tempo $t = 1, 2, \ldots, 15$ e a corrente média associada. É essa linha, com o
+O comando dos degraus parte de um \emph{script} de acionamento do ESC, disponibilizado pelo
+orientador, que executa no Raspberry Pi embarcado no veículo e é acionado remotamente pelo
+notebook, por meio de \texttt{ssh alunos@raspberrypi.local "python3
+teste\_throttle.py <ângulo> <duração>"}. O \emph{script} coloca o ESC em neutro ($95^\circ$),
+aplica o degrau pela duração programada e retorna ao neutro ao final. O neutro, no padrão de
+rádio-controle, é o comando para o qual o ESC mantém o motor parado --- no sinal de servo, o
+pulso de $1{,}5$ ms. Os pulsos são gerados pelo circuito PCA9685, na faixa de $90^\circ$ a
+$180^\circ$; ao longo do trabalho, o comando é usado na forma normalizada $u = (\theta - 95)/85$.
+A automação do ensaio --- o laço que percorre a escala de degraus, substituindo a cada iteração
+o ângulo e a duração e disparando o comando remoto correspondente, e o registro da serial do
+Arduino em arquivo CSV --- foi desenvolvida no âmbito deste trabalho. Cada amostra gravada
+contém o tempo de ensaio, o tempo dentro do degrau, o ângulo e a corrente, um bloco de dados
+por degrau. No terminal, mesmo com a aquisição a $100$ Hz, imprime-se somente a média de cada
+segundo: o tempo $t = 1, 2, \ldots, 15$ e a corrente média associada. É essa linha, com o
 horário, que aparece no vídeo do ensaio ao lado do display da balança.
 
 \subsection{Retempo das amostras a 100 Hz}
