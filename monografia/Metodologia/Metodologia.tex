@@ -2,12 +2,13 @@
 \label{chap:metodologia}
 
 Este capítulo descreve os métodos experimentais empregados na caracterização do sistema de
-propulsão do automodelo. A apresentação segue a ordem em que o ensaio foi construído: a
-montagem --- mecânica e elétrica --- do ensaio de tração (Seção \ref{sec:montagem}), a aquisição
-e o registro dos dados (Seção \ref{sec:cadeia}), o procedimento experimental (Seção
-\ref{sec:procedimento}) e, por fim, as incertezas de medição (Seção \ref{sec:incertezas}). Para
-cada escolha, apresentam-se o critério que a fundamenta e as alternativas consideradas, de modo
-a permitir a reprodução integral do ensaio.
+propulsão do automodelo. A Seção \ref{sec:montagem} apresenta a montagem do ensaio ---
+mecânica e elétrica ---, comum a todos os experimentos. As Seções \ref{sec:bancada},
+\ref{sec:vazio} e \ref{sec:tracao} descrevem, cada uma com o mesmo roteiro de definição,
+configuração, \emph{checklist} e procedimento, os três ensaios realizados: os testes em
+bancada, o ensaio em vazio e o ensaio de tração estática. A Seção \ref{sec:incertezas} fecha
+o capítulo com o orçamento de incertezas. Para cada escolha, apresentam-se o critério que a
+fundamenta e as alternativas consideradas, de modo a permitir a reprodução integral do ensaio.
 
 \section{A Montagem do Ensaio de Tração Estática}
 \label{sec:montagem}
@@ -69,22 +70,18 @@ O desvio sistemático máximo decorrente do ângulo é, portanto, de $0{,}53\%$;
 em cada leitura, esse valor é carregado como componente sistemática no orçamento de incertezas
 da Seção \ref{sec:incertezas}.
 
-\subsection{Padrão de força e sua calibração}
+\subsection{Padrão de força}
 \label{sec:padraoforca}
 
 Como padrão de força, adotou-se uma balança digital de mala com gancho, que exibe a tensão
-aplicada ao gancho com resolução de $10$ g. Antes do ensaio, a balança foi verificada com pesos
-padrão: nas três verificações, a carga de $0{,}500$ kg foi indicada como $0{,}490$ kg; a de
-$1{,}000$ kg, como $0{,}980$ kg; e a de $1{,}500$ kg, como $1{,}470$ kg. O desvio é sistemático
-e cresce linearmente com a carga --- $10$ g para cada $0{,}5$ kg, cerca de $2\%$ da leitura ---
-, sendo registrado como componente de incerteza na Seção \ref{sec:incertezas}.
-
-As alternativas a essa escolha são discutidas no Relatório Parcial 2. O dinamômetro comercial é
-inviável em custo e disponibilidade para um veículo de escala 1/8, e a célula de carga com
-registrador --- que viabilizaria a medição dinâmica da força, inacessível à leitura manual de
-um display --- constitui proposta de continuidade deste trabalho. A balança de mala é, assim, o
-melhor compromisso entre custo, simplicidade e adequação à faixa de forças do ensaio, que
-permanece abaixo de $6$ kgf.
+aplicada ao gancho com resolução de $10$ g. As alternativas a essa escolha são discutidas no
+Relatório Parcial 2: o dinamômetro comercial é inviável em custo e disponibilidade para um
+veículo de escala 1/8, e a célula de carga com registrador --- que viabilizaria a medição
+dinâmica da força, inacessível à leitura manual de um display --- constitui proposta de
+continuidade deste trabalho. A balança de mala é, assim, o melhor compromisso entre custo,
+simplicidade e adequação à faixa de forças do ensaio, que permanece abaixo de $6$ kgf. A
+verificação da balança com pesos padrão, realizada em bancada, é apresentada na Seção
+\ref{sec:bancada}.
 
 \subsection{Massa adicional}
 \label{sec:massaaderencia}
@@ -141,29 +138,17 @@ em $3{,}3$ V pelo Arduino Due. A sensibilidade é ratiométrica: $10$ mV/A na al
 de $5$ V, reduzida a $6{,}6$ mV/A a $3{,}3$ V; a saída em corrente nula é metade da alimentação,
 $1{,}65$ V. Um filtro RC de cerca de $24$ Hz limita a banda do sinal antes da conversão
 analógico-digital, realizada pelo ADC de $12$ bits do Due, com resolução de $122$ mA por degrau
-de conversão. A amostragem propriamente dita, com seus dois regimes, é descrita na Seção
-\ref{sec:cadeia}.
+de conversão.
 
-\section{Aquisição e Registro de Dados}
-\label{sec:cadeia}
+\subsection{Aquisição e registro de dados}
+\label{sec:registro}
 
-\subsection{Verificação em bancada}
-\label{sec:bancada}
-
-Antes dos ensaios, a cadeia de corrente foi verificada em bancada: o sensor leu a corrente de
-uma fonte ajustável de $0$ a $6$ A, tomada como referência por um multímetro. A resposta foi
-linear em toda a faixa, com regressão $y = 1{,}0742\,x$ entre os valores do multímetro ($x$) e
-os do sistema ($y$). Os desvios sistemáticos, de até $\pm 7\%$, são compensáveis por um fator
-de correção em software, o que valida o sensor para o monitoramento da corrente do ensaio.
-
-\subsection{Ensaio de degraus a 100 Hz}
-\label{sec:degraus}
-
-O ensaio aquisitou a corrente em alta taxa ao longo de cada degrau de comando, por meio de um
-\emph{firmware} dedicado que amostra o ADC com período de $10$ ms --- aproximadamente $100$ Hz
---- e transmite cada leitura pela serial. A taxa segue as regras clássicas de amostragem, de
-dez a trinta vezes a banda do fenômeno de interesse, e viabiliza a identificação da dinâmica
-entre o comando e a corrente.
+Os ensaios de degraus compartilham a mesma cadeia de aquisição, aqui descrita uma única vez. A
+corrente é amostrada em alta taxa ao longo de cada degrau, por meio de um \emph{firmware}
+dedicado que lê o ADC com período de $10$ ms --- aproximadamente $100$ Hz --- e transmite cada
+leitura pela serial. A taxa segue as regras clássicas de amostragem, de dez a trinta vezes a
+banda do fenômeno de interesse, e viabiliza a identificação da dinâmica entre o comando e a
+corrente.
 
 O comando dos degraus parte de um \emph{script} de acionamento do ESC, disponibilizado pelo
 orientador, que executa no Raspberry Pi embarcado no veículo e é acionado remotamente pelo
@@ -177,12 +162,9 @@ A automação do ensaio --- o laço que percorre a escala de degraus, substituin
 o ângulo e a duração e disparando o comando remoto correspondente, e o registro da serial do
 Arduino em arquivo CSV --- foi desenvolvida no âmbito deste trabalho. Cada amostra gravada
 contém o tempo de ensaio, o tempo dentro do degrau, o ângulo e a corrente, um bloco de dados
-por degrau. No terminal, mesmo com a aquisição a $100$ Hz, imprime-se somente a média de cada
-segundo: o tempo $t = 1, 2, \ldots, 15$ e a corrente média associada. É essa linha, com o
-horário, que aparece no vídeo do ensaio ao lado do display da balança.
-
-\subsection{Retempo das amostras a 100 Hz}
-\label{sec:retempo}
+por degrau. No terminal, imprime-se somente a média de cada segundo: o tempo
+$t = 1, 2, \ldots, 15$ e a corrente média associada. É essa linha, com o horário, que aparece
+no vídeo do ensaio ao lado do display da balança.
 
 Um efeito prático da aquisição a $100$ Hz merece registro. O envio serial bufferiza as
 amostras, que chegam ao computador em rajadas de cerca de dez, com o mesmo carimbo de tempo,
@@ -191,68 +173,102 @@ reconstruído por índice --- a $k$-ésima amostra do arquivo corresponde a $t =
 com $k = 0, 1, 2, \ldots$ ---, de modo que cada degrau de $15$ s gera cerca de $1550$ amostras
 sem perda de resolução temporal.
 
-\section{Procedimento Experimental}
-\label{sec:procedimento}
+\section{Testes em Bancada}
+\label{sec:bancada}
 
-\subsection{Checklist pré-ensaio}
-\label{sec:checklist}
+\textbf{Definição e objetivo.} Os testes em bancada validam os instrumentos de medição antes
+de qualquer ensaio com o veículo, de modo que os desvios sistemáticos sejam conhecidos --- e
+compensados ou declarados --- antes de entrarem na curva característica. Dois instrumentos são
+verificados: a cadeia de corrente, contra um multímetro de referência, e a balança de gancho,
+contra pesos padrão.
 
-Antes de cada sessão, três condições são verificadas. A bateria LiPo deve estar carregada:
-em repouso abaixo de $7{,}7$ V, o corte de baixa tensão do ESC reduz a resposta do motor,
-invalidando os degraus mais altos. A bateria do Raspberry Pi deve estar carregada --- o
-conversor \emph{step-down} que o alimenta possui amostragem da tensão de saída, o que permite
-confirmar a saúde da alimentação embarcada. Por fim, o notebook deve estar conectado à rede do
-Raspberry, com o acesso remoto por \texttt{ssh} funcionando.
+\textbf{Configuração.} Para a corrente, emprega-se uma fonte ajustável de $0$ a $6$ A em série
+com o sensor ACS758, cujas leituras são adquiridas pelo Arduino Due; o multímetro de referência
+mede a mesma corrente. Para a força, empregam-se pesos padrão de $0{,}500$ kg, $1{,}000$ kg e
+$1{,}500$ kg, aplicados sucessivamente ao gancho da balança.
 
-\subsection{Escadas de comando}
-\label{sec:escadas}
+\textbf{Procedimento.} Para a corrente: (i) ajusta-se a fonte em valores distribuídos entre
+$0$ e $6$ A; (ii) em cada valor, registram-se a leitura do multímetro e a do sistema; e
+(iii) ajusta-se uma regressão entre ambas. Para a força: (i) aplica-se cada peso padrão ao
+gancho; e (ii) registra-se a indicação da balança.
 
-Dois conjuntos de escadas foram executados. No primeiro --- com anotação de força e registro
-em vídeo --- o veículo percorreu a subida de $97^\circ$ a $117^\circ$ e a descida de
-$117^\circ$ a $97^\circ$, de grau em grau, cobrindo a faixa completa nos dois sentidos. No
-segundo --- com aquisição contínua a $100$ Hz --- a subida foi de $98^\circ$ a $119^\circ$ e a
-descida de $120^\circ$ a $113^\circ$, interrompida pela queda da rede na parte final da
-sessão. Em ambos, cada degrau durou $15$ s, com $3$ s de neutro entre degraus.
+\textbf{Resultados e uso.} A cadeia de corrente respondeu de forma linear em toda a faixa, com
+regressão $y = 1{,}0742\,x$ entre os valores do multímetro ($x$) e os do sistema ($y$); os
+desvios sistemáticos, de até $\pm 7\%$, são compensáveis por um fator de correção em software,
+o que valida o sensor para o monitoramento da corrente do ensaio. Na balança, as indicações
+foram $0{,}490$ kg para $0{,}500$ kg; $0{,}980$ kg para $1{,}000$ kg; e $1{,}470$ kg para
+$1{,}500$ kg --- desvio sistemático de $10$ g para cada $0{,}5$ kg, cerca de $2\%$ da leitura,
+registrado como componente de incerteza na Seção \ref{sec:incertezas}. A resolução da balança,
+de $10$ g, integra o mesmo orçamento.
 
-\subsection{Protocolo de cada degrau}
-\label{sec:protocolo}
-
-No ensaio com força, a balança é tarada nos $3$ s de neutro entre um degrau e o seguinte, pois
-a corda relaxa a cada puxada, deixando um deslocamento residual de $0{,}1$ a $0{,}2$ kg entre
-leituras consecutivas; tarar a cada degrau elimina o erro acumulado. Após o disparo do
-comando, aguarda-se $7$ s --- a resposta de corrente se assenta em cerca de quatro constantes
-de tempo, conforme a dinâmica identificada no Capítulo \ref{chap:resultados} --- e a força é
-anotada nos segundos $7$, $8$ e $9$. O ponto da curva é a média dessas três leituras. O mesmo
-protocolo se aplica à descida.
-
-A sessão é gravada em vídeo, com o display da balança e o terminal do notebook no mesmo
-enquadramento --- este último exibindo o horário, o tempo dentro do degrau e a corrente média
-do segundo. Após o experimento, cada ponto é lido no vídeo pausado, quadro a quadro. A leitura
-em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe da leitura ao vivo e
-dá rastreabilidade a cada valor anotado, uma vez que o display da balança não possui saída
-elétrica.
-
-\subsection{Ensaio em vazio}
+\section{Ensaio em Vazio}
 \label{sec:vazio}
 
-Para separar a fração de corrente que produz torque da fração que alimenta as perdas do
-conjunto, realizou-se um ensaio em vazio: o veículo foi apoiado de modo que as rodas motrizes
-ficassem suspensas em uma caixa, sem contato com a mesa, e a mesma escala de degraus foi
-aplicada. A corrente registrada em cada degrau, $I_0(u)$, é a corrente sem carga na ponta ---
-valor que o modelo de validação desconta de cada leitura, conforme o Capítulo
-\ref{chap:resultados}.
+\textbf{Definição e objetivo.} O ensaio em vazio mede a corrente consumida pelo conjunto
+propulsor quando ele não entrega tração alguma --- as rodas livres no ar. Essa corrente de
+perdas, $I_0(u)$, em cada comando, é o valor que o modelo de validação desconta de cada leitura
+para isolar a fração de corrente que efetivamente produz torque.
 
-\subsection{Consolidação e validação}
-\label{sec:consolidacao}
+\textbf{Configuração.} O veículo é apoiado de modo que as rodas motrizes fiquem suspensas em
+uma caixa, sem contato com a mesa, permanecendo livres para girar; o sensor de corrente e a
+cadeia de aquisição da Seção \ref{sec:registro} são empregados sem alterações.
 
-Os arquivos CSV da aquisição contínua foram consolidados por um \emph{script} dedicado, que
-aplica regras objetivas de validação a cada execução de degrau. Execuções com pico de corrente
-acima de $60$ A são classificadas como corrompidas, pois indicam falha de comunicação serial
-durante o registro; degraus acima de $100^\circ$ com pico inferior a $3$ A, ou a partir de
-$99^\circ$ com pico inferior a $1$ A, são classificados como de sinal fraco, pois indicam
-comando não executado; e execuções com duração inferior a $10$ s, como curtas. Das $58$
-execuções registradas, $54$ foram validadas --- degraus de $98^\circ$ a $119^\circ$ na subida
-e de $113^\circ$ a $120^\circ$ na descida. A ausência de descida abaixo de $113^\circ$ nesta
+\textbf{\emph{Checklist} pré-ensaio.} As mesmas três condições de toda sessão com o veículo: a
+bateria LiPo 2S deve estar carregada --- em repouso abaixo de $7{,}7$ V, o corte de baixa
+tensão do ESC reduz a resposta do motor, invalidando os degraus mais altos; a bateria do
+Raspberry Pi deve estar carregada, com a tensão de saída do \emph{step-down} conferida; e o
+notebook deve estar conectado à rede do Raspberry, com o acesso remoto por \texttt{ssh}
+funcionando.
+
+\textbf{Procedimento.} (i) Aplica-se a escala de degraus de $97^\circ$ a $117^\circ$, de grau
+em grau, cada degrau com $15$ s e $3$ s de neutro entre degraus; (ii) em cada degrau, a
+corrente é amostrada a $100$ Hz pela cadeia da Seção \ref{sec:registro}; e (iii) ao final da
+escala, extrai-se, para cada degrau, o valor médio de corrente em regime.
+
+\textbf{O que fornece.} A curva de corrente de perdas $I_0(u)$, ponto de apoio do modelo de
+validação do Capítulo \ref{chap:resultados}.
+
+\section{Ensaio de Tração Estática}
+\label{sec:tracao}
+
+\textbf{Definição e objetivo.} O ensaio de tração estática é o experimento central do
+trabalho: o veículo ancorado (Seção \ref{sec:ancoragem}) recebe degraus de comando, e cada
+platô fornece um par de valores --- corrente consumida e força de tração --- que compõe a curva
+característica ponto a ponto.
+
+\textbf{Configuração.} A montagem da Seção \ref{sec:montagem}: veículo ancorado pela balança
+na linha de tração, massa adicional de $6{,}640$ kg, sensor de corrente no ramo de
+alimentação e cadeia de aquisição da Seção \ref{sec:registro}.
+
+\textbf{\emph{Checklist} pré-ensaio.} As três condições da Seção \ref{sec:vazio}, acrescidas
+do posicionamento da câmera: o vídeo deve enquadrar, no mesmo plano, o display da balança e o
+terminal do notebook --- este exibindo o horário, o tempo dentro do degrau e a corrente média
+do segundo.
+
+\textbf{Procedimento.} Para cada degrau da escala: (i) tarar a balança nos $3$ s de neutro
+entre degraus, pois a corda relaxa a cada puxada, deixando um deslocamento residual de
+$0{,}1$ a $0{,}2$ kg entre leituras consecutivas; (ii) disparar o comando remoto do degrau;
+(iii) aguardar $7$ s --- a resposta de corrente se assenta em cerca de quatro constantes de
+tempo, conforme a dinâmica identificada no Capítulo \ref{chap:resultados}; (iv) anotar a força
+exibida nos segundos $7$, $8$ e $9$; e (v) registrar como ponto da curva a média dessas três
+leituras. A escala completa é percorrida duas vezes: na subida, de $97^\circ$ a $117^\circ$, e
+na descida, de $117^\circ$ a $97^\circ$.
+
+\textbf{Leitura em vídeo.} Cada ponto é lido no vídeo pausado, quadro a quadro, após o
+experimento. A leitura em vídeo padroniza o processo, elimina os erros de pressa e de
+paralaxe da leitura ao vivo e dá rastreabilidade a cada valor anotado, uma vez que o display
+da balança não possui saída elétrica.
+
+\textbf{Aquisição contínua e consolidação.} Em sessão complementar, o mesmo protocolo de
+degraus foi executado com aquisição contínua a $100$ Hz e sem anotação de força: a subida de
+$98^\circ$ a $119^\circ$ e a descida de $120^\circ$ a $113^\circ$, esta interrompida pela
+queda da rede na parte final da sessão. Os arquivos CSV foram consolidados por um
+\emph{script} dedicado, com regras objetivas de validação a cada execução: pico acima de
+$60$ A indica registro corrompido por falha de comunicação serial; degrau acima de $100^\circ$
+com pico inferior a $3$ A, ou a partir de $99^\circ$ com pico inferior a $1$ A, indica comando
+não executado; e duração inferior a $10$ s indica execução curta. Das $58$ execuções
+registradas, $54$ foram validadas --- degraus de $98^\circ$ a $119^\circ$ na subida e de
+$113^\circ$ a $120^\circ$ na descida. A ausência de descida abaixo de $113^\circ$ nesta
 aquisição é declarada como lacuna, sem prejuízo da sessão com força, que cobre a faixa de
 $97^\circ$ a $117^\circ$ nos dois sentidos.
 
@@ -262,17 +278,19 @@ $97^\circ$ a $117^\circ$ nos dois sentidos.
 As incertezas foram avaliadas pelo método da Aula 04, separando os componentes estatísticos
 (Tipo A) dos avaliados por propriedades do instrumento (Tipo B) e combinando-os em incerteza
 combinada e expandida. No Tipo A, trabalham-se em dois níveis. No nível do ponto, a dispersão
-das três leituras de força --- nos segundos $7$, $8$ e $9$ --- informa a flutuação de curta
-duração da tração somada à dispersão de leitura; no nível do método, a dispersão entre as
-repetições da escada informa a repetibilidade do processo completo, da montagem à leitura em
-vídeo. Os dois níveis são reportados nos resultados.
+das três leituras de força --- nos segundos $7$, $8$ e $9$ do protocolo da Seção
+\ref{sec:tracao} --- informa a flutuação de curta duração da tração somada à dispersão de
+leitura; no nível do método, a dispersão entre as repetições da escada informa a
+repetibilidade do processo completo, da montagem à leitura em vídeo. Os dois níveis são
+reportados nos resultados.
 
 No Tipo B, contribuem: a resolução da balança, de $10$ g, tratada como distribuição
 retangular, $u = 5/\sqrt{3} \approx 2{,}9$ g; o erro sistemático de calibração, de $10$ g para
-cada $0{,}5$ kg (Seção \ref{sec:padraoforca}); a leitura em vídeo, estimada em $\pm 1$ dígito
-quando há dúvida de legibilidade; e a quantização da corrente, de $122$ mA por degrau de
-conversão, com $u \approx 35$ mA. O desvio sistemático de $\pm 7\%$ da verificação em bancada
-é corrigido por fator em software, restando o resíduo da correção como componente.
+cada $0{,}5$ kg, medido nos testes em bancada (Seção \ref{sec:bancada}); a leitura em vídeo,
+estimada em $\pm 1$ dígito quando há dúvida de legibilidade; e a quantização da corrente, de
+$122$ mA por degrau de conversão, com $u \approx 35$ mA. O desvio sistemático de $\pm 7\%$ da
+verificação em bancada é corrigido por fator em software, restando o resíduo da correção como
+componente.
 
 As componentes sistemáticas pequenas são o ângulo do cabo, limitado a $0{,}53\%$ conforme a
 Equação \eqref{eq:erro_cosseno}, e o raio efetivo, abaixo de $0{,}5\%$. A incerteza combinada
@@ -293,12 +311,14 @@ de aproximadamente $95\%$.
 
 Este capítulo apresentou a construção do ensaio, da montagem à estimativa da confiança dos
 valores. A montagem ancora o automodelo e converte a tração do propulsor em tensão mensurável
-por uma balança de mala calibrada com pesos padrão, com o ângulo do cabo quantificado em
-$0{,}53\%$, o raio efetivo medido em $0{,}0751$ m e a corrente adquirida por um sensor de
-efeito Hall instalado por adaptação Deans-T. A aquisição registra os degraus de comando em
-CSV, com a força lida em vídeo nos segundos de regime e a corrente de perdas medida em ensaio
-a vazio. As incertezas foram estruturadas em dois níveis de repetibilidade e em componentes de
-resolução, calibração e efeitos sistemáticos pequenos. O Capítulo \ref{chap:resultados}
-apresenta os resultados obtidos com este procedimento.
+por uma balança de mala, com o ângulo do cabo quantificado em $0{,}53\%$, o raio efetivo
+medido em $0{,}0751$ m e a corrente adquirida por um sensor de efeito Hall instalado por
+adaptação Deans-T. Os três experimentos --- verificação em bancada, ensaio em vazio e ensaio
+de tração --- foram descritos com o mesmo roteiro de definição, configuração, \emph{checklist}
+e procedimento: a bancada validou os instrumentos e quantificou seus desvios sistemáticos; o
+vazio forneceu a corrente de perdas do modelo; e a tração, lida em vídeo nos segundos de
+regime, construiu a curva característica. As incertezas foram estruturadas em dois níveis de
+repetibilidade e em componentes de resolução, calibração e efeitos sistemáticos pequenos. O
+Capítulo \ref{chap:resultados} apresenta os resultados obtidos com este procedimento.
 
 \clearpage
