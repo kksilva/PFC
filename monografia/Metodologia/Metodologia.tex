@@ -15,11 +15,18 @@ integral do ensaio.
 
 Caracterizar o sistema de propulsão exige medir, simultaneamente, a força de tração
 desenvolvida pelas rodas e a corrente elétrica consumida pelo conjunto, uma vez que a curva que
-este trabalho busca estabelece é a relação entre o torque na roda e a corrente de alimentação.
-A força de tração, contudo, só se manifesta enquanto o veículo se desloca; para medê-la em
-condição estacionária, recorre-se ao ensaio de tração com o veículo ancorado, configuração em
-que o automodelo é impedido de se mover e a reação da ancoragem iguala a tração desenvolvida
-pelas rodas, dispensando um dinamômetro dedicado.
+este trabalho busca estabelecer relaciona o torque na roda à corrente de alimentação.
+
+A tração é a força com que o veículo é impulsionado sobre o solo --- o efeito mecânico final
+de toda a cadeia motor--transmissão--roda. Diretamente, ela só se manifesta enquanto o veículo
+se desloca; em condição estacionária, contudo, a mesma força surge de outro modo. Se o
+veículo for impedido de se mover, o pneu não consegue rolar e a tração que seria entregue ao
+solo transfere-se integralmente para a estrutura que retém o veículo. O ensaio de tração
+estática explora exatamente essa condição: o automodelo é ancorado, e a reação da ancoragem ---
+medida como a tensão no cabo que o prende --- iguala a tração desenvolvida pelas rodas,
+dispensando um dinamômetro dedicado. Como o veículo está parado, a tração medida corresponde
+à condição de partida, em que o motor opera em baixa rotação e máxima exigência de torque ---
+precisamente a região de maior interesse para o controle de aceleração.
 
 A leitura da balança empregada no ensaio é expressa em quilogramas, mas o que o instrumento
 mede quando o seu gancho é tracionado é uma força. O valor exibido é a massa cuja força-peso
@@ -34,19 +41,31 @@ corrente, pela cadeia de aquisição descrita na Seção \ref{sec:cadeia}.
 \section{Geometria do Cabo e o Efeito Cosseno}
 \label{sec:angulocabo}
 
-A tensão registrada pela balança atua ao longo do cabo que a liga ao veículo, e a grandeza de
-interesse é apenas a componente dessa tensão na linha de tração, isto é, $F\cos\theta$, em que
-$\theta$ é o ângulo entre o cabo e a horizontal. As dimensões da montagem foram medidas três
-vezes: o comprimento do cabo, de $126$ cm em cada lado da balança; a altura da balança em
-relação ao solo, de $15$ cm; e a altura do engate no veículo, de $28$ cm. A diferença de altura
-entre os extremos, de $13$ cm, sobre o comprimento de $126$ cm, define
+A força que equilibra a tração do veículo atua na direção horizontal --- a direção em que o
+veículo tentaria se deslocar. A tensão que a balança registra, porém, atua ao longo do cabo, e
+o cabo não é perfeitamente horizontal: o engate no veículo se encontra a $28$ cm do solo,
+ao passo que a balança se encontra a $15$ cm. O cabo e a linha horizontal entre os mesmos dois
+pontos formam, com a diferença de altura, um triângulo retângulo, cuja hipotenusa é o próprio
+cabo e cujo cateto vertical, oposto ao ângulo $\theta$ entre o cabo e a horizontal, é a
+diferença de altura entre os engates.
+
+Cada uma das três dimensões da montagem foi medida três vezes, e os valores adotados ---
+comprimento do cabo de $126$ cm, alturas de $15$ cm e $28$ cm --- são as médias das três
+leituras. A diferença de altura, de $28 - 15 = 13$ cm, sobre o comprimento do cabo, define,
+pela razão entre o cateto oposto e a hipotenusa,
 \begin{equation}\label{eq:sen_theta}
 \mathrm{sen}\,\theta = \frac{13}{126}
 \qquad\Rightarrow\qquad
-\theta = 5{,}9^\circ,
+\theta = 5{,}9^\circ.
 \end{equation}
-de modo que $\cos\theta = 0{,}995$. A correção máxima que o ângulo poderia introduzir na força
-medida, de $0{,}53\%$, situa-se abaixo da incerteza de leitura da balança; o efeito do ângulo
-é, portanto, desprezado, e a leitura da balança é tomada diretamente como a força de tração.
+A componente horizontal da tensão --- a que efetivamente equilibra a tração --- é $F\cos\theta$;
+tomar a leitura da balança diretamente como força de tração equivale a aproximar $\cos\theta$
+por $1$, com erro relativo dado pela fração da tensão que foge à direção horizontal,
+\begin{equation}\label{eq:erro_cosseno}
+1 - \cos\theta = 1 - 0{,}995 = 0{,}0053 = 0{,}53\%.
+\end{equation}
+O desvio sistemático máximo decorrente do ângulo é, portanto, de $0{,}53\%$; em vez de corrigi-lo
+em cada leitura, esse valor é carregado como componente sistemática no orçamento de incertezas
+da Seção \ref{sec:incertezas}.
 
 \clearpage
