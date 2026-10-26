@@ -55,9 +55,11 @@ na parede (rolamento reto garantido); 3 anotações independentes; L = 236 cm �
 vs nominal 80 mm (deflexão 6,1%); usar r_ef em T = F·r_ef.
 
 ### 3.4 Cadeia de Aquisição e Geração de Degraus
-**3.4.1 Medição da corrente.** ACS758 em série na alimentação, alimentado em 3,3 V pelo
-Arduino Due (sensibilidade ratiométrica: X mV/A em 3,3 V — confirmar versão); filtro RC ~24 Hz;
-ADC 12 bits; firmware básico (100 amostras ~1 ms por ponto, 1 ponto/s).
+**3.4.1 Medição da corrente.** **CONFIRMADO: ACS758ECB-200B (±200 A)** em série na
+alimentação, alimentado em 3,3 V pelo Due; sensibilidade ratiométrica 10 mV/A a 5 V → **6,6 mV/A
+a 3,3 V**; saída em corrente zero = Vcc/2 = 1,65 V; filtro RC ~24 Hz; ADC 12 bits → resolução
+**122 mA/LSB**, incerteza tipo B de quantização ≈ 35 mA (0,1–0,3% na faixa do ensaio);
+firmware básico (100 amostras ~1 ms por ponto, 1 ponto/s).
 
 **3.4.2 Ensaio dinâmico a 100 Hz.** Firmware rápido (período 10 ms); regras de amostragem
 (reativar citações depois); rajadas do buffer USB e retempo por índice (t = k×10 ms).
@@ -74,9 +76,12 @@ após o comando, espera de 7 s (≈4τ da dinâmica identificada — retomar no 
 anotada nos segundos 7, 8 e 9; ponto = média das 3 leituras; mesmo protocolo na subida e na
 descida; sessão gravada em vídeo.
 
-**3.5.3 Escadas de comando.** Subida 95→119° e descida 120→113° (CONFIRMAR extremos);
-duração 15 s por degrau; pausa de 3 s no neutro entre degraus (era 2 s ou 3 s? — a tara foi
-nos "3 segundos entre um degrau e outro").
+**3.5.3 Escadas de comando (DUAS SESSÕES DISTINTAS — não misturar no texto).**
+(a) Ensaio com força anotada + vídeo: subida **97→117°** e descida **117→97°** (faixa completa
+nos dois sentidos → histerese com força cobre tudo); duração 15 s por degrau; tara nos 3 s de
+neutro entre degraus.
+(b) Ensaio cego (dinâmica 100 Hz, sem rede): subida **98→119°** e descida **120→113°** (queda
+da rede interrompeu a descida em 113° — lacuna só desta sessão).
 
 **3.5.4 Ensaio em vazio.** Rodas suspensas em caixa, sem contato com a mesa; mesmos degraus;
 fornece I₀(u).
