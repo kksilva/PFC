@@ -64,72 +64,107 @@ discutem sua aplicabilidade na caracterização do sistema e fundamentam a opç�
 
 A primeira lei de Newton estabelece que um corpo livre de forças externas tende a manter seu
 estado de movimento --- repouso ou deslocamento retilíneo e uniforme ---, de modo que qualquer
-mudança na velocidade, em magnitude ou em direção, exige força resultante não nula. Essa
-resistência que a matéria oferece às mudanças de seu estado de movimento é denominada
-inércia: na translação, ela é medida pela massa do corpo, e na rotação, pelo momento de
-inércia, que depende da massa e de sua distribuição em relação ao eixo de giro. O sensor
-inercial é o instrumento que converte essa propriedade em medida. A Unidade de Medição
-Inercial (\emph{Inertial Measurement Unit} --- IMU) é definida como o dispositivo que mede o
-movimento próprio do corpo ao qual está fixado, sem referência a nenhum elemento externo ---
-daí o adjetivo \emph{inercial}.
+mudança na velocidade, em magnitude ou em direção, exige a ação de uma força resultante não nula.
+Essa resistência que a matéria oferece às mudanças de seu estado de movimento é denominada
+inércia, e ela constitui o princípio físico explorado pela instrumentação inercial. Na
+translação, a medida da inércia de um corpo é sua massa: quanto maior a massa, maior a força
+necessária para produzir a mesma variação de velocidade no mesmo intervalo de tempo. Na rotação,
+o papel análogo é desempenhado pelo momento de inércia, que quantifica a resistência às mudanças
+de velocidade angular e depende tanto da massa quanto de sua distribuição em relação ao eixo de
+giro. Assim, a inércia não é uma propriedade acessória do movimento, mas a grandeza que todo
+sensor inercial converte em medida.
 
-O princípio de funcionamento consiste em explorar exatamente essa resistência. Quando a
-carcaça do sensor é acelerada junto com o veículo, um corpo de prova interno, em razão de sua
-inércia, tende a permanecer em seu estado anterior e se desloca em relação à carcaça; medindo
-esse deslocamento relativo, o sensor estima a aceleração sofrida pelo conjunto. Nos
-acelerômetros de tecnologia MEMS (\emph{Micro-Electro-Mechanical Systems} --- sistemas
-microeletromecânicos), o corpo de prova é uma massa microfabricada suspensa por molas
-flexíveis, e o deslocamento é medido pela variação de capacitância entre placas que se
-aproximam ou se afastam. Em regime, o equilíbrio entre a força de inércia e a força elástica
-satisfaz
+A Unidade de Medição Inercial (\emph{Inertial Measurement Unit} --- IMU) é um instrumento que
+mede o movimento próprio do corpo ao qual está fixado, sem referência a nenhum elemento externo,
+daí o adjetivo \emph{inercial}. Seu princípio de funcionamento consiste em explorar justamente a
+resistência descrita acima: quando a carcaça do sensor é acelerada junto com o veículo, um corpo
+de prova interno, em razão de sua inércia, tende a permanecer em seu estado anterior e, com isso,
+se desloca em relação à carcaça. Medindo esse deslocamento relativo --- a reação do corpo de
+prova à aceleração imposta ---, o sensor estima a aceleração a que o conjunto está sujeito, sem
+contato com o solo, sem marcas externas e sem sinais de rádio. Dessa forma, a IMU reúne, em um
+único dispositivo, um acelerômetro e um giroscópio, que realizam essa medião para as
+translações e para as rotações, respectivamente.
+
+No acelerômetro de tecnologia MEMS (\emph{Micro-Electro-Mechanical Systems} --- sistemas
+microeletromecânicos), o corpo de prova é uma massa microfabricada, suspensa por molas flexíveis
+a uma estrutura que se move solidariamente à carcaça. Quando o veículo acelera, a carcaça e a
+estrutura acompanham o movimento imediatamente, ao passo que a massa de prova, atrasada pela
+inércia, resiste à variação e se desloca relativamente à estrutura até que as molas restabeleçam
+o equilíbrio. Esse deslocamento relativo é tipicamente medido pela variação de capacitância entre
+placas microfabricadas que se aproximam ou se afastam, e, em regime, o equilíbrio entre a força
+de inércia que age sobre a massa de prova e a força elástica das molas satisfaz
+
 \begin{equation}\label{eq:acelerometro}
 m_p\,a = k_m\,x,
 \end{equation}
-em que $m_p$ é a massa de prova, $k_m$ a constante elástica das molas e $x$ o deslocamento
-relativo, de modo que a aceleração se obtém diretamente de $a = (k_m/m_p)\,x$. Cabe a
-ressalva de que o acelerômetro não distingue, na leitura bruta, a aceleração do movimento da
-gravidade, cuja separação exige a estimativa contínua da orientação do sensor. O giroscópio
-interno mede, por sua vez, a velocidade angular pelo efeito Coriolis: uma estrutura oscilante,
-ao sofrer rotação, desenvolve força perpendicular à oscilação e proporcional à velocidade
-angular, fornecendo a taxa de rotação em cada eixo, usualmente em graus por segundo. Sua
-limitação clássica é a deriva (\emph{drift}): pequenos erros de \emph{bias} integrados ao
-longo do tempo fazem a estimativa de orientação se afastar progressivamente do valor real.
 
-Essas medições se relacionam com o veículo de forma direta. A aceleração longitudinal,
-integrada uma vez, fornece a velocidade; na prática, porém, a integração pura é inviabilizada
-em poucos segundos pelo acúmulo do \emph{drift}, de modo que a velocidade de uma IMU real
-sempre resulta da fusão com referências externas, como um receptor GPS ou um encoder de
-roda. Além disso, a IMU mede a dinâmica do chassi, e não do \emph{powertrain}: a aceleração
-que capta é o efeito líquido da propulsão já descontadas as resistências, de forma que nem o
-torque do motor nem a força de tração são acessíveis diretamente em sua leitura. O torque do
-motor se transforma em força de tração na roda, que deve vencer as forças resistivas para
-resultar na aceleração do veículo; pela segunda lei de Newton,
+em que $m_p$ é a massa de prova, $a$ a aceleração da carcaça, $k_m$ a constante elástica das
+molas e $x$ o deslocamento relativo, de modo que $a = (k_m/m_p)\,x$ e a aceleração se obtém
+diretamente do deslocamento medido. Cabe uma ressalva importante: o acelerômetro não distingue,
+em sua leitura bruta, a aceleração do movimento da aceleração da gravidade, uma vez que a
+aceleração própria medida inclui a componente correspondente à força de apoio que sustenta o
+sensor. Para separar a gravidade da aceleração efetiva do veículo, é necessário estimar
+continuamente a orientação do sensor --- sua atitude ---, o que normalmente é feito combinando-se
+as leituras do acelerômetro e do giroscópio em um filtro de fusão.
+
+O giroscópio MEMS, por sua vez, mede a velocidade angular recorrendo ao efeito Coriolis: uma
+estrutura oscilante interna, mantida em vibração por atuadores eletrostáticos, ao sofrer rotação
+do conjunto, desenvolve uma força perpendicular à direção da oscilação e proporcional à
+velocidade angular imposta. Essa força desloca lateralmente a estrutura vibrante, e o
+deslocamento, medido pelas mesmas técnicas capacitivas do acelerômetro, fornece a taxa de
+rotação em cada eixo, usualmente em graus por segundo (°/s). A principal limitação clássica do
+giroscópio é a deriva (\emph{drift}): pequenos erros sistemáticos de \emph{bias} presentes em
+cada leitura, quando integrados ao longo do tempo para se obter o ângulo, crescem sem limite e
+fazem a estimativa de orientação se afastar progressivamente da orientação real.
+
+Essas duas medições se relacionam com o veículo de forma direta. A aceleração longitudinal
+integrada uma vez no tempo fornece a velocidade, e integrada duas vezes fornece a posição;
+na prática, contudo, a integração pura é inviável em poucos segundos, pois o \emph{drift} do
+giroscópio e o \emph{bias} do acelerômetro se acumulam exatamente como na estimativa de
+orientação. Por isso, a velocidade obtida de uma IMU em aplicações reais é sempre resultado de
+uma fusão com outras fontes --- um receptor GPS ou um encoder de roda ---, que fornecem
+referências externas capazes de limitar o crescimento do erro. Além disso, a IMU mede a
+dinâmica do chassi, e não do \emph{powertrain}: a aceleração que ela capta é o efeito líquido
+da ação propulsora já descontadas as resistências, de modo que nem o torque do motor nem a
+força de tração são acessíveis diretamente em sua leitura. O torque do motor se transforma em
+força de tração na roda, que deve vencer as forças resistivas ao movimento para resultar na
+aceleração do veículo; aplicando a segunda lei de Newton:
+
 \begin{equation}\label{eq:newton}
 m\,a = F_{\text{tração}} - F_{\text{resistivos}},
 \end{equation}
-em que $m$ é a massa do veículo e $F_{\text{resistivos}}$ reúne as contribuições do atrito de
-rolamento e do arrasto aerodinâmico. Na roda, a força de tração é $F_{\text{tração}} =
-T_\mathrm{roda}/r$, sendo $r$ o raio efetivo, e o torque nas rodas é o torque do motor
-multiplicado pela redução $i$ e pelo rendimento $\eta$ da transmissão,
+
+em que $m$ é a massa do veículo e $F_{\text{resistivos}}$ reúne as contribuições do atrito de rolamento
+e do arrasto aerodinâmico. Na roda, a força de tração é dada por $F_{\text{tração}} = T_\mathrm{roda}/r$, sendo $r$ o
+raio efetivo da roda, e o torque nas rodas é o torque do motor multiplicado pela redução $i$ e
+pelo rendimento $\eta$ da transmissão,
+
 \begin{equation}\label{eq:transmissao}
 T_\mathrm{roda} = i\,\eta\,T_{\text{motor}}.
 \end{equation}
-Combinando as Equações \eqref{eq:newton} e \eqref{eq:transmissao}, o torque poderia ser
+
+Combinando as Equações \eqref{eq:newton} e \eqref{eq:transmissao}, o torque do motor poderia ser
 estimado a partir da aceleração medida:
+
 \begin{equation}\label{eq:torque_motor}
 T_{\text{motor}} = \frac{r\,(m\,a + F_{\text{resistivos}})}{i\,\eta}.
 \end{equation}
-A estimativa, contudo, exige desfazer toda a cadeia que vai da causa ao efeito: cada passo
-requer um parâmetro que a IMU não mede, como a massa $m$, as resistências
-$F_{\text{resistivos}}$, o raio $r$ e o rendimento $\eta$. O sensor informa como o veículo
-responde, mas não quanto o propulsor produz.
 
-Na implementação prática, considerou-se o MPU-6050, que reúne acelerômetro e giroscópio
-triaxiais em um único circuito integrado, lido pelo microcontrolador por meio do barramento
-I$^2$C --- dois sinais, SDA e SCL, além da alimentação, conforme a
-Figura~\ref{fig:imu_i2c}. Em malha fechada, a velocidade estimada realimentaria diretamente um
-controlador de velocidade, sem nenhum modelo de torque, de forma análoga ao encoder da Seção
-anterior.
+Essa estimativa, contudo, exige que se desfaça toda a cadeia de transformações que vai da causa ao
+efeito: cada passo da operação inversa requer um parâmetro que a IMU não mede, como a massa $m$,
+as resistências $F_{\text{resistivos}}$, o raio da roda $r$ e o rendimento $\eta$. A IMU, portanto, informa
+como o veículo responde, mas não quanto o propulsor efetivamente produz.
+
+Na implementação prática, o sensor considerado foi o MPU-6050, que reúne acelerômetro e
+giroscópio triaxiais em um único circuito integrado. O microcontrolador o lê por meio do
+barramento I$^2$C, que emprega apenas dois sinais --- SDA (\emph{Serial Data}), por onde transitam
+as informações, e SCL (\emph{Serial Clock}), que sincroniza a troca ---, além da alimentação.
+Nesse barramento, cada dispositivo é reconhecido por um endereço fixo, o que permite
+compartilhar os mesmos dois fios com outros sensores. A Figura~\ref{fig:imu_i2c} ilustra a
+ligação com um Arduino: quatro fios conectam a alimentação ($V_{CC}$ e GND) e os dois sinais do
+barramento. Em malha fechada, o controlador executado no microcontrolador compararia a
+velocidade estimada à referência e enviaria o comando de aceleração ao ESC por um sinal PWM,
+sem acionar o motor diretamente.
 
 \begin{figure}[htb]
 \centering
@@ -139,12 +174,15 @@ anterior.
 \footnotesize{Fonte: RudraNarayanG, via Instructables (s.d.). Disponível em: \url{https://www.instructables.com/Accelerometer-MPU-6050-Communication-With-AVR-MCU/}.}
 \end{figure}
 
-Em síntese, as vantagens e desvantagens da IMU são as seguintes.
-
-\begin{enumerate}
-    \item Vantagens: mede sem contato mecânico adicional, em formato compacto e embutido, com baixo custo e interface digital simples; fornece aceleração e rotação em três eixos, viabilizando a caracterização dinâmica longitudinal do veículo.
-    \item Desvantagens: o \emph{drift} inviabiliza a integração pura e exige fusão com outras fontes; é sensível à vibração intensa do veículo de pequena escala; e não mede nenhuma grandeza da cadeia elétrica ou de torque do propulsor, cuja estimativa dependeria de parâmetros externos à sua leitura, conforme a Equação \eqref{eq:torque_motor}.
-\end{enumerate}
+Quanto à adequação ao objetivo deste trabalho, as vantagens da IMU são o desempenho sem contato
+mecânico adicional, o formato compacto e embutido, o baixo custo e a interface digital simples.
+As desvantagens são o \emph{drift} que inviabiliza a integração pura, a sensibilidade à vibração
+intensa do veículo de pequena escala e, sobretudo, o fato de não medir diretamente nenhuma
+grandeza da cadeia elétrica ou de torque do propulsor. Uma vez que o objetivo do projeto é
+estimar torque e tração a partir da corrente elétrica, a IMU viabilizaria apenas a
+caracterização dinâmica longitudinal do veículo --- a relação entre comando e velocidade ---,
+configurando alternativa para trabalho futuro, e não o sensor adequado ao propósito central da
+caracterização proposta.
 
 \subsection{Sensor Magnético de Efeito Hall SS41F/41G}
 \label{sec:ss41f}
