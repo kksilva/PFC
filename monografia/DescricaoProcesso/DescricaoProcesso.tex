@@ -98,49 +98,58 @@ m\,a_x = F_{\mathrm{tração}} - F_{\mathrm{resistivos}},
 em que \(m\) é a massa total do veículo, \(a_x\) é a aceleração longitudinal e \(F_{\mathrm{resistivos}}\) 
 representa a resultante das forças resistivas, como o atrito de rolamento e o arrasto aerodinâmico.
 
-No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, $v(t)$,
-sendo estimada a partir da integração numerica das medições de aceleração, denotada por $\hat{v}(t)$, enquanto a 
-variável manipulada é o comando de aceleração \(u(t)\) enviado ao ESC via rádio ou o degrau enviado pelo Rapsberry 
-Pi embarcado, calculado a partir do erro de velocidade, dado por:
+No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, \(v(t)\), cuja 
+estimativa, denotada por \(\hat{v}(t)\), é obtida pela integração numérica da aceleração longitudinal estimada a 
+partir das medições da IMU. A velocidade desejada é definida pela referência \(v_{\mathrm{ref}}(t)\), definindo o
+erro de controle:
 
 \begin{equation}
-e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t),
+e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t).
+\label{eq:erro_velocidade}
 \end{equation}
 
-Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
+A partir desse erro, o controlador calcula a variável manipulada \(u(t)\), correspondente ao comando de acionamento enviado ao ESC
+modulado em largura de pulsos (pwm), seja gerado pelo Raspberry Pi ou pelo rádio. Para fechar a malha de velocidade, o comando deve
+ser atualizado automaticamente pelo controlador com base no erro calculado. Assim, pode ser descrito por::
 
 \begin{enumerate}
-    \item a velocidade de referência $v_\mathrm{ref}$ é comparada à velocidade estimada $\hat{v}$, gerando o erro $e = v_\mathrm{ref} - \hat{v}$;
-    \item o controlador calcula o comando de aceleração $u$ a partir desse erro;
-    \item o ESC converte $u$ em tensão aplicada às fases do motor, com energia fornecida pela bateria;
-    \item o motor produz torque, que, pela transmissão, move as rodas e o veículo;
-    \item a aceleração resultante é medida pela IMU, e o filtro atualiza $\hat{v}$.
+    \item A velocidade de referência \(v_{\mathrm{ref}}(t)\) é comparada à velocidade estimada \(\hat{v}(t)\), produzindo o erro \(e_v(t)\).
+    \item O controlador de malha fechadautiliza esse erro para calcular o comando de acionamento \(u(t)\).
+    \item O comando é transmitido coomo sinal modulado em largura de pulsos (pwm)    
+    \item O ESC interpreta o comando e controla eletronicamente a energia fornecida pela bateria aos enrolamentos do motor brushless.
+    \item O motor produz torque, transmitido às rodas pelo sistema de transmissão, gerando força de tração e movimento do veículo.
+    \item A IMU mede a aceleração específica do chassi. Após o processamento, a aceleração longitudinal estimada é integrada numericamente para atualizar \(\hat{v}(t)\).
+    \item A velocidade estimada é realimentada ao controlador, permitindo calcular um novo erro e atualizar o comando de acionamento.
 \end{enumerate}
 
-O controlador roda no microcontrolador, que lê a IMU por I$^2$C e envia o comando ao ESC por
-um sinal PWM, sem acionar o motor diretamente. A Figura~\ref{fig:imu_i2c} ilustra a ligação com um Arduino: alimentação ($V_{CC}$
-e GND) e os dois sinais do barramento --- SDA (\emph{Serial Data}), por onde transitam as informações, e
-SCL (\emph{Serial Clock}), que sincroniza a troca. Nesse barramento, cada dispositivo é reconhecido por
-um endereço fixo, o que permite compartilhar os mesmos dois fios com outros sensores. Para a proteção do sistema, o microcontrolador
-pode detectar picos de aceleração e limitar a taxa de variação do comando $u$, suavizando a
-aceleração e reduzindo os picos de torque na transmissão. Essa ação é apenas parcialmente
-preventiva, pois atua depois que o pico já começou a ser medido. Desse modo, o sensor cumpre o objetivo de
-realimentação de velocidade, mas não o de proteção elétrica direta dos componentes.
+A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
+A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e GND) e dois sinais de comunicação: SDA (*Serial Data*), responsável 
+pela transmissão dos dados, e SCL (*Serial Clock*), que fornece o sinal de sincronismo. 
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.75\textwidth]{DescricaoProcesso/Figuras/imu_mpu6050_i2c.png}
-\caption{Ligação do MPU-6050 a um microcontrolador Arduino via I$^2$C: quatro fios conectam a alimentação e os sinais SDA e SCL do barramento.}
+\caption{Conexão do módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C, com alimentação e sinais SDA e SCL.}
 \label{fig:imu_i2c}
 \footnotesize{Fonte: RudraNarayanG, via Instructables (s.d.). Disponível em: \url{https://www.instructables.com/Accelerometer-MPU-6050-Communication-With-AVR-MCU/}.}
 \end{figure}
 
-Em síntese, as vantagens e desvantagens da IMU são as seguintes.
+Para a proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar a taxa de variação do comando $u$, suavizando a
+aceleração e reduzindo os picos de torque na transmissão. Essa ação é apenas parcialmente preventiva, pois atua depois que o pico já começou
+a ser medido. Desse modo, o sensor cumpre o objetivo de realimentação de velocidade, mas não o de proteção elétrica direta dos componentes.
 
-\begin{enumerate}
-    \item Vantagens: mede diretamente a dinâmica do chassi, sem um modelo intermediário para a grandeza medida; é compacta e de baixo custo, além de usar interface digital simples; e oferece, adicionalmente, orientação para controle de direção e estabilidade.
-    \item Desvantagens: a integração acumula erro e demanda filtragem; a leitura é sensível à vibração e, quando o eixo não está na horizontal, à componente da gravidade; a estimativa de torque depende de parâmetros mecânicos não medidos; e o acelerômetro perde a referência durante a aceleração do próprio sistema.
-\end{enumerate}
+Em síntese, a utilização da IMU apresenta vantagens e limitações para a instrumentação e o controle do automodelo:
+
+\begin{itemize}
+    \item \textbf{Vantagens:} permite medir a aceleração do chassi sem depender de um modelo mecânico para obter essa grandeza; 
+    apresenta dimensões reduzidas, baixo custo e interface digital simples; 
+    e fornece medições de velocidade angular que podem ser úteis em análises posteriores da dinâmica do veículo.
+    \item \textbf{Limitações:} a estimativa de velocidade por integração acumula erros e pode exigir filtragem e correção de deriva; 
+    as medições são sensíveis às vibrações e à projeção da gravidade nos eixos do sensor; 
+    e a estimação de torque a partir da aceleração depende de parâmetros mecânicos, como massa, raio efetivo das rodas, relação de transmissão e
+    rendimento, além da consideração das forças resistivas. Por fim, a aceleração não permite determinar diretamente a corrente elétrica ou garantir
+    a proteção dos componentes contra sobrecorrente.
+\end{itemize}
 
 \subsection{Sensor Magnético de Efeito Hall SS41F/41G}
 \label{sec:ss41f}
