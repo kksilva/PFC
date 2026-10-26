@@ -49,6 +49,34 @@ proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
 \emph{step-down} para alimentação em 5 V.
 
+As quatro abordagens medem grandezas distintas, e cada uma se associa ao torque por um caminho
+próprio. A IMU mede a aceleração linear, o SS41F/41G mede a
+velocidade angular de uma roda ou do eixo por pulsos, e o shunt e o sensor Hall linear medem a
+corrente elétrica por princípios físicos distintos.
+
+A ponte entre a cadeia elétrica e a mecânica do propulsor é a relação entre o torque
+eletromagnético e a corrente, dada pela constante de torque $K_t$,
+\begin{equation}\label{eq:torque_corrente}
+T_{\text{motor}} = K_t\,I.
+\end{equation}
+Essa constante traduz, num único número, a capacidade do motor de converter corrente em torque.
+Em motores brushless, ela é numericamente igual à constante de
+força contraeletromotriz, em V·s/rad --- um reflexo da conservação da energia: a mesma constante
+que converte corrente em torque converte rotação em tensão. A constante de velocidade $K_v$, dada
+em rpm/V, se
+relaciona a ambas por
+\begin{equation}\label{eq:ke_kv}
+K_t = K_e = \frac{60}{2\pi\,K_v} \approx \frac{9{,}55}{K_v},
+\end{equation}
+em que o fator 9,55 é o valor numérico de $60/(2\pi)$, que converte rotações por minuto em
+radianos por segundo. Para o motor do automodelo, com $K_v = 2100$ rpm/V, obtém-se
+$K_t \approx 4{,}5$ mN$\cdot$m/A. Com a redução $i \approx 11{,}5$ e desprezando, em primeira
+análise, as perdas da transmissão, o torque nas rodas é
+\begin{equation}\label{eq:torque_roda_corrente}
+T_\mathrm{roda} = i\,K_t\,I \approx 52\ \mathrm{mN\cdot m/A}\cdot I.
+\end{equation}
+Essa é uma estimativa idealizada, válida apenas na faixa em que a relação entre corrente e torque
+permanece aproximadamente linear, a qual a caracterização experimental deste trabalho determina.
 
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
@@ -348,35 +376,6 @@ controle do automodelo:
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
 
-As quatro abordagens medem grandezas distintas, e cada uma se associa ao torque por um caminho
-próprio. A IMU mede a aceleração linear, o SS41F/41G mede a
-velocidade angular de uma roda ou do eixo por pulsos, e o shunt e o sensor Hall linear medem a
-corrente elétrica por princípios físicos distintos.
-
-Para os sensores de corrente, a relação entre o torque eletromagnético e a corrente é dada pela
-constante de torque $K_t$,
-\begin{equation}\label{eq:torque_corrente}
-T_{\text{motor}} = K_t\,I.
-\end{equation}
-Essa constante traduz, num único número, a capacidade do motor de converter corrente em torque.
-Em motores brushless, ela é numericamente igual à constante de
-força contraeletromotriz, em V·s/rad --- um reflexo da conservação da energia: a mesma constante
-que converte corrente em torque converte rotação em tensão. A constante de velocidade $K_v$, dada
-em rpm/V, se
-relaciona a ambas por
-\begin{equation}\label{eq:ke_kv}
-K_t = K_e = \frac{60}{2\pi\,K_v} \approx \frac{9{,}55}{K_v},
-\end{equation}
-em que o fator 9,55 é o valor numérico de $60/(2\pi)$, que converte rotações por minuto em
-radianos por segundo. Para o motor do automodelo, com $K_v = 2100$ rpm/V, obtém-se
-$K_t \approx 4{,}5$ mN$\cdot$m/A. Com a redução $i \approx 11{,}5$ e desprezando, em primeira
-análise, as perdas da transmissão, o torque nas rodas é
-\begin{equation}\label{eq:torque_roda_corrente}
-T_\mathrm{roda} = i\,K_t\,I \approx 52\ \mathrm{mN\cdot m/A}\cdot I.
-\end{equation}
-Essa é uma estimativa idealizada, válida apenas na faixa em que a relação entre corrente e torque
-permanece aproximadamente linear, a qual a caracterização experimental deste trabalho determina.
-
 A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A IMU e o
 SS41F/41G exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$). A corrente elétrica dispensa esses parâmetros, mas sua relação com o torque
 depende da posição do sensor no circuito, conforme a Equação \eqref{eq:corrente_bateria}.
@@ -492,7 +491,7 @@ no Capítulo 4.
 Este capítulo apresentou o sistema de propulsão do automodelo e comparou as principais grandezas
 mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e força de
 tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
-\eqref{eq:torque_motor}, \eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A
+\eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A
 comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
 sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores de corrente avaliados,
 sendo a balança digital de mala empregada como padrão de tração da caracterização.

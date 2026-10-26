@@ -38,6 +38,49 @@ convertidas para newtons por meio de $F\,[\mathrm{N}] = 9{,}81\,m\,[\mathrm{kgf}
 roda é obtido da força pela roda efetiva, determinada na Seção \ref{sec:raioefetivo}, e a
 corrente, pela cadeia de aquisição descrita na Seção \ref{sec:cadeia}.
 
+\subsection{Configuração de ancoragem}
+\label{sec:ancoragem}
+
+Na configuração adotada, o gancho da balança é engatado em uma estrutura traseira do veículo,
+posicionada acima do eixo de transmissão das rodas, de modo que a linha de tração coincida com
+a direção longitudinal do automodelo; o outro lado da balança é preso por um segundo cabo a
+uma estrutura fixa. O cabo empregado em cada lado da balança mede $126$ cm; a balança fica
+suspensa a $15$ cm do solo e o engate no veículo, a $28$ cm. Cada uma dessas dimensões foi
+medida três vezes, e os valores adotados são as médias das três leituras. Essa geometria define
+o ângulo do cabo, quantificado na Seção \ref{sec:angulocabo}.
+
+% FIGURA: fotografia da montagem do ensaio --- automodelo ancorado, balança suspensa entre o
+% engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.
+
+\subsection{Padrão de força e sua calibração}
+\label{sec:padraoforca}
+
+Como padrão de força, adotou-se uma balança digital de mala com gancho, que exibe a tensão
+aplicada ao gancho com resolução de $10$ g. Antes do ensaio, a balança foi verificada com pesos
+padrão: nas três verificações, a carga de $0{,}500$ kg foi indicada como $0{,}490$ kg; a de
+$1{,}000$ kg, como $0{,}980$ kg; e a de $1{,}500$ kg, como $1{,}470$ kg. O desvio é sistemático
+e cresce linearmente com a carga --- $10$ g para cada $0{,}5$ kg, cerca de $2\%$ da leitura ---
+, sendo registrado como componente de incerteza na Seção \ref{sec:incertezas}.
+
+As alternativas a essa escolha são discutidas no Relatório Parcial 2. O dinamômetro comercial é
+inviável em custo e disponibilidade para um veículo de escala 1/8, e a célula de carga com
+registrador --- que viabilizaria a medição dinâmica da força, inacessível à leitura manual de
+um display --- constitui proposta de continuidade deste trabalho. A balança de mala é, assim, o
+melhor compromisso entre custo, simplicidade e adequação à faixa de forças do ensaio, que
+permanece abaixo de $6$ kgf.
+
+\subsection{Massa adicional}
+\label{sec:massaaderencia}
+
+Sobre o centro de massa do veículo foi fixada uma massa adicional, elevando o conjunto a
+$6{,}640$ kg --- valor obtido como média de três pesagens. Essa massa tem função
+exclusivamente condicionante: ela aumenta a carga normal sobre os pneus e, com ela, o atrito
+disponível na interface pneu--piso, retardando o início da patinagem nos degraus mais altos.
+Em condição estática, não interfere na medida, pois a força registrada na balança iguala a
+tração desenvolvida, seja qual for a massa do veículo; a condição de carregamento integra,
+contudo, a especificação do ensaio, uma vez que a tração máxima transferível antes da
+patinagem depende dela.
+
 \section{Geometria do Cabo e o Efeito Cosseno}
 \label{sec:angulocabo}
 
@@ -49,10 +92,8 @@ pontos formam, com a diferença de altura, um triângulo retângulo, cuja hipote
 cabo e cujo cateto vertical, oposto ao ângulo $\theta$ entre o cabo e a horizontal, é a
 diferença de altura entre os engates.
 
-Cada uma das três dimensões da montagem foi medida três vezes, e os valores adotados ---
-comprimento do cabo de $126$ cm, alturas de $15$ cm e $28$ cm --- são as médias das três
-leituras. A diferença de altura, de $28 - 15 = 13$ cm, sobre o comprimento do cabo, define,
-pela razão entre o cateto oposto e a hipotenusa,
+A diferença de altura, de $28 - 15 = 13$ cm, sobre o comprimento do cabo, define, pela razão
+entre o cateto oposto e a hipotenusa,
 \begin{equation}\label{eq:sen_theta}
 \mathrm{sen}\,\theta = \frac{13}{126}
 \qquad\Rightarrow\qquad
@@ -74,8 +115,8 @@ da Seção \ref{sec:incertezas}.
 O torque na roda é obtido da força de tração por meio do raio em que essa força atua --- a
 distância entre o centro da roda e o contato do pneu com o solo. Esse raio, contudo, não é o
 nominal do pneu novo e descarregado, mas o raio efetivo de rolamento, medido sob as condições
-de carga do veículo: o pneu se deforma sob o peso do conjunto, e o raio com que ele efetivamente
-trabalha é menor que o nominal.
+de carga do veículo: o pneu se deforma sob o peso do conjunto, e o raio com que ele
+efetivamente trabalha é menor que o nominal.
 
 O raio efetivo foi medido pelo método de \emph{roll-out}. Marcaram-se o pneu e o solo em um
 mesmo alinhamento; o veículo, encostado em uma parede para garantir que o deslocamento se
@@ -99,5 +140,176 @@ T_\mathrm{roda} = F\,r_\mathrm{ef},
 \end{equation}
 e o emprego do raio nominal em lugar do efetivo injetaria erro sistemático de $6{,}1\%$ em
 todos os pontos da curva característica.
+
+\section{Instrumentação Elétrica e Aquisição}
+\label{sec:cadeia}
+
+\subsection{Sensor de corrente}
+\label{sec:aquisicao}
+
+A corrente do conjunto é medida pelo sensor ACS758ECB-200B, instalado em série entre a bateria
+e o ESC por meio de uma adaptação com conector Deans-T --- o padrão de conector do automodelo,
+que dispensa qualquer corte nos cabos originais. Trata-se de um sensor linear de efeito Hall,
+isolado galvanicamente do circuito de potência, alimentado em $3{,}3$ V pelo Arduino Due. A
+sensibilidade é ratiométrica: $10$ mV/A na alimentação nominal de $5$ V, reduzida a
+$6{,}6$ mV/A a $3{,}3$ V; a saída em corrente nula é metade da alimentação, $1{,}65$ V. Um
+filtro RC de cerca de $24$ Hz limita a banda do sinal antes da conversão analógico-digital,
+realizada pelo ADC de $12$ bits do Due, com resolução de $122$ mA por degrau de conversão.
+
+Dois firmwares foram empregados na aquisição. O firmware básico realiza cem leituras do ADC em
+sequência, em cerca de $1$ ms, e emite um ponto por segundo; ele apoia o ensaio com forças
+anotadas. O firmware rápido amostra com período de $10$ ms, a aproximadamente $100$ Hz, e
+registra a corrente ao longo de todo o degrau; ele viabiliza a identificação da dinâmica entre
+o comando e a corrente. A escolha das taxas segue as regras clássicas de amostragem, de dez a
+trinta vezes a banda do fenômeno de interesse.
+
+\subsection{Verificação em bancada}
+\label{sec:bancada}
+
+Antes dos ensaios, a cadeia de corrente foi verificada em bancada: o sensor leu a corrente de
+uma fonte ajustável de $0$ a $6$ A, tomada como referência por um multímetro. A resposta foi
+linear em toda a faixa, com regressão $y = 1{,}0742\,x$ entre os valores do multímetro ($x$) e
+os do sistema ($y$). Os desvios sistemáticos, de até $\pm 7\%$, são compensáveis por um fator
+de correção em software, o que valida o sensor para o monitoramento da corrente do ensaio.
+
+\subsection{Geração dos degraus e registro em CSV}
+\label{sec:degraus}
+
+O comando dos degraus parte de um script disponibilizado pelo orientador, que executa no
+Raspberry Pi embarcado no veículo e é acionado remotamente pelo notebook, por meio de
+\texttt{ssh alunos@raspberrypi.local "python3 teste\_throttle.py <ângulo> <duração>"}. O
+script coloca o ESC em neutro ($95^\circ$), aplica o degrau de comando pela duração programada
+e retorna ao neutro ao final. O neutro, no padrão de rádio-controle, é o comando para o qual o
+ESC mantém o motor parado --- no sinal de servo, o pulso de $1{,}5$ ms. Os pulsos são gerados
+pelo circuito PCA9685, na faixa de $90^\circ$ a $180^\circ$; ao longo do trabalho, o comando é
+usado na forma normalizada $u = (\theta - 95)/85$.
+
+A automação do ensaio reside em um script local que percorre a escala de degraus em um laço:
+a cada iteração, substituem-se o ângulo e a duração e dispara-se o comando remoto
+correspondente. Em paralelo, a leitura da serial do Arduino é registrada continuamente em
+arquivo CSV --- tempo de ensaio, tempo dentro do degrau, ângulo e corrente ---, um bloco de
+dados por degrau. No terminal, mesmo com a aquisição a $100$ Hz, imprime-se somente a média de
+cada segundo: o tempo $t = 1, 2, \ldots, 15$ e a corrente média associada. É essa linha, com o
+horário, que aparece no vídeo do ensaio ao lado do display da balança.
+
+\subsection{Retempo das amostras a 100 Hz}
+\label{sec:retempo}
+
+Um efeito prático da aquisição a $100$ Hz merece registro. O envio serial bufferiza as
+amostras, que chegam ao computador em rajadas de cerca de dez, com o mesmo carimbo de tempo,
+em blocos de $100$ ms. A ordem de chegada, porém, preserva a sequência de aquisição; o tempo é
+reconstruído por índice --- a $k$-ésima amostra do arquivo corresponde a $t = k \times 10$ ms,
+com $k = 0, 1, 2, \ldots$ ---, de modo que cada degrau de $15$ s gera cerca de $1550$ amostras
+sem perda de resolução temporal.
+
+\section{Procedimento Experimental}
+\label{sec:procedimento}
+
+\subsection{Checklist pré-ensaio}
+\label{sec:checklist}
+
+Antes de cada sessão, três condições são verificadas. A bateria LiPo deve estar carregada:
+em repouso abaixo de $7{,}7$ V, o corte de baixa tensão do ESC reduz a resposta do motor,
+invalidando os degraus mais altos. A bateria do Raspberry Pi deve estar carregada --- o
+conversor \emph{step-down} que o alimenta possui amostragem da tensão de saída, o que permite
+confirmar a saúde da alimentação embarcada. Por fim, o notebook deve estar conectado à rede do
+Raspberry, com o acesso remoto por \texttt{ssh} funcionando.
+
+\subsection{Escadas de comando}
+\label{sec:escadas}
+
+Dois conjuntos de escadas foram executados. No primeiro --- com anotação de força e registro
+em vídeo --- o veículo percorreu a subida de $97^\circ$ a $117^\circ$ e a descida de
+$117^\circ$ a $97^\circ$, de grau em grau, cobrindo a faixa completa nos dois sentidos. No
+segundo --- com aquisição contínua a $100$ Hz --- a subida foi de $98^\circ$ a $119^\circ$ e a
+descida de $120^\circ$ a $113^\circ$, interrompida pela queda da rede na parte final da
+sessão. Em ambos, cada degrau durou $15$ s, com $3$ s de neutro entre degraus.
+
+\subsection{Protocolo de cada degrau}
+\label{sec:protocolo}
+
+No ensaio com força, a balança é tarada nos $3$ s de neutro entre um degrau e o seguinte, pois
+a corda relaxa a cada puxada, deixando um deslocamento residual de $0{,}1$ a $0{,}2$ kg entre
+leituras consecutivas; tarar a cada degrau elimina o erro acumulado. Após o disparo do
+comando, aguarda-se $7$ s --- a resposta de corrente se assenta em cerca de quatro constantes
+de tempo, conforme a dinâmica identificada no Capítulo \ref{chap:resultados} --- e a força é
+anotada nos segundos $7$, $8$ e $9$. O ponto da curva é a média dessas três leituras. O mesmo
+protocolo se aplica à descida.
+
+A sessão é gravada em vídeo, com o display da balança e o terminal do notebook no mesmo
+enquadramento --- este último exibindo o horário, o tempo dentro do degrau e a corrente média
+do segundo. Após o experimento, cada ponto é lido no vídeo pausado, quadro a quadro. A leitura
+em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe da leitura ao vivo e
+dá rastreabilidade a cada valor anotado, uma vez que o display da balança não possui saída
+elétrica.
+
+\subsection{Ensaio em vazio}
+\label{sec:vazio}
+
+Para separar a fração de corrente que produz torque da fração que alimenta as perdas do
+conjunto, realizou-se um ensaio em vazio: o veículo foi apoiado de modo que as rodas motrizes
+ficassem suspensas em uma caixa, sem contato com a mesa, e a mesma escala de degraus foi
+aplicada. A corrente registrada em cada degrau, $I_0(u)$, é a corrente sem carga na ponta ---
+valor que o modelo de validação desconta de cada leitura, conforme o Capítulo
+\ref{chap:resultados}.
+
+\subsection{Consolidação e validação}
+\label{sec:consolidacao}
+
+Os arquivos CSV da aquisição contínua foram consolidados por um \emph{script} dedicado, que
+aplica regras objetivas de validação a cada execução de degrau. Execuções com pico de corrente
+acima de $60$ A são classificadas como corrompidas, pois indicam falha de comunicação serial
+durante o registro; degraus acima de $100^\circ$ com pico inferior a $3$ A, ou a partir de
+$99^\circ$ com pico inferior a $1$ A, são classificados como de sinal fraco, pois indicam
+comando não executado; e execuções com duração inferior a $10$ s, como curtas. Das $58$
+execuções registradas, $54$ foram validadas --- degraus de $98^\circ$ a $119^\circ$ na subida
+e de $113^\circ$ a $120^\circ$ na descida. A ausência de descida abaixo de $113^\circ$ nesta
+aquisição é declarada como lacuna, sem prejuízo da sessão com força, que cobre a faixa de
+$97^\circ$ a $117^\circ$ nos dois sentidos.
+
+\section{Incertezas de Medição}
+\label{sec:incertezas}
+
+As incertezas foram avaliadas pelo método da Aula 04, separando os componentes estatísticos
+(Tipo A) dos avaliados por propriedades do instrumento (Tipo B) e combinando-os em incerteza
+combinada e expandida. No Tipo A, trabalham-se em dois níveis. No nível do ponto, a dispersão
+das três leituras de força --- nos segundos $7$, $8$ e $9$ --- informa a flutuação de curta
+duração da tração somada à dispersão de leitura; no nível do método, a dispersão entre as
+repetições da escada informa a repetibilidade do processo completo, da montagem à leitura em
+vídeo. Os dois níveis são reportados nos resultados.
+
+No Tipo B, contribuem: a resolução da balança, de $10$ g, tratada como distribuição
+retangular, $u = 5/\sqrt{3} \approx 2{,}9$ g; o erro sistemático de calibração, de $10$ g para
+cada $0{,}5$ kg (Seção \ref{sec:padraoforca}); a leitura em vídeo, estimada em $\pm 1$ dígito
+quando há dúvida de legibilidade; e a quantização da corrente, de $122$ mA por degrau de
+conversão, com $u \approx 35$ mA. O desvio sistemático de $\pm 7\%$ da verificação em bancada
+é corrigido por fator em software, restando o resíduo da correção como componente.
+
+As componentes sistemáticas pequenas são o ângulo do cabo, limitado a $0{,}53\%$ conforme a
+Equação \eqref{eq:erro_cosseno}, e o raio efetivo, abaixo de $0{,}5\%$. A incerteza combinada
+do torque é obtida pela soma quadrática das componentes relativas,
+\begin{equation}\label{eq:propagacao}
+\frac{u_c(T)}{T} = \sqrt{\left(\frac{u_A(F)}{F}\right)^2
+                        + \left(\frac{u_B(F)}{F}\right)^2
+                        + \left(\frac{u(r_\mathrm{ef})}{r_\mathrm{ef}}\right)^2
+                        + \left(0{,}53\%\right)^2},
+\end{equation}
+e a incerteza expandida é $U = 2\,u_c$, com $k = 2$, correspondente a um nível de confiança
+de aproximadamente $95\%$.
+
+% TABELA: incertezas por faixa de degrau — u_A (3 leituras e repetibilidade), u_B e U(T),
+% geradas de ensaios/pfc kaka.xlsx + ensaio_consolidado.csv.
+
+\section{Resumo do Capítulo}
+
+Este capítulo apresentou a cadeia completa da medida, do princípio do ensaio à estimativa da
+confiança dos valores. O ensaio de tração estática ancorado converte a tração do propulsor em
+tensão mensurável por uma balança de mala calibrada com pesos padrão; o ângulo do cabo foi
+quantificado em $0{,}53\%$ e o raio efetivo, medido em $0{,}0751$ m. A corrente é adquirida
+por um sensor de efeito Hall verificado em bancada, sob degraus gerados por \emph{script} e
+registrados em CSV, com a força lida em vídeo nos segundos de regime e a corrente de perdas
+medida em ensaio a vazio. As incertezas foram estruturadas em dois níveis de repetibilidade e
+em componentes de resolução, calibração e efeitos sistemáticos pequenos. O Capítulo
+\ref{chap:resultados} apresenta os resultados obtidos com este procedimento.
 
 \clearpage
