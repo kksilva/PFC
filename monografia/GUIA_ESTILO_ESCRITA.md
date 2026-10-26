@@ -219,6 +219,61 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   "solitário". Quando o termo técnico tem um vizinho comum no vocabulário, a definição
   embutida com travessão elimina a ambiguidade na primeira ocorrência.
 
+## 15a. Lições da construção dos Caps. 2 e 3 (outubro/2026)
+
+- **Número aparece uma vez só.** Valor novo entra na tabela ou na figura; a prosa discute
+  padrões, regiões e interpretações — nunca reenumera. Se o número precisa voltar a aparecer,
+  o texto está mal organizado, não faltando dado.
+- **Conceitos-chave são nomeados uma vez e depois usados pelo nome.** Regiões de operação
+  (zona morta, região de aderência, região de saturação), modos de ensaio (ensaio em vazio,
+  ensaio de tração estática) e instrumentos são definidos com nome e limites na primeira
+  ocorrência; daí em diante o texto trabalha com o nome. Faixas numéricas repetidas em cada
+  parágrafo = sinal de que falta o conceito que as resume.
+- **Explicações didáticas entram como frase de apoio no fluxo, não como parágrafo de aula.**
+  r², η, regressão sem intercepto, stick-slip, método da 63,2%: uma frase curta no ponto da
+  primeira ocorrência, amarrada ao que está sendo mostrado — *"o coeficiente de determinação
+  r², fração da variância dos dados explicada pelo ajuste"*. Detalhamento longo vaza o ritmo.
+- **Capítulo de Metodologia organizado por experimento, não por disciplina.** Cada ensaio com
+  o mesmo template de blocos, na mesma ordem: **Definição e objetivo → Configuração →
+  Checklist pré-ensaio → Procedimento (passo a passo numerado) → O que fornece**. O leitor
+  sabe onde encontrar cada elemento em qualquer ensaio; a infraestrutura comum (montagem,
+  cadeia de aquisição) fica numa seção inicial, descrita uma única vez e referenciada.
+- **Capítulo de Resultados espelha a ordem dos experimentos da Metodologia.** O leitor
+  atravessa os dois capítulos no mesmo ritmo; cada seção de resultado abre com o que o ensaio
+  prometia e fecha com o que entregou.
+- **Seções de sensor seguem o template da 2.2.1**: definição (nome por extenso entre
+  parênteses + sigla) → fixação no veículo → equações da cadeia (cada uma anunciada por frase
+  curta: "Pela Lei de Ohm...", "a segunda lei de Newton resulta em") → aplicação em malha
+  fechada (o que a grandeza viabiliza como realimentação) → veredito ("Dessa forma...") →
+  "Em síntese, a utilização do X apresenta vantagens e limitações:" → itemize com
+  `\textbf{Vantagens:}` / `\textbf{Limitações:}`. O veredito vem **antes** da enumeração, e a
+  seção fecha no itemize.
+- **Seção de Proposta contém proposta, não resultados.** Nada de valores identificados,
+  equações com parâmetros ajustados, ganhos de controlador ou menções a trabalhos externos —
+  a proposta diz o quê e para quê; o como fica na Metodologia, o quanto fica nos Resultados,
+  o controlador fica no Capítulo 5. Parâmetros aparecem como "a determinar experimentalmente".
+- **Aferições são relatadas com sua repetição.** "Medido três vezes; o valor adotado é a média
+  das três leituras" — toda dimensão, pesagem e leitura de calibração carrega a multiplicidade.
+- **Atribuições em forma acadêmica impessoal.** "disponibilizado pelo orientador" /
+  "desenvolvido no âmbito deste trabalho" — crédito claro sem quebrar o registro.
+- **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
+  Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
+  sem a atribuição formal.
+
+## 15b. Convenções LaTeX duras (quebram silenciosamente se esquecidas)
+
+- **Acentos em modo matemático**: `\mathrm{tração}` e `\text{tração}` perdem o `ç`/`ã` no PDF
+  ("Ftrao"). Forma que funciona neste template: `F_{\text{tra\c{c}\~{a}o}}`. Escapes: ç =
+  `\c{c}`, ã = `\~{a}`, õ = `\~{o}`, á/é/í = `\'{a}` etc.
+- **Ambiente de lista correto**: `\begin{item}` não existe — compila em nonstopmode sem
+  bullets, sem erro aparente. `itemize` (sem ordem) ou `enumerate` (passo a passo, sequência
+  do sinal).
+- **Fonte de figura em forma ABNT curta**: `\footnotesize{Fonte: Autor (ano).}` — sem URL na
+  figura; o link completo vai em entrada `@misc` no `.bib` (como `ti_ina240_2`), citada na
+  rodada de referências.
+- **Splice de seções por script**: ao remendar `.tex` com `re.subn`, usar função de reposição
+  (valor literal) — string de reposição processa escapes e duplica as barras.
+
 ## 16. Convenções LaTeX do projeto
 
 - Fonte Times (norma PFC/UFMG); `book` 12pt, `abntex2`.
