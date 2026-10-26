@@ -170,6 +170,12 @@ anel é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem forne
 velocidade $\omega_m$; com ele na roda, fornece $\omega_\mathrm{roda}$, que se converte em
 $\omega_m$ pela redução $i$ da transmissão.
 
+Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
+rotação se deseja medir, e o sensor é montado no chassi próximo ao anel, mantendo uma
+entreferência constante e pequena entre o elemento Hall e os polos. A conexão com o
+microcontrolador é direta --- alimentação, terra e saída digital ---, e a leitura por
+interrupção dispensa circuitos de condicionamento adicionais.
+
 A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
 carga $T_L$, a segunda lei de Newton para a rotação resulta em
@@ -214,6 +220,12 @@ V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
 em que $G$ é o ganho fixo do amplificador.
 
+Na fixação, o resistor é inserido em série no ramo de alimentação, entre a bateria e o ESC,
+e o INA240 é instalado no circuito de medição, lendo a queda de tensão sobre o shunt. Por
+não haver isolamento galvânico, o circuito de medição permanece em contato elétrico direto
+com o ramo de potência, o que exige cuidados de layout e limita sua proximidade com o
+computador de bordo.
+
 % TODO: inserir figura do INA240 (Relatório 1)
 
 O componente possui largura de banda de 400 kHz e
@@ -234,6 +246,11 @@ permanece ligado:
 
 Consequentemente, a leitura precisa ser interpretada considerando o ciclo de trabalho vigente. Essa ressalva
 se aplica igualmente a qualquer sensor instalado no ramo de alimentação, como se verá adiante.
+
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e
+implementar a proteção contra sobrecorrente por limiar --- capacidades que os sensores de
+movimento não oferecem. Essas funções, contudo, vêm acompanhadas da ressalva da interpretação
+pela razão cíclica.
 
 Dessa forma, o arranjo com shunt reúne banda e linearidade adequadas à medição, mas a ausência de
 isolamento galvânico e a dissipação crescente com o quadrado da corrente afastam-no da montagem de
@@ -296,9 +313,19 @@ interna de 120 kHz, valor bem superior à faixa de 8 kHz a 16 kHz de chaveamento
 típica de ESCs \emph{sensorless}. Logo, o sensor dispõe de margem para acompanhar as
 variações de corrente impostas pela comutação, sem subamostrá-las.
 
-O isolamento galvânico dispensa modificação do circuito de potência além da inserção em série do
-próprio sensor, e não introduz dissipação adicional significativa. Como limitações, ele
-permanece sujeito a ruído eletromagnético proveniente do chaveamento do ESC, o que pode exigir
+Na fixação adotada neste trabalho, o sensor é instalado em série entre a bateria e o ESC por
+meio de uma adaptação com conector Deans-T --- o padrão de conector do automodelo, que
+dispensa qualquer corte nos cabos originais. A saída analógica do sensor é lida pelo conversor
+do Arduino Due, com filtro RC de cerca de 24 Hz na entrada; a cadeia de aquisição é detalhada
+no Capítulo 3.
+
+Em malha fechada, a corrente medida habilita a malha de torque proposta neste trabalho: uma
+malha interna de corrente, cuja dinâmica entre o comando e a corrente é identificada
+experimentalmente, e um estimador de torque a partir do modelo do propulsor, com a referência
+limitada pelo limiar de aderência. A leitura permite, ainda, a proteção contra sobrecorrente.
+
+O isolamento galvânico não introduz dissipação adicional significativa. Como limitações, o
+sensor permanece sujeito a ruído eletromagnético proveniente do chaveamento do ESC, o que pode exigir
 filtragem do sinal antes da aquisição. A faixa máxima das variantes, de ±200 A, é inferior ao
 pico de 760 A especificado para o ESC, o que deixa os picos extremos de corrente fora da
 faixa de medição. A operação a 3,3 V desloca os valores nominais de repouso e de sensibilidade,
