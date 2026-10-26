@@ -212,3 +212,19 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   degrau acima de 113° tem os dois sentidos — nao reivindicar histerese na faixa
   alta. Cuidado com forca anotada como PICO: overshoot de stick-slip infla a
   leitura nos degraus altos.
+- [ ] **13. Comportamento "engasga e volta" nos degraus >118° (relato da autora, 25/10)** —
+  Observado em bancada: acima de ~118° o carrinho acelera por um tempo, **corta
+  (engasga), para e acelera de novo**, ciclicamente. Suspeita principal: **corte de
+  subtensao (LVC) do ESC** — sob alta corrente a LiPo "saga" abaixo do limiar, o ESC
+  se protege e corta o motor; sem carga a tensao se recupera e o ESC religa, gerando
+  o ciclo. Hipotese alternativa: protecao termica do ESC ou da bateria. **Consequencia
+  para os dados:** quedas de corrente a ~0 A no meio do degrau NAO sao necessariamente
+  patinagem — podem ser corte do ESC (ver ex. descida 114, t=9-14 s com I ~0,03 A,
+  hoje rotulado "PATINAGEM sustentada"). **Para o Cap. 4:** (a) revisar os pontos
+  118-120 e re-rotular quedas abruptas a ~0 A como CORTE_ESC quando o padrao for
+  abrupcao seguida de retorno (stick-slip = oscilacao suave ~2 s; LVC = queda a zero +
+  morto + retorno); (b) declarar como limitacao do ensaio na faixa de saturacao e
+  reforcar que a caracterizacao valida fica na regiao de aderencia (100-110°);
+  (c) se possivel, confirmar medindo a tensao da bateria durante um degrau >118°
+  (multimetro/logging) — caso nao de, deixar como hipotese embasada no sag ja
+  documentado (item do checklist da bateria gasta/estufada).
