@@ -68,4 +68,36 @@ O desvio sistemático máximo decorrente do ângulo é, portanto, de $0{,}53\%$;
 em cada leitura, esse valor é carregado como componente sistemática no orçamento de incertezas
 da Seção \ref{sec:incertezas}.
 
+\section{Medida do Raio Efetivo da Roda}
+\label{sec:raioefetivo}
+
+O torque na roda é obtido da força de tração por meio do raio em que essa força atua --- a
+distância entre o centro da roda e o contato do pneu com o solo. Esse raio, contudo, não é o
+nominal do pneu novo e descarregado, mas o raio efetivo de rolamento, medido sob as condições
+de carga do veículo: o pneu se deforma sob o peso do conjunto, e o raio com que ele efetivamente
+trabalha é menor que o nominal.
+
+O raio efetivo foi medido pelo método de \emph{roll-out}. Marcaram-se o pneu e o solo em um
+mesmo alinhamento; o veículo, encostado em uma parede para garantir que o deslocamento se
+desse em linha reta, foi movimentado até completar cinco voltas da roda. A distância percorrida
+entre as marcas do solo corresponde, nessas condições, a cinco circunferências de rolamento.
+O procedimento foi repetido três vezes, e a distância adotada, $L = 236$ cm, é a média das
+três leituras. O raio efetivo segue diretamente da circunferência:
+\begin{equation}\label{eq:raio_efetivo}
+r_\mathrm{ef} = \frac{L}{2\pi n}
+              = \frac{236}{2\pi \times 5}
+              = 7{,}51\ \mathrm{cm}
+              = 0{,}0751\ \mathrm{m},
+\end{equation}
+em que $n = 5$ é o número de voltas completas.
+
+O valor nominal do fabricante para o pneu novo, sem carga, é de $80$ mm de raio; o raio
+efetivo medido, de $75{,}1$ mm, é $6{,}1\%$ menor --- a deflexão do pneu sob a carga do
+conjunto. Fecha-se, assim, a cadeia anunciada na Seção \ref{sec:montagem}: o torque na roda é
+\begin{equation}\label{eq:torque_f_r}
+T_\mathrm{roda} = F\,r_\mathrm{ef},
+\end{equation}
+e o emprego do raio nominal em lugar do efetivo injetaria erro sistemático de $6{,}1\%$ em
+todos os pontos da curva característica.
+
 \clearpage

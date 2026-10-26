@@ -16,7 +16,9 @@ Fatos confirmados pela autora (26/10, noite):
 - Gancho na estrutura traseira, ACIMA do eixo de transmissão.
 - Tara nos 3 s de neutro; força nos s 7, 8, 9; ponto = média; idem descida; vídeo.
 - Massa total 6,640 kg (3×). [efeito: μ do Cap. 4 = 0,80]
-- ACS758ECB-200B a 3,3 V → 6,6 mV/A; offset 1,65 V; 12 bits → 122 mA/LSB.
+- ACS758ECB-200B a 3,3 V → 6,6 mV/A; offset 1,65 V; 12 bits → 122 mA/LSB. **Instalação:
+  adaptação com conector Deans-T** (padrão do automodelo), ligando o sensor em série entre a
+  bateria e o ESC, sem cortar os cabos originais.
 - **Calibração da balança com pesos padrão**: 0,5 kg → 0,490; 1,0 kg → 0,980; 1,5 kg →
   1,470 — erro sistemático de 10 g a cada 0,5 kg (≈ −2%); resolução 10 g.
 - Script de degraus (`teste_throttle.py`) do orientador, executa no Pi, via ssh do notebook.
@@ -79,9 +81,10 @@ e o uso do raio nominal injetaria 6% de erro sistemático em todo o resultado.
 
 ## 3.4 Instrumentação Elétrica e Aquisição
 
-**3.4.1 Sensor de corrente — 1 parágrafo.** ACS758ECB-200B em série na alimentação do
-conjunto ESC–motor; efeito Hall, isolado galvanicamente; alimentado a 3,3 V pelo Arduino
-Due; sensibilidade ratiométrica 6,6 mV/A a 3,3 V (10 mV/A a 5 V); saída 1,65 V em corrente
+**3.4.1 Sensor de corrente — 1 parágrafo.** ACS758ECB-200B em série entre a bateria e o
+ESC, por meio de uma adaptação com conector Deans-T --- o padrão de conector do automodelo,
+que dispensa qualquer corte nos cabos originais; efeito Hall, isolado galvanicamente;
+alimentado a 3,3 V pelo Arduino Due; sensibilidade ratiométrica 6,6 mV/A a 3,3 V (10 mV/A a 5 V); saída 1,65 V em corrente
 zero; filtro RC de ~24 Hz; ADC de 12 bits → resolução de 122 mA por LSB. Dois firmwares:
 básico (100 amostras consecutivas ~1 ms por ponto, 1 ponto/s) e rápido (período de 10 ms,
 ~100 Hz). [Citações de amostragem na rodada futura.]
