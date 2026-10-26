@@ -1,4 +1,52 @@
 \chapter{Metodologia}
 \label{chap:metodologia}
 
-% Capítulo em planejamento de escrita. Ver METODOLOGIA_PLANEJAMENTO.md.
+Este capítulo descreve os métodos experimentais empregados na caracterização do sistema de
+propulsão do automodelo. A apresentação segue a cadeia da medida: o princípio do ensaio de
+tração e a sua montagem (Seções \ref{sec:montagem} e \ref{sec:angulocabo}), a determinação do
+raio efetivo da roda (Seção \ref{sec:raioefetivo}), a instrumentação elétrica e o registro dos
+dados (Seção \ref{sec:cadeia}), o procedimento experimental (Seção \ref{sec:procedimento}) e,
+por fim, as incertezas de medição (Seção \ref{sec:incertezas}). Para cada escolha, apresentam-se
+o critério que a fundamenta e as alternativas consideradas, de modo a permitir a reprodução
+integral do ensaio.
+
+\section{O Ensaio de Tração Estática}
+\label{sec:montagem}
+
+Caracterizar o sistema de propulsão exige medir, simultaneamente, a força de tração
+desenvolvida pelas rodas e a corrente elétrica consumida pelo conjunto, uma vez que a curva que
+este trabalho busca estabelece é a relação entre o torque na roda e a corrente de alimentação.
+A força de tração, contudo, só se manifesta enquanto o veículo se desloca; para medê-la em
+condição estacionária, recorre-se ao ensaio de tração com o veículo ancorado, configuração em
+que o automodelo é impedido de se mover e a reação da ancoragem iguala a tração desenvolvida
+pelas rodas, dispensando um dinamômetro dedicado.
+
+A leitura da balança empregada no ensaio é expressa em quilogramas, mas o que o instrumento
+mede quando o seu gancho é tracionado é uma força. O valor exibido é a massa cuja força-peso
+equilibraria a tensão aplicada ao gancho --- o quilograma-força, definido como o peso de um
+quilograma em condições normais de gravidade e equivalente a $9{,}81$ N. Como o gancho é puxado
+horizontalmente pela reação da ancoragem, e não sustenta massa alguma na vertical, a leitura em
+quilogramas representa força de tração, e não peso. Ao longo do trabalho, as leituras são
+convertidas para newtons por meio de $F\,[\mathrm{N}] = 9{,}81\,m\,[\mathrm{kgf}]$. O torque na
+roda é obtido da força pela roda efetiva, determinada na Seção \ref{sec:raioefetivo}, e a
+corrente, pela cadeia de aquisição descrita na Seção \ref{sec:cadeia}.
+
+\section{Geometria do Cabo e o Efeito Cosseno}
+\label{sec:angulocabo}
+
+A tensão registrada pela balança atua ao longo do cabo que a liga ao veículo, e a grandeza de
+interesse é apenas a componente dessa tensão na linha de tração, isto é, $F\cos\theta$, em que
+$\theta$ é o ângulo entre o cabo e a horizontal. As dimensões da montagem foram medidas três
+vezes: o comprimento do cabo, de $126$ cm em cada lado da balança; a altura da balança em
+relação ao solo, de $15$ cm; e a altura do engate no veículo, de $28$ cm. A diferença de altura
+entre os extremos, de $13$ cm, sobre o comprimento de $126$ cm, define
+\begin{equation}\label{eq:sen_theta}
+\mathrm{sen}\,\theta = \frac{13}{126}
+\qquad\Rightarrow\qquad
+\theta = 5{,}9^\circ,
+\end{equation}
+de modo que $\cos\theta = 0{,}995$. A correção máxima que o ângulo poderia introduzir na força
+medida, de $0{,}53\%$, situa-se abaixo da incerteza de leitura da balança; o efeito do ângulo
+é, portanto, desprezado, e a leitura da balança é tomada diretamente como a força de tração.
+
+\clearpage

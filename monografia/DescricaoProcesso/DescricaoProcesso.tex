@@ -62,20 +62,11 @@ discutem sua aplicabilidade na caracterização do sistema e fundamentam a opç�
 \subsection{Sensor Inercial (IMU)}
 \label{sec:imu}
 
-A Unidade de Medição Inercial (\emph{Inertial Measurement Unit} --- IMU) reúne, em um único
-dispositivo, um acelerômetro e um giroscópio triaxiais, capazes de medir, respectivamente, a
-aceleração linear e a velocidade angular do chassi ao longo dos eixos $x$, $y$ e $z$. Nesse dispositivo, cada eixo do
-acelerômetro é, em essência, uma pequena massa suspensa por molas: quando a carcaça acelera, a
-massa permanece no lugar por inércia, e o deslocamento relativo entre uma e outra --- convertido
-eletronicamente em sinal elétrico --- é diretamente proporcional à aceleração. O giroscópio, por
-sua vez, mede a velocidade angular em torno de cada eixo pela força de Coriolis que surge sobre
-uma massa vibrante quando o dispositivo gira. Dessa forma, a IMU descreve o movimento do chassi;
-para a propulsão, porém, apenas a aceleração linear se conecta ao esforço do sistema, já que a
-velocidade angular não se relaciona diretamente com o torque.
+A Unidade de Medição Inercial (*Inertial Measurement Unit* — IMU) reúne, geralmente, um acelerômetro e um giroscópio triaxiais, que medem, respectivamente, a aceleração específica \(a\) e a velocidade angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). O acelerômetro utiliza uma pequena massa suspensa por elementos elásticos, cujo deslocamento relativo à estrutura do sensor é convertido em sinal elétrico. O giroscópio, por sua vez, utiliza os efeitos da força de Coriolis sobre uma massa vibrante para determinar a velocidade angular.
 
-O torque do motor se transforma em força de tração na roda, que deve vencer as forças resistivas ao
-movimento para resultar na aceleração do veículo. Assim, a aceleração longitudinal $a$ se relaciona
-à força de tração $F_{\text{tração}}$ pela segunda lei de Newton:
+Para caracterizar o movimento do automodelo, a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos alinhados às direções longitudinal, lateral e vertical do veículo. Esse posicionamento facilita a interpretação dos dados e, quando próximo ao centro de gravidade, reduz a influência das acelerações associadas aos movimentos rotacionais. Além disso, o sensor deve ser instalado em uma região rígida, afastada de fontes intensas de vibração, como o motor, e protegido contra impactos e detritos.
+
+O torque produzido pelo motor é transmitido às rodas, que geram a força de tração \(F_{\mathrm{tração}}\). A aceleração do veículo depende da força resultante \(F_{\mathrm{resultante}}\), obtida pela diferença entre as forças propulsoras e as forças resistivas ao movimento. De acordo com a segunda lei de Newton, a aceleração longitudinal \(a_x\) está relacionada à massa total \(m\) do automodelo por:
 
 \begin{equation}\label{eq:newton}
 m\,a = F_{\text{tração}} - F_{\text{resistivos}},
@@ -309,13 +300,13 @@ Em síntese, as vantagens e desvantagens do ACS758 são as seguintes.
 
 Assim, entre os sensores de corrente avaliados, o ACS758 reúne o melhor compromisso entre
 isolamento galvânico, dissipação, faixa de medição e banda para as correntes e frequências deste
-sistema, sendo o sensor adotado neste trabalho para a medição da corrente de bateria.
+sistema.
 
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
 
 As quatro abordagens medem grandezas distintas, e cada uma se associa ao torque por um caminho
-próprio. A IMU mede a aceleração linear e a velocidade angular do chassi, o SS41F/41G mede a
+próprio. A IMU mede a aceleração linear, o SS41F/41G mede a
 velocidade angular de uma roda ou do eixo por pulsos, e o shunt e o sensor Hall linear medem a
 corrente elétrica por princípios físicos distintos.
 
