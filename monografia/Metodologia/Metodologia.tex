@@ -46,8 +46,13 @@ uma estrutura fixa. O cabo empregado em cada lado da balança mede $126$ cm; a b
 suspensa a $15$ cm do solo e o engate no veículo, a $28$ cm. Cada uma dessas dimensões foi
 medida três vezes, e os valores adotados são as médias das três leituras.
 
-% FIGURA: fotografia da montagem do ensaio --- automodelo ancorado, balança suspensa entre o
-% engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{Figuras/montagem_tracao.png}
+\caption{Montagem do ensaio de tração: automodelo ancorado pela balança de gancho suspensa
+entre o engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.}
+\label{fig:montagem}
+\end{figure}
 
 A tensão que a balança registra atua ao longo do cabo, e o cabo não é perfeitamente
 horizontal --- os engates estão a alturas diferentes. O cabo e a linha horizontal entre os
@@ -140,6 +145,14 @@ $1{,}65$ V. Um filtro RC de cerca de $24$ Hz limita a banda do sinal antes da co
 analógico-digital, realizada pelo ADC de $12$ bits do Due, com resolução de $122$ mA por degrau
 de conversão.
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/sensor_chassi.png}
+\caption{Sensor de corrente ACS758 instalado no ramo de alimentação, entre a bateria e o
+ESC, por adaptação com conector Deans-T.}
+\label{fig:sensor}
+\end{figure}
+
 \subsection{Aquisição e registro de dados}
 \label{sec:registro}
 
@@ -173,6 +186,14 @@ reconstruído por índice --- a $k$-ésima amostra do arquivo corresponde a $t =
 com $k = 0, 1, 2, \ldots$ ---, de modo que cada degrau de $15$ s gera cerca de $1550$ amostras
 sem perda de resolução temporal.
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{Figuras/bateria_pi.jpeg}
+\caption{Raspberry Pi embarcado com sua bateria dedicada e o conversor \emph{step-down} de
+alimentação.}
+\label{fig:pi}
+\end{figure}
+
 \section{Testes em Bancada}
 \label{sec:bancada}
 
@@ -201,6 +222,21 @@ $1{,}500$ kg --- desvio sistemático de $10$ g para cada $0{,}5$ kg, cerca de $2
 registrado como componente de incerteza na Seção \ref{sec:incertezas}. A resolução da balança,
 de $10$ g, integra o mesmo orçamento.
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/teste_bancada.jpeg}
+\caption{Verificação da cadeia de corrente em bancada: fonte ajustável, multímetro de
+referência e sensor ACS758 com o Arduino Due.}
+\label{fig:bancada}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/visao_pesos.jpeg}
+\caption{Verificação da balança com pesos padrão.}
+\label{fig:pesos}
+\end{figure}
+
 \section{Ensaio em Vazio}
 \label{sec:vazio}
 
@@ -212,6 +248,13 @@ para isolar a fração de corrente que efetivamente produz torque.
 \textbf{Configuração.} O veículo é apoiado de modo que as rodas motrizes fiquem suspensas em
 uma caixa, sem contato com a mesa, permanecendo livres para girar; o sensor de corrente e a
 cadeia de aquisição da Seção \ref{sec:registro} são empregados sem alterações.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/ensaio_vazio.jpeg}
+\caption{Ensaio em vazio: rodas motrizes suspensas em caixa, sem contato com a mesa.}
+\label{fig:vazio}
+\end{figure}
 
 \textbf{\emph{Checklist} pré-ensaio.} As mesmas três condições de toda sessão com o veículo: a
 bateria LiPo 2S deve estar carregada --- em repouso abaixo de $7{,}7$ V, o corte de baixa
