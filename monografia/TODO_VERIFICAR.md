@@ -239,28 +239,25 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   trava de forma sustentada e os pontos alinham. Texto ja acordado para o
   Cap. 4: validar o modelo pela descida (r2 = 0,96) e apresentar a subida como
   evidencia do regime de stick-slip, nao como contraexemplo.
-- [ ] **15. Planejamento da identificacao dinamica (FOPDT) — o que falta** —
-  **Ja temos (estatico, SUFICIENTE para o TCC):** zona morta, I0(u), K = 120
-  A/u, saturacao u_sat ~ 0,18, eta = 0,58-0,60, ponto nominal (105°, I0 = 12,2
-  A), r_ef = 0,0751 m, i = 11,5, specs do controlador. Com isso ja e possivel
-  montar o modelo estatico completo (Hammerstein), projetar o PI-IMC por
-  PRIORS (theta_a em [0,02; 0,1] s, tau em [0,05; 0,3] s) e validar em
-  simulacao com cenarios de robustez (K +/-20%, tau +/-30%) — "erro em degrau"
-  (Mp, ts, ess) e PRP sao avaliados NESTA simulacao.
-  **Falta para fechar a dinamica MEDIDA:** os parametros theta_a (atraso) e tau
-  (constante de tempo) de G1(s) = K*exp(-theta_a*s)/(tau*s+1), de u ate I. O
-  dado a 1 Hz NAO contem dinamica util: a resposta do ESC+eletromagnetico
-  (~50-100 ms) fica abaixo do periodo de amostragem (1 s), sobrando apenas o
-  valor de regime. Falta portanto: (1) ensaio a ~100 Hz (firmware fast JA
-  gravado no Due, 250000 baud) refazendo a escada 100-110° com os MESMOS
-  degraus de 15 s — cada borda de subida e uma resposta ao degrau; ACRESCENTAR
-  pulsos curtos de +/-2-3° em torno de 105° (1-2 s, >=3 repeticoes) para o
-  modelo linear em desvios; (2) ajustar FOPDT aos dados (minimos quadrados ou
-  metodo da area); (3) refazer o PI-IMC com theta/tau medidos e comparar com
-  o projeto por priors. Estimativa: 1 tarde. **Opcional (continuidade):** malha
-  fechada real de corrente no Raspberry (PI + leitura do ACS758), ja que a
-  forca nao e mensuravel online (balanca so tem display) — para o TCC basta a
-  simulacao.
+- [x] **15. DECISAO 26/10: escopo ESTATICO-ONLY — dinamica fica para trabalho futuro** —
+  A autora decidiu: somente a caracterizacao estatica entra na monografia.
+  **Esclarecimento tecnico registrado:** o ensaio dinamico de u->I (comando ->
+  corrente) NAO precisaria de célula de carga — o ACS758 + Due ja logam a 100 Hz
+  (firmware fast gravado). Célula de carga (HX711) seria necessaria apenas para
+  a dinamica u->F e para malha fechada de forca. A opcao u->I a 100 Hz continua
+  disponivel como meia-tarde opcional, mas fica FORA do escopo. **Consequencias
+  para o texto (ja alinhadas com os objetivos 1.3, que sao 100% estaticos —
+  NENHUM objetivo e refutado):**
+  (1) Cap. 4 = caracterizacao estatica completa (curva T x I validada, eta, zona
+  morta, saturacao, stick-slip, histerese aparente termica, incertezas);
+  (2) Cap. 5 = PROPOSTA de controlador (PI-IMC) PROJETADO POR PRIORS
+  (theta_a em [0,02;0,1] s, tau em [0,05;0,3] s) e AVALIADO EM SIMULACAO com
+  varredura de robustez (K +/-20%, tau +/-30%, GM>=6 dB, PM>=30°); proibido
+  afirmar "dinamica identificada experimentalmente" — declarar como limitacao;
+  (3) Trabalhos futuros = ensaio dinamico u->I a 100 Hz (sem custo) e/ou
+  dinamica u->F com célula de carga HX711 (~R$30) + malha fechada real;
+  (4) titulo: avaliar se menciona "dinamica" — preferir algo como
+  "Caracterizacao estatica do sistema de propulsao..." (verificar titulo atual).
 - [ ] **13. Comportamento "engasga e volta" nos degraus >118° (relato da autora, 25/10)** —
   Observado em bancada: acima de ~118° o carrinho acelera por um tempo, **corta
   (engasga), para e acelera de novo**, ciclicamente. Suspeita principal: **corte de
