@@ -409,68 +409,23 @@ proposta de instrumentação deste trabalho, apresentada na Seção~\ref{sec:pro
 Com base na comparação apresentada na Seção~\ref{sec:sintese}, este trabalho propõe a
 caracterização do sistema de propulsão do automodelo por meio de sua curva característica torque
 versus corrente. Para tanto, emprega-se uma instrumentação combinada: o sensor de efeito Hall
-linear ACS758 de ±200 A, instalado no ramo de alimentação do ESC, fornece a corrente elétrica
-consumida; uma balança digital de gancho, instalada na linha de tração do veículo, mede a força
-desenvolvida.
+linear ACS758, instalado no ramo de alimentação do ESC, fornece a corrente elétrica consumida;
+uma balança digital de gancho, instalada na linha de tração com o veículo ancorado, serve de
+padrão para a força desenvolvida --- configuração que converte a tração do propulsor em tensão
+mensurável e o torque na roda em um produto da força pelo raio efetivo.
 
-A medição da força de tração segue a configuração do ensaio de tração com o veículo ancorado:
-o veículo é impedido de se deslocar, a balança, instalada na linha de tração, mede a reação da
-ancoragem --- que iguala a tração desenvolvida pelas rodas ---, e o torque na roda é obtido por
-$T_\mathrm{roda} = F_{\text{tra\c{c}\~{a}o}}\,r_\mathrm{ef}$, com um único parâmetro geométrico,
-o raio efetivo da roda. A escolha da balança digital de mala em lugar de uma célula de carga
-dedicada segue o mesmo princípio de baixo custo já adotado na seleção do sensor de corrente.
+Dois ensaios complementares fornecem os dois modelos que a caracterização exige. O primeiro é
+estático: degraus de comando aplicados ao ESC com o veículo ancorado, registrando, em cada
+platô, a corrente consumida e a força na balança, de modo a construir a curva torque versus
+corrente ponto a ponto. O segundo é dinâmico: a corrente é amostrada em alta taxa durante os
+mesmos degraus, de modo a identificar a resposta temporal entre o comando e a corrente, sobre a
+qual a malha de controle atua.
 
-O ensaio é conduzido com o veículo acrescido de massa adicional fixada próxima ao centro de
-massa, condição adotada para elevar a aderência disponível entre pneus e piso. A massa não entra
-no equilíbrio estático da medição --- na configuração ancorada, a força registrada na balança
-iguala a tração desenvolvida, independentemente da massa do veículo ---, mas define o limite de
-patinagem: a tração máxima transferida cresce com a carga normal sobre as rodas motrizes. A
-curva característica obtida é, portanto, uma propriedade do conjunto propulsor, referida a essa
-condição de carregamento.
-
-A combinação das duas medições permite construir a curva característica torque versus corrente
-ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. Para além
-da característica estática, o projeto contempla a dinâmica do caminho de comando até a corrente,
-uma vez que é sobre essa dinâmica que a malha de controle atua. Dois ensaios complementares
-fornecem os dois modelos.
-
-O primeiro, denominado ensaio dinâmico, dispensa a leitura da balança --- daí também ser chamado
-ensaio cego --- e aplica degraus de comando na região de aderência do pneu, entre $100^\circ$ e
-$110^\circ$, com a corrente de bateria amostrada a $100$ Hz por firmware dedicado. Com o comando
-normalizado $u = (\theta - 95^\circ)/85^\circ$, que mapeia o neutro ($95^\circ$) em $u = 0$ e o
-máximo ($180^\circ$) em $u = 1$, pretende-se identificar, por resposta ao degrau, uma função de
-transferência de primeira ordem com atraso,
-
-\begin{equation}\label{eq:ft_ui}
-G_1(s) = \frac{I(s)}{u(s)} = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1},
-\end{equation}
-
-em que o ganho estático $K$, a constante de tempo $\tau$ e o atraso $\theta_a$ são os parâmetros
-a serem determinados experimentalmente.
-
-O segundo é o ensaio de tração estática, no qual o protocolo de degraus é repetido com o veículo
-ancorado e a força anotada na balança durante o platô de cada degrau. A corrente medida no ramo de
-alimentação é a corrente de bateria; conforme a Equação \eqref{eq:corrente_bateria}, com razão
-cíclica $D \approx u$, define-se a corrente de fase equivalente $I_\mathrm{fase} = I_\mathrm{bat}/u$.
-Um ensaio complementar, realizado com as rodas suspensas e sem carga, fornece a corrente de
-perdas $I_0(u)$ em cada comando. O torque na roda é, então, estimado por
-
-\begin{equation}\label{eq:torque_estimado}
-\hat{T}_\mathrm{roda} = \eta\,i\,K_t\,\frac{I_\mathrm{bat} - I_0(u)}{u},
-\end{equation}
-
-em que $\eta$ é o rendimento da transmissão, $i$ a redução, $K_t$ a constante de torque do motor e
-$r_\mathrm{ef}$ o raio efetivo da roda --- todos quantificados experimentalmente no Capítulo 3.
-A validação desse estimador contra as forças anotadas na balança, adotada como padrão de tração da
-caracterização, constitui o resultado central do trabalho.
-
-Sobre esses dois modelos estrutura-se a malha de controle de torque proposta. Um termo de
-\emph{feedforward}, dado pela inversa da característica estática, converte a referência de torque
-em corrente; um controlador PI de corrente, projetado sobre a função $G_1(s)$ pelo método de
-modelo interno, atua sobre a dinâmica entre comando e corrente; e um limitador de aderência impõe
-o torque máximo transferível, associado ao início da patinagem. A montagem experimental, o
-procedimento de ensaio por degraus de comando e o tratamento das incertezas são apresentados no
-Capítulo 3, e os resultados da caracterização, no Capítulo 4.
+A validação do modelo de torque contra a força medida pela balança constitui o resultado central
+do trabalho. Sobre os dois modelos identificados estrutura-se, em sequência, uma proposta de
+malha de controle de torque para o automodelo. A montagem experimental e o procedimento de
+ensaio são apresentados no Capítulo 3; os resultados da caracterização, no Capítulo 4; e o
+projeto do controlador, no Capítulo 5.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
