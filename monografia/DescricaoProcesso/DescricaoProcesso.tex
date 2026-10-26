@@ -189,27 +189,13 @@ de velocidade, sem nenhum modelo de torque, da mesma forma que a velocidade esti
 Motores brushless com sensores Hall integrados já são controlados dessa maneira, com os mesmos
 sinais servindo à comutação e à realimentação.
 
-Em síntese, as vantagens e desvantagens do SS41F/41G são as seguintes.
+Em síntese, a utilização do SS41F/41G apresenta vantagens e limitações para a instrumentação
+e o controle do automodelo:
 
-\begin{enumerate}
-    \item Vantagens: baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns; e fornece a velocidade por contagem direta dos pulsos.
-    \item Desvantagens: gera apenas pulsos associados à posição angular, sem informação sobre corrente elétrica ou torque; a estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme a Equação \eqref{eq:dinamica_rotacional}; e a instalação demanda alinhamento mecânico preciso entre o sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
-\end{enumerate}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+\begin{itemize}
+    \item \textbf{Vantagens:} baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns; e fornece a velocidade por contagem direta dos pulsos.
+    \item \textbf{Limitações:} gera apenas pulsos associados à posição angular, sem informação sobre corrente elétrica ou torque; a estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme a Equação \eqref{eq:dinamica_rotacional}; e a instalação demanda alinhamento mecânico preciso entre o sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
+\end{itemize}
 
 \subsection{Shunt Resistivo e Amplificador de Instrumentação (INA240)}
 \label{sec:ina240}
@@ -249,16 +235,17 @@ permanece ligado:
 Consequentemente, a leitura precisa ser interpretada considerando o ciclo de trabalho vigente. Essa ressalva
 se aplica igualmente a qualquer sensor instalado no ramo de alimentação, como se verá adiante.
 
-Em síntese, as vantagens e desvantagens do arranjo com shunt e INA240 são as seguintes.
-
-\begin{enumerate}
-    \item Vantagens: proporciona uma medida direta da corrente, com boa linearidade e ampla largura de banda a baixo custo.
-    \item Desvantagens: dissipação de potência sob correntes elevadas, distorção da leitura em alta frequência decorrente da indutância parasita do resistor e ausência de isolamento galvânico --- contato elétrico direto entre o circuito de medição e o de potência.
-\end{enumerate}
-
 Dessa forma, o arranjo com shunt reúne banda e linearidade adequadas à medição, mas a ausência de
 isolamento galvânico e a dissipação crescente com o quadrado da corrente afastam-no da montagem de
 bancada adotada neste trabalho, na qual o circuito de medição permanece próximo ao computador de bordo.
+
+Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
+instrumentação e o controle do automodelo:
+
+\begin{itemize}
+    \item \textbf{Vantagens:} proporciona uma medida direta da corrente, com boa linearidade e ampla largura de banda a baixo custo.
+    \item \textbf{Limitações:} dissipação de potência sob correntes elevadas, distorção da leitura em alta frequência decorrente da indutância parasita do resistor e ausência de isolamento galvânico --- contato elétrico direto entre o circuito de medição e o de potência.
+\end{itemize}
 
 \subsection{Sensor de Efeito Hall Linear (ACS758/ACS712)}
 \label{sec:acshall}
@@ -319,16 +306,17 @@ devendo ser tratada como condição de calibração experimental própria, o que
 Por fim, a relação entre corrente e torque pode deixar de ser aproximadamente linear em correntes
 elevadas, exigindo calibração experimental adicional, também retomada naquele capítulo.
 
-Em síntese, as vantagens e desvantagens do ACS758 são as seguintes.
-
-\begin{enumerate}
-    \item Vantagens: isolamento galvânico, sem dissipação adicional significativa e com banda suficiente para o chaveamento do ESC.
-    \item Desvantagens: resolução inferior à do shunt para a mesma faixa, faixa máxima inferior ao pico do ESC, sensibilidade dependente da alimentação e sensibilidade a ruído eletromagnético.
-\end{enumerate}
-
 Assim, entre os sensores de corrente avaliados, o ACS758 reúne o melhor compromisso entre
 isolamento galvânico, dissipação, faixa de medição e banda para as correntes e frequências deste
-sistema.
+sistema, sendo o sensor adotado na cadeia de aquisição deste trabalho.
+
+Em síntese, a utilização do ACS758 apresenta vantagens e limitações para a instrumentação e o
+controle do automodelo:
+
+\begin{itemize}
+    \item \textbf{Vantagens:} isolamento galvânico, sem dissipação adicional significativa e com banda suficiente para o chaveamento do ESC.
+    \item \textbf{Limitações:} resolução inferior à do shunt para a mesma faixa, faixa máxima inferior ao pico do ESC, sensibilidade dependente da alimentação e sensibilidade a ruído eletromagnético.
+\end{itemize}
 
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
