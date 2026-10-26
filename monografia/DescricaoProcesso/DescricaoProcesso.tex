@@ -62,52 +62,52 @@ discutem sua aplicabilidade na caracterização do sistema e fundamentam a opç�
 \subsection{Sensor Inercial (IMU)}
 \label{sec:imu}
 
-A Unidade de Medição Inercial (*Inertial Measurement Unit* — IMU) reúne, geralmente, um acelerômetro e um giroscópio triaxiais, que medem, respectivamente, a aceleração específica \(a\) e a velocidade angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). O acelerômetro utiliza uma pequena massa suspensa por elementos elásticos, cujo deslocamento relativo à estrutura do sensor é convertido em sinal elétrico. O giroscópio, por sua vez, utiliza os efeitos da força de Coriolis sobre uma massa vibrante para determinar a velocidade angular.
+A Unidade de Medição Inercial (*Inertial Measurement Unit* — IMU) reúne, geralmente, um acelerômetro 
+e um giroscópio triaxiais, que medem, respectivamente, a aceleração específica \(a\) e a velocidade 
+angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). Para caracterizar o movimento do automodelo, 
+a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos 
+alinhados às direções longitudinal, lateral e vertical do veículo, de preferência afastada de fontes 
+intensas de vibração e protegido contra impactos e detritos.
 
-Para caracterizar o movimento do automodelo, a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos alinhados às direções longitudinal, lateral e vertical do veículo. Esse posicionamento facilita a interpretação dos dados e, quando próximo ao centro de gravidade, reduz a influência das acelerações associadas aos movimentos rotacionais. Além disso, o sensor deve ser instalado em uma região rígida, afastada de fontes intensas de vibração, como o motor, e protegido contra impactos e detritos.
+O torque produzido pelo motor \(T_{\mathrm{motor}}\) é transmitido às rodas pelo sistema de transmissão, 
+resultando em um torque nas rodas \(T_{\mathrm{roda}}\). Considerando a relação de transmissão \(i\) e o 
+rendimento mecânico \(\eta\), essa relação é expressa por:
 
-O torque produzido pelo motor é transmitido às rodas, que geram a força de tração \(F_{\mathrm{tração}}\). A aceleração do veículo depende da força resultante \(F_{\mathrm{resultante}}\), obtida pela diferença entre as forças propulsoras e as forças resistivas ao movimento. De acordo com a segunda lei de Newton, a aceleração longitudinal \(a_x\) está relacionada à massa total \(m\) do automodelo por:
-
-\begin{equation}\label{eq:newton}
-m\,a = F_{\text{tração}} - F_{\text{resistivos}},
-\end{equation}
-em que $m$ é a massa do veículo e $F_{\text{resistivos}}$ reúne as contribuições do atrito de rolamento
-e do arrasto aerodinâmico. Na roda, a força de tração é dada por $F_{\text{tração}} = T_\mathrm{roda}/r$, sendo $r$ o
-raio efetivo da roda, e o torque nas rodas é o torque do motor multiplicado pela redução $i$ e
-pelo rendimento $\eta$ da transmissão,
-\begin{equation}\label{eq:transmissao}
-T_\mathrm{roda} = i\,\eta\,T_{\text{motor}}.
-\end{equation}
-
-Combinando as Equações \eqref{eq:newton} e \eqref{eq:transmissao}, o torque do motor pode ser
-estimado a partir da aceleração:
-\begin{equation}\label{eq:torque_motor}
-T_{\text{motor}} = \frac{r\,(m\,a + F_{\text{resistivos}})}{i\,\eta}.
+\begin{equation}
+\label{eq:transmissao}
+T_{\mathrm{roda}} = i\,\eta\,T_{\mathrm{motor}}.
 \end{equation}
 
-Essa estimativa, contudo, exige que se desfaça toda a cadeia de transformações que vai da causa ao
-efeito. O torque é a causa; a aceleração é o efeito líquido, já descontadas as perdas de cada etapa,
-que o sensor efetivamente capta. Para recuperar a causa, cada passo da operação inversa requer um
-parâmetro que a IMU não mede: a massa $m$ e as resistências $F_{\text{resistivos}}$ na passagem da
-aceleração à força; o raio da roda $r$ e o rendimento da transmissão $\eta$ na passagem da força ao
-torque.
+Nas rodas, o torque é convertido em força de tração \(F_{\mathrm{tração}}\), que atua sobre o solo e impulsiona 
+o veículo. Considerando o raio efetivo \(r\) da roda e desprezando perdas no contato pneu-solo, essa força é dada por:
 
-Para obter a velocidade do veículo, a aceleração medida $a_m$ é integrada no tempo,
-\begin{equation}\label{eq:integral}
-\hat{v}(t) = \hat{v}(0) + \int_0^t a_m(\tau)\,d\tau.
+\begin{equation}
+\label{eq:forca_tracao}
+F_{\mathrm{tração}} = \frac{T_{\mathrm{roda}}}{r}.
 \end{equation}
 
-Na prática, essa integração acumula o erro de medida e a estimativa $\hat{v}$ se afasta da
-velocidade real $v$ ao longo do tempo. Quanto à fixação, a IMU deve ser instalada em uma placa rígida
-do chassi, o mais próximo possível do centro de massa e o mais afastado possível do ESC, do motor
-e da transmissão, que são as principais fontes de vibração, com seus eixos alinhados aos eixos
-longitudinal, lateral e vertical. Cabe notar que a malha poderia, em princípio, ser fechada
-diretamente sobre a aceleração medida, dispensando a integração e sua deriva. Essa alternativa
-rejeita perturbações que alteram o torque do conjunto --- como variações de carga e de inclinação
----, mas não garante o seguimento de uma referência de velocidade, uma vez que nenhuma
-realimentação atua sobre essa grandeza. Para o objetivo de controlar a velocidade do veículo, a
-estimativa por integração permanece, portanto, necessária. Com a velocidade estimada, a malha de
-controle se fecha na seguinte sequência:
+A aceleração longitudinal do automodelo depende da força resultante \(F_{\mathrm{resultante}}\), obtida pela 
+diferença entre a força de tração e as forças resistivas ao movimento. De acordo com a segunda lei de Newton, 
+essa relação é descrita por:
+
+\begin{equation}
+\label{eq:newton}
+m\,a_x = F_{\mathrm{tração}} - F_{\mathrm{resistivos}},
+\end{equation}
+
+em que \(m\) é a massa total do veículo, \(a_x\) é a aceleração longitudinal e \(F_{\mathrm{resistivos}}\) 
+representa a resultante das forças resistivas, como o atrito de rolamento e o arrasto aerodinâmico.
+
+No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, $v(t)$,
+sendo estimada a partir da integração numerica das medições de aceleração, denotada por $\hat{v}(t)$, enquanto a 
+variável manipulada é o comando de aceleração \(u(t)\) enviado ao ESC via rádio ou o degrau enviado pelo Rapsberry 
+Pi embarcado, calculado a partir do erro de velocidade, dado por:
+
+\begin{equation}
+e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t),
+\end{equation}
+
+Com a velocidade estimada, a malha de controle se fecha na seguinte sequência:
 
 \begin{enumerate}
     \item a velocidade de referência $v_\mathrm{ref}$ é comparada à velocidade estimada $\hat{v}$, gerando o erro $e = v_\mathrm{ref} - \hat{v}$;
