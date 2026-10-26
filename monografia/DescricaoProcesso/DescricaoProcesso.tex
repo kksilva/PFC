@@ -67,7 +67,7 @@ e um giroscópio triaxiais, que medem, respectivamente, a aceleração específi
 angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). Para caracterizar o movimento do automodelo, 
 a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos 
 alinhados às direções longitudinal, lateral e vertical do veículo, de preferência afastada de fontes 
-intensas de vibração e protegido contra impactos e detritos.
+intensas de vibração e protegida contra impactos e detritos.
 
 O torque produzido pelo motor \(T_{\mathrm{motor}}\) é transmitido às rodas pelo sistema de transmissão, 
 resultando em um torque nas rodas \(T_{\mathrm{roda}}\). Considerando a relação de transmissão \(i\) e o 
@@ -104,7 +104,7 @@ partir das medições da IMU:
 \begin{equation}\label{eq:integral}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\tau)\,d\tau.
 \end{equation}
-A velocidade desejada é definida pela referência \(v_{\mathrm{ref}}(t)\), definindo o
+A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle:
 
 \begin{equation}
@@ -113,13 +113,13 @@ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t).
 \end{equation}
 
 A partir desse erro, o controlador calcula a variável manipulada \(u(t)\), correspondente ao comando de acionamento enviado ao ESC
-modulado em largura de pulsos (pwm), seja gerado pelo Raspberry Pi ou pelo rádio. Para fechar a malha de velocidade, o comando deve
-ser atualizado automaticamente pelo controlador com base no erro calculado. Assim, pode ser descrito por::
+modulado em largura de pulsos (PWM), seja gerado pelo Raspberry Pi ou pelo rádio. Para fechar a malha de velocidade, o comando deve
+ser atualizado automaticamente pelo controlador com base no erro calculado. Assim, o funcionamento da malha pode ser descrito pela seguinte sequência:
 
 \begin{enumerate}
     \item A velocidade de referência \(v_{\mathrm{ref}}(t)\) é comparada à velocidade estimada \(\hat{v}(t)\), produzindo o erro \(e_v(t)\).
-    \item O controlador de malha fechadautiliza esse erro para calcular o comando de acionamento \(u(t)\).
-    \item O comando é transmitido coomo sinal modulado em largura de pulsos (pwm)    
+    \item O controlador de malha fechada utiliza esse erro para calcular o comando de acionamento \(u(t)\).
+    \item O comando é transmitido como sinal modulado em largura de pulsos (PWM);
     \item O ESC interpreta o comando e controla eletronicamente a energia fornecida pela bateria aos enrolamentos do motor brushless.
     \item O motor produz torque, transmitido às rodas pelo sistema de transmissão, gerando força de tração e movimento do veículo.
     \item A IMU mede a aceleração específica do chassi. Após o processamento, a aceleração longitudinal estimada é integrada numericamente para atualizar \(\hat{v}(t)\).
@@ -138,7 +138,7 @@ pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincro
 \footnotesize{Fonte: RudraNarayanG, via Instructables (s.d.).}
 \end{figure}
 
-Para a proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar a taxa de variação do comando $u$, suavizando a
+Para a proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar a taxa de variação do comando \(u\), suavizando a
 aceleração e reduzindo os picos de torque na transmissão. Essa ação é apenas parcialmente preventiva, pois atua depois que o pico já começou
 a ser medido. Desse modo, o sensor cumpre o objetivo de realimentação de velocidade, mas não o de proteção elétrica direta dos componentes.
 
@@ -195,6 +195,21 @@ Em síntese, as vantagens e desvantagens do SS41F/41G são as seguintes.
     \item Vantagens: baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns; e fornece a velocidade por contagem direta dos pulsos.
     \item Desvantagens: gera apenas pulsos associados à posição angular, sem informação sobre corrente elétrica ou torque; a estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme a Equação \eqref{eq:dinamica_rotacional}; e a instalação demanda alinhamento mecânico preciso entre o sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
 \end{enumerate}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 \subsection{Shunt Resistivo e Amplificador de Instrumentação (INA240)}
 \label{sec:ina240}
