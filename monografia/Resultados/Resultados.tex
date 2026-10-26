@@ -59,10 +59,10 @@ I_0(u) = 0{,}54 + 9{,}36\,u,
 com coeficiente de determinação $r^2 = 0{,}97$. O coeficiente $r^2$ mede a fração da
 variância dos dados que o ajuste explica --- valor $1$ corresponderia a alinhamento perfeito;
 $0{,}97$ indica que a relação é substancialmente linear. O resultado tem duas leituras. Para
-o modelo, fornece a subtração $(I - I_0)$ da Seção \ref{sec:resvalidacao}. E, por si só,
-evidencia a linearidade do ESC: se o \emph{duty cycle} entregue ao motor crescesse de forma
-não linear com o comando, a corrente de perdas --- proporcional a esse \emph{duty} ---
-não se ajustaria a uma reta.
+o modelo, fornece a subtração $(I - I_0)$ da Seção \ref{sec:resvalidacao}. Como comportamento isolado, o ajuste é compatível com a linearidade do
+ESC: se o \emph{duty cycle} entregue ao motor crescesse de forma não linear com o comando, a
+corrente de perdas --- proporcional a esse \emph{duty} --- dificilmente se ajustaria a uma
+reta.
 
 \section{A Curva Característica}
 \label{sec:rescurva}
@@ -167,12 +167,11 @@ está sendo aplicado fora de sua região de validade, e o sinal é usado justame
 delimitá-la.
 
 Da força máxima de $52$ N e da massa do conjunto, $6{,}640$ kg (peso de $65{,}1$ N), resulta
-um coeficiente de atrito aparente $\mu \approx 0{,}80$ entre pneu e piso. O valor é
-condizente com a literatura de borracha em piso seco, à condição de se considerar a
-transferência de carga: sob a tração, a dianteira do veículo descarrega e o eixo traseiro ---
-motriz --- carrega, de modo que a força normal sobre as rodas motrizes excede a fração
-estática do peso. Sem essa transferência, o $\mu$ implicado superaria $1$, incompatível com
-atrito seco. O torque máximo correspondente, $T = 52 \times 0{,}0751$, é de aproximadamente
+um coeficiente de atrito aparente $\mu \approx 0{,}80$, tomado sobre o peso total. O
+valor só é compatível com atrito seco se a força normal efetiva sobre as rodas motrizes
+exceder a fração estática do peso --- o que exige transferência de carga: sob a tração, a
+dianteira do veículo descarrega e o eixo traseiro, motriz, carrega. Sem essa transferência, o
+coeficiente implicado superaria $1$, o que os dados não sustentariam. O torque máximo correspondente, $T = 52 \times 0{,}0751$, é de aproximadamente
 $3{,}9$ N$\cdot$m.
 
 \section{Dinâmica Comando $\rightarrow$ Corrente}
@@ -202,16 +201,12 @@ adota-se a soma, de aproximadamente $2$ s, como descriptor da dinâmica.
 % FIGURA: respostas ao degrau normalizadas (bordas 100-109°) com o ajuste FOPDT — gerar de
 % ensaios/ensaio_cego_subida.csv.
 
-O valor de $\tau$ refuta o \emph{prior} clássico da literatura, que situa a constante de
-tempo do caminho comando--corrente entre $0{,}05$ e $0{,}3$ s com base na constante elétrica
-$L/R$ do enrolamento. Essa constante, de fato, vale milissegundos; mas ela não governa o
-comportamento medido, dominado pelo escalonamento interno do ESC --- o controle de
-progressividade (\emph{soft-start} / \emph{punch control}) e o sequenciamento de partida
-\emph{sensorless} com a roda travada impõem uma rampa de corrente da ordem de segundos. A
-constante de tempo de $1{,}8$ a $2{,}0$ s é, assim, um achado do trabalho, com consequência
-direta para o projeto do controlador: a planta é lenta, e o controlador não pode exigir dela
-uma resposta muito mais rápida que a sua --- imposição que se traduz, no Capítulo
-\ref{chap:conclusao}, na escolha do parâmetro de ajuste $\lambda$.
+O valor de $\tau$ confronta o \emph{prior} usual para o caminho comando--corrente, que a
+literatura situa entre $0{,}05$ e $0{,}3$ s com base na constante elétrica $L/R$ do
+enrolamento --- constante que, de fato, vale milissegundos, mas que não é a observada no
+comportamento do conjunto. O valor medido indica que a dinâmica do caminho é dominada pelo
+próprio ESC, por seu escalonamento interno de corrente, e não pelo enrolamento do motor. A
+consequência para o projeto do controlador é examinada no Capítulo \ref{chap:conclusao}.
 
 O regime só se assenta após cerca de quatro constantes de tempo, $4\tau \approx 7$ s ---
 o que valida, \emph{a posteriori}, a janela de anotação da força nos segundos $7$ a $9$ do
@@ -255,8 +250,7 @@ máxima de $52$ N e revelou o \emph{stick-slip} do pneu frio, a memória térmic
 aquecido e o corte cíclico do ESC nos degraus extremos. O modelo de torque foi validado pela
 descida, com rendimento $\eta = 0{,}579$ e $r^2 = 0{,}962$, delimitada à região de aderência.
 E a dinâmica comando--corrente foi identificada com constante de tempo de $1{,}8$ a $2{,}0$ s
-e atraso desprezível, refutando o \emph{prior} clássico e impondo o ritmo da planta ao
-controlador. Sobre esses resultados estrutura-se a malha de controle de torque, objeto do
+e atraso desprezível, em confronto com o \emph{prior} clássico do caminho comando--corrente. Sobre esses resultados estrutura-se a malha de controle de torque, objeto do
 Capítulo \ref{chap:conclusao}.
 
 \clearpage

@@ -256,6 +256,12 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   das três leituras" — toda dimensão, pesagem e leitura de calibração carrega a multiplicidade.
 - **Atribuições em forma acadêmica impessoal.** "disponibilizado pelo orientador" /
   "desenvolvido no âmbito deste trabalho" — crédito claro sem quebrar o registro.
+- **Não afirmar além dos dados recebidos.** Se a conclusão não decorre dos dados da autora, o
+  texto hedged ("é compatível com", "a interpretação mais plausível é") ou silencia.
+  Interpretações e consequências (o que os resultados implicam para o controlador, hipóteses
+  de causa, discussão com a literatura) pertencem à **Conclusão**, não ao corpo de Resultados —
+  onde só vive o que foi medido. Afirmar causa sem instrumentação (ex.: memória térmica vs.
+  bateria aquecida) é atacável em banca; apresentar a alternativa e o que a separaria é defensável.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.
