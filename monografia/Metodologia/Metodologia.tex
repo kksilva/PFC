@@ -1,0 +1,304 @@
+\chapter{Metodologia}
+\label{chap:metodologia}
+
+Este capítulo descreve os métodos experimentais empregados para caracterizar a curva torque
+versus corrente do sistema de propulsão do automodelo, bem como a dinâmica entre o comando
+aplicado e a corrente consumida. Para cada escolha metodológica, são apresentados o princípio
+que a fundamenta, as alternativas consideradas e o veredito que definiu a configuração final do
+ensaio, de modo a permitir a reprodução integral do procedimento.
+
+\section{Escolha da Instrumentação e Montagem do Ensaio de Tração Estática}
+\label{sec:montagem}
+
+A caracterização do sistema de propulsão exige a medição simultânea de duas grandezas: a
+força de tração desenvolvida pelas rodas e a corrente elétrica consumida pelo conjunto. A
+força, contudo, só se manifesta enquanto o veículo está em movimento; para medir essa
+grandeza em condição estacionária, optou-se pelo ensaio de tração com o veículo ancorado, uma
+configuração formalizada em normas de ensaio de trator agrícola \cite{abnt7899} e largamente
+adotada em caracterizações de veículos de pequeno porte, como a prova de tração do Baja SAE
+\cite{saebaja2021, franca2020baja}. Nessa configuração, o veículo é impedido de se deslocar e
+a força de reação da ancoragem iguala a tração desenvolvida, permitindo medir o esforço
+mecânico sem necessidade de dinamômetro dedicado.
+
+\subsection{Padrão de força}
+\label{sec:padraoforca}
+
+Como padrão de força, adotou-se uma balança digital de mala com gancho, dispositivo que exibe
+diretamente a tensão aplicada ao gancho com resolução de 10 g. A alternativa natural a essa
+escolha seria uma célula de carga com condicionador e registrador; contudo, essa solução
+exigiria montagem eletrônica adicional e não agregaria precisão suficiente para justificar o
+custo na faixa de forças do ensaio, que permanece abaixo de 6 kgf. O dinamômetro comercial,
+por sua vez, é inviável em termos de custo e disponibilidade para um automodelo de escala
+1/8, e a célula de carga com registrador constitui proposta de continuidade deste
+trabalho, uma vez que viabilizaria a medição dinâmica da força, inacessível com a leitura
+manual do display. Dessa forma, a balança de mala constitui o melhor compromisso entre custo,
+simplicidade e adequação ao objeto de estudo.
+
+Na montagem, o automodelo é ancorado pelo para-choque dianteiro, ao qual é engatado o gancho
+da balança, que por sua vez é presa a uma estrutura fixa. Com o veículo impedido de se
+deslocar, a leitura da balança iguala a componente horizontal da tração, e o torque na roda é
+obtido diretamente por
+
+\begin{equation}\label{eq:torque_f_r}
+T_\mathrm{roda} = F\,r_\mathrm{ef},
+\end{equation}
+em que $F$ é a força registrada na balança e $r_\mathrm{ef}$ é o raio efetivo da roda,
+determinado experimentalmente na Seção~\ref{sec:raioefetivo}.
+
+% FIGURA: fotografia da montagem do ensaio --- automodelo ancorado ao armário pela balança
+% de gancho suspensa pela alça, com os halteres sobre o centro de massa.
+
+\subsection{Massa adicional e aderência}
+\label{sec:massaaderencia}
+
+Sobre o centro de massa do veículo foram fixados dois halteres de 1 kg, elevando a massa
+total a aproximadamente 7,1 kg. Essa massa adicional tem função exclusivamente condicionante:
+ela aumenta a carga normal sobre os pneus e, com ela, a força de atrito disponível entre
+pneus e piso, de modo a retardar o início da patinagem nas faixas de comando mais altas. Em
+condições de ensaio estático, a massa não interfere na medida, uma vez que a força registrada
+na balança iguala a tração desenvolvida, independentemente da massa do veículo. A condição de
+carregamento, contudo, integra a especificação do ensaio, pois a tração máxima transferível
+antes da patinagem depende diretamente dessa massa; a curva característica obtida refere-se,
+portanto, a um veículo de 7,1 kg ancorado sobre o piso de ensaio.
+
+A escolha dos halteres em vez de outras formas de lastro deveu-se à disponibilidade imediata,
+à facilidade de fixação por fita adesiva e velcro sobre a carroceria e à simetria da carga em
+relação ao centro de massa, condição que preserva a distribuição original de peso entre os
+eixos.
+
+% FIGURA: diagrama em blocos da cadeia de ensaio --- Raspberry Pi → PCA9685 → ESC → motor →
+% transmissão → rodas → balança; e ramo elétrico: bateria LiPo → ACS758 → Arduino Due → notebook.
+
+\section{O Ângulo do Cabo e a Evidência de Alinhamento}
+\label{sec:angulocabo}
+
+Quando a linha de tração forma um ângulo $\theta$ com o eixo longitudinal do sensor, apenas a
+componente útil da força é registrada, de modo que a força indicada relaciona-se à força real
+por
+
+\begin{equation}\label{eq:cosseno}
+F_\mathrm{medida} = F_\mathrm{real}\,\cos\theta.
+\end{equation}
+
+Para $\theta$ pequeno, o fator $\cos\theta$ difere da unidade por menos de $\theta^2/2$, e o
+erro cometido ao desprezá-lo permanece abaixo de 0,5\% mesmo para desníveis de alguns
+centímetros ao longo de um metro de percurso do cabo. A questão metodológica, nesse caso, não
+é o valor numérico da correção, mas a possibilidade de o ângulo variar de um degrau para
+outro, o que introduziria um erro não controlado ponto a ponto da curva característica.
+
+A montagem final elimina essa variabilidade por construção: a balança é suspensa pela própria
+alça, de modo que o eixo interno do instrumento se alinha espontaneamente à linha de tração,
+mantendo-se horizontal enquanto os pontos de engate estiverem em alturas próximas. O ângulo
+residual depende, portanto, apenas da geometria de engate entre o para-choque e a estrutura
+de ancoragem, condição estável ao longo de toda a escada de degraus.
+
+Essa decisão foi verificada experimentalmente. Pesou-se o veículo na vertical, suspenso
+diretamente pela balança, e na horizontal, com o cabo de tração esticado ao máximo na
+configuração de ensaio. As leituras obtidas foram 5,140 kg e 5,130 kg, respectivamente, uma
+concordância de 0,19\% --- valor abaixo da resolução de 10 g do instrumento e consistente com
+$\theta \approx 0$. Registrou-se, portanto, a decisão de não medir $\theta$ a cada degrau e de
+não aplicar correção trigonométrica aos dados, uma vez que a evidência experimental indica
+que o desalinhamento é desprezível frente às demais fontes de incerteza do ensaio.
+
+\section{Medida do Raio Efetivo da Roda pelo Método \emph{Roll-out}}
+\label{sec:raioefetivo}
+
+O torque na roda, conforme a Equação \eqref{eq:torque_f_r}, exige o raio $r_\mathrm{ef}$ com
+precisão compatível à das demais grandezas. O valor nominal do fabricante, de 80 mm, refere-se
+ao diâmetro de 160 mm de um pneu novo e sem carga, condição que não corresponde à operação
+real, na qual a deflexão do pneu sob o peso do veículo reduz o raio de rolagem. Para capturar
+essa condição, adotou-se o método \emph{roll-out}, que consiste em medir a distância
+percorrida por um número inteiro de voltas completas da roda:
+
+\begin{equation}\label{eq:rollout}
+r_\mathrm{ef} = \frac{L}{2\pi n},
+\end{equation}
+em que $L$ é a distância percorrida e $n$ é o número de voltas completas.
+
+Com o veículo em condição de ensaio, sobre o piso e com a massa adicional, marcou-se o ponto
+de contato do pneu e deslocou-se o veículo em linha reta até completar $n = 5$ voltas,
+obtendo-se $L = 236$ cm. Da Equação \eqref{eq:rollout}, resulta
+
+\begin{equation}\label{eq:raio_efetivo}
+r_\mathrm{ef} = \frac{2{,}36}{2\pi \times 5} = 0{,}0751\ \mathrm{m}.
+\end{equation}
+
+O raio efetivo é, portanto, 6,1\% menor que o nominal, deflexão esperada para um pneu macio
+de perfil alto sob carga, com incerteza de medição inferior a 0,5\%. O uso do valor efetivo em
+$T_\mathrm{roda} = F\,r_\mathrm{ef}$ garante que o torque calculado corresponda ao torque
+realmente entregue ao solo na condição de ensaio, e não a um valor geométrico idealizado.
+
+\section{Cadeia de Aquisição e Geração de Degraus}
+\label{sec:cadeia}
+
+\subsection{Aquisição da corrente}
+\label{sec:aquisicao}
+
+A corrente é medida pelo sensor ACS758 de ±200 A, instalado em série no ramo de alimentação
+entre a bateria LiPo e o ESC, e alimentado em 3,3 V pelo Arduino Due, cuja lógica nativa
+opera nessa tensão. Por se tratar de saída ratiométrica, a operação a 3,3 V desloca a tensão
+de repouso para a metade da alimentação e reduz a sensibilidade para aproximadamente
+6,6 mV/A, condição tratada como calibração experimental própria, com compensação do
+\emph{offset} executada no firmware a cada sessão de ensaio. O conversor analógico-digital do
+Due, de 12 bits com referência de 3,3 V, confere resolução de aproximadamente 122 mA por
+degrau de contagem. Um filtro RC com frequência de corte de aproximadamente 24 Hz é
+interposto entre a saída do sensor e a entrada do conversor, atenuando o ruído do
+chaveamento do ESC antes da amostragem.
+
+O firmware básico (\texttt{Sensor\_de\_Corrente\_ACS758.ino}) realiza, a cada ponto,
+a média de 100 leituras consecutivas do ADC, completadas em cerca de 1 ms, e transmite um
+ponto por segundo pela porta serial. Essa cadeia define a taxa de 1 Hz do ensaio de escada, na
+qual a corrente de cada degrau é registrada de forma praticamente instantânea em relação à
+dinâmica mecânica lenta do veículo ancorado.
+
+\subsection{Ensaio dinâmico a 100 Hz}
+\label{sec:cadeiafast}
+
+Para a identificação da dinâmica entre o comando e a corrente, empregou-se um firmware
+dedicado (\texttt{Sensor\_de\_Corrente\_ACS758\_fast.ino}), com período de amostragem de
+10 ms, correspondente a aproximadamente 100 Hz. Essa taxa atende à recomendação clássica de
+amostrar de 10 a 30 vezes acima da banda do sinal de interesse \cite{astrom1997computer,
+franklin1998digital}, de modo a preservar os transientes de corrente do ESC, cuja resposta ao
+degrau se desenvolve em dezenas de milissegundos, e a satisfaz a exigência de dez a vinte
+amostras no tempo de subida para a qualidade da estimativa de modelos dinâmicos
+\cite{ljung1999system}. Nesse regime, o filtro RC de 24 Hz assume o papel de filtro
+anti-\emph{aliasing}, posicionando sua frequência de corte abaixo da frequência de Nyquist de
+50 Hz.
+
+Registra-se aqui uma particularidade técnica do ensaio a 100 Hz, que constitui
+condição dos dados. A essa taxa, o buffer da porta serial agrupa as amostras em rajadas de
+aproximadamente dez pontos, recebidos com o mesmo carimbo de tempo em blocos de 100 ms.
+A ordem serial das amostras, contudo, é integralmente preservada, de modo que o retempo
+interno dos dados é válido: atribui-se a cada amostra o instante $t_k = k \times 10$ ms,
+com $k$ o índice sequencial dentro do arquivo. Cada bloco de 15 s de degrau contém cerca de
+1550 amostras, quantidade suficiente para a análise dos transientes de subida e descida.
+
+\subsection{Geração dos degraus de comando}
+\label{sec:degraus}
+
+Os degraus de comando são gerados por uma Raspberry Pi embarcada, que comanda o módulo
+PCA9685 --- gerador de pulsos PWM por barramento I$^2$C --- na faixa de 90° a 180°, com
+neutro estabelecido em 95°. Adotou-se a normalização do comando por
+
+\begin{equation}\label{eq:normalizacao}
+u = \frac{\theta - 95}{85},
+\end{equation}
+em que $\theta$ é o ângulo de comando e $u \in [0,1]$ varre a faixa inteira de operação do ESC.
+A geração por computador de bordo, em lugar do controle remoto manual, garante degraus
+reprodutíveis, com amplitude, duração e sequência programadas, e dispensa a manipulação do
+rádio durante o ensaio. O ensaio de escada é conduzido por \emph{scripts} Python executados
+no notebook por \emph{ssh}, com confirmação de cada degrau; o ensaio dinâmico é disparado
+pelo próprio Raspberry Pi, sem dependência de rede, com a janela de cada bloco ancorada na
+resposta elétrica registrada, de modo a tornar o ensaio imune a interrupções do enlace sem
+fio.
+
+\section{Procedimento Experimental}
+\label{sec:procedimento}
+
+\subsection{Checklist pré-ensaio}
+\label{sec:checklist}
+
+Antes de cada série, verificam-se três condições operacionais, consolidadas após episódios de
+falha registrados durante o desenvolvimento do método. Primeiro, a tensão da bateria LiPo em
+repouso deve ser de pelo menos 7,7 V; abaixo desse valor, a proteção de subtensão do ESC
+reduz ou bloqueia a entrega de potência sob carga, tornando os degraus executados
+indistinguíveis de falhas reais do sistema. Segundo, a bateria dedicada do Raspberry Pi deve
+estar carregada, uma vez que sua descarga provoca quedas do enlace de rede e perda da
+telemetria no momento do disparo. Terceiro, o notebook deve estar conectado à rede do
+Raspberry, verificada pelo nome da rede sem fio e por conexão de teste, garantindo que os
+comandos de degrau e o registro da corrente ocorram sem interrupção.
+
+\subsection{Protocolo dos degraus}
+\label{sec:protocolo}
+
+Cada degrau segue um protocolo fixo. A balança é tarada antes de cada degrau, com o veículo
+em repouso e o cabo tenso, pois o conjunto de suspensão e corda relaxa a cada aplicação de força,
+apresentando deriva de aproximadamente 0,1 a 0,2 kg entre degraus; a taragem individual
+elimina o erro acumulado na força, e nunca é realizada durante a aplicação do degrau. O
+comando é então aplicado por 15 s, e a força é anotada nos últimos 3 s da janela, quando os
+transientes mecânicos já se dissiparam e a leitura se estabiliza. Entre degraus, permanece-se
+em repouso para a recuperação da tensão da bateria.
+
+A escada de subida cobre os ângulos de 95° a 119° e a de descida, de 120° a 113°, em passos de
+1°, com repetições por degrau para a avaliação da repetibilidade. Além da escada sob carga,
+conduziu-se um ensaio em vazio, com a roda suspensa, que fornece a corrente de perdas
+$I_0(u)$ para cada comando, grandeza necessária à separação entre a fração de corrente que
+produz torque e a fração que alimenta as perdas do conjunto.
+
+\subsection{Consolidação e validação dos dados}
+\label{sec:consolidacao}
+
+Os dados de todas as sessões foram consolidados por \emph{script} dedicado, que aplica regras
+objetivas de validação a cada execução de degrau: execuções com pico de corrente superior a
+60 A são classificadas como corrompidas, pois indicam falha de comunicação serial durante o
+registro; degraus acima de 100° com pico inferior a 3 A, bem como degraus a partir de 99°
+com pico inferior a 1 A, são classificados como de sinal fraco, pois indicam comando não
+executado; e execuções com duração inferior a 10 s são
+classificadas como curtas. Das 58 execuções registradas, a aplicação das regras e a correção
+do sentido da escada inferido pelo arquivo de origem deixaram \textbf{54 execuções validadas}
+--- na subida, degraus
+de 98° a 119°, e na descida, de 113° a 120°, com os degraus de 113° a 119° presentes em
+ambos os sentidos. Declaram-se como lacunas a ausência de degraus de descida abaixo de 113° e
+o não fechamento da subida em 120°, consequência da queda da rede registrada ao final da
+sessão. Apenas o conjunto consolidado é utilizado no Capítulo 4.
+
+\section{Incertezas de Medição}
+\label{sec:incertezas}
+
+As incertezas associadas à curva característica foram avaliadas conforme o método de
+propagação de incertezas por categorias, distinguindo contribuições avaliadas por análise
+estatística de séries de observações (Tipo A) e contribuições avaliadas por informação
+declarada dos instrumentos (Tipo B). Para cada degrau, a incerteza Tipo A decorre da
+repetibilidade, estimada pelo desvio-padrão experimental das repetições válidas, com
+$u_A = s/\sqrt{n}$. Para a corrente e a força, as incertezas Tipo B derivam das resoluções dos
+instrumentos: 122 mA por degrau do conversor para a corrente e 10 g para a balança, esta
+última correspondente a 0,098 N ou, propagada pela Equação \eqref{eq:torque_f_r}, a
+aproximadamente 0,007 N$\cdot$m de resolução em torque.
+
+As contribuições são combinadas por raiz da soma dos quadrados,
+
+\begin{equation}\label{eq:combinada}
+u_c = \sqrt{u_A^2 + u_B^2},
+\end{equation}
+e a incerteza expandida é declarada por
+
+\begin{equation}\label{eq:expandida}
+U = 2\,u_c,
+\end{equation}
+com fator de abrangência $k = 2$, correspondente a um nível de confiança de aproximadamente
+95\% para distribuição normal.
+
+Para o torque, obtido por produto $T_\mathrm{roda} = F\,r_\mathrm{ef}$, a propagação para
+grandezas independentes resulta em
+
+\begin{equation}\label{eq:propagacao}
+\left(\frac{u_T}{T_\mathrm{roda}}\right)^2 =
+\left(\frac{u_F}{F}\right)^2 +
+\left(\frac{u_r}{r_\mathrm{ef}}\right)^2,
+\end{equation}
+em que $u_T$, $u_F$ e $u_r$ são as incertezas do torque, da força e do raio efetivo,
+respectivamente. O termo relativo do raio, inferior a 0,5\% conforme a Seção~\ref{sec:raioefetivo}, contribui
+pouco frente às demais fontes. Os valores resultantes por degrau e os limites globais da curva
+são apresentados no Capítulo 4, junto aos resultados.
+
+% TABELA: incertezas por degrau --- ângulo (°), u, u_A(F), u_B(F), u_c(F), u_T e U_T (N.m),
+% com os valores [X] a preencher a partir do consolidado.
+
+\section{Resumo do Capítulo}
+\label{sec:resumocap3}
+
+Este capítulo definiu a metodologia experimental do trabalho, desde a escolha da
+instrumentação até o tratamento das incertezas. Optou-se pelo ensaio de tração com o veículo
+ancorado, com a balança digital de gancho suspensa pela alça como padrão de força e dois
+halteres de 1 kg sobre o centro de massa como condição de aderência, totalizando
+aproximadamente 7,1 kg. O ângulo do cabo foi declarado desprezível com base na concordância
+de 0,19\% entre as pesagens na vertical e na horizontal, e o raio efetivo da roda foi medido
+pelo método \emph{roll-out}, resultando em 0,0751 m. A cadeia de aquisição foi documentada em
+sua configuração efetiva --- 1 Hz com média de 100 amostras para a curva estática e 100 Hz com
+retempo sequencial para a dinâmica ---, assim como o protocolo dos degraus com taragem
+individual e a consolidação que rejeitou execuções corrompidas, de sinal fraco ou curtas,
+restando 54 execuções validadas. As incertezas foram estruturadas em Tipo A e Tipo B, com
+propagação até o torque pela Equação \eqref{eq:propagacao}. Os resultados obtidos com essa
+metodologia são apresentados no Capítulo 4.
+
+\clearpage

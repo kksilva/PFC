@@ -1,74 +1,118 @@
 \chapter{Resultados}
 \label{chap:resultados}
 
-% TODO(ensaio definitivo): substituir as secoes 4.2-4.4 pelos resultados
-% das series finais (bateria nova, 21 degraus, 3 repeticoes, subida+descida).
+Este capítulo apresenta os resultados obtidos na caracterização do sistema de propulsão do automodelo: a consolidação e a validação dos dados do ensaio definitivo, a caracterização estática da curva força versus comando, a validação do modelo torque versus corrente, a identificação da dinâmica comando--corrente e a análise das incertezas e limitações associadas.
 
 \section{Atividades do Projeto}
 \label{sec:atividades}
 
-As atividades desenvolvidas compreenderam: (i) estudo do sistema de
-propulsao e do ESC; (ii) selecao e validacao em bancada do sensor de
-corrente; (iii) construcao da bancada de tracao; (iv) implementacao da
-aquisicao automatica (Arduino Due + Raspberry Pi); (v) ensaios preliminares
-de caracterizacao; e (vi) analise dos dados com tratamento de incertezas.
+As atividades desenvolvidas compreenderam: (i) estudo do sistema de propulsão e do ESC; (ii) seleção e validação em bancada do sensor de corrente; (iii) construção da bancada de tração; (iv) implementação da aquisição automática (Arduino Due + Raspberry Pi); (v) ensaios preliminares e definitivos de caracterização; e (vi) análise dos dados com tratamento de incertezas.
 
-\section{Validação do Sensor de Corrente}
-\label{sec:resultsensor}
+Duas atividades preliminares antecederam o ensaio definitivo e fundamentaram as decisões de instrumentação. Na validação em bancada do sensor de efeito Hall linear ACS758, com fonte de 0 a 6 A e multímetro de referência, o sistema de aquisição apresentou relação linear com a corrente aplicada em toda a faixa, com regressão $y = 1{,}0742\,x$ entre os valores medidos pelo multímetro ($x$) e pelo sistema ($y$). Os desvios sistemáticos de $\pm$7\% são compensáveis por fator de correção em software, validando o sensor para monitoramento.
 
-Em bancada, com fonte de 0 a 6 A e multimetro de referencia, o sistema de
-aquisicao com ACS758 apresentou relacao linear com a corrente aplicada em
-toda a faixa, com regressao $y = 1{,}0742\,x$ entre os valores medidos pelo
-multimetro ($x$) e pelo sistema ($y$). Os desvios sistematicos de $\pm$7\%
-sao compensaveis por fator de correcao em software, validando o sensor para
-monitoramento.
-
-\section{Curva Característica Torque $\times$ Corrente (Ensaios Preliminares)}
-\label{sec:curva}
-
-O ensaio preliminar de tração (escada de 97$^\circ$ a 115$^\circ$,
-superficie com EVA) caracterizou a curva na faixa de 3,6 a 18,2 A. Na
-janela estacionaria (7--10 s de cada degrau), o ajuste por minimos
-quadrados resultou em
-\begin{equation}
-T \;[\text{N$\cdot$m}] = 0{,}185 \; I_{ef} \;[\text{A}] + 0{,}48,
+No ensaio preliminar de tração (escada de $97^\circ$ a $115^\circ$, superfície com EVA), a curva característica foi levantada na faixa de 3,6 a 18,2 A. Na janela estacionária (7--10 s de cada degrau), o ajuste por mínimos quadrados resultou em
+\begin{equation}\label{eq:ajuste_preliminar}
+T\;[\mathrm{N\cdot m}] = 0{,}185\,I_{ef}\;[\mathrm{A}] + 0{,}48,
 \qquad r = 0{,}92,
 \end{equation}
-com torque crescente de aproximadamente 1,3 N$\cdot$m (3,6 A) a
-3,5 N$\cdot$m (18,2 A). A forca de tracao nao apresentou saturacao por
-aderencia ate o ultimo degrau, indicando que a escada pode ser estendida
-para caracterizacao da faixa de correntes maiores.
+em que $T$ é o torque na roda, estimado por $T = F\,r_{ef}$, e $I_{ef}$ é a corrente efetiva média da janela. O torque cresceu de aproximadamente 1,3 N$\cdot$m (3,6 A) a 3,5 N$\cdot$m (18,2 A), e a força de tração não saturou por aderência até o último degrau. Esse resultado, embora preliminar, evidenciou a viabilidade da medição indireta de torque pela combinação do sensor ACS758 com a balança na linha de tração e motivou o ensaio definitivo, que estendeu a escada até $120^\circ$ com bateria nova e protocolo de aquisição revisado.
 
-\subsection{Validação Cruzada com o Modelo do Powertrain}
+\section{Consolidação e Validação dos Dados}
+\label{sec:consolidacao_res}
 
-Comparando degrau a degrau com o modelo teorico
-($K_t$ do motor de 2100 KV, reducao $i \approx 11{,}5$, $\eta$ estimado),
-os desvios ficaram dentro de $\pm$5\% nos degraus de 104$^\circ$ a
-115$^\circ$, incluindo concordancia exata (0,0\%) no degrau maximo,
-confirmando a consistencia da cadeia de medicao e do modelo fisico.
-Degraus proximos ao neutro foram excluidos da comparacao pela incerteza do
-\emph{duty cycle} efetivo na regiao nao-linear do ESC.
+O ensaio definitivo foi conduzido em degraus de comando de $98^\circ$ a $120^\circ$, nos dois sentidos (subida e descida), com a corrente registrada a aproximadamente 100 Hz durante 15 s em cada degrau e a força de tração anotada na janela estacionária de 7 a 10 s. A consolidação dos arquivos de ensaio, realizada pelo script \texttt{consolidar\_dados.py}, resultou em 54 execuções validadas, de um total de 58 registradas. As regras de validação são as seguintes: pico superior a 60 A indica registro corrompido (transbordamento do buffer serial a 115200 bauds); degrau acima de $100^\circ$ com pico inferior a 3 A, ou degrau a partir de $99^\circ$ com pico inferior a 1 A, indica sinal fraco; e duração inferior a 10 s indica execução curta.
 
-\section{Testes}
-\label{sec:testes}
+A cobertura resultante ficou assim distribuída: na subida, degraus de $98^\circ$ a $119^\circ$ com uma a duas repetições; na descida, degraus de $113^\circ$ a $120^\circ$, com o degrau de $114^\circ$ repetido cinco vezes. Os degraus comuns aos dois sentidos, de $113^\circ$ a $119^\circ$, permitem a verificação de histerese somente nessa faixa; a lacuna entre $98^\circ$ e $112^\circ$ na descida é declarada como limitação do ensaio, uma vez que a descida não foi executada abaixo de $113^\circ$.
 
-Os ensaios preliminares revelaram efeitos sistematicos tratados no
-protocolo: (i) corte de baixa tensao do ESC por bateria degradada
-(sesssao descartada e repetida com bateria saudavel); (ii) perda de aderencia
-na descida (resolvida com massa adicional e limpeza dos pneus); e
-(iii) dessincronizacao entre comando e registro (eliminada com espera de
-finalizacao do comando em cada degrau).
+Dois problemas sistemáticos surgiram durante as sessões de ensaio e foram diagnosticados e corrigidos. O primeiro manifestava-se como ``degrau sobreposto ao outro'' --- um comando de degrau alto executado com força e corrente de um degrau menor. O fenômeno teve dois gatilhos: o corte de baixa tensão (\emph{Low Voltage Cutoff} --- LVC) do ESC, que, com bateria gasta, reduzia internamente a razão cíclica para se proteger; e a dessincronização entre notebook e Raspberry Pi, pois o comando era lançado sem aguardar seu término e o próximo degrau podia iniciar antes do computador de bordo retornar ao neutro. A correção consistiu em aguardar a finalização de cada comando com folga de tempo garantida e em adotar bateria LiPo 2S saudável e carregada, eliminando o gatilho do LVC.
 
-% TODO(ensaio definitivo):
-% \section{Analise dos Resultados} -> regressao final, resíduos,
-% repetitividade (t-Student), incerteza expandida, linearidade, histerese.
-% Incluir figuras: curva T x I com banda de incerteza; residuos.
+O segundo problema consistia em quedas do túnel SSH durante os degraus altos, que tornavam o Raspberry Pi inalcançável e interrompiam a telemetria. A hipótese inicial de interferência eletromagnética foi afastada: a causa principal era a bateria dedicada do computador de bordo descarregada, que provocava \emph{brown-out} e o desaparecimento da rede. A evidência elétrica foi a tensão medida na saída do conversor \emph{step-down}, de 4,0 V contra 5,3 V esperados --- valor abaixo do mínimo operacional do Raspberry Pi (aproximadamente 4,75 V), condição suficiente para os resets observados. A medida corretiva adotada no protocolo foi a verificação da carga da bateria do computador de bordo no checklist pré-ensaio.
+
+\section{Caracterização Estática: Curva Força $\times$ Comando}
+\label{sec:curva_forca}
+
+A caracterização estática relaciona o comando de aceleração, expresso pelo ângulo $\theta$ do acelerador, à força de tração desenvolvida e à corrente consumida. Os resultados apresentados nesta seção derivam do ensaio com forças anotadas, no qual foram registradas quatro repetições da subida ($98^\circ$ a $117^\circ$) e quatro da descida ($99^\circ$ a $117^\circ$), com a força registrada em kgf. A corrente desses pontos foi confrontada com o consolidado do ensaio cego, de cobertura mais ampla (subida de $98^\circ$ a $119^\circ$, descida de $113^\circ$ a $120^\circ$), sem divergências relevantes entre as duas fontes.
+
+% FIGURA: curva força F x comando theta, com laço de histerese subida/descida,
+% pontos médios das repetições e barras de erro (desvio-padrão).
+% Gerar a partir de ensaios/ensaio_consolidado.csv + planilha de forças.
+
+A curva força versus comando cresce monotonicamente até o máximo medido de 5,32 kgf (52 N) no degrau de $114^\circ$ na descida. Na subida, entretanto, a força satura em aproximadamente 3,2 a 3,3 kgf nos degraus de $105^\circ$ a $110^\circ$, com o pneu frio operando no limite de aderência; na descida, com o pneu aquecido pela subida inteira, a força prossegue crescente e estável até $115^\circ$. Observa-se, portanto, um laço de histerese aparente entre os dois sentidos, com a força da descida superando a da subida em +7\% a +45\% na faixa de $104^\circ$ a $115^\circ$.
+
+Essa diferença não representa histerese do \emph{powertrain}: o coeficiente de atrito da borracha cresce com a temperatura, de modo que a roda aquecida transfere mais força antes de patinar. A histerese aparente é, assim, memória térmica do pneu, e a curva de cada sentido deve ser interpretada referida à sua condição de temperatura.
+
+Nos degraus de $116^\circ$ e $117^\circ$ da descida, a força e a corrente colapsam ciclicamente no meio do degrau. O comportamento observado --- o veículo acelera, a corrente é cortada, a tração cessa e o ciclo reinicia --- é consistente com o corte cíclico do ESC por subtensão: sob alta corrente, a tensão da bateria LiPo cai abaixo do limiar de corte, o ESC protege o motor e o desliga; sem carga, a tensão se recupera e o ESC religa, gerando o ciclo. Esses pontos são contaminados e não representam o comportamento estático do sistema.
+
+Na região de comando imediatamente acima do neutro, identifica-se uma zona morta: entre $97^\circ$ e $99^\circ$, a corrente fica em aproximadamente 0,5 a 1,3 A e a força residual é de cerca de 0,45 kgf, evidenciando que o ESC não transfere potência significativa nessa faixa.
+
+Observa-se, em síntese, que a curva força versus comando não é uma função única: na faixa de aderência ($100^\circ$ a $110^\circ$) a força é controlável e reproduzível; a partir de $110^\circ$ o limite de aderência passa a determinar a força, e acima de $114^\circ$ o próprio ESC limita a operação.
+
+\section{Validação do Modelo Torque $\times$ Corrente}
+\label{sec:validacao_modelo}
+
+A validação do modelo consiste em verificar se a força de tração se relaciona à corrente consumida pela cadeia física torque--transmissão--tração, conforme as Equações \eqref{eq:torque_roda_corrente} e \eqref{eq:transmissao}. O modelo, ponto a ponto, é
+\begin{equation}\label{eq:modelo_validacao}
+F = \frac{\eta\,i\,K_t\,(I - I_0(u))}{u\,r_{ef}},
+\end{equation}
+em que $\eta$ é o rendimento do conjunto, $i \approx 11{,}5$ a redução, $K_t \approx 4{,}55$ mN$\cdot$m/A a constante de torque do motor, $I$ a corrente da fase de aderência, $I_0(u)$ a corrente de vazio no comando $u$, $r_{ef} = 75{,}1$ mm o raio efetivo da roda e $u = (\theta - 95)/85$ o comando normalizado. A corrente de vazio, medida em ensaio sem carga de tração, ajusta-se por
+\begin{equation}\label{eq:corrente_vazio}
+I_0(u) = 0{,}54 + 9{,}36\,u, \qquad r^2 = 0{,}97,
+\end{equation}
+validando a hipótese de que o \emph{duty cycle} efetivo acompanha o comando. Para identificar o rendimento, ajusta-se uma regressão linear sem intercepto de $y = F\,r_{ef}\,u/(K_t\,i)$ contra $x = (I - I_0)$, cujo coeficiente angular é $\eta$.
+
+% FIGURA: dispersão de y = F*r_ef*u/(Kt*i) versus x = (I - I0) com a reta
+% sem intercepto, separada por sentido (subida e descida), indicando eta.
+
+Os resultados, por sentido, são os seguintes: na descida, $\eta = 0{,}579$ com $r^2 = 0{,}962$ ($n = 56$ pontos, quatro repetições em cada um dos 14 degraus de $100^\circ$ a $113^\circ$); na subida, $\eta = 0{,}596$ com $r^2 = 0{,}784$ ($n = 44$ pontos, $100^\circ$ a $110^\circ$). A validação do modelo é feita pela descida, que apresenta alinhamento estreito dos pontos.
+
+O coeficiente de determinação menor da subida não constitui contraexemplo ao modelo: é a assinatura do regime de \emph{stick-slip} na fase de aderência com pneu frio. O mecanismo é o seguinte: com aderência marginal no limite, a roda alterna travamento --- em que a corrente sobe e o torque se acumula na transmissão como numa mola --- e deslizamento --- em que a força contraeletromotriz aumenta e a corrente cai. A energia elástica acumulada e liberada a cada ciclo oscila a balança. Nas consequências sobre os dados, a força permanece presa no limite de aderência (pouco ruído) enquanto a corrente oscila (muito ruído), de modo que pontos com a mesma força e correntes diferentes degradam o $r^2$ da regressão. Na descida, com o pneu aquecido, a roda trava de forma sustentada e os pontos se alinham.
+
+O rendimento estimado implica uma constante de torque efetiva de 2,5 a 2,7 mN$\cdot$m/A, valor igual a $4{,}55\,\eta$ --- coerente com o modelo físico, embora não valide isoladamente a constante de velocidade de 2100 rpm/V, uma vez que a rotação do motor não foi medida neste trabalho.
+
+% FIGURA: rendimento eta ponto a ponto versus comando theta, com a transicao
+% de aderencia para patinagem (~110 graus) e os pontos excluidos (>113 graus).
+
+A validade do modelo tem um limite explícito: acima de $114^\circ$, o rendimento calculado excede a unidade, o que evidencia que a razão cíclica efetiva deixa de acompanhar o comando na saturação de aderência. A validação restringe-se, portanto, aos comandos até $113^\circ$.
+
+A força máxima medida, 52 N, corresponde a um coeficiente de atrito aparente $\mu \approx 0{,}75$ sobre as rodas motrizes, valor consistente com a transferência de carga longitudinal que descarrega o eixo dianteiro sob tração. Essa condição de aderência é uma propriedade do conjunto pneu--piso--carregamento, e não do propulsor em si.
+
+\section{Dinâmica Comando $\rightarrow$ Corrente}
+\label{sec:dinamica}
+
+A identificação da dinâmica comando--corrente utilizou os próprios arquivos do ensaio cego, nos quais a corrente foi registrada a aproximadamente 100 Hz, com a particularidade da aquisição em rajadas já descrita na Seção~\ref{sec:aquisicao} e o retempo por índice das amostras.
+
+Cada borda de subida entre $100^\circ$ e $109^\circ$ constitui uma resposta ao degrau, identificada pelo método da 63,2\% e por ajuste de mínimos quadrados ao modelo de primeira ordem com atraso (FOPDT):
+\begin{equation}\label{eq:fopdt}
+G_1(s) = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1},
+\end{equation}
+em que $K$ é o ganho estático, $\theta_a$ o atraso puro e $\tau$ a constante de tempo.
+
+% FIGURA: respostas ao degrau de corrente sobrepostas (bordas de subida
+% 100-109 graus), com as curvas do ajuste FOPDT e marcacao de tau e theta_a.
+
+Os resultados por borda de subida apresentam: ganho estático $K = 116$ a 125 A/u, confirmando o valor estático de 120 A/u obtido pela regressão da curva; atraso puro $\theta_a < 0{,}1$ s, uma vez que a resposta se inicia dentro da primeira janela de 100 ms --- a partida \emph{sensorless} do ESC não impõe, portanto, atraso mensurável; e constante de tempo $\tau = 1{,}8$ a 2,0 s. O ajuste por mínimos quadrados reparte a soma em $\theta_a \approx 1{,}0$ s e $\tau \approx 1{,}0$ s, mantendo a mesma soma próxima de 2 s; como o par $(\theta_a, \tau)$ é mal-condicionado, adota-se a soma como descriptor da dinâmica.
+
+Esse resultado refuta o \emph{prior} derivado da literatura, que assumia atraso entre 0,02 e 0,1 s e constante de tempo entre 0,05 e 0,3 s, com base na dominância da constante elétrica $L/R$ do motor --- valor em milissegundos. A dinâmica medida é dominada pelo escalonamento interno do ESC: o controle de progressividade (\emph{soft-start} / \emph{punch control}) e o sequenciamento de partida \emph{sensorless} com a roda travada impõem uma rampa de corrente da ordem de segundos. A constante de tempo de 1,8 a 2,0 s é, assim, um achado relevante deste trabalho, com consequência direta para o projeto do controlador no Capítulo 5: o horizonte de ajuste $\lambda = 0{,}2$ s definido a priori torna-se agressivo demais, e adota-se $\lambda = 0{,}6$ s, que satisfaz a recomendação $\lambda \geq 0{,}25\,\tau \approx 0{,}45$ s.
+
+A janela de anotação da força nos últimos 3 s de cada degrau mostra-se adequada: a resposta alcança cerca de 98\% do valor final em $4\tau \approx 7$ s, de modo que a janela de 7 a 10 s já está contida na região assentada.
+
+\section{Incertezas dos Resultados}
+\label{sec:incertezas_res}
+
+As incertezas dos resultados procedem de três fontes principais: a repetibilidade entre as quatro repetições de cada sentido, a resolução e os desvios sistemáticos do sensor ACS758, e a leitura da balança. A repetibilidade é expressa pelas barras de erro da curva força versus comando, construídas com o desvio-padrão das repetições em cada degrau [X --- desvio-padrão por degrau a partir da planilha].
+
+A corrente carrega a resolução do conversor analógico-digital de aproximadamente 122 mA (Seção~\ref{sec:acshall}), somada aos desvios sistemáticos de $\pm$7\% do sensor, compensados em software pela regressão de bancada. A força carrega a resolução de leitura da balança em kgf e o \emph{drift} do conjunto de suspensão, mitigado pela taragem antes de cada degrau.
+
+A propagação até o torque segue $T = F\,r_{ef}$: com o raio efetivo medido por \emph{roll-out} (236 cm em 5 voltas, incerteza inferior a 0,5\%), a incerteza do torque é dominada pela da força. A incerteza do rendimento $\eta$, por sua vez, combina as incertezas de $F$, de $(I - I_0)$ e de $r_{ef}$ [X --- incerteza expandida de eta a calcular].
+
+\section{Limitações}
+\label{sec:limitacoes}
+
+Cinco limitações delimitam a validade dos resultados. Primeiro, a dinâmica comando--força não foi identificada: a balança fornece um único valor por degrau, sem registro temporal, de modo que a caracterização dinâmica restringe-se à corrente; a dinâmica até a força exigiria uma célula de carga com registrador. Segundo, a lacuna de $98^\circ$ a $112^\circ$ na descida impede a verificação de histerese na faixa baixa. Terceiro, os pontos de $116^\circ$ a $117^\circ$ na descida estão contaminados pelo corte cíclico do ESC por subtensão. Quarto, a identificação dinâmica foi realizada apenas na faixa de aderência ($100^\circ$ a $109^\circ$), única região em que o modelo linear se aplica. Quinto, a aquisição a 1 Hz do ensaio de escada não resolve o regime de patinagem cíclica (período de aproximadamente 2 s, no limiar de Nyquist), que só é observado pelo registro a 100 Hz em faixas pontuais.
 
 \section{Resumo do Capítulo}
+\label{sec:resumo}
 
-O sensor de corrente foi validado em bancada e a metodologia de medicao
-indireta de torque produziu uma curva caracteristica coerente com o modelo
-do powertrain na faixa preliminar. Os ensaios definitivos ampliarao a faixa
-de corrente e completarao a caracterizacao metrologica.
+Foram consolidadas 54 execuções válidas do ensaio definitivo, com diagnóstico e correção dos problemas de protocolo (LVC da bateria, dessincronização de comando e \emph{brown-out} do computador de bordo). A caracterização estática mostrou força crescente até 52 N, saturação de aderência com pneu frio na subida e memória térmica aparente entre os sentidos. O modelo torque versus corrente foi validado na descida com rendimento $\eta = 0{,}579$ ($r^2 = 0{,}962$, até $113^\circ$), com a subida evidenciando o regime de \emph{stick-slip}. A dinâmica comando--corrente revelou-se dominada pelo escalonamento interno do ESC, com constante de tempo de 1,8 a 2,0 s --- resultado que fundamenta o projeto do controlador de torque no Capítulo 5.
 
 \clearpage
