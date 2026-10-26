@@ -410,32 +410,23 @@ Com base na comparação apresentada na Seção~\ref{sec:sintese}, este trabalho
 caracterização do sistema de propulsão do automodelo por meio de sua curva característica torque
 versus corrente. Para tanto, emprega-se uma instrumentação combinada: o sensor de efeito Hall
 linear ACS758 de ±200 A, instalado no ramo de alimentação do ESC, fornece a corrente elétrica
-consumida; uma balança digital de gancho, instalada na linha de tração do veículo, mede a
-força desenvolvida.
+consumida; uma balança digital de gancho, instalada na linha de tração do veículo, mede a força
+desenvolvida.
 
-A medição da força de tração segue a configuração do ensaio de \emph{drawbar pull} --- ensaio de
-tração com o veículo ancorado ---, empregado na caracterização de veículos planetários, de robôs
-terrestres de pequeno porte e de protótipos de baixo custo que substituem a célula de carga por
-balanças digitais de gancho. Nessa configuração, o
-veículo é ancorado e a balança, instalada na linha de tração, mede a própria força desenvolvida,
-e o torque na roda é obtido diretamente por $T_\mathrm{roda} = F_{\text{tra\c{c}\~{a}o}}\,r$, com um único
-parâmetro geométrico. A escolha da balança digital de mala em lugar de uma célula de carga
+A medição da força de tração segue a configuração do ensaio de tração com o veículo ancorado:
+o veículo é impedido de se deslocar, a balança, instalada na linha de tração, mede a reação da
+ancoragem --- que iguala a tração desenvolvida pelas rodas ---, e o torque na roda é obtido por
+$T_\mathrm{roda} = F_{\text{tra\c{c}\~{a}o}}\,r_\mathrm{ef}$, com um único parâmetro geométrico,
+o raio efetivo da roda. A escolha da balança digital de mala em lugar de uma célula de carga
 dedicada segue o mesmo princípio de baixo custo já adotado na seleção do sensor de corrente.
-Automodelos instrumentados têm sido empregados em trabalhos recentes, tanto em ensaios dinâmicos
-para o ensino de engenharia
-quantum em plataformas de aquisição de dados
-off-road na mesma escala 1/8 do veículo utilizado neste trabalho.
-Nesses casos, contudo, a instrumentação visa a dinâmica de movimento, e não o ensaio de tração
-estacionário com medição simultânea de força e corrente proposto aqui.
 
-O ensaio é conduzido com o veículo acrescido de dois halteres de 1 kg fixados próximo ao centro de
-massa, totalizando 7,14 kg, condição adotada para elevar a aderência disponível entre pneus e
-piso. A massa não entra no equilíbrio estático da medição --- na configuração ancorada, a força
-registrada na balança iguala a tração desenvolvida, independentemente da massa do veículo ---, mas
-define o limite de patinagem: a tração máxima transferida cresce com a carga normal sobre as rodas
-motrizes, e a especificação da massa do veículo integra a condição de ensaio em procedimentos de
-referência para ensaios de tração de veículos \emph{off-road}. A curva característica obtida é,
-portanto, uma propriedade do conjunto propulsor, referida a essa condição de carregamento.
+O ensaio é conduzido com o veículo acrescido de massa adicional fixada próxima ao centro de
+massa, condição adotada para elevar a aderência disponível entre pneus e piso. A massa não entra
+no equilíbrio estático da medição --- na configuração ancorada, a força registrada na balança
+iguala a tração desenvolvida, independentemente da massa do veículo ---, mas define o limite de
+patinagem: a tração máxima transferida cresce com a carga normal sobre as rodas motrizes. A
+curva característica obtida é, portanto, uma propriedade do conjunto propulsor, referida a essa
+condição de carregamento.
 
 A combinação das duas medições permite construir a curva característica torque versus corrente
 ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. Para além
@@ -444,46 +435,42 @@ uma vez que é sobre essa dinâmica que a malha de controle atua. Dois ensaios c
 fornecem os dois modelos.
 
 O primeiro, denominado ensaio dinâmico, dispensa a leitura da balança --- daí também ser chamado
-ensaio cego --- e aplica degraus de comando na região de aderência do pneu, entre 100° e 110°,
-com a corrente de bateria amostrada a 100 Hz por firmware dedicado. Com o comando normalizado
-$u = (\theta - 95^\circ)/85^\circ$, que mapeia o neutro ($95^\circ$) em $u = 0$ e o máximo
-($180^\circ$) em $u = 1$, a identificação por resposta ao degrau resulta na função de
-transferência
+ensaio cego --- e aplica degraus de comando na região de aderência do pneu, entre $100^\circ$ e
+$110^\circ$, com a corrente de bateria amostrada a $100$ Hz por firmware dedicado. Com o comando
+normalizado $u = (\theta - 95^\circ)/85^\circ$, que mapeia o neutro ($95^\circ$) em $u = 0$ e o
+máximo ($180^\circ$) em $u = 1$, pretende-se identificar, por resposta ao degrau, uma função de
+transferência de primeira ordem com atraso,
 
 \begin{equation}\label{eq:ft_ui}
-G_1(s) = \frac{I(s)}{u(s)} = \frac{120\,e^{-\theta_a s}}{1{,}8\,s + 1},
+G_1(s) = \frac{I(s)}{u(s)} = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1},
 \end{equation}
 
-em que $120$ A/u é o ganho estático, $1{,}8$ s é a constante de tempo dominante --- atribuída ao
-escalonamento interno do ESC --- e $\theta_a < 0{,}1$ s é o atraso, inferior à resolução temporal do
-ensaio.
+em que o ganho estático $K$, a constante de tempo $\tau$ e o atraso $\theta_a$ são os parâmetros
+a serem determinados experimentalmente.
 
 O segundo é o ensaio de tração estática, no qual o protocolo de degraus é repetido com o veículo
 ancorado e a força anotada na balança durante o platô de cada degrau. A corrente medida no ramo de
 alimentação é a corrente de bateria; conforme a Equação \eqref{eq:corrente_bateria}, com razão
 cíclica $D \approx u$, define-se a corrente de fase equivalente $I_\mathrm{fase} = I_\mathrm{bat}/u$.
-O torque na roda é então estimado por
+Um ensaio complementar, realizado com as rodas suspensas e sem carga, fornece a corrente de
+perdas $I_0(u)$ em cada comando. O torque na roda é, então, estimado por
 
 \begin{equation}\label{eq:torque_estimado}
 \hat{T}_\mathrm{roda} = \eta\,i\,K_t\,\frac{I_\mathrm{bat} - I_0(u)}{u},
 \end{equation}
 
-em que $\eta$ é o rendimento da transmissão, $i \approx 11{,}5$ a redução, $K_t$ a constante de
-torque do motor e $I_0(u) = 0{,}54 + 9{,}36\,u$ a corrente sem carga, dependente do comando. A
-validação desse estimador contra as forças anotadas na balança --- adotada como padrão de tração
-da caracterização --- produz coeficiente de determinação de $0{,}96$ na descida, e o raio efetivo
-da roda, medido por \emph{roll-out}, é $r_\mathrm{ef} = 0{,}0751$ m.
+em que $\eta$ é o rendimento da transmissão, $i$ a redução, $K_t$ a constante de torque do motor e
+$r_\mathrm{ef}$ o raio efetivo da roda --- todos quantificados experimentalmente no Capítulo 3.
+A validação desse estimador contra as forças anotadas na balança, adotada como padrão de tração da
+caracterização, constitui o resultado central do trabalho.
 
-Sobre esses dois resultados estrutura-se a malha de controle de torque proposta. Um termo de
+Sobre esses dois modelos estrutura-se a malha de controle de torque proposta. Um termo de
 \emph{feedforward}, dado pela inversa da característica estática, converte a referência de torque
 em corrente; um controlador PI de corrente, projetado sobre a função $G_1(s)$ pelo método de
-modelo interno com parâmetro $\lambda = 0{,}6$ s ($K_p \approx 0{,}026$ u/A, $T_i = 1{,}8$ s,
-período de amostragem de 100 ms, anti-windup e limitação de taxa de variação), atua sobre a
-dinâmica entre comando e corrente; e um limitador de aderência impõe o torque máximo
-transferível, $T_\mathrm{max} = F_\mathrm{max}\,r_\mathrm{ef}$, associado ao início da patinagem
-na região de $110^\circ$. A montagem experimental, o procedimento de ensaio por degraus de comando
-e o tratamento das incertezas são apresentados no Capítulo 3, e os resultados da caracterização,
-no Capítulo 4.
+modelo interno, atua sobre a dinâmica entre comando e corrente; e um limitador de aderência impõe
+o torque máximo transferível, associado ao início da patinagem. A montagem experimental, o
+procedimento de ensaio por degraus de comando e o tratamento das incertezas são apresentados no
+Capítulo 3, e os resultados da caracterização, no Capítulo 4.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
