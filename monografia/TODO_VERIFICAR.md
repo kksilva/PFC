@@ -239,25 +239,34 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   trava de forma sustentada e os pontos alinham. Texto ja acordado para o
   Cap. 4: validar o modelo pela descida (r2 = 0,96) e apresentar a subida como
   evidencia do regime de stick-slip, nao como contraexemplo.
-- [x] **15. DECISAO 26/10: escopo ESTATICO-ONLY — dinamica fica para trabalho futuro** —
-  A autora decidiu: somente a caracterizacao estatica entra na monografia.
-  **Esclarecimento tecnico registrado:** o ensaio dinamico de u->I (comando ->
-  corrente) NAO precisaria de célula de carga — o ACS758 + Due ja logam a 100 Hz
-  (firmware fast gravado). Célula de carga (HX711) seria necessaria apenas para
-  a dinamica u->F e para malha fechada de forca. A opcao u->I a 100 Hz continua
-  disponivel como meia-tarde opcional, mas fica FORA do escopo. **Consequencias
-  para o texto (ja alinhadas com os objetivos 1.3, que sao 100% estaticos —
-  NENHUM objetivo e refutado):**
-  (1) Cap. 4 = caracterizacao estatica completa (curva T x I validada, eta, zona
-  morta, saturacao, stick-slip, histerese aparente termica, incertezas);
-  (2) Cap. 5 = PROPOSTA de controlador (PI-IMC) PROJETADO POR PRIORS
-  (theta_a em [0,02;0,1] s, tau em [0,05;0,3] s) e AVALIADO EM SIMULACAO com
-  varredura de robustez (K +/-20%, tau +/-30%, GM>=6 dB, PM>=30°); proibido
-  afirmar "dinamica identificada experimentalmente" — declarar como limitacao;
-  (3) Trabalhos futuros = ensaio dinamico u->I a 100 Hz (sem custo) e/ou
-  dinamica u->F com célula de carga HX711 (~R$30) + malha fechada real;
-  (4) titulo: avaliar se menciona "dinamica" — preferir algo como
-  "Caracterizacao estatica do sistema de propulsao..." (verificar titulo atual).
+- [x] **15. DECISAO 26/10 REVISTA — dinamica u->I JA MEDIDA (arquivos cego, 23/10)** —
+  A autora lembrou corretamente: os arquivos `ensaio_cego_subida/descida.csv`
+  JA SAO o ensaio dinamico de u->I (feito na sexta 23/10). Particularidade
+  tecnica: o firmware a 100 Hz enche o buffer USB e o Python recebe em rajadas
+  de ~10 amostras — os timestamps vêm quantizados em blocos de 100 ms (10
+  amostras com o mesmo carimbo, em SEQUENCIA serial preservada). Retempo valido:
+  t = k*10 ms dentro da ordem do arquivo. Cada bloco de 15 s tem ~1550 amostras.
+  **RESULTADOS DA IDENTIFICACAO (bordas de subida 100-109°, metodo da 63,2% +
+  LSQ):** K = 116-125 A/u (confirma o estatico 120 A/u); **atraso puro theta
+  < 0,1 s** (resposta comeca dentro da primeira janela de 100 ms — sensorless
+  do ESC nao impoe atraso mensuravel); **tau = 1,8-2,0 s** (LSQ reparte em
+  theta~1,0 + tau~1,0, mesma soma ~2 s; par mal-condicionado, usar a soma).
+  **PRIOR DA LITERATURA REFUTADO:** theta_a em [0,02;0,1] s, tau em [0,05;0,3] s
+  assumia dominancia da constante eletrica L/R (ms) — mas a dinamica medida e
+  DOMINADA PELO ESCALONAMENTO INTERNO DO ESC (soft-start/punch control e
+  sequenciamento de partida sensorless com a roda travada). tau ~1,8 s e um
+  achado de Cap. 4 por si so.
+  **CONSEQUENCIA PARA O CAP. 5 (controlador):** o lambda = 0,2 s definido nos
+  VALORES FECHADOS ficou AGRESSIVO DEMAIS para tau = 1,8 s. Regra IMC:
+  lambda >= 0,25*tau. NOVA PROPOSTA: lambda = 0,6 s (ts ~ 3*lambda ~ 1,8 s,
+  coerente com a protecao da transmissao), Kp = tau/(K*(lambda+theta)) ~ 0,026
+  u/A, Ti = tau = 1,8 s, Ts = 100 ms (coerente com a dinamica — o 10 ms antigo
+  era desnecessario). Confirmar no fechamento do Cap. 5.
+  **Cautelas:** (a) bloco do degrau 110° na subida comeca cortado (theta=1,41
+  no metodo da 63,2% e anomalia no LSQ) — excluir ou refazer o corte do bloco;
+  (b) bordas de descida (120->113) ainda nao ajustadas — verificar simetria;
+  (c) declinar a dinamica u->F e malha fechada real como trabalho futuro
+  (célula de carga HX711) — isso sim precisa de sensor de carga.
 - [ ] **13. Comportamento "engasga e volta" nos degraus >118° (relato da autora, 25/10)** —
   Observado em bancada: acima de ~118° o carrinho acelera por um tempo, **corta
   (engasga), para e acelera de novo**, ciclicamente. Suspeita principal: **corte de
