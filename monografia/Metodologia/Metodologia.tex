@@ -14,9 +14,9 @@ A caracterização do sistema de propulsão exige a medição simultânea de dua
 força de tração desenvolvida pelas rodas e a corrente elétrica consumida pelo conjunto. A
 força, contudo, só se manifesta enquanto o veículo está em movimento; para medir essa
 grandeza em condição estacionária, optou-se pelo ensaio de tração com o veículo ancorado, uma
-configuração formalizada em normas de ensaio de trator agrícola \cite{abnt7899} e largamente
-adotada em caracterizações de veículos de pequeno porte, como a prova de tração do Baja SAE
-\cite{saebaja2021, franca2020baja}. Nessa configuração, o veículo é impedido de se deslocar e
+configuração formalizada em normas de ensaio de trator agrícola e largamente
+adotada em caracterizações de veículos de pequeno porte, como a prova de tração do Baja SAE.
+Nessa configuração, o veículo é impedido de se deslocar e
 a força de reação da ancoragem iguala a tração desenvolvida, permitindo medir o esforço
 mecânico sem necessidade de dinamômetro dedicado.
 
@@ -157,11 +157,9 @@ dinâmica mecânica lenta do veículo ancorado.
 Para a identificação da dinâmica entre o comando e a corrente, empregou-se um firmware
 dedicado (\texttt{Sensor\_de\_Corrente\_ACS758\_fast.ino}), com período de amostragem de
 10 ms, correspondente a aproximadamente 100 Hz. Essa taxa atende à recomendação clássica de
-amostrar de 10 a 30 vezes acima da banda do sinal de interesse \cite{astrom1997computer,
-franklin1998digital}, de modo a preservar os transientes de corrente do ESC, cuja resposta ao
+amostrar de 10 a 30 vezes acima da banda do sinal de interesse, de modo a preservar os transientes de corrente do ESC, cuja resposta ao
 degrau se desenvolve em dezenas de milissegundos, e a satisfaz a exigência de dez a vinte
-amostras no tempo de subida para a qualidade da estimativa de modelos dinâmicos
-\cite{ljung1999system}. Nesse regime, o filtro RC de 24 Hz assume o papel de filtro
+amostras no tempo de subida para a qualidade da estimativa de modelos dinâmicos. Nesse regime, o filtro RC de 24 Hz assume o papel de filtro
 anti-\emph{aliasing}, posicionando sua frequência de corte abaixo da frequência de Nyquist de
 50 Hz.
 
