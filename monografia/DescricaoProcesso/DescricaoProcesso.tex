@@ -22,7 +22,7 @@ o torque responsável pela rotação do eixo, como ilustrado na Figura~\ref{fig:
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.8\textwidth]{DescricaoProcesso/Figuras/motor_explode.jpeg}
-\caption{Partes de um motor brushless --- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
+\caption{Visão explodida de um motor brushless --- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
 \label{fig:motorbrushless}
 \footnotesize{Fonte: DIGI Electronics (s.d.). Disponível em: \url{https://www.digi-electronics.com/en/blogs/stator-vs-rotor-construction-functions-and-maintenance/518.html}.}
 \end{figure}
@@ -146,7 +146,7 @@ realimentação de velocidade, mas não o de proteção elétrica direta dos com
 Em síntese, as vantagens e desvantagens da IMU são as seguintes.
 
 \begin{enumerate}
-    \item Vantagens: mede diretamente a dinâmica do chassi, sem um modelo intermediário para a grandeza medida; é compacta, de baixo custo e usa interface digital simples; e oferece, adicionalmente, orientação para controle de direção e estabilidade.
+    \item Vantagens: mede diretamente a dinâmica do chassi, sem um modelo intermediário para a grandeza medida; é compacta e de baixo custo, além de usar interface digital simples; e oferece, adicionalmente, orientação para controle de direção e estabilidade.
     \item Desvantagens: a integração acumula erro e demanda filtragem; a leitura é sensível à vibração e, quando o eixo não está na horizontal, à componente da gravidade; a estimativa de torque depende de parâmetros mecânicos não medidos; e o acelerômetro perde a referência durante a aceleração do próprio sistema.
 \end{enumerate}
 
@@ -217,8 +217,7 @@ frequências, a indutância parasita do resistor faz com que a tensão deixe de 
 corrente instantânea, distorcendo a leitura durante o chaveamento.
 
 A dissipação de potência no resistor cresce com o quadrado da corrente; com isso, sob correntes
-elevadas, o shunt aquece e consome parte da energia destinada ao motor. Vale observar, ainda, que
-o shunt instalado na alimentação do ESC mede a corrente média de entrada, e não a corrente de
+elevadas, o shunt aquece e consome parte da energia destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente média de entrada, e não a corrente de
 fase do motor, que é chaveada pelo PWM. Na aproximação usual, a corrente de entrada se
 relaciona à de fase pela razão cíclica $D$ do chaveamento --- a fração do período em que o PWM
 permanece ligado:
@@ -236,6 +235,10 @@ Em síntese, as vantagens e desvantagens do arranjo com shunt e INA240 são as s
     \item Vantagens: proporciona uma medida direta da corrente, com boa linearidade e ampla largura de banda a baixo custo.
     \item Desvantagens: dissipação de potência sob correntes elevadas, distorção da leitura em alta frequência decorrente da indutância parasita do resistor e ausência de isolamento galvânico --- contato elétrico direto entre o circuito de medição e o de potência.
 \end{enumerate}
+
+Dessa forma, o arranjo com shunt reúne banda e linearidade adequadas à medição, mas a ausência de
+isolamento galvânico e a dissipação crescente com o quadrado da corrente afastam-no da montagem de
+bancada adotada neste trabalho, na qual o circuito de medição permanece próximo ao computador de bordo.
 
 \subsection{Sensor de Efeito Hall Linear (ACS758/ACS712)}
 \label{sec:acshall}
@@ -303,6 +306,10 @@ Em síntese, as vantagens e desvantagens do ACS758 são as seguintes.
     \item Desvantagens: resolução inferior à do shunt para a mesma faixa, faixa máxima inferior ao pico do ESC, sensibilidade dependente da alimentação e sensibilidade a ruído eletromagnético.
 \end{enumerate}
 
+Assim, entre os sensores de corrente avaliados, o ACS758 reúne o melhor compromisso entre
+isolamento galvânico, dissipação, faixa de medição e banda para as correntes e frequências deste
+sistema, sendo o sensor adotado neste trabalho para a medição da corrente de bateria.
+
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
 
@@ -350,13 +357,17 @@ alimentação, do comando de aceleração e da velocidade de rotação, ajustand
 quatro parâmetros ao conjunto motor, ESC e hélice. Essa abordagem evita a instrumentação elétrica
 do sistema de propulsão, mas o modelo precisa ser recalibrado para cada motor, ESC e carga
 mecânica utilizados. Sua viabilidade para o automodelo depende, desse modo, da variabilidade entre
-configurações de transmissão e regimes de carga, a ser avaliada no Capítulo 3.
+configurações de transmissão e regimes de carga, cuja investigação fica como proposta de
+continuidade deste trabalho.
 
 Assim, a corrente elétrica é a grandeza com a cadeia de dependências mais curta até o torque, e,
 entre os sensores de corrente, o Hall linear oferece o melhor equilíbrio entre isolamento, custo e
-simplicidade de montagem para as correntes e frequências deste sistema. A forma de combiná-lo a
-uma medição direta do esforço de tração constitui a proposta de instrumentação deste trabalho,
-apresentada na Seção~\ref{sec:proposta}.
+simplicidade de montagem para as correntes e frequências deste sistema. O sensor magnético
+SS41F/41G, embora não empregado na caracterização proposta, viabiliza um ensaio em vazio com
+rotação --- com anel magnetizado no eixo e veículo suspenso --- que permitiria medir a constante de
+velocidade real do motor e a dinâmica entre comando e velocidade angular, configurando proposta de
+continuidade. A forma de combinar o ACS758 a uma medição direta do esforço de tração constitui a
+proposta de instrumentação deste trabalho, apresentada na Seção~\ref{sec:proposta}.
 
 \section{Proposta do Projeto}
 \label{sec:proposta}
@@ -392,9 +403,52 @@ em procedimentos de \emph{drawbar pull} \cite{creager2017drawbar}. A curva carac
 portanto, uma propriedade do conjunto propulsor, referida a essa condição de carregamento.
 
 A combinação das duas medições permite construir a curva característica torque versus corrente
-ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. A
-montagem experimental, o procedimento de ensaio por degraus de comando e o tratamento das
-incertezas são apresentados no Capítulo 3.
+ponto a ponto, relacionando o esforço mecânico produzido ao esforço elétrico consumido. Para além
+da característica estática, o projeto contempla a dinâmica do caminho de comando até a corrente,
+uma vez que é sobre essa dinâmica que a malha de controle atua. Dois ensaios complementares
+fornecem os dois modelos.
+
+O primeiro, denominado ensaio dinâmico, dispensa a leitura da balança --- daí também ser chamado
+ensaio cego --- e aplica degraus de comando na região de aderência do pneu, entre 100° e 110°,
+com a corrente de bateria amostrada a 100 Hz por firmware dedicado. Com o comando normalizado
+$u = (\theta - 95^\circ)/85^\circ$, que mapeia o neutro ($95^\circ$) em $u = 0$ e o máximo
+($180^\circ$) em $u = 1$, a identificação por resposta ao degrau resulta na função de
+transferência
+
+\begin{equation}\label{eq:ft_ui}
+G_1(s) = \frac{I(s)}{u(s)} = \frac{120\,e^{-\theta_a s}}{1{,}8\,s + 1},
+\end{equation}
+
+em que $120$ A/u é o ganho estático, $1{,}8$ s é a constante de tempo dominante --- atribuída ao
+escalonamento interno do ESC --- e $\theta_a < 0{,}1$ s é o atraso, inferior à resolução temporal do
+ensaio.
+
+O segundo é o ensaio de tração estática, no qual o protocolo de degraus é repetido com o veículo
+ancorado e a força anotada na balança durante o platô de cada degrau. A corrente medida no ramo de
+alimentação é a corrente de bateria; conforme a Equação \eqref{eq:corrente_bateria}, com razão
+cíclica $D \approx u$, define-se a corrente de fase equivalente $I_\mathrm{fase} = I_\mathrm{bat}/u$.
+O torque na roda é então estimado por
+
+\begin{equation}\label{eq:torque_estimado}
+\hat{T}_\mathrm{roda} = \eta\,i\,K_t\,\frac{I_\mathrm{bat} - I_0(u)}{u},
+\end{equation}
+
+em que $\eta$ é o rendimento da transmissão, $i \approx 11{,}5$ a redução, $K_t$ a constante de
+torque do motor e $I_0(u) = 0{,}54 + 9{,}36\,u$ a corrente sem carga, dependente do comando. A
+validação desse estimador contra as forças anotadas na balança --- adotada como padrão de tração
+da caracterização --- produz coeficiente de determinação de $0{,}96$ na descida, e o raio efetivo
+da roda, medido por \emph{roll-out}, é $r_\mathrm{ef} = 0{,}0751$ m.
+
+Sobre esses dois resultados estrutura-se a malha de controle de torque proposta. Um termo de
+\emph{feedforward}, dado pela inversa da característica estática, converte a referência de torque
+em corrente; um controlador PI de corrente, projetado sobre a função $G_1(s)$ pelo método de
+modelo interno com parâmetro $\lambda = 0{,}6$ s ($K_p \approx 0{,}026$ u/A, $T_i = 1{,}8$ s,
+período de amostragem de 100 ms, anti-windup e limitação de taxa de variação), atua sobre a
+dinâmica entre comando e corrente; e um limitador de aderência impõe o torque máximo
+transferível, $T_\mathrm{max} = F_\mathrm{max}\,r_\mathrm{ef}$, associado ao início da patinagem
+na região de $110^\circ$. A montagem experimental, o procedimento de ensaio por degraus de comando
+e o tratamento das incertezas são apresentados no Capítulo 3, e os resultados da caracterização,
+no Capítulo 4.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
@@ -403,7 +457,15 @@ Este capítulo apresentou o sistema de propulsão do automodelo e comparou as pr
 mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e força de
 tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
 \eqref{eq:torque_motor}, \eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A
-comparação evidenciou o sensor de efeito Hall linear como a melhor opção para a corrente, e a
-proposta de instrumentação que combina o sensor ACS758 com a balança digital na linha de tração
-foi apresentada na Seção~\ref{sec:proposta}. A montagem experimental e o procedimento de ensaio
-são detalhados no Capítulo 3.
+comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
+sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores de corrente avaliados,
+sendo a balança digital de mala empregada como padrão de tração da caracterização.
+
+A proposta do projeto foi, então, detalhada: dois ensaios complementares --- o dinâmico, a 100 Hz,
+que identifica a função de transferência entre comando e corrente, e o de tração estática, com as
+forças anotadas, que constrói a curva torque versus corrente --- fundamentam a malha de controle de
+torque proposta, formada por \emph{feedforward} de inversa estática, PI de corrente e limitador de
+aderência. A montagem experimental e o procedimento de ensaio são detalhados no Capítulo 3, e os
+resultados da caracterização, no Capítulo 4.
+
+\clearpage
