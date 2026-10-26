@@ -2,15 +2,14 @@
 \label{chap:metodologia}
 
 Este capítulo descreve os métodos experimentais empregados na caracterização do sistema de
-propulsão do automodelo. A apresentação segue a cadeia da medida: o princípio do ensaio de
-tração e a sua montagem (Seções \ref{sec:montagem} e \ref{sec:angulocabo}), a determinação do
-raio efetivo da roda (Seção \ref{sec:raioefetivo}), a instrumentação elétrica e o registro dos
-dados (Seção \ref{sec:cadeia}), o procedimento experimental (Seção \ref{sec:procedimento}) e,
-por fim, as incertezas de medição (Seção \ref{sec:incertezas}). Para cada escolha, apresentam-se
-o critério que a fundamenta e as alternativas consideradas, de modo a permitir a reprodução
-integral do ensaio.
+propulsão do automodelo. A apresentação segue a ordem em que o ensaio foi construído: a
+montagem --- mecânica e elétrica --- do ensaio de tração (Seção \ref{sec:montagem}), a aquisição
+e o registro dos dados (Seção \ref{sec:cadeia}), o procedimento experimental (Seção
+\ref{sec:procedimento}) e, por fim, as incertezas de medição (Seção \ref{sec:incertezas}). Para
+cada escolha, apresentam-se o critério que a fundamenta e as alternativas consideradas, de modo
+a permitir a reprodução integral do ensaio.
 
-\section{O Ensaio de Tração Estática}
+\section{A Montagem do Ensaio de Tração Estática}
 \label{sec:montagem}
 
 Caracterizar o sistema de propulsão exige medir, simultaneamente, a força de tração
@@ -34,11 +33,9 @@ equilibraria a tensão aplicada ao gancho --- o quilograma-força, definido como
 quilograma em condições normais de gravidade e equivalente a $9{,}81$ N. Como o gancho é puxado
 horizontalmente pela reação da ancoragem, e não sustenta massa alguma na vertical, a leitura em
 quilogramas representa força de tração, e não peso. Ao longo do trabalho, as leituras são
-convertidas para newtons por meio de $F\,[\mathrm{N}] = 9{,}81\,m\,[\mathrm{kgf}]$. O torque na
-roda é obtido da força pela roda efetiva, determinada na Seção \ref{sec:raioefetivo}, e a
-corrente, pela cadeia de aquisição descrita na Seção \ref{sec:cadeia}.
+convertidas para newtons por meio de $F\,[\mathrm{N}] = 9{,}81\,m\,[\mathrm{kgf}]$.
 
-\subsection{Configuração de ancoragem}
+\subsection{Configuração de ancoragem e geometria do cabo}
 \label{sec:ancoragem}
 
 Na configuração adotada, o gancho da balança é engatado em uma estrutura traseira do veículo,
@@ -46,11 +43,31 @@ posicionada acima do eixo de transmissão das rodas, de modo que a linha de tra�
 a direção longitudinal do automodelo; o outro lado da balança é preso por um segundo cabo a
 uma estrutura fixa. O cabo empregado em cada lado da balança mede $126$ cm; a balança fica
 suspensa a $15$ cm do solo e o engate no veículo, a $28$ cm. Cada uma dessas dimensões foi
-medida três vezes, e os valores adotados são as médias das três leituras. Essa geometria define
-o ângulo do cabo, quantificado na Seção \ref{sec:angulocabo}.
+medida três vezes, e os valores adotados são as médias das três leituras.
 
 % FIGURA: fotografia da montagem do ensaio --- automodelo ancorado, balança suspensa entre o
 % engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.
+
+A tensão que a balança registra atua ao longo do cabo, e o cabo não é perfeitamente
+horizontal --- os engates estão a alturas diferentes. O cabo e a linha horizontal entre os
+mesmos dois pontos formam, com a diferença de altura, um triângulo retângulo, cuja hipotenusa
+é o próprio cabo e cujo cateto vertical, oposto ao ângulo $\theta$ entre o cabo e a horizontal,
+é a diferença de altura entre os engates. A força que equilibra a tração é a componente
+horizontal da tensão, $F\cos\theta$; a diferença de altura, de $28 - 15 = 13$ cm, sobre o
+comprimento do cabo, define pela razão entre o cateto oposto e a hipotenusa
+\begin{equation}\label{eq:sen_theta}
+\mathrm{sen}\,\theta = \frac{13}{126}
+\qquad\Rightarrow\qquad
+\theta = 5{,}9^\circ.
+\end{equation}
+Tomar a leitura da balança diretamente como força de tração equivale a aproximar $\cos\theta$
+por $1$, com erro relativo dado pela fração da tensão que foge à direção horizontal,
+\begin{equation}\label{eq:erro_cosseno}
+1 - \cos\theta = 1 - 0{,}995 = 0{,}0053 = 0{,}53\%.
+\end{equation}
+O desvio sistemático máximo decorrente do ângulo é, portanto, de $0{,}53\%$; em vez de corrigi-lo
+em cada leitura, esse valor é carregado como componente sistemática no orçamento de incertezas
+da Seção \ref{sec:incertezas}.
 
 \subsection{Padrão de força e sua calibração}
 \label{sec:padraoforca}
@@ -81,35 +98,7 @@ tração desenvolvida, seja qual for a massa do veículo; a condição de carreg
 contudo, a especificação do ensaio, uma vez que a tração máxima transferível antes da
 patinagem depende dela.
 
-\section{Geometria do Cabo e o Efeito Cosseno}
-\label{sec:angulocabo}
-
-A força que equilibra a tração do veículo atua na direção horizontal --- a direção em que o
-veículo tentaria se deslocar. A tensão que a balança registra, porém, atua ao longo do cabo, e
-o cabo não é perfeitamente horizontal: o engate no veículo se encontra a $28$ cm do solo,
-ao passo que a balança se encontra a $15$ cm. O cabo e a linha horizontal entre os mesmos dois
-pontos formam, com a diferença de altura, um triângulo retângulo, cuja hipotenusa é o próprio
-cabo e cujo cateto vertical, oposto ao ângulo $\theta$ entre o cabo e a horizontal, é a
-diferença de altura entre os engates.
-
-A diferença de altura, de $28 - 15 = 13$ cm, sobre o comprimento do cabo, define, pela razão
-entre o cateto oposto e a hipotenusa,
-\begin{equation}\label{eq:sen_theta}
-\mathrm{sen}\,\theta = \frac{13}{126}
-\qquad\Rightarrow\qquad
-\theta = 5{,}9^\circ.
-\end{equation}
-A componente horizontal da tensão --- a que efetivamente equilibra a tração --- é $F\cos\theta$;
-tomar a leitura da balança diretamente como força de tração equivale a aproximar $\cos\theta$
-por $1$, com erro relativo dado pela fração da tensão que foge à direção horizontal,
-\begin{equation}\label{eq:erro_cosseno}
-1 - \cos\theta = 1 - 0{,}995 = 0{,}0053 = 0{,}53\%.
-\end{equation}
-O desvio sistemático máximo decorrente do ângulo é, portanto, de $0{,}53\%$; em vez de corrigi-lo
-em cada leitura, esse valor é carregado como componente sistemática no orçamento de incertezas
-da Seção \ref{sec:incertezas}.
-
-\section{Medida do Raio Efetivo da Roda}
+\subsection{Medida do raio efetivo da roda}
 \label{sec:raioefetivo}
 
 O torque na roda é obtido da força de tração por meio do raio em que essa força atua --- a
@@ -134,27 +123,32 @@ em que $n = 5$ é o número de voltas completas.
 
 O valor nominal do fabricante para o pneu novo, sem carga, é de $80$ mm de raio; o raio
 efetivo medido, de $75{,}1$ mm, é $6{,}1\%$ menor --- a deflexão do pneu sob a carga do
-conjunto. Fecha-se, assim, a cadeia anunciada na Seção \ref{sec:montagem}: o torque na roda é
+conjunto. Fecha-se, assim, a cadeia mecânica da medida: o torque na roda é
 \begin{equation}\label{eq:torque_f_r}
 T_\mathrm{roda} = F\,r_\mathrm{ef},
 \end{equation}
 e o emprego do raio nominal em lugar do efetivo injetaria erro sistemático de $6{,}1\%$ em
 todos os pontos da curva característica.
 
-\section{Instrumentação Elétrica e Aquisição}
-\label{sec:cadeia}
-
 \subsection{Sensor de corrente}
 \label{sec:aquisicao}
 
-A corrente do conjunto é medida pelo sensor ACS758ECB-200B, instalado em série entre a bateria
-e o ESC por meio de uma adaptação com conector Deans-T --- o padrão de conector do automodelo,
-que dispensa qualquer corte nos cabos originais. Trata-se de um sensor linear de efeito Hall,
-isolado galvanicamente do circuito de potência, alimentado em $3{,}3$ V pelo Arduino Due. A
-sensibilidade é ratiométrica: $10$ mV/A na alimentação nominal de $5$ V, reduzida a
-$6{,}6$ mV/A a $3{,}3$ V; a saída em corrente nula é metade da alimentação, $1{,}65$ V. Um
-filtro RC de cerca de $24$ Hz limita a banda do sinal antes da conversão analógico-digital,
-realizada pelo ADC de $12$ bits do Due, com resolução de $122$ mA por degrau de conversão.
+A outra grandeza da caracterização, a corrente elétrica, é medida pelo sensor ACS758ECB-200B,
+instalado em série entre a bateria e o ESC por meio de uma adaptação com conector Deans-T ---
+o padrão de conector do automodelo, que dispensa qualquer corte nos cabos originais. Trata-se
+de um sensor linear de efeito Hall, isolado galvanicamente do circuito de potência, alimentado
+em $3{,}3$ V pelo Arduino Due. A sensibilidade é ratiométrica: $10$ mV/A na alimentação nominal
+de $5$ V, reduzida a $6{,}6$ mV/A a $3{,}3$ V; a saída em corrente nula é metade da alimentação,
+$1{,}65$ V. Um filtro RC de cerca de $24$ Hz limita a banda do sinal antes da conversão
+analógico-digital, realizada pelo ADC de $12$ bits do Due, com resolução de $122$ mA por degrau
+de conversão. A amostragem propriamente dita, com seus dois regimes, é descrita na Seção
+\ref{sec:cadeia}.
+
+\section{Aquisição e Registro de Dados}
+\label{sec:cadeia}
+
+\subsection{Amostragem da corrente}
+\label{sec:amostragem}
 
 Dois firmwares foram empregados na aquisição. O firmware básico realiza cem leituras do ADC em
 sequência, em cerca de $1$ ms, e emite um ponto por segundo; ele apoia o ensaio com forças
@@ -302,14 +296,14 @@ de aproximadamente $95\%$.
 
 \section{Resumo do Capítulo}
 
-Este capítulo apresentou a cadeia completa da medida, do princípio do ensaio à estimativa da
-confiança dos valores. O ensaio de tração estática ancorado converte a tração do propulsor em
-tensão mensurável por uma balança de mala calibrada com pesos padrão; o ângulo do cabo foi
-quantificado em $0{,}53\%$ e o raio efetivo, medido em $0{,}0751$ m. A corrente é adquirida
-por um sensor de efeito Hall verificado em bancada, sob degraus gerados por \emph{script} e
-registrados em CSV, com a força lida em vídeo nos segundos de regime e a corrente de perdas
-medida em ensaio a vazio. As incertezas foram estruturadas em dois níveis de repetibilidade e
-em componentes de resolução, calibração e efeitos sistemáticos pequenos. O Capítulo
-\ref{chap:resultados} apresenta os resultados obtidos com este procedimento.
+Este capítulo apresentou a construção do ensaio, da montagem à estimativa da confiança dos
+valores. A montagem ancora o automodelo e converte a tração do propulsor em tensão mensurável
+por uma balança de mala calibrada com pesos padrão, com o ângulo do cabo quantificado em
+$0{,}53\%$, o raio efetivo medido em $0{,}0751$ m e a corrente adquirida por um sensor de
+efeito Hall instalado por adaptação Deans-T. A aquisição registra os degraus de comando em
+CSV, com a força lida em vídeo nos segundos de regime e a corrente de perdas medida em ensaio
+a vazio. As incertezas foram estruturadas em dois níveis de repetibilidade e em componentes de
+resolução, calibração e efeitos sistemáticos pequenos. O Capítulo \ref{chap:resultados}
+apresenta os resultados obtidos com este procedimento.
 
 \clearpage
