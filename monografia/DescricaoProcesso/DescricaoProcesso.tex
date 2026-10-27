@@ -345,21 +345,25 @@ controle do automodelo:
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
 
-A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A IMU e o
-SS41F exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$). 
-A corrente elétrica dispensa esses parâmetros, mas sua relação com o torque
-depende da posição do sensor no circuito, conforme a Equação \eqref{eq:corrente_bateria}.
+A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque, sendo que a IMU e o
+SS41F exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$),
+enquanto a corrente elétrica se relaciona diretamente. Dessa forma, esta oferece um caminho mais
+direto para a estimativa do esforço mecânico, sendo que o sensor Hall linear apresenta um equilíbrio adequado
+entre isolamento, custo e simplicidade de montagem para as condições de operação do sistema.
 
-Entre os sensores de corrente, a escolha envolve o compromisso entre isolamento elétrico, dissipação
-de potência, faixa de medição e desempenho dinâmico sob chaveamento. O shunt oferece maior largura
-de banda a menor custo, mas não é isolado e dissipa potência. O sensor Hall é isolado e praticamente
-não dissipa potência, mas tem faixa limitada e demanda atenção ao ruído e à calibração da alimentação.
+Entre os sensores de corrente, a comparação envolve isolamento, dissipação, faixa e desempenho
+sob chaveamento. O shunt oferece a maior banda e a melhor resolução ao menor custo, mas dissipa
+potência e mantém o circuito de medição em contato elétrico com o ramo de potência. O sensor
+Hall linear é isolado e praticamente não dissipa, ao preço de faixa limitada e de atenção ao
+ruído e à calibração da alimentação. A ambos se aplica a mesma ressalva, já apresentada: a
+leitura no ramo de alimentação mede a corrente média, e não a corrente de fase, de modo que a
+interpretação exige a razão cíclica do chaveamento, conforme a Equação
+\eqref{eq:corrente_bateria}.
 
-Assim, a corrente elétrica é a grandeza com a cadeia de dependências mais curta até o torque, e,
-entre os sensores de corrente, o Hall linear oferece o melhor equilíbrio entre isolamento, custo e
-simplicidade de montagem para as correntes e frequências deste sistema. A forma de combinar o ACS758 
-a uma medição direta do esforço de tração constitui a
-proposta de instrumentação deste trabalho, apresentada na Seção~\ref{sec:proposta}.
+Assim, a corrente elétrica é a grandeza de cadeia mais curta até o torque, e o sensor Hall
+linear, o melhor equilíbrio entre os sensores de corrente para este sistema. A forma de combiná-lo
+a uma medição direta do esforço de tração, que forneça o padrão para a validação, constitui a
+proposta deste trabalho.
 
 \section{Proposta do Projeto}
 \label{sec:proposta}
