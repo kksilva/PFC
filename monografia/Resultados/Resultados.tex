@@ -61,7 +61,7 @@ ensaio em vazio testa exatamente isso.
 
 Na zona morta, $I_0$ vale $0{,}49$ A; na região de aderência, cresce de $1{,}04$ A a
 $2{,}22$ A entre $100^\circ$ e $110^\circ$; no último degrau, atinge $2{,}84$ A. O ajuste
-linear sobre os pontos válidos,
+linear sobre os pontos válidos, apresentado na Figura~\ref{fig:i0},
 \[
 I_0(u) = 0{,}54 + 9{,}36\,u,
 \]
@@ -69,7 +69,21 @@ apresenta coeficiente de determinação $r^2 = 0{,}97$, fração da variância d
 ajuste explica. A linearidade confirmada sustenta a hipótese do modelo e fecha a primeira
 peça da caracterização.
 
-% FIGURA: I_0(u) × u com o ajuste linear — gerar de ensaios/ensaio_series_vazio.csv.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{Figuras/i0_vazio.png}
+\caption{Corrente de perdas $I_0$ em função do comando normalizado $u$, com o ajuste
+linear.}
+\label{fig:i0}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Observa-se que o crescimento é uniforme ao longo de toda a escala, sem mudança de
+inclinação entre as regiões, e que os pontos se distribuem estreitamente em torno da reta.
+A comparação com a corrente de carga da caracterização mostra a relevância relativa das
+perdas: no centro da região de aderência, $I_0$ vale cerca de $1{,}6$ A sobre correntes de
+$13$ A, de modo que a fração descontada do estimador é pequena, mas não desprezível, e é
+exatamente a que não produz torque.
 
 \section{A Curva Característica Estática}
 \label{sec:restracao}
@@ -99,14 +113,62 @@ aderência se esgota e a força deixa de ser determinada pela corrente. Comandar
 não produz mais torque, apenas deslizamento, de modo que ela delimita a faixa útil do
 atuador pelo lado mecânico.
 
-A tabela-mestra consolida os dados da caracterização: para cada degrau, o comando
+A Tabela \ref{tab:mestra} consolida os dados da caracterização: para cada degrau, o comando
 normalizado $u$ e as medianas da corrente e da força em cada sentido, com o desvio-padrão
 das repetições entre parênteses. A corrente do ensaio a $100$ Hz, adquirida
 independentemente, concordou com a anotada dentro da dispersão entre repetições, o que cruza
 as duas fontes de dados.
 
-% TABELA: mestra — degrau | u | I_sub | F_sub | I_desc | F_desc (medianas ± dp, n = 4).
-% FIGURA: curva força × comando com as três regiões sombreadas — gerar de ensaios/pfc kaka.xlsx.
+\begin{table}[htb]
+\centering
+\caption{Caracterização estática: medianas das quatro repetições por degrau, com desvio-padrão
+entre parênteses. Correntes em A; forças em N.}
+\label{tab:mestra}
+\footnotesize
+\begin{tabular}{c c c c c c}
+\hline
+Degrau & $u$ & $I_\mathrm{sub}$ & $F_\mathrm{sub}$ & $I_\mathrm{desc}$ & $F_\mathrm{desc}$ \\
+\hline
+98 & 0,035 & 1,36 $\pm$ 0,26 & 4,44 $\pm$ 0,59 & -- & -- \\
+99 & 0,047 & 1,15 $\pm$ 0,81 & 5,17 $\pm$ 2,19 & 3,15 $\pm$ 0,35 & 10,69 $\pm$ 1,80 \\
+100 & 0,059 & 4,40 $\pm$ 0,19 & 14,22 $\pm$ 1,18 & 4,46 $\pm$ 0,28 & 14,37 $\pm$ 1,94 \\
+101 & 0,071 & 6,87 $\pm$ 0,29 & 23,23 $\pm$ 0,65 & 6,00 $\pm$ 1,04 & 21,26 $\pm$ 1,37 \\
+102 & 0,082 & 7,73 $\pm$ 0,23 & 25,29 $\pm$ 1,01 & 7,95 $\pm$ 0,29 & 23,89 $\pm$ 1,16 \\
+103 & 0,094 & 9,79 $\pm$ 0,24 & 30,02 $\pm$ 1,41 & 10,11 $\pm$ 0,28 & 27,93 $\pm$ 0,22 \\
+104 & 0,106 & 10,56 $\pm$ 0,73 & 32,08 $\pm$ 1,31 & 11,89 $\pm$ 0,09 & 34,89 $\pm$ 0,43 \\
+105 & 0,118 & 11,88 $\pm$ 0,86 & 31,54 $\pm$ 2,37 & 13,34 $\pm$ 0,03 & 36,89 $\pm$ 0,47 \\
+106 & 0,129 & 13,11 $\pm$ 1,27 & 31,76 $\pm$ 5,87 & 15,22 $\pm$ 0,32 & 40,25 $\pm$ 1,33 \\
+107 & 0,141 & 11,48 $\pm$ 1,15 & 32,01 $\pm$ 4,25 & 17,47 $\pm$ 0,42 & 43,24 $\pm$ 1,65 \\
+108 & 0,153 & 12,82 $\pm$ 0,76 & 34,51 $\pm$ 1,29 & 19,31 $\pm$ 0,67 & 41,55 $\pm$ 0,64 \\
+109 & 0,165 & 11,75 $\pm$ 2,16 & 32,47 $\pm$ 0,73 & 20,16 $\pm$ 0,63 & 46,17 $\pm$ 2,22 \\
+110 & 0,176 & 15,56 $\pm$ 1,07 & 32,52 $\pm$ 0,30 & 22,41 $\pm$ 0,27 & 47,18 $\pm$ 0,42 \\
+111 & 0,188 & 17,20 $\pm$ 0,85 & 35,24 $\pm$ 0,87 & 25,17 $\pm$ 2,39 & 46,08 $\pm$ 5,61 \\
+112 & 0,200 & 12,35 $\pm$ 1,00 & 37,87 $\pm$ 1,82 & 26,58 $\pm$ 1,02 & 50,89 $\pm$ 0,80 \\
+113 & 0,212 & 16,75 $\pm$ 1,76 & 37,67 $\pm$ 0,76 & 26,61 $\pm$ 0,36 & 50,79 $\pm$ 1,94 \\
+114 & 0,224 & 17,80 $\pm$ 2,30 & 40,66 $\pm$ 0,84 & 29,25 $\pm$ 0,87 & 52,16 $\pm$ 1,08 \\
+115 & 0,235 & 16,95 $\pm$ 3,72 & 46,65 $\pm$ 2,19 & 26,15 $\pm$ 0,50 & 49,76 $\pm$ 3,44 \\
+116 & 0,247 & 21,12 $\pm$ 2,25 & 48,15 $\pm$ 1,05 & 14,98 $\pm$ 1,00 & 38,48 $\pm$ 0,52 \\
+117 & 0,259 & 16,89 $\pm$ 0,23 & 52,04 $\pm$ 1,37 & 15,20 $\pm$ 0,35 & 44,15 $\pm$ 0,63 \\
+\hline
+\end{tabular}
+\end{table}
+
+A Figura \ref{fig:curva} apresenta os mesmos dados em forma de curva. O gráfico concentra
+o que as regiões significam na prática: a força quase não se move na zona morta, cresce com
+regularidade na descida da região de aderência, estaciona na subida entre $105^\circ$ e
+$110^\circ$, sob o \emph{stick-slip}, e atinge o máximo já na fronteira da saturação, com
+os dois últimos pontos da descida marcados como ocos, fora da curva, pelo corte do ESC. A
+comparação visual entre os sentidos torna a histerese imediata: o laço entre as curvas é a
+memória térmica do conjunto registrada na forma mais simples.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/curva_forca_comando.png}
+\caption{Força de tração em função do comando, para os dois sentidos da escada, com as
+regiões de operação e os pontos do corte do ESC destacados.}
+\label{fig:curva}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \subsection{O que cada região mostrou}
 \label{sec:reszonas}
@@ -200,42 +262,63 @@ malha de controle.
 \label{sec:resdinamica}
 
 O segundo modelo vem do ensaio a $100$ Hz. Cada borda de subida na região de aderência, os
-degraus de $100^\circ$ a $109^\circ$, é uma resposta ao degrau completa, e as dez bordas
-foram analisadas por dois métodos, o da $63{,}2\%$, que toma o instante em que a resposta
-atinge $63{,}2\%$ do valor final como estimativa da constante de tempo, e o ajuste de
-mínimos quadrados ao modelo de primeira ordem com atraso. Bordas acima de $110^\circ$ não
-foram empregadas, pois a resposta já nasce contaminada pela patinagem.
+degraus de $100^\circ$ a $109^\circ$, registra a corrente ao longo de todo o degrau, e a
+análise dessas janelas exigiu um cuidado que só se torna evidente na Figura
+\ref{fig:blocos}: os blocos não começam no degrau. Os primeiros $1{,}5$ a $2$ s de cada
+bloco registram a corrente em nível de repouso, compatível com a corrente de perdas $I_0$ do
+ensaio em vazio, uma vez que a janela de registro abre antes de o comando remoto produzir
+efeito no ESC. Somente após esse período a corrente sobe. Tratar o bloco inteiro como
+resposta ao degrau conduziria, portanto, a uma constante de tempo superestimada, mistura do
+atraso do protocolo com a dinâmica da planta.
 
-Os resultados convergem. O ganho, tomado do platô de cada resposta, varia de $116$ a
-$125$ A/u, envolvendo o valor estático da caracterização e cruzando as duas identificações.
-O atraso é inferior a $0{,}1$ s, pois a corrente responde dentro da primeira janela de
-$100$ ms, de modo que a partida \emph{sensorless} do ESC não impõe atraso mensurável. A
-constante de tempo situa-se entre $1{,}8$ e $2{,}0$ s, e a planta é
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{Figuras/blocos_degrau.png}
+\caption{Janelas brutas de dois degraus da aquisição a $100$ Hz, com corrente bruta (cinza)
+e média móvel (vermelho): o patamar inicial é o neutro que precede o degrau, e a subida é
+rápida uma vez iniciada.}
+\label{fig:blocos}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O tratamento adotado foi ancorar cada resposta no seu início elétrico, o instante em que a
+corrente supera o patamar de repouso, e analisar a subida a partir dele, pelos métodos da
+$63{,}2\%$ e do ajuste de mínimos quadrados ao modelo de primeira ordem com atraso. Bordas
+acima de $110^\circ$ não foram empregadas, pois a resposta já nasce contaminada pela
+patinagem. A Figura \ref{fig:respostas} apresenta as dez respostas assim alinhadas e
+normalizadas, com a média e o ajuste sobre ela.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.66\textwidth]{Figuras/resposta_degrau.png}
+\caption{Respostas ao degrau alinhadas no início elétrico, normalizadas, com a média das dez
+bordas e o ajuste de primeira ordem.}
+\label{fig:respostas}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Os resultados são consistentes entre si e com o \emph{prior} da literatura. O atraso puro é
+inferior a $0{,}1$ s, uma vez que a corrente responde dentro da primeira janela de $100$ ms
+após o início elétrico, de modo que a partida \emph{sensorless} do ESC não impõe atraso
+mensurável nesse caminho. A constante de tempo da subida situa-se em $0{,}25$ s, valor que o
+ajuste reproduz sobre a média das dez bordas. O ganho, tomado do platô de cada resposta,
+varia de $116$ a $125$ A/u, envolvendo o valor estático da caracterização e cruzando as duas
+identificações, e a sobreposição das respostas normalizadas indica que a planta é a mesma
+para todos os degraus da região de aderência. A planta é, portanto,
 \begin{equation}\label{eq:g1_identificada}
-G_1(s) = \frac{120\,e^{-\theta_a s}}{1{,}8\,s + 1},
-\qquad \theta_a < 0{,}1\ \mathrm{s}.
+G_1(s) = \frac{120}{0{,}25\,s + 1},
 \end{equation}
+sem atraso apreciável. O valor confirma o \emph{prior} usual para o caminho comando--corrente,
+que a literatura situa entre $0{,}05$ e $0{,}3$ s com base na constante elétrica do
+enrolamento: a resposta é rápida porque, com a roda travada, a corrente acompanha o comando
+quase sem inércia elétrica. A aparente lentidão observada nas janelas brutas pertence ao
+protocolo de disparo, não à planta, e desaparece quando a resposta é ancorada no seu início
+elétrico, como o próprio script do ensaio cego faz ao abrir a janela na resposta da corrente.
 
-% FIGURA: respostas ao degrau normalizadas (bordas 100-109°) com o ajuste — gerar de
-% ensaios/ensaio_cego_subida.csv.
-
-O valor de $\tau$ exige interpretação, pois confronta um \emph{prior} da literatura. O
-caminho comando--corrente é frequentemente modelado pela constante elétrica $L/R$ do
-enrolamento, de milissegundos, e referências situam a constante de tempo entre $0{,}05$ e
-$0{,}3$ s. O valor medido, uma ordem de grandeza acima, indica que o enrolamento não governa
-o comportamento. Com a roda travada, a velocidade do motor é quase nula, a força
-contra-eletromotriz é pequena e a corrente responderia em milissegundos a um degrau de
-tensão. A rampa observada, de segundos, só pode ser imposta pelo próprio ESC, por seu
-escalonamento interno de corrente, o controle de progressividade e o sequenciamento de
-partida com a roda parada. A constante de tempo medida é uma propriedade do firmware do ESC.
-Conclui-se que a planta é lenta não por limitação elétrica, mas por decisão de projeto do
-controlador comercial, o que tem consequência direta para o projeto da malha: nenhum
-controlador pode fazer a corrente responder mais rápido que a rampa que o ESC impõe.
-
-A consequência prática já se manifestava no protocolo. Com $\tau = 1{,}8$ s, o regime assenta
-após cerca de quatro constantes de tempo, $4\tau \approx 7$ s, exatamente a espera que
-antecede a anotação da força. A janela do protocolo é validada \emph{a posteriori} pela
-própria dinâmica identificada.
+Essa distinção tem consequência direta para o projeto da malha: a planta elétrica não limita
+a velocidade do controlador. A consequência prática se manifesta também no protocolo da
+força: decorridos $7$ s do comando, a corrente está em regime há muito mais de $6$ s, de
+modo que a anotação da força nos segundos $7$ a $9$ é largamente confortável.
 
 \section{O Controlador de Torque}
 \label{sec:rescontrolador}
@@ -248,10 +331,17 @@ validação experimental da malha fechada permanece como etapa pendente.
 \subsection{O caminho do sinal}
 \label{sec:estrutura}
 
-% FIGURA: diagrama de blocos da malha.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{Figuras/diagrama_malha.png}
+\caption{Estrutura da malha de controle de torque.}
+\label{fig:malha}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 A variável de processo é o torque na roda, obtido por estimativa, e a variável manipulada é
-o comando de aceleração $u$, aplicado ao ESC. A referência $T_\mathrm{ref}$ percorre dois
+o comando de aceleração $u$, aplicado ao ESC. A malha, apresentada na
+Figura~\ref{fig:malha}, fecha sobre a referência $T_\mathrm{ref}$, que percorre dois
 caminhos. No direto, a inversa da característica estática converte a referência na corrente
 de bateria esperada,
 \begin{equation}\label{eq:feedforward}
@@ -274,13 +364,13 @@ grandeza de processo.
 \subsection{A escolha do proporcional--integral}
 \label{sec:escolhapi}
 
-A estrutura do controlador segue a da planta. Como $G_1(s)$ é de primeira ordem, o
+A estrutura do controlador segue a da planta. Como $G_1(s)$, identificada na Seção \ref{sec:resdinamica}, é de primeira ordem, o
 proporcional--integral é a escolha natural: o proporcional atua sobre o erro instantâneo, e o
 integral elimina o erro em regime, função que nenhum outro termo cumpre e que importa neste
 sistema, onde a cadeia de corrente carrega um desvio sistemático de ganho conhecido. O termo
 derivativo foi descartado por duas razões. A primeira é que ele responde à taxa de variação
 do erro e, com ela, ao ruído de quantização da corrente, de $122$ mA por degrau do conversor,
-sensibilidade que uma planta de constante de tempo de $1{,}8$ s não justifica. A segunda é
+sensibilidade que um erro não oscilante não justifica. A segunda é
 que a resposta da planta não apresenta sobressinal nem oscilação a serem antecipados, função
 própria do derivativo. O que não beneficia o sistema deve ser deixado de fora, e um PI
 satisfaz ao projeto.
@@ -291,13 +381,12 @@ satisfaz ao projeto.
 Para ajustar o PI, optou-se pelo método de modelo interno em detrimento das alternativas
 clássicas, e o motivo está no que cada método oferece. As fórmulas de Ziegler--Nichols foram
 construídas para rejeição de perturbação com resposta rápida e produzem ajustes agressivos,
-com margens estreitas, inadequados a uma planta lenta que opera encostada em uma saturação de
+com margens estreitas, inadequados a um sistema que opera encostado em uma saturação de
 aderência. A síntese direta especifica o comportamento de malha fechada desejado e calcula o
 controlador que o cumpre, mas não oferece, por si só, um parâmetro de robustez contra as
 incertezas do modelo. O método de modelo interno é uma síntese direta na qual o
 comportamento desejado é filtrado por um parâmetro $\lambda$ que torna o ajuste conservador
-de forma explícita e controlável, o que se busca numa planta cuja constante de tempo vem de
-um firmware que não se controla.
+de forma explícita e controlável, o que se busca numa planta identificada sobre dados de ensaio, sempre sujeita a incerteza.
 
 O procedimento do método é o seguinte. Especifica-se que a malha fechada se comporte como
 primeira ordem com constante de tempo $\lambda$, o mais lento que se deseja exigir dela.
@@ -308,17 +397,17 @@ K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
 \qquad
 T_i = \tau.
 \end{equation}
-Substituindo na Equação \eqref{eq:g1_identificada} os valores identificados, os ganhos são
-$K_p \approx 0{,}025$ u/A e $T_i = 1{,}8$ s. O tempo integral reproduz a constante de tempo da
+Substituindo na Equação \eqref{eq:g1_identificada} os valores identificados, com
+$\lambda = \tau = 0{,}25$ s, os ganhos são $K_p \approx 8{,}3 \times 10^{-3}$ u/A e
+$T_i = 0{,}25$ s. O tempo integral reproduz a constante de tempo da
 planta, imposição do método, e o ganho proporcional diminui com $\lambda$, de modo que um
 ajuste mais conservador significa um comando menos enérgico, relação transparente que as
 fórmulas clássicas não oferecem.
 
-O valor $\lambda = 0{,}6$ s segue a recomendação do método, $\lambda \geq 0{,}25\,\tau$, que
-expressa a limitação da própria planta: abaixo de $0{,}45$ s, o controlador exigiria uma
-resposta que a rampa interna do ESC não pode dar, saturando o comando sem benefício. O valor
-adotado respeita o limite com folga e torna a malha três vezes mais rápida que a planta
-aberta, ganho substancial de desempenho sem agressividade excessiva junto à saturação.
+Com $\lambda$ igual à constante de tempo da planta, a malha fecha tão rápido quanto a
+planta elétrica permite, sem exigir dela o que não pode dar. A escolha preserva as margens
+do ajuste, examinadas adiante por variação paramétrica, e mantém a malha confortavelmente
+mais lenta que a dinâmica mecânica do veículo, a respeitar pela proteção da transmissão.
 
 \subsection{Os valores do projeto}
 \label{sec:escolhavalores}
@@ -327,10 +416,10 @@ A implementação é digital, e a razão está na cadeia de sinal. O sensor é a
 tensão é amostrada pelo conversor do Arduino, e a partir desse instante o sinal é digital:
 o controlador executa em software, no computador de bordo, e o laço atua sobre valores
 amostrados, sem que haja implementação analógica a considerar. O período de amostragem é
-$T_s = 100$ ms, uma ordem de magnitude abaixo de $\lambda$, condição para que a aproximação
-discreta não distorça o projeto contínuo, com integração trapezoidal e anti-windup por
-limitação da integral sempre que o atuador satura, situação em que o limitador de aderência
-permanece ativo.
+$T_s = 10$ ms, o regime do \emph{firmware} rápido já gravado no Arduino, uma décima do
+tempo integral e condição para que a integração trapezoidal não distorça o projeto
+contínuo. O anti-windup limita a integral sempre que o atuador satura, situação em que o
+limitador de aderência permanece ativo.
 
 O limitador impõe $T_\mathrm{ref} \leq T_\mathrm{max}$, com o torque máximo tomado da curva
 característica, aproximadamente $3{,}9$ N$\cdot$m com o pneu aquecido e cerca de
@@ -343,15 +432,21 @@ protege a transmissão dos picos de torque que o seguimento brusco de referênci
 \subsection{O desempenho esperado}
 \label{sec:desempenho}
 
-Em malha aberta, a resposta de $G_1(s)$ a um degrau é a de primeira ordem pura, sem
-sobressinal, com $63\%$ do valor final em $1{,}8$ s e $95\%$ em $5{,}4$ s. Em malha
-fechada, com o PI ajustado sobre o próprio modelo, o comportamento segue as especificações
-de projeto: resposta de primeira ordem com constante de tempo $\lambda = 0{,}6$ s, sobressinal
-nulo, limite de sobressinal de $10\%$ respeitado com folga, tempo de acomodação da ordem de
-$3\lambda \approx 1{,}8$ s e erro nulo em regime, garantido pelo integrador mesmo diante do
-desvio sistemático da cadeia de corrente. A rejeição de perturbação segue o mesmo ritmo,
-com recuperação da ordem de $3\lambda$ e sem erro permanente.
-% FIGURA: resposta em malha fechada — degrau de referência e de perturbação (MATLAB).
+Em malha fechada, com o PI ajustado sobre o próprio modelo, o comportamento segue as
+especificações de projeto: resposta de primeira ordem com constante de tempo
+$\lambda = 0{,}25$ s, sobressinal nulo, tempo de acomodação da ordem de $1$ s e erro nulo
+em regime, garantido pelo integrador mesmo diante do desvio sistemático de ganho da cadeia
+de corrente. O desempenho projetado está resumido na Figura~\ref{fig:mf}, com o seguimento
+de referência e a rejeição de perturbação no mesmo ritmo, com recuperação da ordem de
+$3\lambda$ e sem erro permanente.
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.66\textwidth]{Figuras/malha_fechada.png}
+\caption{Desempenho projetado da malha: seguimento de referência e rejeição de
+perturbação, em comparação com a planta em malha aberta.}
+\label{fig:mf}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 A robustez foi examinada por variação paramétrica, conforme as especificações do projeto:
 com o ganho da planta variando $\pm 20\%$ e a constante de tempo $\pm 30\%$ em torno dos
@@ -367,10 +462,27 @@ As incertezas seguem o orçamento da Seção \ref{sec:incertezas}. A repetibilid
 escadas é quantificada pelo desvio-padrão das medianas por degrau, presente na tabela-mestra
 e de $\pm 0{,}1$ a $\pm 0{,}2$ kgf na força da faixa de aderência. A propagação pela
 Equação \eqref{eq:propagacao}, com as componentes de resolução, calibração e efeitos
-sistemáticos, resulta em incerteza expandida da ordem de $\pm 0{,}1$ N$\cdot$m na faixa de
-maior torque, valor de trabalho a ser refinado pela tabela completa por faixa de degrau.
+sistemáticos, resulta nas incertezas expandidas da Tabela \ref{tab:incertezas}, que crescem de
+$\pm 0{,}30$ N$\cdot$m na zona morta para $\pm 0{,}56$ N$\cdot$m na região de aderência e
+$\pm 0{,}87$ N$\cdot$m na saturação, acompanhando o crescimento da repetibilidade com o
+nível de força. Na faixa de validade do modelo, a incerteza representa cerca de $6\%$ do
+torque medido.
 
-% TABELA: incertezas por faixa de degrau — gerar de ensaios/pfc kaka.xlsx.
+\begin{table}[htb]
+\centering
+\caption{Incerteza expandida do torque por faixa de operação ($k = 2$).}
+\label{tab:incertezas}
+\small
+\begin{tabular}{l c c}
+\hline
+Faixa & $u_A(F)$ (N) & $U(T)$ (N$\cdot$m) \\
+\hline
+Zona morta ($98$--$99^\circ$) & 2,0 & $\pm$ 0,30 \\
+Aderência ($100$--$110^\circ$) & 3,6 & $\pm$ 0,56 \\
+Saturação ($111$--$117^\circ$) & 5,7 & $\pm$ 0,87 \\
+\hline
+\end{tabular}
+\end{table}
 
 \section{Limitações}
 \label{sec:reslimitacoes}
@@ -391,11 +503,11 @@ cadeia de corrente e quantificou o desvio da balança. O ensaio em vazio mediu a
 perdas e confirmou a linearidade do ESC. A curva característica, organizada pelas regiões de
 operação, atingiu força máxima de $52$ N e revelou o \emph{stick-slip}, a memória térmica do
 conjunto e o corte do ESC. O estimador de torque foi validado com rendimento $\eta = 0{,}579$
-e $r^2 = 0{,}962$, delimitado à região de aderência. A dinâmica comando--corrente foi
-identificada com constante de tempo de $1{,}8$ a $2{,}0$ s, dominada pelo ESC. Sobre esses
-dois modelos, a malha de controle foi estruturada: realimentação de corrente com estimativa
-de torque, \emph{feedforward} da inversa estática, PI ajustado por modelo interno e limitador
-de aderência. As considerações finais são apresentadas no Capítulo
+e $r^2 = 0{,}962$, delimitado à região de aderência. A dinâmica comando--corrente revelou resposta rápida, com constante de tempo de
+$0{,}25$ s, e o atraso aparente das janelas brutas, pertencente ao protocolo de disparo, foi
+distinguido da planta. Sobre esses dois modelos, a malha de controle foi estruturada:
+realimentação de corrente com estimativa de torque, \emph{feedforward} da inversa estática,
+PI ajustado por modelo interno e limitador de aderência. As considerações finais são apresentadas no Capítulo
 \ref{chap:conclusao}.
 
 \clearpage

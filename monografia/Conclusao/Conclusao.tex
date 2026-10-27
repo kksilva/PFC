@@ -43,13 +43,14 @@ A conclusão prática é que, em ensaios com ESC comerciais, o estado da bateria
 condição de ensaio tanto quanto a massa e o piso, e deve constar do \emph{checklist} e das
 regras de validação, como ficou neste trabalho.
 
-\textbf{Consequência para o controle.} A constante de tempo de $1{,}8$ a $2{,}0$ s impõe o
-ritmo de qualquer malha sobre esse propulsor: um controlador não pode exigir da planta
-resposta muito mais rápida que a sua. Com o modelo de torque validado, a dinâmica
-identificada e a sintonização apresentada na Seção \ref{sec:rescontrolador}, a malha proposta,
-com realimentação de corrente e estimativa de torque, \emph{feedforward} da inversa estática
-e limitador de aderência, fica completamente especificada pelos parâmetros medidos,
-restando sua validação experimental como etapa pendente.
+\textbf{Consequência para o controle.} A resposta elétrica do propulsor é rápida, e o
+atraso aparente das janelas de ensaio pertence ao protocolo de disparo, não à planta, de
+modo que o projeto da malha não é limitado pela dinâmica elétrica. Com o modelo de torque
+validado, a dinâmica identificada e a sintonização apresentada na Seção
+\ref{sec:rescontrolador}, a malha proposta, com realimentação de corrente e estimativa de
+torque, \emph{feedforward} da inversa estática e limitador de aderência, fica completamente
+especificada pelos parâmetros medidos, restando sua validação experimental como etapa
+pendente.
 
 \section{Propostas de Continuidade}
 
