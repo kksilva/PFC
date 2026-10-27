@@ -1,6 +1,67 @@
 \chapter{Conclusões}
 \label{chap:conclusao}
 
-% Em planejamento.
+\section{Considerações Finais}
+
+Este trabalho caracterizou experimentalmente o sistema de propulsão de um automodelo
+elétrico 1/8, obtendo sua curva característica torque versus corrente por meio de um ensaio
+de tração estática de baixo custo --- automodelo ancorado, balança de mala como padrão de
+força e sensor de efeito Hall no ramo de alimentação. O modelo de torque foi validado com
+coeficiente de determinação de $0{,}962$ na descida, com rendimento global de $0{,}579$ e
+constante de torque efetiva de $2{,}5$ a $2{,}7$ mN$\cdot$m/A, delimitado à região de
+aderência. A dinâmica entre o comando e a corrente foi identificada com constante de tempo de
+$1{,}8$ a $2{,}0$ s e atraso desprezível, em confronto com o \emph{prior} clássico do caminho
+--- a dinâmica é do ESC, não do enrolamento. Dois resultados estruturam as considerações que
+seguem: a planta é lenta, e sua aderência é a fronteira de tudo o que se pode controlar.
+
+\textbf{Aderência e stick-slip.} O fator de aderência aparente entre pneu e piso foi de
+aproximadamente $0{,}80$, tomado sobre o peso total do conjunto, e só é compatível com atrito
+seco mediante transferência de carga do eixo dianteiro para o traseiro sob tração. A aderência
+mostrou-se, além disso, uma condição de estado: na subida, com o pneu frio, o limite se
+manifestou como \emph{stick-slip} --- oscilação de relaxamento com a força presa em cerca de
+$32$ N e a corrente oscilando entre repetições, com o tremor do conjunto observado
+diretamente em bancada; na descida, com o pneu aquecido, a roda travou de forma sustentada e
+a força atingiu $52$ N. A diferença sistemática entre os sentidos ($+7\%$ a $+45\%$ na região
+de aderência) é compatível com duas contribuições não separadas neste trabalho --- o
+aquecimento do pneu e o da bateria ---, e indica que a caracterização de um propulsor de
+tração deve especificar o histórico térmico do conjunto, não apenas sua massa. Para o
+controle, a conclusão é direta: o torque é controlável apenas dentro da região de aderência,
+e o limitador de um controlador deve respeitar o limiar observado, sob pena de comandar
+patinagem em vez de tração.
+
+\textbf{A bateria como elo do experimento.} Duas interferências de bateria marcaram o
+trabalho e merecem registro como fontes de erro. A bateria dedicada do Raspberry Pi, quando
+descarregada, derrubava a tensão do conversor \emph{step-down} --- medida em $4{,}0$ V contra
+$5{,}3$ V esperados, abaixo do mínimo operacional ---, provocando quedas da rede em plena
+sessão, com o veículo rodando; o sintoma imita falha de comando e só foi diagnosticado pela
+medição da tensão de alimentação. As baterias antigas do laboratório, por sua vez, impuseram
+o problema oposto: degradadas e uma delas estufada, apresentavam \emph{sag} severo sob carga,
+de modo que o corte de baixa tensão do ESC reduzia o \emph{duty} interno e executava degraus
+altos com corrente de degraus menores --- o defeito que rotulou execuções inteiras da escada e
+exigiu a regra de validação do consolidado. Sessões inteiras foram descartadas por essa causa.
+A conclusão prática é que, em ensaios com ESC comerciais, o estado da bateria integra a
+condição de ensaio tanto quanto a massa e o piso, e deve constar do \emph{checklist} e das
+regras de validação --- como ficou neste trabalho.
+
+\textbf{Consequência para o controle.} A constante de tempo de $1{,}8$ a $2{,}0$ s impõe o
+ritmo de qualquer malha sobre esse propulsor: um controlador não pode exigir da planta
+resposta muito mais rápida que a sua. Com o modelo de torque validado e a dinâmica
+identificada, a malha proposta --- realimentação de corrente com estimativa de torque,
+\emph{feedforward} da inversa estática e limitador de aderência --- fica completamente
+especificada pelos parâmetros medidos, restando sua sintonização e validação como etapa
+pendente.
+
+\section{Propostas de Continuidade}
+
+Quatro continuidades se descortinam diretamente dos resultados. A medição dinâmica da força,
+com célula de carga e registrador de baixo custo (HX711), permitiria identificar a dinâmica
+comando--tração e fechar a malha de torque sobre a grandeza de interesse, em vez da corrente.
+A instrumentação do pneu e da bateria --- temperatura do primeiro, tensão da segunda, durante
+os degraus --- separaria as contribuições da memória térmica e embasaria a modelagem do limite
+de aderência. O sensor de rotação por efeito Hall (SS41F), previsto desde a revisão de
+instrumentação, viabilizaria o ensaio em vazio com rotação medida e a validação isolada da
+constante de torque do motor. E, por fim, a sintonização e a validação da malha de controle
+proposta, em simulação sobre o modelo identificado e, se possível, em bancada, completariam o
+caminho da caracterização ao controle.
 
 \clearpage
