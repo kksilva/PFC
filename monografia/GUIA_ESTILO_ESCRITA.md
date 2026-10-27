@@ -285,6 +285,11 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   processo, variável manipulada e como a malha fecham, em parágrafo próprio antes do veredito.
   Comparação de sensores não antecipa decisão do trabalho: modo de medição, calibrações e
   adoções vivem na Metodologia; a seção de sensor é imparcial até o veredito.
+- **Tom formal sem solas conversacionais.** Evitar construções como "A malha fecha
+  comparando...", "assim como na solução com...", sequências de frases curtas soltas e
+  explicações em estilo de conversa. Preferir o indicativo com subordinação ("A malha compara
+  ... e ajusta ..."), "como no arranjo com..." e períodos que amarram as ações. O texto da
+  autora soa acadêmico, nunca didático-conversado.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.

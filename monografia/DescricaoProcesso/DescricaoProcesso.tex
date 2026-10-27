@@ -114,11 +114,11 @@ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t).
 A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando de acionamento
 \(u(t)\), a variável manipulada do sistema, utilizado para ajustar a atuação do motor e
 reduzir a diferença entre a velocidade desejada e a velocidade estimada. Esse comando é
-transmitido ao ESC por meio de um sinal elétrico PWM, e o ESC controla a energia fornecida
-pela bateria aos enrolamentos do motor. O motor produz torque, transmitido às rodas, e o
-veículo acelera. A IMU mede a nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é
-atualizada por integração e realimentada ao controlador, que calcula um novo erro e um novo
-comando, fechando o ciclo.
+transmitido ao ESC por meio de um sinal elétrico PWM, com o qual o ESC controla a energia
+fornecida pela bateria aos enrolamentos do motor. O motor produz torque, que a transmissão leva
+às rodas, e o veículo acelera. A IMU mede a nova aceleração do chassi, a estimativa
+\(\hat{v}(t)\) é atualizada por integração e realimentada ao controlador, que calcula um novo
+erro e um novo comando, fechando o ciclo.
 
 A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
 A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e GND) e dois sinais de comunicação: SDA (Serial Data), responsável 
@@ -247,9 +247,9 @@ O INA240 é montado no circuito de medição, lendo a queda de tensão entre os 
 saída é um sinal analógico na entrada do microcontrolador para tornar possível a leitura dos valores. 
 O componente possui largura de banda de 400 kHz e
 rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
-simultâneas da tensão nos dois terminais de entrada, justamente as produzidas pelo chaveamento de
-um ESC: sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
-mascaram a corrente. Em altas
+simultâneas da tensão nos dois terminais de entrada, produzidas pelo chaveamento do
+ESC. Sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
+mascariam a corrente. Em altas
 frequências, ainda, a indutância parasita do próprio resistor --- de seus terminais e de sua
 construção --- soma-se à queda ômica, de modo que a tensão deixa de ser proporcional à corrente
 instantânea, distorcendo a leitura durante as bordas de chaveamento.
@@ -266,9 +266,10 @@ resistivo.}
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e implementar a
 proteção contra sobrecorrente por limiar. No sistema de controle, a variável de processo é a
 corrente do propulsor, que se relaciona ao torque pelo modelo do motor, e a variável manipulada
-é o comando de aceleração $u$, aplicado ao ESC. A malha fecha comparando a corrente medida à
-referência calculada para o torque desejado e ajustando o comando; quando a leitura ultrapassa
-um limiar, o controlador reduz a excitação, protegendo o conjunto.
+é o comando de aceleração $u$, aplicado ao ESC. A malha compara a corrente medida à
+referência calculada para o torque desejado e ajusta o comando, e o controlador reduz a
+excitação sempre que a leitura ultrapassa um limiar, protegendo o conjunto contra
+sobrecorrente.
 
 Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
 instrumentação e o controle do automodelo:
@@ -325,14 +326,15 @@ Equação \eqref{eq:acs_resolucao}:
 \end{figure}
 
 Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
-saída analógica é ligada diretamente ao conversor do microcontrolador, conforme a Figura~ef{fig:acs758}.
+saída analógica é ligada diretamente ao conversor do microcontrolador, conforme a Figura~
+ef{fig:acs758}.
 
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
-pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, assim como na
-solução com shunt e INA240. No sistema de controle, a variável de processo é o torque estimado
-a partir da corrente, e a variável manipulada é o comando de aceleração $u$: uma malha interna
-de corrente compara a corrente medida à referência e ajusta o comando, e o estimador converte
-a corrente em torque.
+pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, como no
+arranjo com shunt e INA240. No sistema de controle, a variável de processo é o torque estimado
+a partir da corrente, e a variável manipulada é o comando de aceleração $u$. Uma malha interna
+de corrente compara a medida à referência e ajusta o comando, enquanto o estimador converte a
+corrente em torque.
 
 Assim, o ACS758 cumpre os requisitos de isolamento galvânico, dissipação, faixa de medição e
 banda para as correntes e frequências deste sistema.
@@ -388,16 +390,16 @@ qual a malha de controle atua.
 
 Sobre esses dois modelos estrutura-se a proposta de controle de torque. A variável de processo
 é o torque na roda, obtido por estimativa a partir da corrente medida, e a variável manipulada é
-o comando de aceleração $u$, aplicado ao ESC. A malha é organizada em cascata. Um termo de
+o comando de aceleração $u$, aplicado ao ESC. A malha organiza-se em cascata. Um termo de
 \emph{feedforward}, dado pela inversa da característica estática, converte diretamente a
 referência de torque na corrente de bateria esperada. Um controlador proporcional--integral,
 com anti-windup e limitação da taxa de variação do comando, atua sobre o erro entre essa
 referência e a corrente medida, ajustando $u$ conforme a dinâmica a ser identificada experimentalmente. Um limitador de
 aderência impõe o torque máximo transferível antes da patinagem, de modo que a operação se
 mantenha na região em que o modelo é válido, e a leitura da corrente viabiliza, ainda, a
-proteção contra sobrecorrente por limiar. A malha fecha em corrente, e não em força, porque a
-força não é mensurável embarcada --- o padrão de tração é um instrumento de bancada, usado na
-caracterização.
+proteção contra sobrecorrente por limiar. A realimentação é feita em corrente, e não em força, uma
+vez que a força não é mensurável embarcada. O padrão de tração é um instrumento de bancada,
+empregado apenas na caracterização.
 
 A montagem experimental e a definição do padrão de tração são apresentadas no Capítulo 3; os
 resultados da caracterização e o projeto do controlador, no Capítulo 4.
