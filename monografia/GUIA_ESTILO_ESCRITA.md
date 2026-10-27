@@ -262,6 +262,21 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   de causa, discussão com a literatura) pertencem à **Conclusão**, não ao corpo de Resultados —
   onde só vive o que foi medido. Afirmar causa sem instrumentação (ex.: memória térmica vs.
   bateria aquecida) é atacável em banca; apresentar a alternativa e o que a separaria é defensável.
+- **Aprovado é congelado.** Texto que a autora revisou e manteve não se reescreve — nem para
+  "melhorar". Melhorias só respondem a perguntas dela, corrigem erro ou consertam coesão com o
+  restante. A revisão dela tem prioridade sobre qualquer sugestão de estilo deste guia.
+- **Perguntas entre parênteses DELA são pedidos, não dúvidas dela.** "(o que é isso?)",
+  "(qual motivo?)", "(como assim? explique)" pedem que o assistente esclareça reescrevendo a
+  passada com a explicação embutida — e apague a pergunta.
+- **Ela poda o fim de frases longas.** Quando o raciocínio estende o período além do
+  necessário, ela corta o rabo da frase em vez de repartir. Revisar imitando: encurtar o
+  fecho, não alongar o meio.
+- **Títulos de seções compostas usam "+"**: "Shunt Resistivo + Amplificador de
+  Instrumentação", não "e".
+- **Parágrafos curtos com respiro**: blocos de 3–6 linhas separados por linha em branco;
+  um bloco, uma ideia.
+- **Equações entram com anúncio simples**: "a Segunda Lei de Newton para rotação ..., é dada
+  por:" — dois-pontos, sem cerimônia.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.

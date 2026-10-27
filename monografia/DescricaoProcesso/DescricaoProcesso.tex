@@ -176,10 +176,14 @@ $\omega_m$ pela redução $i$ da transmissão.
 
 
 Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
-rotação se deseja medir, e o sensor é montado no chassi próximo ao anel, mantendo uma
-entreferência (o que é isso?) constante entre o elemento Hall e os polos (qual motivo?). A conexão com o
-microcontrolador é facilmente realizada com alimentação, terra e saída digital e a leitura por
-interrupção dispensa circuitos de condicionamento adicionais (como assim? explique pq seria necessario)
+rotação se deseja medir, e o sensor é montado no chassi, fixo, próximo ao anel. Entre o elemento
+Hall e os polos mantém-se uma entreferência --- a distância entre o sensor e o anel --- pequena
+e constante: o campo magnético decai rapidamente com a distância, de modo que uma folga
+excessiva enfraquece o sinal, ao passo que uma folga mínima demais arrisca o contato
+mecânico. A conexão com o microcontrolador é direta --- alimentação, terra e saída digital ---,
+e a leitura por interrupção dispensa circuitos de condicionamento adicionais: a saída do
+sensor já é um nível lógico compatível com a entrada do microcontrolador, ao contrário de um
+sinal analógico fraco, que exigiria amplificação e filtragem antes da conversão.
 
 A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
@@ -189,7 +193,7 @@ T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
 
 O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
-que precisariam ser identificados separadamente. Há, ainda, um limite de resolução inerente ao
+que precisam ser identificados separadamente (pq?). Há, ainda, um limite de resolução inerente ao
 método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
 torna progressivamente mais grosseira. A derivada exigida pela Equação
 \eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
