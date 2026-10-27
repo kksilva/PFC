@@ -49,35 +49,6 @@ proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
 \emph{step-down} para alimentação em 5 V.
 
-A ponte entre a cadeia elétrica e a mecânica do propulsor é a relação entre o torque
-eletromagnético e a corrente, dada pela constante de torque $K_t$,
-\begin{equation}\label{eq:torque_corrente}
-T_{\text{motor}} = K_t\,I.
-\end{equation}
-Essa constante traduz, num único número, a capacidade do motor de converter corrente em
-torque. Em motores brushless, ela é numericamente igual à constante de força
-contraeletromotriz, em V·s/rad --- um reflexo da conservação da energia: a mesma constante que
-converte corrente em torque converte rotação em tensão. A constante de velocidade $K_v$, dada
-em rpm/V, se relaciona a ambas por
-\begin{equation}\label{eq:ke_kv}
-K_t = K_e = \frac{60}{2\pi\,K_v} \approx \frac{9{,}55}{K_v},
-\end{equation}
-em que o fator 9,55 é o valor numérico de $60/(2\pi)$, que converte rotações por minuto em
-radianos por segundo. Para o motor do automodelo, com $K_v = 2100$ rpm/V, obtém-se
-$K_t \approx 4{,}55$ mN$\cdot$m/A. Com a redução $i \approx 11{,}5$ e desprezando, em
-primeira análise, as perdas da transmissão, o torque nas rodas é
-\begin{equation}\label{eq:torque_roda_corrente}
-T_\mathrm{roda} = i\,K_t\,I \approx 52\ \mathrm{mN\cdot m/A}\cdot I.
-\end{equation}
-Essa é uma estimativa idealizada, válida apenas na faixa em que a relação entre corrente e
-torque permanece aproximadamente linear, a qual a caracterização experimental deste trabalho
-determina.
-
-As quatro abordagens medem grandezas distintas, e cada uma se associa ao torque por um caminho
-próprio. A IMU mede a aceleração linear, o SS41F/41G mede a
-velocidade angular de uma roda ou do eixo por pulsos, e o shunt e o sensor Hall linear medem a
-corrente elétrica por princípios físicos distintos.
-
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
 
@@ -87,18 +58,18 @@ como precisão, complexidade de implementação, custo e adequação às condiç
 Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento de cada técnica,
 discutem sua aplicabilidade na caracterização do sistema e fundamentam a opção adotada.
 
-\subsection{Sensor Inercial (IMU)}
+\subsection{Sensor Inercial (IMU) -- MPU-6050}
 \label{sec:imu}
 
-A Unidade de Medição Inercial (Inertial Measurement Unit — IMU) reúne, geralmente, um acelerômetro 
-e um giroscópio triaxiais, que medem, respectivamente, a aceleração específica \(a\) e a velocidade 
+A Unidade de Medição Inercial (Inertial Measurement Unit — IMU) MPU-6050 reúne um acelerômetro 
+e um giroscópio triaxiais, que medem, respectivamente, a aceleração \(a\) e a velocidade 
 angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). Para caracterizar o movimento do automodelo, 
 a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos 
 alinhados às direções longitudinal, lateral e vertical do veículo, de preferência afastada de fontes 
-intensas de vibração e protegida contra impactos e detritos.
+intensas de vibração e protegida contra impactos.
 
 O torque produzido pelo motor \(T_{\mathrm{motor}}\) é transmitido às rodas pelo sistema de transmissão, 
-resultando em um torque nas rodas \(T_{\mathrm{roda}}\). Considerando a relação de transmissão \(i\) e o 
+resultando em um torque nas rodas \(T_{\mathrm{roda}}\). Considerando a relação de redução da transmissão \(i\) e o 
 rendimento mecânico \(\eta\), essa relação é expressa por:
 
 \begin{equation}
@@ -132,6 +103,7 @@ partir das medições da IMU:
 \begin{equation}\label{eq:integral}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
 \end{equation}
+
 A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle:
 
@@ -140,9 +112,10 @@ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t).
 \label{eq:erro_velocidade}
 \end{equation}
 
-A partir desse erro, o controlador calcula a variável manipulada \(u(t)\), correspondente ao comando de acionamento enviado ao ESC
-modulado em largura de pulsos (PWM), seja gerado pelo Raspberry Pi ou pelo rádio. Para fechar a malha de velocidade, o comando deve
-ser atualizado automaticamente pelo controlador com base no erro calculado. Assim, o funcionamento da malha pode ser descrito pela seguinte sequência:
+A partir do erro de velocidade $e_v(t)$, o controlador calcula o comando de acionamento $u(t)$, utilizado para ajustar a atuação do motor e 
+reduzir a diferença entre a velocidade desejada e a velocidade estimada. Esse comando é transmitido ao ESC por meio de um sinal elétrico PWM, 
+sendo atualizado pelo sistema embarcado com base no erro de velocidade. Dessa forma, o funcionamento da malha de controle pode ser descrito 
+pela seguinte sequência:
 
 \begin{enumerate}
     \item A velocidade de referência \(v_{\mathrm{ref}}(t)\) é comparada à velocidade estimada \(\hat{v}(t)\), produzindo o erro \(e_v(t)\).
@@ -153,6 +126,8 @@ ser atualizado automaticamente pelo controlador com base no erro calculado. Assi
     \item A IMU mede a aceleração específica do chassi. Após o processamento, a aceleração longitudinal estimada é integrada numericamente para atualizar \(\hat{v}(t)\).
     \item A velocidade estimada é realimentada ao controlador, permitindo calcular um novo erro e atualizar o comando de acionamento.
 \end{enumerate}
+
+(essa sequencia ficou redundante com o texto anterior. complete o paragrafo para contemplar tudo e apague)
 
 A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
 A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e GND) e dois sinais de comunicação: SDA (Serial Data), responsável 
@@ -178,35 +153,34 @@ Em síntese, a utilização da IMU apresenta vantagens e limitações para a ins
     e fornece medições de velocidade angular que podem ser úteis em análises posteriores da dinâmica do veículo.
     \item \textbf{Limitações:} a estimativa de velocidade por integração acumula erros e pode exigir filtragem e correção de deriva; 
     as medições são sensíveis às vibrações e à projeção da gravidade nos eixos do sensor; 
-    e a estimação de torque a partir da aceleração depende de parâmetros mecânicos, como massa, raio efetivo das rodas, relação de transmissão e
-    rendimento, além da consideração das forças resistivas. Por fim, a aceleração não permite determinar diretamente a corrente elétrica ou garantir
+    e a aceleração não permite determinar diretamente a corrente elétrica para garantir
     a proteção dos componentes contra sobrecorrente.
 \end{itemize}
 
-\subsection{Sensor Magnético de Efeito Hall SS41F/41G}
+\subsection{Sensor Magnético de Efeito Hall SS41F}
 \label{sec:ss41f}
 
-O SS41F/41G é um sensor digital de efeito Hall do tipo bipolar, cuja
+O SS41F é um sensor digital de efeito Hall do tipo bipolar, cuja
 saída assume nível alto na presença do polo norte de um ímã e nível baixo na presença do polo sul. Quando um anel
 magnetizado --- um ímã de ferrita com polos alternados ao longo da circunferência --- gira rigidamente
 acoplado à roda ou ao eixo, o sensor produz $N$ transições digitais por revolução, sendo $N$ o número de
 alternâncias de polos. Esse é o princípio dos encoders de roda usualmente empregados em robótica,
 nos quais o microcontrolador conta as transições em uma janela de tempo para estimar a rotação.
 
+% IMAGEM DO SENSOR
+
 Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
 anel é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem fornece diretamente a
-velocidade $\omega_m$; com ele na roda, fornece $\omega_\mathrm{roda}$, que se converte em
-$\omega_m$ pela redução $i$ da transmissão.
-
-Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
+velocidade $\omega_m$; com ele na roda, fornece $\omega_\mathrm{roda}$, que se relaciona com
+$\omega_m$ pela redução $i$ da transmissão. Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
 rotação se deseja medir, e o sensor é montado no chassi próximo ao anel, mantendo uma
-entreferência constante e pequena entre o elemento Hall e os polos. A conexão com o
-microcontrolador é direta --- alimentação, terra e saída digital ---, e a leitura por
-interrupção dispensa circuitos de condicionamento adicionais.
+entreferência (o que é isso?) constante entre o elemento Hall e os polos (qual motivo?). A conexão com o
+microcontrolador é facilmente realizada com alimentação, terra e saída digital e a leitura por
+interrupção dispensa circuitos de condicionamento adicionais (como assim? explique pq seria necessario)
 
 A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
-carga $T_L$, a segunda lei de Newton para a rotação resulta em
+carga $T_L$, a segunda lei de Newton para a rotação resulta em:
 \begin{equation}\label{eq:dinamica_rotacional}
 T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
@@ -433,7 +407,7 @@ estrutura e o projeto do controlador, no Capítulo 4.
 Este capítulo apresentou o sistema de propulsão do automodelo e comparou as principais grandezas
 mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e força de
 tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
-\eqref{eq:dinamica_rotacional} e \eqref{eq:torque_roda_corrente}. A
+\eqref{eq:newton} e \eqref{eq:dinamica_rotacional}. A
 comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
 sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores de corrente avaliados,
 sendo a balança digital de mala empregada como padrão de tração da caracterização.
