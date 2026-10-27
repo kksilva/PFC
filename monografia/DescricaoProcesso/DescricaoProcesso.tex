@@ -38,8 +38,7 @@ permitindo ao controlador detectar os cruzamentos por zero dessa tensão e estim
 próxima etapa. Dessa forma, o ESC mantém o campo do estator sincronizado com o movimento do rotor, possibilitando
 a conversão contínua da energia elétrica em energia mecânica.
 
-Segundo o manual do fabricante, o ESC suporta corrente
-contínua de até 120 A e corrente de pico de até 760 A.
+Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
 preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC 
@@ -193,7 +192,10 @@ T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
 
 O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
-que precisam ser identificados separadamente (pq?). Há, ainda, um limite de resolução inerente ao
+que precisam ser identificados separadamente, pois são propriedades do conjunto
+veículo--carga, não do sensor: $J$ depende da massa e da redução, $B$ do atrito interno da
+transmissão e $T_L$ da carga e da inclinação --- mudam com a configuração e não aparecem na
+leitura. Há, ainda, um limite de resolução inerente ao
 método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
 torna progressivamente mais grosseira. A derivada exigida pela Equação
 \eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
@@ -221,7 +223,7 @@ e o controle do automodelo:
 \label{sec:ina240}
 
 No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série com o
-caminho da corrente. Pela Lei de Ohm, a queda de tensão sobre ele é
+caminho da corrente; pela Lei de Ohm, a queda de tensão sobre ele é:
 
 \begin{equation}\label{eq:shunt_ohm}
 V_s = R_s\,I.
@@ -232,13 +234,17 @@ saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
 \begin{equation}\label{eq:shunt_ganho}
 V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
-em que $G$ é o ganho fixo do amplificador.
+em que $G$ é o ganho fixo do amplificador. A polarização é uma tensão de referência somada à
+saída: com $V_\mathrm{bias}$ igual à metade da faixa do conversor, a corrente nula produz saída
+em meia escala, e correntes positivas e negativas --- em frenagem, por exemplo --- podem ser lidas
+por um único conversor alimentado em tensão simples.
 
-Na fixação, o resistor é inserido em série no ramo de alimentação, entre a bateria e o ESC,
-e o INA240 é instalado no circuito de medição, lendo a queda de tensão sobre o shunt. Por
-não haver isolamento galvânico, o circuito de medição permanece em contato elétrico direto
-com o ramo de potência, o que exige cuidados de layout e limita sua proximidade com o
-computador de bordo.
+Na fixação, o resistor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e o
+INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt.
+A saída do amplificador é um sinal analógico de nível adequado à entrada do conversor do
+microcontrolador, sem necessidade de amplificação adicional. Por não haver isolamento
+galvânico, porém, o circuito de medição permanece em contato elétrico direto com o ramo de
+potência, o que exige cuidados de layout e limita sua proximidade com o computador de bordo.
 
 \begin{figure}[htb]
 \centering
@@ -250,28 +256,31 @@ resistivo.}
 \end{figure}
 
 O componente possui largura de banda de 400 kHz e
-rejeição reforçada a transientes de modo comum --- variações rápidas e simultâneas da tensão nos
-dois terminais de entrada, justamente as produzidas pelo chaveamento de um ESC. Em altas
-frequências, a indutância parasita do resistor faz com que a tensão deixe de ser proporcional à
-corrente instantânea, distorcendo a leitura durante o chaveamento.
+rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
+simultâneas da tensão nos dois terminais de entrada, justamente as produzidas pelo chaveamento de
+um ESC: sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
+mascaram a corrente. Em altas
+frequências, ainda, a indutância parasita do próprio resistor --- de seus terminais e de sua
+construção --- soma-se à queda ômica, de modo que a tensão deixa de ser proporcional à corrente
+instantânea, distorcendo a leitura durante as bordas de chaveamento.
 
-A dissipação de potência no resistor cresce com o quadrado da corrente; com isso, sob correntes
-elevadas, o shunt aquece e consome parte da energia destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente média de entrada, e não a corrente de
-fase do motor, que é chaveada pelo PWM. Na aproximação usual, a corrente de entrada se
-relaciona à de fase pela razão cíclica $D$ do chaveamento --- a fração do período em que o PWM
-permanece ligado:
+A dissipação de potência no resistor cresce com o quadrado da corrente; sob as correntes do
+ESC --- 120 A em regime e 760 A de pico --- um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W
+em regime e mais de $500$ W nos picos, de modo que o shunt aquece e consome parte da energia
+destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente
+média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
+usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento --- a
+fração do período em que o PWM permanece ligado:
 
 \begin{equation}\label{eq:corrente_bateria}
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
 \end{equation}
 
-Consequentemente, a leitura precisa ser interpretada considerando o ciclo de trabalho vigente. Essa ressalva
-se aplica igualmente a qualquer sensor instalado no ramo de alimentação, como se verá adiante.
-
-Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e
-implementar a proteção contra sobrecorrente por limiar --- capacidades que os sensores de
-movimento não oferecem. Essas funções, contudo, vêm acompanhadas da ressalva da interpretação
-pela razão cíclica.
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor ---
+uma vez que o torque se relaciona à corrente pela constante do motor --- e implementar a
+proteção contra sobrecorrente por limiar, funções que os sensores de movimento não oferecem.
+Essas funções vêm acompanhadas da ressalva da interpretação pela razão cíclica, conforme a
+Equação \eqref{eq:corrente_bateria}.
 
 Dessa forma, o arranjo com shunt reúne banda e linearidade adequadas à medição, mas a ausência de
 isolamento galvânico e a dissipação crescente com o quadrado da corrente afastam-no da montagem de
@@ -281,8 +290,14 @@ Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e 
 instrumentação e o controle do automodelo:
 
 \begin{itemize}
-    \item \textbf{Vantagens:} proporciona uma medida direta da corrente, com boa linearidade e ampla largura de banda a baixo custo.
-    \item \textbf{Limitações:} dissipação de potência sob correntes elevadas, distorção da leitura em alta frequência decorrente da indutância parasita do resistor e ausência de isolamento galvânico --- contato elétrico direto entre o circuito de medição e o de potência.
+    \item \textbf{Vantagens:} proporciona uma medida direta da corrente, com boa linearidade e
+    ampla largura de banda a baixo custo; a polarização da saída permite a leitura bidirecional
+    com um único conversor; e a rejeição a transientes de modo comum preserva o sinal sob o
+    chaveamento do ESC.
+    \item \textbf{Limitações:} dissipação de potência sob as correntes do ESC, com
+    aquecimento do resistor; contato elétrico direto com o ramo de potência, pela ausência de
+    isolamento galvânico; e distorção da leitura em alta frequência, decorrente da indutância
+    parasita do resistor.
 \end{itemize}
 
 \subsection{Sensor de Efeito Hall Linear (ACS758/ACS712)}
