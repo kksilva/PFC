@@ -1,352 +1,443 @@
 \chapter{Resultados}
 \label{chap:resultados}
 
-Este capítulo apresenta os resultados dos experimentos definidos na Seção
-\ref{sec:tracao}, na mesma ordem em que foram conduzidos. A Seção \ref{sec:regioes}
-define as regiões de operação que o ensaio revelou e apresenta a tabela-mestra dos dados; as
-Seções \ref{sec:resvazio}, \ref{sec:rescurva} e \ref{sec:resvalidacao} tratam do ensaio em
-vazio, da curva característica e da validação do modelo de torque; a Seção
-\ref{sec:resdinamica} apresenta a dinâmica identificada entre o comando e a corrente; a Seção
-\ref{sec:rescontrolador}, a estrutura e o projeto do controlador sobre o modelo identificado; e as Seções \ref{sec:resincerteza} e \ref{sec:reslimitacoes} fecham com as
-incertezas e as limitações. Todos os valores citados são provenientes das repetições da escada de degraus
-(quatro por sentido no ensaio de tração), lidos em vídeo conforme o protocolo da Seção \ref{sec:tracao}, ou do
-consolidado da aquisição contínua a $100$ Hz, conforme a Seção \ref{sec:tracao}.
+Este capítulo apresenta os resultados dos experimentos definidos na Seção \ref{sec:tracao}, na
+mesma ordem em que foram conduzidos: a verificação em bancada (Seção \ref{sec:resbancada}),
+o ensaio em vazio (Seção \ref{sec:resvazio}) e o ensaio de tração estática (Seção
+\ref{sec:restracao}), este último dividido nas regiões de operação que o próprio ensaio
+revelou, na dinâmica comando--corrente identificada a $100$ Hz e na validação do modelo de
+torque. A Seção \ref{sec:rescontrolador} desenvolve a malha de controle projetada sobre esses
+resultados, com a teoria, as definições e a justificativa de cada escolha. As incertezas e as
+limitações fecham o capítulo. Todos os valores citados provêm das repetições da escada de
+degraus, lidas em vídeo conforme o protocolo da Seção \ref{sec:tracao}, ou do consolidado da
+aquisição contínua, conforme as regras da mesma seção.
 
-\section{Regiões de Operação e Tabela-Mestra}
+\section{Testes em Bancada}
+\label{sec:resbancada}
+
+A verificação em bancada responde, antes de qualquer ensaio com o veículo, a duas perguntas:
+a cadeia de corrente mede o que afirma medir, e com que desvio; e a balança indica a carga
+aplicada com que erro sistemático. Os desvios encontrados aqui são os que o orçamento de
+incertezas da Seção \ref{sec:incertezas} carrega adiante, de modo que esta seção é a base
+metrológica de tudo o que segue.
+
+A cadeia de corrente respondeu de forma linear em toda a faixa de $0$ a $6$ A. O ajuste pelo
+método dos mínimos quadrados entre os valores do multímetro de referência ($x$) e os lidos
+pelo sistema ($y$) resultou em
+\begin{equation}\label{eq:regressao_bancada}
+y = 1{,}0742\,x,
+\end{equation}
+ou seja, um ganho $7{,}42\%$ acima do ideal, quase constante em toda a faixa. Desvio quase
+constante é o caso favorável, uma vez que pode ser compensado por um único fator
+multiplicativo em software, sem distorção da forma do sinal. Assim, o desvio sistemático de
+$\pm 7\%$ não invalida o sensor: ele o calibra. A correção é aplicada aos dados antes de
+qualquer uso, e o resíduo da correção é tratado como componente de incerteza.
+
+Na balança, as indicações para as cargas de referência foram $0{,}490$ kg, $0{,}980$ kg e
+$1{,}470$ kg, para cargas nominais de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg. O desvio é
+sistemático e cresce linearmente com a carga, $10$ g para cada $0{,}5$ kg, cerca de $2\%$ da
+leitura. Diferentemente do caso anterior, a leitura da balança é a própria grandeza de
+referência do ensaio, e não há canal de correção em software, uma vez que o display não possui
+saída elétrica. O desvio é, portanto, declarado como componente sistemática do orçamento, e a
+resolução de $10$ g integra o mesmo orçamento.
+
+Em ambos os casos, a linearidade verificada justifica o tratamento dos desvios como
+sistemáticos simples, e nenhum dos instrumentos exigiu descarte ou substituição.
+
+\section{Ensaio em Vazio}
+\label{sec:resvazio}
+
+O ensaio em vazio fornece a corrente de perdas do propulsor em cada comando, medida com as
+rodas suspensas, quando nenhuma tração é entregue. Seu resultado entra no modelo de duas
+maneiras, e por isso abre a sequência dos ensaios com o veículo.
+
+A primeira é direta. O estimador de torque desconta a corrente de perdas de cada leitura, e
+a Seção \ref{sec:resvalidacao} mostra que esse desconto é o que torna os pontos alinháveis
+sobre a reta de validação. A segunda é estrutural. Se a corrente de perdas crescesse de forma
+não linear com o comando, o \emph{duty cycle} efetivo do ESC não acompanharia o comando de
+forma linear, e o quociente $I/u$, base do modelo, perderia sentido. O resultado permite
+verificar essa hipótese.
+
+A curva de corrente de perdas por comando, com o ajuste linear sobre
+os pontos válidos. Descartaram-se as execuções com pico inferior a $1$ A, nas quais o comando
+não foi efetivamente executado pelo ESC e que distorceriam a média para baixo. Na zona morta,
+$I_0$ vale $0{,}49$ A; na região de aderência, cresce de $1{,}04$ A a $2{,}22$ A entre $100^\circ$
+e $110^\circ$; no último degrau, atinge $2{,}84$ A. O ajuste linear
+\begin{equation}\label{eq:i0_ajuste}
+I_0(u) = 0{,}54 + 9{,}36\,u
+\end{equation}
+apresenta coeficiente de determinação $r^2 = 0{,}97$. O coeficiente $r^2$ mede a fração da
+variância dos dados que o ajuste explica, de $0$ a $1$, e o valor encontrado indica que a
+relação é substancialmente linear. Conclui-se que o ESC responde de forma linear ao comando
+na faixa ensaiada, hipótese que o modelo de validação pressupõe.
+
+% FIGURA: I_0(u) × u com o ajuste linear — gerar de ensaios/ensaio_series_vazio.csv.
+% TABELA: I0 por degrau (mediana das execuções válidas) — gerar do mesmo arquivo.
+
+\section{Ensaio de Tração Estática}
+\label{sec:restracao}
+
+O ensaio de tração estática é o experimento central do trabalho e o mais rico em
+informação. Antes de apresentar seus resultados, convém organizar o que ele revelou. O
+comportamento do propulsor ao longo da escala de comandos não é uniforme, e a apresentação
+dos dados por regiões de operação torna a análise mais clara e as comparações entre as
+regiões, mais significativas.
+
+\subsection{Regiões de operação e seus significados}
 \label{sec:regioes}
 
-O ensaio de tração revelou que o comportamento do propulsor não é uniforme ao longo da escala
-de comando, de modo que a apresentação dos resultados se organiza por regiões de operação,
-definidas a seguir e usadas pelo restante do capítulo. A \textbf{zona morta} compreende os
-comandos de $97^\circ$ a $99^\circ$: o ESC está armado e consome corrente, mas a tração útil é
-residual. A \textbf{região de aderência}, de $100^\circ$ a $113^\circ$, é aquela em que a roda
-permanece travada e a força desenvolvida segue o comando de forma estável --- é a região de
-interesse do modelo e da identificação dinâmica. Acima de $113^\circ$--$114^\circ$, inicia-se a
-\textbf{região de saturação}: a aderência do pneu se esgota, ocorre patinagem ou corte do ESC,
-e a força deixa de crescer com o comando.
+O ensaio revelou três regiões de operação, delimitadas pelo comportamento da tração e da
+corrente. A \textbf{zona morta} abrange os comandos de $97^\circ$ a $99^\circ$: o ESC está
+armado e consome corrente, mas a tração útil é residual. Sua existência tem uma interpretação
+direta para o controle, uma vez que variações de referência dentro dessa faixa não produzem
+resposta mecânica alguma, e um controlador deve atravessá-la sem acumular erro.
 
-% FIGURA: curva força × comando (subida e descida, barras de erro da repetibilidade) com as
-% três regiões sombreadas e nomeadas — gerar de ensaios/pfc kaka.xlsx.
+A \textbf{região de aderência}, de $100^\circ$ a $113^\circ$, é aquela em que a roda
+permanece travada e a força desenvolvida segue o comando de forma estável. É a região em que
+o torque é determinado pela corrente, única em que o modelo linear é válido e única em que a
+dinâmica identificada representa a planta. Todo o projeto do controlador se apoia nela, e o
+limitador de aderência existe para que a operação não a abandone.
+
+Acima de $113^\circ$--$114^\circ$, inicia-se a \textbf{região de saturação}: a aderência do
+pneu se esgota, ocorre patinagem ou o corte do ESC, e a força deixa de ser determinada pela
+corrente. Comandar dentro dessa região não produz mais torque, apenas deslizamento, de modo
+que ela delimita, pelo lado mecânico, a faixa útil do atuador.
 
 A tabela-mestra consolida os dados da caracterização estática: para cada degrau, o
-comando normalizado $u$ e as medianas da corrente e da força de tração em cada sentido, com o
-desvio-padrão das quatro repetições entre parênteses. A corrente é a mediana das leituras do
-ensaio anotado; a força, convertida para newtons, é a média das três leituras dos segundos $7$
-a $9$ de cada repetição. Os valores de corrente do ensaio a $100$ Hz, adquiridos
+comando normalizado $u$ e as medianas da corrente e da força de tração em cada sentido, com
+o desvio-padrão das repetições entre parênteses. A corrente é a mediana das leituras do
+ensaio anotado; a força, convertida para newtons, é a média das três leituras dos segundos
+$7$ a $9$ de cada repetição. Os valores de corrente do ensaio a $100$ Hz, adquiridos
 independentemente, concordam com os anotados dentro da dispersão entre repetições, o que
 cruza as duas fontes de dados.
 
 % TABELA: mestra — degrau | u | I_sub | F_sub | I_desc | F_desc (medianas ± dp, n = 4).
 % Gerar de ensaios/pfc kaka.xlsx.
+% FIGURA: curva força × comando (subida e descida, barras de erro) com as três regiões
+% sombreadas — gerar de ensaios/pfc kaka.xlsx.
 
-\section{Ensaio em Vazio}
-\label{sec:resvazio}
+\subsection{Resultados na zona morta}
+\label{sec:reszonamorta}
 
-O ensaio em vazio, conduzido com as rodas suspensas conforme a Seção \ref{sec:vazio}, forneceu
-a corrente de perdas do propulsor em cada comando. O valor de $I_0$ em cada degrau é a mediana
-dos platôs das execuções válidas, descartadas as execuções com pico inferior a $1$ A --- nessas,
-o comando não foi efetivamente executado pelo ESC, e mantê-las distorceria a média para baixo.
-Na região da zona morta, $I_0$ vale $0{,}49$ A; na região de aderência, cresce de $1{,}04$ A
-($100^\circ$) a $2{,}22$ A ($110^\circ$); no último degrau, atinge $2{,}84$ A.
+De $97^\circ$ a $99^\circ$, a força permanece residual, em torno de $4{,}4$ N, enquanto a
+corrente consoma de $0{,}5$ A a $1{,}3$ A, valores compatíveis com a corrente de perdas do
+ensaio em vazio. O ESC armado alimenta o motor, mas o torque entregue não vence as
+resistências internas do conjunto, e nenhuma tração útil se desenvolve. O limite superior da
+zona morta coincide com o início do crescimento sustentado da corrente de carga, o que a
+delimita de forma natural.
 
-% FIGURA: I_0(u) × u com o ajuste linear — gerar de ensaios/ensaio_series_vazio.csv.
+\subsection{Resultados na região de aderência}
+\label{sec:resaderencia}
 
-A corrente de perdas cresce linearmente com o comando normalizado, e o ajuste pelo método dos
-mínimos quadrados resulta em
-\begin{equation}\label{eq:i0_ajuste}
-I_0(u) = 0{,}54 + 9{,}36\,u,
+Na descida, o crescimento da força com o comando é estável e quase linear, de $1{,}47$ kgf
+em $100^\circ$ até $5{,}32$ kgf em $114^\circ$, cerca de $52$ N, com dispersão entre
+repetições típica de $\pm 0{,}1$ kgf. É o comportamento esperado de um propulsor operando
+abaixo do limite de aderência, e será a base da validação do modelo.
+
+Na subida, o crescimento é menos regular. Entre $105^\circ$ e $110^\circ$, a força estaciona
+em torno de $3{,}2$ kgf enquanto a corrente registrada oscila entre as repetições,
+dispersão bem maior que a dos demais degraus. O padrão é o do \emph{stick-slip}, a oscilação
+de relaxamento do atrito seco quando a aderência está no limite: o pneu, ainda frio no início
+da sessão, alterna travamento e microderrapagens, a força fica presa no limite de aderência e
+a corrente acompanha a alternância. Em bancada, o tremor do conjunto nessa faixa foi observado
+diretamente durante os degraus. Na descida, com o pneu aquecido pela sessão inteira, a
+aderência é folgada, a roda trava de forma sustentada e o crescimento se torna regular, como
+seu menor espalhamento confirma.
+
+A comparação entre os sentidos evidencia uma diferença sistemática: na faixa de $104^\circ$ a
+$115^\circ$, a força da descida supera a da subida em $+7\%$ a $+45\%$, acompanhada de
+corrente maior no mesmo comando. O padrão não é a histerese do powertrain, uma vez que as
+diferenças se acompanham de corrente maior, o que aponta para causa fora do propulsor. As
+hipóteses compatíveis com os dados, o aquecimento do pneu e o da bateria ao longo da sessão,
+não foram separadas neste trabalho, e sua discussão é remetida às considerações finais.
+
+\subsection{Resultados na região de saturação}
+\label{sec:ressaturacao}
+
+Acima de $113^\circ$--$114^\circ$, a força da descida ainda cresce até o máximo de $5{,}32$
+kgf, mas nos dois degraus finais, $116^\circ$ e $117^\circ$, o comportamento muda de
+caráter. A corrente, que chegava a $26$--$29$ A nos degraus vizinhos, cai para cerca de
+$15$ A, e a força recua de $5{,}1$ kgf para $3{,}9$--$4{,}5$ kgf. Em bancada, o veículo
+apresentava nesses degraus um comportamento cíclico de aceleração e parada. O padrão, queda
+abrupta da corrente seguida de retorno, é compatível com o corte de subtensão do ESC: sob
+alta corrente, a tensão da bateria cai abaixo do limiar de proteção, o ESC interrompe o
+motor, a tensão se recupera e o ciclo se reinicia. Esses dois pontos são registrados como
+observação de comportamento e não integram a curva característica.
+
+\subsection{Dinâmica comando--corrente}
+\label{sec:resdinamica}
+
+A identificação da dinâmica utilizou os arquivos do ensaio a $100$ Hz, com o tempo
+reconstruído por índice. Cada borda de subida na região de aderência, degraus de $100^\circ$
+a $109^\circ$, é uma resposta ao degrau completa; bordas acima de $110^\circ$ não foram
+empregadas, pois a resposta já nasce contaminada pela patinagem. Dois métodos foram aplicados
+a cada borda e concordaram.
+
+O primeiro é o método da $63{,}2\%$, que toma o instante em que a resposta atinge $63{,}2\%$
+do valor final como estimativa da constante de tempo, e o segundo é o ajuste pelo método dos
+mínimos quadrados ao modelo de primeira ordem com atraso,
+\begin{equation}\label{eq:fopdt}
+G_1(s) = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1},
 \end{equation}
-com coeficiente de determinação $r^2 = 0{,}97$. O coeficiente $r^2$ mede a fração da
-variância dos dados que o ajuste explica --- valor $1$ corresponderia a alinhamento perfeito;
-$0{,}97$ indica que a relação é substancialmente linear. O resultado tem duas leituras. Para
-o modelo, fornece a subtração $(I - I_0)$ da Seção \ref{sec:resvalidacao}. Como comportamento isolado, o ajuste é compatível com a linearidade do
-ESC: se o \emph{duty cycle} entregue ao motor crescesse de forma não linear com o comando, a
-corrente de perdas --- proporcional a esse \emph{duty} --- dificilmente se ajustaria a uma
-reta.
+em que $K$ é o ganho estático, $\theta_a$ o atraso puro e $\tau$ a constante de tempo. As dez
+bordas convergem: o ganho, tomado do platô de cada resposta, varia de $116$ a $125$ A/u,
+envolvendo o valor estático da caracterização e cruzando as duas identificações. O atraso é
+inferior a $0{,}1$ s, pois a corrente começa a responder dentro da primeira janela de $100$ ms,
+de modo que a partida \emph{sensorless} do ESC não impõe atraso mensurável nesse caminho. A
+constante de tempo situa-se entre $1{,}8$ e $2{,}0$ s.
 
-\section{A Curva Característica}
-\label{sec:rescurva}
+% FIGURA: respostas ao degrau normalizadas (bordas 100-109°) com o ajuste FOPDT — gerar de
+% ensaios/ensaio_cego_subida.csv.
 
-Os pontos de força de tração em função do comando, para os dois sentidos da escada,
-reúnem-se na curva característica com as regiões sombreadas (a gerar na Seção \ref{sec:regioes}). A leitura por regiões organiza o que o
-ensaio mostrou.
+Esse valor exige interpretação, pois confronta um \emph{prior} da literatura. O caminho
+comando--corrente é frequentemente modelado com constante elétrica $L/R$ do enrolamento, de
+milissegundos, e referências situam a constante de tempo entre $0{,}05$ e $0{,}3$ s. O valor
+medido, uma ordem de grandeza acima, indica que o enrolamento não governa o comportamento.
+Com a roda travada, a velocidade do motor é quase nula, a força contra-eletromotriz é
+pequena e a corrente responderia em milissegundos a um degrau de tensão. A rampa observada,
+da ordem de segundos, só pode ser imposta pelo próprio ESC, por seu escalonamento interno de
+corrente, o controle de progressividade e o sequenciamento de partida \emph{sensorless} com a
+roda parada. A constante de tempo medida é, assim, uma propriedade do firmware do ESC, e
+não do motor.
 
-\textbf{Zona morta.} De $97^\circ$ a $99^\circ$, a força permanece residual, em torno de
-$0{,}45$ kgf (cerca de $4{,}4$ N) --- o ESC armado consome corrente, mas o torque entregue
-não vence as resistências internas do conjunto. O limite superior da zona morta coincide com o
-início do crescimento sustentado da corrente de carga.
+A consequência prática já se manifestou no protocolo. Com $\tau = 1{,}8$ s, o regime só se
+assenta após cerca de quatro constantes de tempo, $4\tau \approx 7$ s, exatamente a espera
+que antecede a anotação da força nos segundos $7$ a $9$. A janela do protocolo é validada
+\emph{a posteriori} pela própria dinâmica identificada.
 
-\textbf{Região de aderência.} De $100^\circ$ em diante, a força cresce com o comando em ambos
-os sentidos. Na descida, o crescimento é estável e quase linear: a força evolui de $1{,}47$ kgf
-($100^\circ$) até $5{,}32$ kgf ($114^\circ$) --- cerca de $52$ N ---, com dispersão entre
-repetições típica de $\pm 0{,}1$ kgf. Na subida, o crescimento é menos regular: entre
-$105^\circ$ e $110^\circ$, a força estaciona em torno de $3{,}2$ a $3{,}3$ kgf enquanto a
-corrente registrada oscila entre repetições. Esse é o comportamento de \emph{stick-slip} ---
-a oscilação de relaxamento do atrito seco quando a aderência está no limite: o pneu, ainda
-frio no início da sessão, alterna travamento e microderrapagens, a força fica presa no limite
-de aderência e a corrente acompanha a alternância. Em bancada, o tremor do conjunto nessa
-faixa foi observado diretamente durante os degraus. Na descida, com o pneu aquecido pela
-sessão inteira, a aderência é folgada e a roda trava de forma sustentada --- por isso a
-descida é a mais estável e a que valida o modelo.
-
-\textbf{Região de saturação.} Acima de $113^\circ$--$114^\circ$, a força da descida ainda
-cresce até o máximo de $5{,}32$ kgf, mas nos dois degraus finais da descida, $116^\circ$ e
-$117^\circ$, observa-se um comportamento distinto: a corrente, que chegava a $26$--$29$ A nos
-degraus vizinhos, cai para cerca de $15$ A, e a força registrada recua de $5{,}1$ kgf para
-$3{,}9$--$4{,}5$ kgf. Em bancada, o veículo apresentava, nesses degraus, um comportamento
-cíclico de aceleração e parada. Esse padrão --- queda abrupta da corrente seguida de retorno
---- é compatível com o corte de subtensão do ESC: sob a alta corrente, a tensão da bateria
-cai abaixo do limiar de proteção, o ESC interrompe o motor, a tensão se recupera e o ciclo
-reinicia. Esses dois pontos são registrados como observação de comportamento e não integram
-a curva característica.
-
-\textbf{Histerese.} Comparando os dois sentidos na região de aderência, a força da descida
-fica sistematicamente acima da da subida, com diferenças de $+7\%$ a $+45\%$ entre $104^\circ$
-e $115^\circ$ --- cruzando a fronteira da saturação. O padrão não é a histerese do powertrain: as diferenças são acompanhadas de corrente
-maior na descida, o que aponta para causa fora do propulsor. As hipóteses compatíveis com os
-dados --- entre elas, o aquecimento do pneu e o da bateria ao longo da sessão --- não foram
-separadas neste trabalho e são discutidas nas considerações finais.
-
-\section{Validação do Modelo Torque versus Corrente}
+\subsection{Validação do modelo corrente $\times$ força}
 \label{sec:resvalidacao}
 
-O modelo do propulsor, apresentado na Seção \ref{sec:proposta}, estima o torque na roda a
-partir da corrente de bateria, do comando e da corrente de perdas. Na forma de trabalho, o
-estimador condensa as constantes do conjunto em um único coeficiente:
+Resta o resultado central, a validação do estimador de torque contra a força medida pela
+balança. O estimador, apresentado na Seção \ref{sec:proposta}, condensa as constantes do
+conjunto em um único coeficiente:
 \begin{equation}\label{eq:estimador_c}
 \hat{T}_\mathrm{roda} = C\,\frac{I_\mathrm{bat} - I_0(u)}{u},
 \qquad
 C = \frac{\eta\,i\,K_t}{r_\mathrm{ef}},
 \end{equation}
-em que $C$ reúne o rendimento $\eta$ da transmissão, a redução $i$, a constante de torque $K_t$
-do motor e o raio efetivo $r_\mathrm{ef}$ --- todas grandezas do conjunto, não do ponto de
-operação. A constante de torque deriva do \emph{speed constant} nominal do datasheet,
-$K_v = 2100$ rpm/V, pela conservação da energia --- a mesma constante que converte corrente em
-torque converte rotação em tensão:
+em que $C$ reúne o rendimento $\eta$ da transmissão, a redução $i$, a constante de torque
+$K_t$ do motor e o raio efetivo $r_\mathrm{ef}$, todas grandezas do conjunto, não do ponto
+de operação. A constante de torque deriva do \emph{speed constant} nominal do datasheet,
+$K_v = 2100$ rpm/V, pela conservação da energia, uma vez que a mesma constante que converte
+corrente em torque converte rotação em tensão:
 \begin{equation}\label{eq:kt_kv}
 K_t = \frac{60}{2\pi\,K_v} = \frac{9{,}55}{2100} \approx 4{,}55\ \mathrm{mN\cdot m/A}.
 \end{equation}
 
-A validação consiste em confrontar o estimador com a força medida pela balança, padrão da
-caracterização. Rearranjando o estimador, obtém-se a relação de validação da Equação
-\eqref{eq:regressao_validacao}:
+O critério de validação decorre de rearranjar o estimador. Isolando o rendimento,
 \begin{equation}\label{eq:regressao_validacao}
-y = \frac{F\,r_\mathrm{ef}\,u}{K_t\,i} = \eta\,(I_\mathrm{bat} - I_0(u)) = \eta\,x,
+\frac{F\,r_\mathrm{ef}\,u}{K_t\,i} = \eta\,(I_\mathrm{bat} - I_0(u)),
 \end{equation}
-de modo que, se o modelo é válido, os pontos $(x, y)$ devem alinhar-se sobre uma reta que
-passa pela origem, com inclinação igual a $\eta$. Essa é a regressão linear sem intercepto:
-ela testa o modelo inteiro de uma vez, e o coeficiente de determinação $r^2$ mede o
-alinhamento.
+de modo que, se o modelo é válido, os pontos devem alinhar-se sobre uma reta que passa pela
+origem, com inclinação $\eta$. Trata-se de uma regressão linear sem intercepto, e ela testa
+o modelo inteiro de uma vez, com o coeficiente de determinação medindo o alinhamento.
 
 Os resultados, por sentido, na região de aderência: na descida, $\eta = 0{,}579$ com
-$r^2 = 0{,}962$ ($n = 56$ pontos, de $100^\circ$ a $113^\circ$, fronteira da saturação excluída); na subida, $\eta = 0{,}596$
-com $r^2 = 0{,}784$ ($n = 44$, de $100^\circ$ a $110^\circ$). A descida valida o modelo ---
-$96\%$ da variância dos pontos é explicada pela reta que passa pela origem. A subida, mais
-dispersa, é o retrato do \emph{stick-slip}: a força presa no limite de aderência enquanto a
-corrente oscila espalha os pontos na horizontal, como discutido na Seção \ref{sec:rescurva}.
+$r^2 = 0{,}962$ ($n = 56$ pontos, de $100^\circ$ a $113^\circ$, com a fronteira da saturação
+excluída); na subida, $\eta = 0{,}596$ com $r^2 = 0{,}784$ ($n = 44$, de $100^\circ$ a
+$110^\circ$). A descida valida o modelo, com $96\%$ da variância dos pontos explicada pela
+reta que passa pela origem. A subida, mais dispersa, é o retrato do \emph{stick-slip}
+discutido na Seção \ref{sec:resaderencia}: a força presa no limite de aderência, enquanto a
+corrente oscila, espalha os pontos na horizontal.
 
 O rendimento $\eta \approx 0{,}58$ é o valor global do caminho elétrico--mecânico no ponto de
-operação do ensaio --- roda travada, motor em baixa rotação. É inferior aos $0{,}8$--$0{,}9$
-típicos de operação normal, e o resultado é coerente com a física do ponto: com a roda presa,
-a força contra-eletromotriz é pequena frente à tensão aplicada, e a maior parte da potência
-elétrica se converte em perdas. O coeficiente $C$ resultante, com $i = 11{,}5$ e
-$K_t = 4{,}55$ mN$\cdot$m/A, corresponde a uma constante de torque efetiva de $2{,}5$ a
-$2{,}7$ mN$\cdot$m/A --- numericamente igual a $4{,}55\,\eta$, como deve ser. O resultado é
-coerente com o datasheet, mas não o valida isoladamente: $\eta$ e $K_t$ aparecem
-multiplicados no estimador, e separá-los exigiria medir a rotação do motor --- o que fica
+operação do ensaio, roda travada e motor em baixa rotação. É inferior aos valores de $0{,}8$
+a $0{,}9$ associados à operação normal, e o resultado é coerente com a física do ponto: com a
+roda presa, a força contra-eletromotriz é pequena frente à tensão aplicada, e a maior parte
+da potência elétrica se converte em perdas. Com $i = 11{,}5$ e $K_t = 4{,}55$ mN$\cdot$m/A,
+o coeficiente $C$ corresponde a uma constante de torque efetiva de $2{,}5$ a
+$2{,}7$ mN$\cdot$m/A, numericamente igual a $4{,}55\,\eta$, como deve ser. O resultado é
+coerente com o datasheet, mas não o valida isoladamente, uma vez que $\eta$ e $K_t$ aparecem
+multiplicados no estimador e a separação entre eles exigiria a medição da rotação, o que fica
 como proposta de continuidade.
 
-A validade do modelo se estende apenas pela região de aderência. Acima de $113^\circ$--$114^\circ$,
-a força deixa de ser determinada pela corrente --- a patinagem limita a tração pelo contato
-pneu--piso --- e o quociente $I/u$ deixa de representar a corrente de fase, uma vez que o ESC,
-sobre corte ou patinagem, não entrega mais o \emph{duty cycle} nominal. É por isso que o
-$\eta$ calculado para esses degraus supera $1$, valor fisicamente impossível: o estimador
-está sendo aplicado fora de sua região de validade, e o sinal é usado justamente para
-delimitá-la.
+O modelo se estende apenas pela região de aderência. Acima de $113^\circ$--$114^\circ$, a
+força deixa de ser determinada pela corrente e o quociente $I/u$ deixa de representar a
+corrente de fase, uma vez que o ESC, sob corte ou patinagem, não entrega o \emph{duty cycle}
+nominal. O $\eta$ calculado para esses degraus supera $1$, valor fisicamente impossível que
+confirma a extrapolação e delimita a região de validade.
 
-Da força máxima de $52$ N e da massa do conjunto, $6{,}640$ kg (peso de $65{,}1$ N), resulta
-um coeficiente de atrito aparente $\mu \approx 0{,}80$, tomado sobre o peso total. O
-valor só é compatível com atrito seco se a força normal efetiva sobre as rodas motrizes
-exceder a fração estática do peso --- o que exige transferência de carga: sob a tração, a
-dianteira do veículo descarrega e o eixo traseiro, motriz, carrega. Sem essa transferência, o
-coeficiente implicado superaria $1$, o que os dados não sustentariam. O torque máximo correspondente, $T = 52 \times 0{,}0751$, é de aproximadamente
+Da força máxima de $52$ N e do peso do conjunto, $65{,}1$ N, resulta um coeficiente de atrito
+aparente $\mu \approx 0{,}80$, tomado sobre o peso total. O valor só é compatível com atrito
+seco se a força normal efetiva sobre as rodas motrizes exceder a fração estática do peso, o
+que exige transferência de carga: sob a tração, a dianteira do veículo descarrega e o eixo
+traseiro, motriz, carrega. Sem essa transferência, o coeficiente implicado superaria $1$, o
+que os dados não sustentariam. O torque máximo correspondente é de aproximadamente
 $3{,}9$ N$\cdot$m.
 
-\section{Dinâmica Comando $\rightarrow$ Corrente}
-\label{sec:resdinamica}
-
-A identificação da dinâmica utilizou os arquivos do ensaio a $100$ Hz (Seção
-\ref{sec:registro}), com o tempo reconstruído por índice. Cada borda de subida na região de
-aderência --- degraus de $100^\circ$ a $109^\circ$ --- é uma resposta ao degrau completa;
-bordas acima de $110^\circ$ não foram empregadas, pois a resposta já nasce contaminada pela
-patinagem. Dois métodos foram aplicados a cada borda: o da $63{,}2\%$, que toma o instante em
-que a resposta atinge $63{,}2\%$ do valor final como estimativa da constante de tempo, e o
-ajuste de mínimos quadrados ao modelo de primeira ordem com atraso da Equação
-\eqref{eq:fopdt}:
-\begin{equation}\label{eq:fopdt}
-G_1(s) = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1}.
-\end{equation}
-
-Os resultados das dez bordas convergem: o ganho estático, tomado do platô de cada resposta,
-varia de $116$ a $125$ A/u --- envolvendo o valor estático de $120$ A/u da caracterização e
-cruzando as duas identificações. O atraso puro é inferior a $0{,}1$ s:
-a corrente começa a responder dentro da primeira janela de $100$ ms, de modo que a partida
-\emph{sensorless} do ESC não impõe atraso mensurável nesse caminho. A constante de tempo, pelo
-método da $63{,}2\%$, situa-se entre $1{,}8$ e $2{,}0$ s. O ajuste de mínimos quadrados reparte
-a mesma soma de forma distinta --- atraso de cerca de $1{,}0$ s e constante de cerca de
-$1{,}0$ s ---, e, como o par $(\theta_a, \tau)$ é mal-condicionado nesse perfil de resposta,
-adota-se a soma, de aproximadamente $2$ s, como descriptor da dinâmica.
-
-% FIGURA: respostas ao degrau normalizadas (bordas 100-109°) com o ajuste FOPDT — gerar de
-% ensaios/ensaio_cego_subida.csv.
-
-O valor de $\tau$ confronta o \emph{prior} usual para o caminho comando--corrente, que a
-literatura situa entre $0{,}05$ e $0{,}3$ s com base na constante elétrica $L/R$ do
-enrolamento --- milissegundos, valor não observado no comportamento do conjunto. A dinâmica
-medida é dominada pelo ESC; a consequência para o projeto do controlador é examinada na
-Seção \ref{sec:rescontrolador}.
-
-O regime só se assenta após cerca de quatro constantes de tempo, $4\tau \approx 7$ s ---
-o que valida, \emph{a posteriori}, a janela de anotação da força nos segundos $7$ a $9$ do
-protocolo experimental.
-
-\section{Estrutura e Projeto do Controlador}
+\section{A Malha de Controle}
 \label{sec:rescontrolador}
 
-Os resultados das seções anteriores --- curva característica validada, corrente de perdas e
-dinâmica identificada --- especificam completamente a malha de controle de torque proposta
-nesta seção. A apresentação segue a estrutura da malha, os controladores e suas sintonias, e
-o desempenho esperado. Trata-se de análise sobre o modelo identificado: os valores a seguir
-são calculados sobre a função de transferência identificada na Seção
-\ref{sec:resdinamica},
-\begin{equation}\label{eq:g1_identificada}
-G_1(s) = \frac{120\,e^{-\theta_a s}}{1{,}8\,s + 1},
-\qquad \theta_a < 0{,}1\ \mathrm{s},
-\end{equation}
-e a validação experimental da malha fechada permanece como etapa pendente.
+Os resultados anteriores especificam a planta e validam o estimador, e sobre eles se projeta
+a malha de controle de torque proposta. Esta seção apresenta a estrutura da malha, a teoria
+que orienta o projeto, a justificativa de cada escolha e o desempenho esperado. Trata-se de
+análise sobre o modelo identificado: os valores são calculados sobre $G_1(s)$, e a validação
+experimental da malha fechada permanece como etapa pendente.
 
-\subsection{Estrutura da malha}
+\subsection{Estrutura e definições da malha}
 \label{sec:estrutura}
 
-% FIGURA: diagrama de blocos da malha (TikZ ou draw.io) — referenciar como Figura do controlador.
+% FIGURA: diagrama de blocos da malha (TikZ ou draw.io).
 
-A estrutura, em blocos, é a seguinte. A referência de torque $T_\mathrm{ref}$ alimenta dois
-caminhos. No caminho direto, um termo de \emph{feedforward} --- a inversa da característica
-estática --- converte a referência na corrente de bateria esperada, pela Equação
-\eqref{eq:feedforward}:
+A variável de processo é o torque na roda, obtido por estimativa a partir da corrente, e a
+variável manipulada é o comando de aceleração $u$, aplicado ao ESC. A referência de torque
+$T_\mathrm{ref}$ percorre dois caminhos. No caminho direto, um termo de
+\emph{feedforward}, a inversa da característica estática, converte a referência na corrente
+de bateria esperada,
 \begin{equation}\label{eq:feedforward}
 I_\mathrm{ref} = I_0(u) + u\,\frac{T_\mathrm{ref}\,r_\mathrm{ef}}{\eta\,i\,K_t},
 \end{equation}
-em que $I_0(u)$ é a corrente de perdas medida no ensaio em vazio e o segundo termo é a
-corrente de fase equivalente necessária ao torque desejado, vista do ramo de bateria. No
-caminho de realimentação, a corrente medida pelo ACS758 alimenta o estimador validado na
-Seção \ref{sec:resvalidacao}, que fornece o torque estimado
-$\hat{T} = C\,(I_\mathrm{bat} - I_0(u))/u$; o erro entre a referência e a estimativa
-aciona o controlador. A saída do controlador é o comando $u$, aplicado ao ESC, que atua sobre
-a planta $G_1(s)$; a corrente resultante fecha o laço. Um limitador de aderência impõe
-$T_\mathrm{ref} \leq T_\mathrm{max}$ antes do \emph{feedforward}, e um
+em que $I_0(u)$ é a corrente de perdas do ensaio em vazio e o segundo termo é a corrente de
+fase equivalente ao torque desejado, vista do ramo de bateria. No caminho de realimentação,
+a corrente medida alimenta o estimador validado, que fornece $\hat{T}$, e o erro entre a
+referência e a estimativa aciona o controlador, cuja saída é o comando $u$. Um limitador de
+aderência impõe $T_\mathrm{ref} \leq T_\mathrm{max}$ antes do \emph{feedforward}, e um
 \emph{rate-limit} restringe a variação do comando.
 
-A malha fecha em corrente, e não em força, por uma razão instrumental: a força não é
-mensurável embarcada --- a balança dispõe apenas de display ---, ao passo que a corrente é
-lida continuamente pelo sensor já instalado. O torque, grandeza de interesse, é obtido pela
-estimativa, cuja validação contra a balança --- $r^2 = 0{,}962$ na descida --- é o que torna
-a escolha defensável.
+A realimentação é feita em corrente, e não em força. A força não é mensurável embarcada, uma
+vez que o display da balança não possui saída elétrica, ao passo que a corrente é lida
+continuamente pelo sensor instalado. O torque, grandeza de interesse, é obtido pela
+estimativa, cuja validação contra a balança é o que torna essa escolha defensável.
 
-\subsection{Controladores e sintonia}
-\label{sec:sintonia}
+\subsection{Por que um PI e por que o IMC}
+\label{sec:teoria}
 
-O controlador do caminho de realimentação é um controlador proporcional--integral (PI), ajustado pelo método de modelo interno (IMC)
-sobre a planta identificada (Equação \eqref{eq:g1_identificada}). Como a planta é lenta, o
-parâmetro de ajuste deve respeitá-la; adota-se $\lambda = 0{,}6$ s, que satisfaz a
-recomendação $\lambda \geq 0{,}25\,\tau \approx 0{,}45$ s. Os ganhos resultam das
-fórmulas do IMC, na Equação \eqref{eq:pi_imc}:
+O projeto do controlador começa pela escolha da estrutura e do método, e cada uma das
+escolhas tem motivo.
+
+A planta identificada é de primeira ordem com atraso desprezível. Para uma planta de
+primeira ordem, o controlador proporcional--integral é a estrutura natural: o termo
+proporcional atua sobre o erro instantâneo, e o integral elimina o erro em regime, função
+que nenhum outro termo cumpre. O termo derivativo, característica do PID, foi descartado por
+duas razões. A primeira é que ele responde à taxa de variação do erro e, com ela, ao ruído
+de quantização da corrente, que o conversor de $12$ bits torna de $122$ mA por degrau; uma
+planta lenta como esta não se beneficia do derivativo a ponto de justificar essa
+sensibilidade. A segunda é que a planta não apresenta sobressinal nem oscilação a serem
+anticipados, função própria do termo. Um PI basta, e o que não se beneficia o sistema deve
+ser deixado de fora.
+
+Quanto ao método de ajuste, as alternativas clássicas são a síntese direta e as fórmulas de
+Ziegler--Nichols. As fórmulas de Ziegler--Nichols, construídas para rejeição de
+perturbação com resposta rápida, produzem ajustes agressivos, com margens estreitas, pouco
+apropriados a uma planta lenta que opera junto a uma saturação de aderência. A síntese
+direta, por sua vez, especifica o comportamento de malha fechada desejado e calcula o
+controlador que o cumpre, mas não oferece, por si só, um parâmetro de robustez contra
+incertezas do modelo. O método de modelo interno reconcilia os dois: é uma síntese direta na
+qual o comportamento desejado é filtrado por um parâmetro $\lambda$ que torna o ajuste
+conservador de forma explícita e controlável.
+
+O método procede da seguinte forma. Deseja-se que a malha fechada se comporte como primeira
+ordem com constante de tempo $\lambda$, o mais lento que se exige dela. Para a planta
+modelada $G_1(s)$, o controlador que cumpre essa especificação, sem cancelar polos
+instáveis e com o filtro de robustez, resulta em
 \begin{equation}\label{eq:pi_imc}
-K_p = \frac{\tau}{K\,(\lambda + \theta_a)} \approx 0{,}025\ \mathrm{u/A},
+K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
 \qquad
-T_i = \tau = 1{,}8\ \mathrm{s},
+T_i = \tau,
 \end{equation}
-com os valores identificados $K = 120$ A/u e $\tau = 1{,}8$ s. A implementação é digital,
-com período de amostragem $T_s = 100$ ms --- bem menor que $\lambda$, sem exigência
-desnecessária de processamento ---, integração trapezoidal e anti-windup por limitação da
-integral quando o atuador satura, situação em que o limitador de aderência permanece ativo.
+com $K = 120$ A/u, $\tau = 1{,}8$ s e $\theta_a < 0{,}1$ s. Substitituindo os valores
+identificados, os ganhos do controlador são $K_p \approx 0{,}025$ u/A e $T_i = 1{,}8$ s. O
+tempo integral reproduz a constante de tempo da planta, o que o método impõe, e o ganho
+proporcional diminui com $\lambda$, de modo que um ajuste mais conservador significa um
+comando menos enérgico, relação transparente que as fórmulas clássicas não oferecem.
 
-O limitador merece destaque por ser, neste sistema, mais do que uma proteção. A caracterização
-mostrou que o torque máximo transferível é uma propriedade do contato pneu--piso ---
-aproximadamente $3{,}9$ N$\cdot$m com o pneu aquecido e cerca de $2{,}4$ N$\cdot$m com o
-pneu frio ---, de modo que comandar acima do limiar não produz mais torque, apenas patinagem.
-O limitador é, assim, parte funcional da malha: ele mantém a operação na região de aderência,
-única em que o modelo, o estimador e o controlador são válidos.
+\subsection{Escolha dos valores}
+\label{sec:escolhas}
 
-\subsection{Resposta ao degrau e desempenho esperado}
+O parâmetro $\lambda$ define a velocidade da malha fechada e é o ajuste mais importante do
+projeto. A recomendação do método é $\lambda \geq 0{,}25\,\tau$, limiar abaixo do qual o
+controlador exige da planta uma resposta que ela não pode dar, saturando o comando sem
+benefício. Adota-se $\lambda = 0{,}6$ s, que satisfaz a recomendação com $\lambda \geq
+0{,}25 \times 1{,}8 = 0{,}45$ s e mantém a malha três vezes mais rápida que a planta aberta,
+ganho substancial de desempenho sem agressividade excessiva junto à saturação de aderência.
+
+A implementação é digital, a despeito do sensor ser analógico, e a razão está na cadeia de
+sinal. O sensor produz uma tensão analógica, mas essa tensão é amostrada pelo conversor do
+Arduino, e a partir desse instante o sinal é digital. O controlador executa em software, no
+computador de bordo, e o laço fecha sobre valores amostrados, de modo que não há
+implementação analógica do controlador a considerar. O período de amostragem é $T_s = 100$
+ms, uma ordem de magnitude abaixo de $\lambda$, condição para que a aproximação discreta
+não distorça o projeto contínuo, com integração trapezoidal e anti-windup por limitação da
+integral sempre que o atuador satura, situação em que o limitador de aderência permanece
+ativo.
+
+O limitador de aderência e o \emph{rate-limit} completam a estrutura, e ambos têm
+justificativa própria. O limitador impõe $T_\mathrm{ref} \leq T_\mathrm{max}$, com o torque
+máximo transferível tomado da curva característica, aproximadamente $3{,}9$ N$\cdot$m com o
+pneu aquecido e cerca de $2{,}4$ N$\cdot$m com o pneu frio, pois comandar acima do limiar não
+produz mais torque, apenas patinagem. Não é uma proteção acessória, mas parte funcional da
+malha, aquela que mantém a operação na região em que o modelo, o estimador e o controlador
+são válidos. O \emph{rate-limit}, por sua vez, restringe a variação do comando e protege a
+transmissão dos picos de torque que o seguimento brusco de referência provocaria.
+
+\subsection{Desempenho esperado}
 \label{sec:desempenho}
 
-Em malha aberta, a resposta de $G_1(s)$ a um degrau unitário em $u$ é a de primeira ordem
-pura: sem sobressinal e sem atraso visível na escala do gráfico, uma vez que $\theta_a <
-0{,}1$ s é menos de um décimo de $\tau$. Os tempos característicos seguem de
-$\tau = 1{,}8$ s: $63\%$ do valor final em $1{,}8$ s, $86\%$ em $3{,}6$ s e $95\%$ em
-$5{,}4$ s.
-% FIGURA: resposta ao degrau em malha aberta de G_1(s) — MATLAB (step).
+Em malha aberta, a resposta de $G_1(s)$ a um degrau é a de primeira ordem pura, sem
+sobressinal e sem atraso visível na escala do gráfico, uma vez que $\theta_a < 0{,}1$ s é
+menos de um décimo de $\tau$. Os tempos característicos seguem de $\tau = 1{,}8$ s: $63\%$
+do valor final em $1{,}8$ s, $95\%$ em $5{,}4$ s.
+% FIGURA: resposta ao degrau em malha aberta de G_1(s) — gerar com o MATLAB (step).
 
-Em malha fechada, com o PI ajustado sobre o próprio modelo da planta, o comportamento
-segue as especificações de projeto. Para o seguimento de referência (PSR), a resposta ao
-degrau é de primeira ordem com constante de tempo $\lambda = 0{,}6$ s: sobressinal nulo
-(limite de $10\%$ respeitado com folga), tempo de acomodação da ordem de $3\lambda \approx
-1{,}8$ s e erro nulo em regime --- o integrador elimina o erro estacionário mesmo diante do
-desvio sistemático de ganho da cadeia de corrente quantificado na verificação em bancada. Para
-a rejeição de perturbação (PRP), uma variação de carga na planta é rejeitada com recuperação
-da mesma ordem de $3\lambda$, sem erro permanente.
-% FIGURA: resposta em malha fechada — degrau de referência e de perturbação (MATLAB step/lsim).
+Em malha fechada, com o PI ajustado sobre o próprio modelo, o comportamento segue as
+especificações de projeto. Para o seguimento de referência, a resposta ao degrau é de
+primeira ordem com constante de tempo $\lambda = 0{,}6$ s: sobressinal nulo, limite de $10\%$
+respeitado com folga, tempo de acomodação da ordem de $3\lambda \approx 1{,}8$ s e erro nulo
+em regime, uma vez que o integrador elimina o erro estacionário mesmo diante do desvio
+sistemático de ganho quantificado na verificação em bancada. Para a rejeição de
+perturbação, uma variação de carga na planta é rejeitada com recuperação da mesma ordem de
+$3\lambda$, também sem erro permanente.
+% FIGURA: resposta em malha fechada — degrau de referência e de perturbação (MATLAB).
 
-A robustez da sintonia é examinada por variação paramétrica, conforme as especificações: com
-o ganho da planta variando $\pm 20\%$ e a constante de tempo $\pm 30\%$ em torno dos
-valores identificados, o comportamento se preserva qualitativamente --- sem oscilação
-crescente e com erro nulo em regime. As margens de ganho e de fase da malha, com os
-desvios admissíveis, são calculadas sobre o modelo identificado e confirmam a margem
-conservadora do ajuste; a análise completa, com as curvas, é apresentada em trabalho futuro,
-junto com a validação experimental da malha fechada.
+A robustez foi examinada por variação paramétrica, conforme as especificações: com o ganho
+da planta variando $\pm 20\%$ e a constante de tempo $\pm 30\%$ em torno dos valores
+identificados, o comportamento se preserva qualitativamente, sem oscilação crescente e com
+erro nulo em regime. As margens de ganho e de fase da malha, com os desvios admissíveis,
+confirmam a margem conservadora do ajuste, e sua análise completa, com as curvas, é
+apresentada em trabalho futuro, junto com a validação experimental da malha fechada.
 
 \section{Incertezas dos Resultados}
 \label{sec:resincerteza}
 
 As incertezas seguem o orçamento da Seção \ref{sec:incertezas}. No Tipo A, a repetibilidade
-entre as quatro escadas é quantificada pelo desvio-padrão das medianas por degrau
-(tabela-mestra da Seção \ref{sec:regioes}); na faixa de aderência, esse desvio é de $\pm 0{,}1$ a $\pm 0{,}2$ kgf
-na força. A propagação pela Equação \eqref{eq:propagacao}, com as componentes de resolução,
-calibração e efeitos sistemáticos da Seção \ref{sec:incertezas}, resulta em incerteza expandida
-da ordem de $\pm 0{,}1$ N$\cdot$m na faixa de maior torque --- valor de trabalho a ser
-refinado pela tabela completa por faixa de degrau.
+entre as escadas é quantificada pelo desvio-padrão das medianas por degrau, presente na
+tabela-mestra da Seção \ref{sec:regioes} e de $\pm 0{,}1$ a $\pm 0{,}2$ kgf na força da faixa
+de aderência. A propagação pela Equação \eqref{eq:propagacao}, com as componentes de
+resolução, calibração e efeitos sistemáticos da Seção \ref{sec:incertezas}, resulta em
+incerteza expandida da ordem de $\pm 0{,}1$ N$\cdot$m na faixa de maior torque, valor de
+trabalho a ser refinado pela tabela completa por faixa de degrau.
 
-% TABELA: incertezas por faixa de degrau — sigma_A (repetibilidade), sigma_B, U(T) — gerar de
-% ensaios/pfc kaka.xlsx.
+% TABELA: incertezas por faixa de degrau — sigma_A (repetibilidade), sigma_B, U(T) — gerar
+% de ensaios/pfc kaka.xlsx.
 
 \section{Limitações}
 \label{sec:reslimitacoes}
 
-Quatro limitações delimitam a validade dos resultados. A dinâmica da força, entre o comando
-e a tração, não foi identificada: a força só existe como leitura anotada em platô, de modo que
-o modelo dinâmico cobre o caminho comando--corrente --- sobre o qual a malha de controle age.
-A medição dinâmica da força exigiria uma célula de carga com registrador, proposta de
-continuidade. A aquisição contínua a $100$ Hz, por sua vez, ficou sem a descida abaixo de
-$113^\circ$, interrompida pela queda da rede na sessão --- lacuna que não atinge a sessão com
-força, completa nos dois sentidos. Os degraus extremos da descida, $116^\circ$ e $117^\circ$,
-foram contaminados pelo corte cíclico do ESC e excluídos da curva. E a constante de torque do
-datasheet não pôde ser isolada do rendimento, por falta de medição de rotação. Por fim, a
-dinâmica foi identificada apenas na região de aderência, única em que o modelo linear se
-sustenta.
+Quatro limitações delimitam a validade dos resultados. A dinâmica identificada cobre apenas
+o caminho comando--corrente, sobre o qual a malha atua; a dinâmica da força não foi
+identificada, uma vez que ela só existe como leitura anotada em platô, e sua medição
+dinâmica exigiria uma célula de carga com registrador, proposta de continuidade. A
+aquisição contínua ficou sem a descida abaixo de $113^\circ$, interrompida pela queda da
+rede na sessão, lacuna que não atinge a sessão com força, completa nos dois sentidos. Os
+degraus extremos da descida foram contaminados pelo corte cíclico do ESC e excluídos da
+curva. E a constante de torque do datasheet não pôde ser isolada do rendimento, por falta de
+medição de rotação.
 
 \section{Resumo do Capítulo}
 
-O capítulo entregou cinco resultados. O ensaio em vazio mediu a corrente de perdas
-$I_0(u) = 0{,}54 + 9{,}36\,u$ ($r^2 = 0{,}97$), evidência da linearidade do ESC. A curva
-característica, organizada pelas regiões de zona morta, aderência e saturação, atingiu força
-máxima de $52$ N e revelou o \emph{stick-slip} do pneu frio, a memória térmica do pneu
-aquecido e o corte cíclico do ESC nos degraus extremos. O modelo de torque foi validado pela
-descida, com rendimento $\eta = 0{,}579$ e $r^2 = 0{,}962$, delimitada à região de aderência.
-E a dinâmica comando--corrente foi identificada com constante de tempo de $1{,}8$ a $2{,}0$ s
-e atraso desprezível, em confronto com o \emph{prior} clássico do caminho comando--corrente. A estrutura, a sintonia e o desempenho esperado do controlador de torque sobre o modelo
-identificado fecham a análise.
-As considerações finais que esses resultados sustentam são apresentadas no Capítulo
-\ref{chap:conclusao}.
+O capítulo entregou cinco resultados. A bancada calibrou a cadeia de corrente, com
+linearidade e ganho $7{,}42\%$ corrigível em software, e quantificou o desvio sistemático
+da balança. O ensaio em vazio mediu a corrente de perdas $I_0(u) = 0{,}54 + 9{,}36\,u$,
+$r^2 = 0{,}97$, e confirmou a linearidade do ESC. A curva característica, organizada pelas
+regiões de zona morta, aderência e saturação, atingiu força máxima de $52$ N e revelou o
+\emph{stick-slip} do pneu frio, a memória térmica do conjunto e o corte cíclico do ESC nos
+degraus extremos. O modelo de torque foi validado pela descida, com rendimento
+$\eta = 0{,}579$ e $r^2 = 0{,}962$, delimitado à região de aderência. A dinâmica
+comando--corrente foi identificada com constante de tempo de $1{,}8$ a $2{,}0$ s e atraso
+desprezível, mostrando-se dominada pelo ESC. Sobre esses resultados, a malha de controle de
+torque foi estruturada e justificada, do PI ajustado por modelo interno ao limitador de
+aderência. As considerações finais que esses resultados sustentam são apresentadas no
+Capítulo \ref{chap:conclusao}.
 
 \clearpage
