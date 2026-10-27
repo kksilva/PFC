@@ -176,10 +176,10 @@ $\omega_m$ pela redução $i$ da transmissão.
 
 Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
 rotação se deseja medir, e o sensor é montado no chassi, fixo, próximo ao anel. Entre o elemento
-Hall e os polos mantém-se uma entreferência --- a distância entre o sensor e o anel --- pequena
-e constante: o campo magnético decai rapidamente com a distância, de modo que uma folga
+Hall e os polos mantém-se uma entreferência (a distância entre o sensor e o anel) pequena
+e constante. O campo magnético decai rapidamente com a distância, de modo que uma folga
 excessiva enfraquece o sinal, ao passo que uma folga mínima demais arrisca o contato
-mecânico. A conexão com o microcontrolador é direta --- alimentação, terra e saída digital ---,
+mecânico. A conexão com o microcontrolador é direta, com alimentação, terra e saída digital,
 e a leitura por interrupção dispensa circuitos de condicionamento adicionais: a saída do
 sensor já é um nível lógico compatível com a entrada do microcontrolador, ao contrário de um
 sinal analógico fraco, que exigiria amplificação e filtragem antes da conversão.
@@ -235,8 +235,8 @@ saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
 V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
 em que $G$ é o ganho fixo do amplificador. A polarização é uma tensão de referência somada à
-saída: com $V_\mathrm{bias}$ igual à metade da faixa do conversor, a corrente nula produz saída
-em meia escala, e correntes positivas e negativas --- em frenagem, por exemplo --- podem ser lidas
+saída. Com $V_\mathrm{bias}$ igual à metade da faixa do conversor, a corrente nula produz saída
+em meia escala, e correntes positivas e negativas (em frenagem, por exemplo) podem ser lidas
 por um único conversor alimentado em tensão simples.
 
 Na fixação, o resistor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e o
@@ -256,31 +256,31 @@ resistivo.}
 \end{figure}
 
 O componente possui largura de banda de 400 kHz e
-rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
-simultâneas da tensão nos dois terminais de entrada, justamente as produzidas pelo chaveamento de
-um ESC: sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
-mascaram a corrente. Em altas
-frequências, ainda, a indutância parasita do próprio resistor --- de seus terminais e de sua
-construção --- soma-se à queda ômica, de modo que a tensão deixa de ser proporcional à corrente
-instantânea, distorcendo a leitura durante as bordas de chaveamento.
+rejeição reforçada a transientes de modo comum, a capacidade de rejeitar variações rápidas e
+simultâneas da tensão nos dois terminais de entrada, justamente as produzidas pelo chaveamento
+de um ESC. Sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
+mascaram a corrente. Em altas frequências, ainda, a indutância parasita do próprio resistor,
+de seus terminais e de sua construção, soma-se à queda ômica, de modo que a tensão deixa de
+ser proporcional à corrente instantânea, distorcendo a leitura durante as bordas de
+chaveamento.
 
-A dissipação de potência no resistor cresce com o quadrado da corrente; sob as correntes do
-ESC --- 120 A em regime e 760 A de pico --- um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W
-em regime e mais de $500$ W nos picos, de modo que o shunt aquece e consome parte da energia
+A dissipação de potência no resistor cresce com o quadrado da corrente. Sob as correntes do
+ESC (120 A em regime e 760 A de pico), um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W em
+regime e mais de $500$ W nos picos, de modo que o shunt aquece e consome parte da energia
 destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente
 média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
-usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento --- a
-fração do período em que o PWM permanece ligado:
+usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento, a
+fração do período em que o PWM permanece ligado,
 
 \begin{equation}\label{eq:corrente_bateria}
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
 \end{equation}
 
-Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor ---
-uma vez que o torque se relaciona à corrente pela constante do motor --- e implementar a
-proteção contra sobrecorrente por limiar, funções que os sensores de movimento não oferecem.
-Essas funções vêm acompanhadas da ressalva da interpretação pela razão cíclica, conforme a
-Equação \eqref{eq:corrente_bateria}.
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
+uma vez que o torque se relaciona à corrente pela constante do motor, e implementar a proteção
+contra sobrecorrente por limiar, funções que os sensores de movimento não oferecem. Essas
+funções vêm acompanhadas da ressalva da interpretação pela razão cíclica, conforme a Equação
+\eqref{eq:corrente_bateria}.
 
 Dessa forma, o arranjo com shunt reúne banda e linearidade adequadas à medição, mas a ausência de
 isolamento galvânico e a dissipação crescente com o quadrado da corrente afastam-no da montagem de

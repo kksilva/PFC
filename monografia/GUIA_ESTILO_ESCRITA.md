@@ -277,6 +277,10 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   um bloco, uma ideia.
 - **Equações entram com anúncio simples**: "a Segunda Lei de Newton para rotação ..., é dada
   por:" — dois-pontos, sem cerimônia.
+- **Poucos dois-pontos, poucos ponto e vírgula, poucos travessões.** A autora reclamou do
+  excesso (revisão do Shunt/SS41F): travessão é para aposto explicativo pontual, não para toda
+  explicação; dois-pontos anunciam raramente, preferindo-se o período; ponto e vírgula vira
+  ponto quando a oração for longa. Variação de pontuação é parte do ritmo.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.
