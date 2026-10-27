@@ -176,10 +176,10 @@ $\omega_m$ pela redução $i$ da transmissão.
 
 Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
 rotação se deseja medir, e o sensor é montado no chassi, fixo, próximo ao anel. Entre o elemento
-Hall e os polos mantém-se uma entreferência (a distância entre o sensor e o anel) pequena
-e constante. O campo magnético decai rapidamente com a distância, de modo que uma folga
+Hall e os polos mantém-se uma entreferência --- a distância entre o sensor e o anel --- pequena
+e constante: o campo magnético decai rapidamente com a distância, de modo que uma folga
 excessiva enfraquece o sinal, ao passo que uma folga mínima demais arrisca o contato
-mecânico. A conexão com o microcontrolador é direta, com alimentação, terra e saída digital,
+mecânico. A conexão com o microcontrolador é direta --- alimentação, terra e saída digital ---,
 e a leitura por interrupção dispensa circuitos de condicionamento adicionais: a saída do
 sensor já é um nível lógico compatível com a entrada do microcontrolador, ao contrário de um
 sinal analógico fraco, que exigiria amplificação e filtragem antes da conversão.
@@ -222,8 +222,8 @@ e o controle do automodelo:
 \subsection{Shunt Resistivo + Amplificador de Instrumentação (INA240)}
 \label{sec:ina240}
 
-No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série com o
-caminho da corrente; pela Lei de Ohm, a queda de tensão sobre ele é:
+No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série no ramo de alimentação, 
+entre a bateria e o ESC, assim, pela Lei de Ohm, a queda de tensão sobre ele é:
 
 \begin{equation}\label{eq:shunt_ohm}
 V_s = R_s\,I.
@@ -234,17 +234,30 @@ saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
 \begin{equation}\label{eq:shunt_ganho}
 V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation}
-em que $G$ é o ganho fixo do amplificador. A polarização é uma tensão de referência somada à
-saída. Com $V_\mathrm{bias}$ igual à metade da faixa do conversor, a corrente nula produz saída
-em meia escala, e correntes positivas e negativas (em frenagem, por exemplo) podem ser lidas
-por um único conversor alimentado em tensão simples.
+em que $G$ é o ganho fixo do amplificador. 
 
-Na fixação, o resistor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e o
-INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt.
-A saída do amplificador é um sinal analógico de nível adequado à entrada do conversor do
-microcontrolador, sem necessidade de amplificação adicional. Por não haver isolamento
-galvânico, porém, o circuito de medição permanece em contato elétrico direto com o ramo de
-potência, o que exige cuidados de layout e limita sua proximidade com o computador de bordo.
+A dissipação de potência no resistor cresce com o quadrado da corrente, então, considerando as correntes do
+ESC, um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W
+em regime e mais de $500$ W nos picos, de modo que o shunt aquece e consome parte da energia
+destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente
+média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
+usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento --- a
+fração do período em que o PWM permanece ligado:
+
+\begin{equation}\label{eq:corrente_bateria}
+\bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
+\end{equation}
+
+O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt, sendo que a 
+saída é um sinal analógico na entrada do microcontrolador para tornar possível a leitura dos valores. 
+O componente possui largura de banda de 400 kHz e
+rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
+simultâneas da tensão nos dois terminais de entrada, justamente as produzidas pelo chaveamento de
+um ESC: sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
+mascaram a corrente. Em altas
+frequências, ainda, a indutância parasita do próprio resistor --- de seus terminais e de sua
+construção --- soma-se à queda ômica, de modo que a tensão deixa de ser proporcional à corrente
+instantânea, distorcendo a leitura durante as bordas de chaveamento.
 
 \begin{figure}[htb]
 \centering
@@ -255,38 +268,8 @@ resistivo.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-O componente possui largura de banda de 400 kHz e
-rejeição reforçada a transientes de modo comum, a capacidade de rejeitar variações rápidas e
-simultâneas da tensão nos dois terminais de entrada, justamente as produzidas pelo chaveamento
-de um ESC. Sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
-mascaram a corrente. Em altas frequências, ainda, a indutância parasita do próprio resistor,
-de seus terminais e de sua construção, soma-se à queda ômica, de modo que a tensão deixa de
-ser proporcional à corrente instantânea, distorcendo a leitura durante as bordas de
-chaveamento.
-
-A dissipação de potência no resistor cresce com o quadrado da corrente. Sob as correntes do
-ESC (120 A em regime e 760 A de pico), um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W em
-regime e mais de $500$ W nos picos, de modo que o shunt aquece e consome parte da energia
-destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente
-média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
-usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento, a
-fração do período em que o PWM permanece ligado,
-
-\begin{equation}\label{eq:corrente_bateria}
-\bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
-\end{equation}
-
-Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
-uma vez que o torque se relaciona à corrente pela constante do motor, e implementar a proteção
-contra sobrecorrente por limiar, funções que os sensores de movimento não oferecem. Essas
-funções vêm acompanhadas da ressalva da interpretação pela razão cíclica, conforme a Equação
-\eqref{eq:corrente_bateria}.
-
-Dessa forma, o arranjo com shunt reúne banda e linearidade adequadas à medição, mas a ausência de
-isolamento galvânico e a dissipação crescente com o quadrado da corrente afastam-no da montagem de
-bancada adotada neste trabalho, na qual o circuito de medição permanece próximo ao computador de bordo.
-
-Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e implementar a
+proteção contra sobrecorrente por limiar. Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
 instrumentação e o controle do automodelo:
 
 \begin{itemize}
@@ -300,17 +283,15 @@ instrumentação e o controle do automodelo:
     parasita do resistor.
 \end{itemize}
 
-\subsection{Sensor de Efeito Hall Linear (ACS758/ACS712)}
+\subsection{Sensor de Efeito Hall Linear (ACS758)}
 \label{sec:acshall}
 
-Os sensores de efeito Hall lineares, como as famílias ACS758 e ACS712, medem a corrente de forma
-indireta e sem contato elétrico com o circuito de potência. Seu princípio é o efeito Hall: quando
-uma corrente atravessa um condutor exposto a um campo magnético perpendicular, as cargas em
-movimento sofrem uma deflexão lateral, gerando uma tensão transversal proporcional ao campo. No
-sensor, a corrente a ser medida percorre um condutor interno e cria, em seu entorno, um campo
-magnético; elementos Hall próximos a esse condutor detectam o campo e a eletrônica integrada
-converte a tensão gerada em uma tensão de saída proporcional à corrente. Na variante bidirecional
-do ACS758, a saída é
+O sensor de efeito Hall ACS758 mede a corrente elétrica indiretamente, proporcionando isolamento 
+galvânico, ou seja, não há conexão elétrica direta entre o circuito de potência e o circuito de medição. 
+Seu funcionamento baseia-se no efeito Hall, no qual a corrente que percorre um condutor interno gera um 
+campo magnético, detectado por elementos Hall integrados ao sensor. A eletrônica interna converte esse 
+campo em uma tensão de saída proporcional à corrente medida. Na variante bidirecional do ACS758, a tensão 
+de saída varia em torno de um nível de referência, permitindo medir correntes nos dois sentidos.
 
 \begin{equation}\label{eq:acs_saida}
 V_\mathrm{out} = \frac{V_{CC}}{2} + S\,I,
@@ -321,57 +302,37 @@ corrente nula. A corrente é recuperada por
 I = \frac{V_\mathrm{out} - V_{CC}/2}{S}.
 \end{equation}
 
-Esse tipo de sensor já foi empregado em um motor brushless do tipo \emph{hub}, relacionando a
-corrente de fase medida à força de tração, à potência e à eficiência de um veículo elétrico de
-baixa potência. Também já foi aplicado em dinamômetros de baixo custo voltados a
-motores brushless de uso amador, acoplado a células de carga, o que evidencia a
-viabilidade desse sensor em montagens de bancada sem equipamentos dedicados de laboratório.
 
-A sensibilidade é definida pela variante escolhida, que determina também a faixa de medição. Na
-família ACS758 bidirecional, as variantes de ±50 A, ±100 A, ±150 A e ±200 A apresentam,
-com alimentação nominal de 5 V, sensibilidades típicas de 40 mV/A, 20 mV/A, 13,3 mV/A e 10 mV/A,
-respectivamente. Como a saída é ratiométrica --- isto é, ambas as grandezas se ajustam
-proporcionalmente à alimentação ---, a operação a 3,3 V adotada neste trabalho reduz a
-sensibilidade da variante de ±200 A para aproximadamente 6,6 mV/A. Em qualquer alimentação, uma
-faixa maior implica menor sensibilidade e, consequentemente, menor resolução para a mesma
-conversão. Essa resolução é limitada pela conversão
-analógico-digital de $n$ bits e por sua tensão de referência $V_\mathrm{ref}$ --- o menor degrau
-de tensão que o conversor distingue:
+Nas variantes bidirecionais da família ACS758, a sensibilidade é definida pela faixa escolhida:
+as versões de ±50 A, ±100 A, ±150 A e ±200 A apresentam, com alimentação nominal de $5$ V,
+sensibilidades típicas de $40$ mV/A, $20$ mV/A, $13{,}3$ mV/A e $10$ mV/A. A saída é
+ratiométrica, isto é, repouso e sensibilidade acompanham a tensão de alimentação. Uma faixa
+maior implica menor sensibilidade e, para a mesma conversão, menor resolução. Essa resolução é
+limitada pelo conversor analógico-digital de $n$ bits e por sua tensão de referência
+$V_\mathrm{ref}$, o menor degrau de tensão que o conversor distingue, conforme a Equação
+\eqref{eq:acs_resolucao}:
+
 \begin{equation}\label{eq:acs_resolucao}
 \Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
 \end{equation}
-Com conversor de 12 bits e referência de 3,3 V, a variante de ±200 A resulta, na prática deste
-trabalho, em resolução de cerca de 122 mA. Para correntes de dezenas de ampères, essa resolução é
-suficiente, embora limite a medida de variações pequenas em torno do repouso.
 
-A folha de dados (\emph{datasheet}) especifica tempo de resposta de 4 µs e largura de banda
-interna de 120 kHz, valor bem superior à faixa de 8 kHz a 16 kHz de chaveamento
-típica de ESCs \emph{sensorless}. Logo, o sensor dispõe de margem para acompanhar as
-variações de corrente impostas pela comutação, sem subamostrá-las.
 
-Na fixação adotada neste trabalho, o sensor é instalado em série entre a bateria e o ESC por
-meio de uma adaptação com conector Deans-T --- o padrão de conector do automodelo, que
-dispensa qualquer corte nos cabos originais. A saída analógica do sensor é lida pelo conversor
-do Arduino Due, com filtro RC de cerca de 24 Hz na entrada; a cadeia de aquisição é detalhada
-no Capítulo 3.
-
-Em malha fechada, a corrente medida habilita a malha de torque proposta neste trabalho: uma
-malha interna de corrente, cuja dinâmica entre o comando e a corrente é identificada
-experimentalmente, e um estimador de torque a partir do modelo do propulsor, com a referência
-limitada pelo limiar de aderência. A leitura permite, ainda, a proteção contra sobrecorrente.
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
+pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, funções que
+os sensores de movimento não oferecem.
 
 O isolamento galvânico não introduz dissipação adicional significativa. Como limitações, o
 sensor permanece sujeito a ruído eletromagnético proveniente do chaveamento do ESC, o que pode exigir
 filtragem do sinal antes da aquisição. A faixa máxima das variantes, de ±200 A, é inferior ao
 pico de 760 A especificado para o ESC, o que deixa os picos extremos de corrente fora da
-faixa de medição. A operação a 3,3 V desloca os valores nominais de repouso e de sensibilidade,
-devendo ser tratada como condição de calibração experimental própria, o que é feito no Capítulo 3.
-Por fim, a relação entre corrente e torque pode deixar de ser aproximadamente linear em correntes
-elevadas, exigindo calibração experimental adicional, também retomada naquele capítulo.
+faixa de medição. A operação fora da alimentação nominal desloca os valores de repouso e de sensibilidade,
+devendo ser tratada como condição de calibração experimental própria. Por fim, a relação
+entre corrente e torque pode deixar de ser aproximadamente linear em correntes elevadas,
+exigindo calibração experimental adicional.
 
 Assim, entre os sensores de corrente avaliados, o ACS758 reúne o melhor compromisso entre
 isolamento galvânico, dissipação, faixa de medição e banda para as correntes e frequências deste
-sistema, sendo o sensor adotado na cadeia de aquisição deste trabalho.
+sistema.
 
 Em síntese, a utilização do ACS758 apresenta vantagens e limitações para a instrumentação e o
 controle do automodelo:
@@ -385,7 +346,8 @@ controle do automodelo:
 \label{sec:sintese}
 
 A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A IMU e o
-SS41F/41G exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$). A corrente elétrica dispensa esses parâmetros, mas sua relação com o torque
+SS41F exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$). 
+A corrente elétrica dispensa esses parâmetros, mas sua relação com o torque
 depende da posição do sensor no circuito, conforme a Equação \eqref{eq:corrente_bateria}.
 
 Entre os sensores de corrente, a escolha envolve o compromisso entre isolamento elétrico, dissipação
@@ -393,22 +355,10 @@ de potência, faixa de medição e desempenho dinâmico sob chaveamento. O shunt
 de banda a menor custo, mas não é isolado e dissipa potência. O sensor Hall é isolado e praticamente
 não dissipa potência, mas tem faixa limitada e demanda atenção ao ruído e à calibração da alimentação.
 
-Existe ainda uma alternativa que dispensa qualquer sensor de corrente. Nela, o torque de motores
-brushless usados em multirrotores é estimado a partir apenas da tensão de
-alimentação, do comando de aceleração e da velocidade de rotação, ajustando-se um modelo de
-quatro parâmetros ao conjunto motor, ESC e hélice. Essa abordagem evita a instrumentação elétrica
-do sistema de propulsão, mas o modelo precisa ser recalibrado para cada motor, ESC e carga
-mecânica utilizados. Sua viabilidade para o automodelo depende, desse modo, da variabilidade entre
-configurações de transmissão e regimes de carga, cuja investigação fica como proposta de
-continuidade deste trabalho.
-
 Assim, a corrente elétrica é a grandeza com a cadeia de dependências mais curta até o torque, e,
 entre os sensores de corrente, o Hall linear oferece o melhor equilíbrio entre isolamento, custo e
-simplicidade de montagem para as correntes e frequências deste sistema. O sensor magnético
-SS41F/41G, embora não empregado na caracterização proposta, viabiliza um ensaio em vazio com
-rotação --- com anel magnetizado no eixo e veículo suspenso --- que permitiria medir a constante de
-velocidade real do motor e a dinâmica entre comando e velocidade angular, configurando proposta de
-continuidade. A forma de combinar o ACS758 a uma medição direta do esforço de tração constitui a
+simplicidade de montagem para as correntes e frequências deste sistema. A forma de combinar o ACS758 
+a uma medição direta do esforço de tração constitui a
 proposta de instrumentação deste trabalho, apresentada na Seção~\ref{sec:proposta}.
 
 \section{Proposta do Projeto}

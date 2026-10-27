@@ -52,8 +52,8 @@ medida três vezes, e os valores adotados são as médias das três leituras.
 \caption{Montagem do ensaio de tração: automodelo ancorado pela balança de gancho suspensa
 entre o engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.}
 \label{fig:montagem}
-\end{figure}
 \footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 A tensão que a balança registra atua ao longo do cabo, e o cabo não é perfeitamente
 horizontal --- os engates estão a alturas diferentes. O cabo e a linha horizontal entre os
@@ -146,7 +146,10 @@ em $3{,}3$ V pelo Arduino Due. A sensibilidade é ratiométrica: $10$ mV/A na al
 de $5$ V, reduzida a $6{,}6$ mV/A a $3{,}3$ V; a saída em corrente nula é metade da alimentação,
 $1{,}65$ V. Um filtro RC de cerca de $24$ Hz limita a banda do sinal antes da conversão
 analógico-digital, realizada pelo ADC de $12$ bits do Due, com resolução de $122$ mA por degrau
-de conversão.
+de conversão. A folha de dados especifica tempo de resposta de $4$ µs e largura de banda
+interna de $120$ kHz, valor bem superior à faixa de $8$ kHz a $16$ kHz de chaveamento típica
+de ESCs \emph{sensorless}, de modo que o sensor acompanha as variações de corrente impostas
+pela comutação sem subamostrá-las.
 
 \begin{figure}[htb]
 \centering
@@ -154,8 +157,8 @@ de conversão.
 \caption{Sensor de corrente ACS758 instalado no ramo de alimentação, entre a bateria e o
 ESC, por adaptação com conector Deans-T.}
 \label{fig:sensor}
-\end{figure}
 \footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \subsection{Aquisição e registro de dados}
 \label{sec:registro}
@@ -196,8 +199,8 @@ sem perda de resolução temporal.
 \caption{Raspberry Pi embarcado com sua bateria dedicada e o conversor \emph{step-down} de
 alimentação.}
 \label{fig:pi}
-\end{figure}
 \footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \section{Testes em Bancada}
 \label{sec:bancada}
@@ -233,16 +236,16 @@ de $10$ g, integra o mesmo orçamento.
 \caption{Verificação da cadeia de corrente em bancada: fonte ajustável, multímetro de
 referência e sensor ACS758 com o Arduino Due.}
 \label{fig:bancada}
-\end{figure}
 \footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.72\textwidth]{Figuras/visao_pesos.jpeg}
 \caption{Verificação da balança com pesos padrão.}
 \label{fig:pesos}
-\end{figure}
 \footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \section{Ensaio em Vazio}
 \label{sec:vazio}
@@ -261,8 +264,8 @@ cadeia de aquisição da Seção \ref{sec:registro} são empregados sem alteraç
 \includegraphics[width=0.72\textwidth]{Figuras/ensaio_vazio.jpeg}
 \caption{Ensaio em vazio: rodas motrizes suspensas em caixa, sem contato com a mesa.}
 \label{fig:vazio}
-\end{figure}
 \footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \textbf{\emph{Checklist} pré-ensaio.} As mesmas três condições de toda sessão com o veículo: a
 bateria LiPo 2S deve estar carregada e em bom estado --- baterias degradadas comprimem os degraus mais altos; em repouso abaixo de $7{,}7$ V, o corte de baixa
