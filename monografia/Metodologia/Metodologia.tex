@@ -4,9 +4,9 @@
 Este capítulo descreve os métodos experimentais empregados na caracterização do sistema de
 propulsão do automodelo. A Seção \ref{sec:montagem} apresenta a montagem do ensaio ---
 mecânica e elétrica ---, comum a todos os experimentos. As Seções \ref{sec:bancada},
-\ref{sec:vazio} e \ref{sec:tracao} descrevem, cada uma com o mesmo roteiro de definição,
-configuração, \emph{checklist} e procedimento, os três ensaios realizados: os testes em
-bancada, o ensaio em vazio e o ensaio de tração estática. A Seção \ref{sec:incertezas} fecha
+\ref{sec:vazio} e \ref{sec:tracao} descrevem os três ensaios realizados --- os testes em
+bancada, o ensaio em vazio e o ensaio de tração estática --- no mesmo roteiro de definição,
+configuração e procedimento, com o \emph{checklist} nos ensaios com o veículo. A Seção \ref{sec:incertezas} fecha
 o capítulo com o orçamento de incertezas. Para cada escolha, apresentam-se o critério que a
 fundamenta e as alternativas consideradas, de modo a permitir a reprodução integral do ensaio.
 
@@ -34,7 +34,7 @@ equilibraria a tensão aplicada ao gancho --- o quilograma-força, definido como
 quilograma em condições normais de gravidade e equivalente a $9{,}81$ N. Como o gancho é puxado
 horizontalmente pela reação da ancoragem, e não sustenta massa alguma na vertical, a leitura em
 quilogramas representa força de tração, e não peso. Ao longo do trabalho, as leituras são
-convertidas para newtons por meio de $F\,[\mathrm{N}] = 9{,}81\,m\,[\mathrm{kgf}]$.
+convertidas para newtons por meio de $F\,[\mathrm{N}] = 9{,}81 \times m_{\mathrm{lei}}\,[\mathrm{kg}]$.
 
 \subsection{Configuração de ancoragem e geometria do cabo}
 \label{sec:ancoragem}
@@ -53,14 +53,15 @@ medida três vezes, e os valores adotados são as médias das três leituras.
 entre o engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.}
 \label{fig:montagem}
 \end{figure}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 
 A tensão que a balança registra atua ao longo do cabo, e o cabo não é perfeitamente
 horizontal --- os engates estão a alturas diferentes. O cabo e a linha horizontal entre os
 mesmos dois pontos formam, com a diferença de altura, um triângulo retângulo, cuja hipotenusa
 é o próprio cabo e cujo cateto vertical, oposto ao ângulo $\theta$ entre o cabo e a horizontal,
 é a diferença de altura entre os engates. A força que equilibra a tração é a componente
-horizontal da tensão, $F\cos\theta$; a diferença de altura, de $28 - 15 = 13$ cm, sobre o
-comprimento do cabo, define pela razão entre o cateto oposto e a hipotenusa
+horizontal da tensão, $F\cos\theta$. O cateto oposto ao ângulo vale $28 - 15 = 13$ cm e,
+pela razão entre o cateto oposto e a hipotenusa, tem-se
 \begin{equation}\label{eq:sen_theta}
 \mathrm{sen}\,\theta = \frac{13}{126}
 \qquad\Rightarrow\qquad
@@ -114,18 +115,20 @@ mesmo alinhamento; o veículo, encostado em uma parede para garantir que o deslo
 desse em linha reta, foi movimentado até completar cinco voltas da roda. A distância percorrida
 entre as marcas do solo corresponde, nessas condições, a cinco circunferências de rolamento.
 O procedimento foi repetido três vezes, e a distância adotada, $L = 236$ cm, é a média das
-três leituras. O raio efetivo segue diretamente da circunferência:
+três leituras. O raio efetivo segue diretamente da circunferência, pela Equação
+\eqref{eq:raio_efetivo}:
 \begin{equation}\label{eq:raio_efetivo}
-r_\mathrm{ef} = \frac{L}{2\pi n}
+r_\mathrm{ef} = \frac{L}{2\pi n_v}
               = \frac{236}{2\pi \times 5}
               = 7{,}51\ \mathrm{cm}
               = 0{,}0751\ \mathrm{m},
 \end{equation}
-em que $n = 5$ é o número de voltas completas.
+em que $n_v = 5$ é o número de voltas completas.
 
 O valor nominal do fabricante para o pneu novo, sem carga, é de $80$ mm de raio; o raio
 efetivo medido, de $75{,}1$ mm, é $6{,}1\%$ menor --- a deflexão do pneu sob a carga do
-conjunto. Fecha-se, assim, a cadeia mecânica da medida: o torque na roda é
+conjunto. Fecha-se, assim, a cadeia mecânica da medida: o torque na roda é dado pela
+Equação \eqref{eq:torque_f_r},
 \begin{equation}\label{eq:torque_f_r}
 T_\mathrm{roda} = F\,r_\mathrm{ef},
 \end{equation}
@@ -152,6 +155,7 @@ de conversão.
 ESC, por adaptação com conector Deans-T.}
 \label{fig:sensor}
 \end{figure}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 
 \subsection{Aquisição e registro de dados}
 \label{sec:registro}
@@ -170,7 +174,7 @@ teste\_throttle.py <ângulo> <duração>"}. O \emph{script} coloca o ESC em neut
 aplica o degrau pela duração programada e retorna ao neutro ao final. O neutro, no padrão de
 rádio-controle, é o comando para o qual o ESC mantém o motor parado --- no sinal de servo, o
 pulso de $1{,}5$ ms. Os pulsos são gerados pelo circuito PCA9685, na faixa de $90^\circ$ a
-$180^\circ$; ao longo do trabalho, o comando é usado na forma normalizada $u = (\theta - 95)/85$.
+$180^\circ$; ao longo do trabalho, o comando é usado na forma normalizada $u = (\alpha - 95)/85$, sendo $\alpha$ o ângulo do comando de aceleração.
 A automação do ensaio --- o laço que percorre a escala de degraus, substituindo a cada iteração
 o ângulo e a duração e disparando o comando remoto correspondente, e o registro da serial do
 Arduino em arquivo CSV --- foi desenvolvida no âmbito deste trabalho. Cada amostra gravada
@@ -193,6 +197,7 @@ sem perda de resolução temporal.
 alimentação.}
 \label{fig:pi}
 \end{figure}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 
 \section{Testes em Bancada}
 \label{sec:bancada}
@@ -229,6 +234,7 @@ de $10$ g, integra o mesmo orçamento.
 referência e sensor ACS758 com o Arduino Due.}
 \label{fig:bancada}
 \end{figure}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 
 \begin{figure}[htb]
 \centering
@@ -236,6 +242,7 @@ referência e sensor ACS758 com o Arduino Due.}
 \caption{Verificação da balança com pesos padrão.}
 \label{fig:pesos}
 \end{figure}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 
 \section{Ensaio em Vazio}
 \label{sec:vazio}
@@ -255,9 +262,10 @@ cadeia de aquisição da Seção \ref{sec:registro} são empregados sem alteraç
 \caption{Ensaio em vazio: rodas motrizes suspensas em caixa, sem contato com a mesa.}
 \label{fig:vazio}
 \end{figure}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 
 \textbf{\emph{Checklist} pré-ensaio.} As mesmas três condições de toda sessão com o veículo: a
-bateria LiPo 2S deve estar carregada --- em repouso abaixo de $7{,}7$ V, o corte de baixa
+bateria LiPo 2S deve estar carregada e em bom estado --- baterias degradadas comprimem os degraus mais altos; em repouso abaixo de $7{,}7$ V, o corte de baixa
 tensão do ESC reduz a resposta do motor, invalidando os degraus mais altos; a bateria do
 Raspberry Pi deve estar carregada, com a tensão de saída do \emph{step-down} conferida; e o
 notebook deve estar conectado à rede do Raspberry, com o acesso remoto por \texttt{ssh}
@@ -320,7 +328,9 @@ $97^\circ$ a $117^\circ$ nos dois sentidos.
 
 As incertezas foram avaliadas pelo método da Aula 04, separando os componentes estatísticos
 (Tipo A) dos avaliados por propriedades do instrumento (Tipo B) e combinando-os em incerteza
-combinada e expandida. No Tipo A, trabalham-se em dois níveis. No nível do ponto, a dispersão
+combinada e expandida. Para não confundir com o comando normalizado $u$, adota-se $\sigma$
+para as incertezas-padrão. No Tipo A, trabalham-se em dois
+níveis: no nível do ponto, a dispersão
 das três leituras de força --- nos segundos $7$, $8$ e $9$ do protocolo da Seção
 \ref{sec:tracao} --- informa a flutuação de curta duração da tração somada à dispersão de
 leitura; no nível do método, a dispersão entre as repetições da escada informa a
@@ -328,10 +338,10 @@ repetibilidade do processo completo, da montagem à leitura em vídeo. Os dois n
 reportados nos resultados.
 
 No Tipo B, contribuem: a resolução da balança, de $10$ g, tratada como distribuição
-retangular, $u = 5/\sqrt{3} \approx 2{,}9$ g; o erro sistemático de calibração, de $10$ g para
+retangular, $\sigma = 5/\sqrt{3} \approx 2{,}9$ g; o erro sistemático de calibração, de $10$ g para
 cada $0{,}5$ kg, medido nos testes em bancada (Seção \ref{sec:bancada}); a leitura em vídeo,
 estimada em $\pm 1$ dígito quando há dúvida de legibilidade; e a quantização da corrente, de
-$122$ mA por degrau de conversão, com $u \approx 35$ mA. O desvio sistemático de $\pm 7\%$ da
+$122$ mA por degrau de conversão, com $\sigma \approx 35$ mA. O desvio sistemático de $\pm 7\%$ da
 verificação em bancada é corrigido por fator em software, restando o resíduo da correção como
 componente.
 
@@ -339,15 +349,15 @@ As componentes sistemáticas pequenas são o ângulo do cabo, limitado a $0{,}53
 Equação \eqref{eq:erro_cosseno}, e o raio efetivo, abaixo de $0{,}5\%$. A incerteza combinada
 do torque é obtida pela soma quadrática das componentes relativas,
 \begin{equation}\label{eq:propagacao}
-\frac{u_c(T)}{T} = \sqrt{\left(\frac{u_A(F)}{F}\right)^2
-                        + \left(\frac{u_B(F)}{F}\right)^2
-                        + \left(\frac{u(r_\mathrm{ef})}{r_\mathrm{ef}}\right)^2
+\frac{\sigma_c(T)}{T} = \sqrt{\left(\frac{\sigma_A(F)}{F}\right)^2
+                        + \left(\frac{\sigma_B(F)}{F}\right)^2
+                        + \left(\frac{\sigma(r_\mathrm{ef})}{r_\mathrm{ef}}\right)^2
                         + \left(0{,}53\%\right)^2},
 \end{equation}
-e a incerteza expandida é $U = 2\,u_c$, com $k = 2$, correspondente a um nível de confiança
+e a incerteza expandida é $U = 2\,\sigma_c$, com $k = 2$, correspondente a um nível de confiança
 de aproximadamente $95\%$.
 
-% TABELA: incertezas por faixa de degrau — u_A (3 leituras e repetibilidade), u_B e U(T),
+% TABELA: incertezas por faixa de degrau — sigma_A (3 leituras e repetibilidade), sigma_B e U(T),
 % geradas de ensaios/pfc kaka.xlsx + ensaio_consolidado.csv.
 
 \section{Resumo do Capítulo}

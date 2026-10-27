@@ -30,7 +30,7 @@ o torque responsável pela rotação do eixo, como ilustrado na Figura~\ref{fig:
 A continuidade desse movimento depende da comutação eletrônica, processo pelo qual a alimentação das três fases
 do motor é alternada em uma sequência que modifica continuamente a orientação do campo magnético resultante do estator,
 produzindo um campo girante. Essa função é realizada pelo Controlador Eletrônico de Velocidade (\emph{Electronic
-Speed Controller} --- ESC) Orion Vortex R8, que recebe do receptor de rádio o comando de aceleração e controla a energia
+Speed Controller} --- ESC) Orion Vortex R8, que recebe o comando de aceleração e controla a energia
 elétrica transferida da bateria para os enrolamentos. Como o motor é do tipo \emph{sensorless}, o ESC estima sua
 posição a partir da força contraeletromotriz (\emph{back-EMF}) --- a tensão induzida nos enrolamentos pela rotação dos
 ímãs permanentes do rotor. Para isso, uma das fases permanece temporariamente sem alimentação durante a comutação,
@@ -49,34 +49,34 @@ proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
 \emph{step-down} para alimentação em 5 V.
 
-As quatro abordagens medem grandezas distintas, e cada uma se associa ao torque por um caminho
-próprio. A IMU mede a aceleração linear, o SS41F/41G mede a
-velocidade angular de uma roda ou do eixo por pulsos, e o shunt e o sensor Hall linear medem a
-corrente elétrica por princípios físicos distintos.
-
 A ponte entre a cadeia elétrica e a mecânica do propulsor é a relação entre o torque
 eletromagnético e a corrente, dada pela constante de torque $K_t$,
 \begin{equation}\label{eq:torque_corrente}
 T_{\text{motor}} = K_t\,I.
 \end{equation}
-Essa constante traduz, num único número, a capacidade do motor de converter corrente em torque.
-Em motores brushless, ela é numericamente igual à constante de
-força contraeletromotriz, em V·s/rad --- um reflexo da conservação da energia: a mesma constante
-que converte corrente em torque converte rotação em tensão. A constante de velocidade $K_v$, dada
-em rpm/V, se
-relaciona a ambas por
+Essa constante traduz, num único número, a capacidade do motor de converter corrente em
+torque. Em motores brushless, ela é numericamente igual à constante de força
+contraeletromotriz, em V·s/rad --- um reflexo da conservação da energia: a mesma constante que
+converte corrente em torque converte rotação em tensão. A constante de velocidade $K_v$, dada
+em rpm/V, se relaciona a ambas por
 \begin{equation}\label{eq:ke_kv}
 K_t = K_e = \frac{60}{2\pi\,K_v} \approx \frac{9{,}55}{K_v},
 \end{equation}
 em que o fator 9,55 é o valor numérico de $60/(2\pi)$, que converte rotações por minuto em
 radianos por segundo. Para o motor do automodelo, com $K_v = 2100$ rpm/V, obtém-se
-$K_t \approx 4{,}5$ mN$\cdot$m/A. Com a redução $i \approx 11{,}5$ e desprezando, em primeira
-análise, as perdas da transmissão, o torque nas rodas é
+$K_t \approx 4{,}55$ mN$\cdot$m/A. Com a redução $i \approx 11{,}5$ e desprezando, em
+primeira análise, as perdas da transmissão, o torque nas rodas é
 \begin{equation}\label{eq:torque_roda_corrente}
 T_\mathrm{roda} = i\,K_t\,I \approx 52\ \mathrm{mN\cdot m/A}\cdot I.
 \end{equation}
-Essa é uma estimativa idealizada, válida apenas na faixa em que a relação entre corrente e torque
-permanece aproximadamente linear, a qual a caracterização experimental deste trabalho determina.
+Essa é uma estimativa idealizada, válida apenas na faixa em que a relação entre corrente e
+torque permanece aproximadamente linear, a qual a caracterização experimental deste trabalho
+determina.
+
+As quatro abordagens medem grandezas distintas, e cada uma se associa ao torque por um caminho
+próprio. A IMU mede a aceleração linear, o SS41F/41G mede a
+velocidade angular de uma roda ou do eixo por pulsos, e o shunt e o sensor Hall linear medem a
+corrente elétrica por princípios físicos distintos.
 
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
@@ -130,7 +130,7 @@ No sistema de controle proposto, a variável de processo é a velocidade longitu
 estimativa, denotada por \(\hat{v}(t)\), é obtida pela integração numérica da aceleração longitudinal estimada a 
 partir das medições da IMU:
 \begin{equation}\label{eq:integral}
-\hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\tau)\,d\tau.
+\hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
 \end{equation}
 A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle:
@@ -424,8 +424,8 @@ qual a malha de controle atua.
 A validação do modelo de torque contra a força medida pela balança constitui o resultado central
 do trabalho. Sobre os dois modelos identificados estrutura-se, em sequência, uma proposta de
 malha de controle de torque para o automodelo. A montagem experimental e o procedimento de
-ensaio são apresentados no Capítulo 3; os resultados da caracterização, no Capítulo 4; e o
-projeto do controlador, no Capítulo 5.
+ensaio são apresentados no Capítulo 3; os resultados da caracterização, no Capítulo 4; e a
+estrutura e o projeto do controlador, no Capítulo 4.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}

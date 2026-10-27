@@ -8,8 +8,8 @@ Seções \ref{sec:resvazio}, \ref{sec:rescurva} e \ref{sec:resvalidacao} tratam 
 vazio, da curva característica e da validação do modelo de torque; a Seção
 \ref{sec:resdinamica} apresenta a dinâmica identificada entre o comando e a corrente; a Seção
 \ref{sec:rescontrolador}, a estrutura e o projeto do controlador sobre o modelo identificado; e as Seções \ref{sec:resincerteza} e \ref{sec:reslimitacoes} fecham com as
-incertezas e as limitações. Todos os valores citados são provenientes das quatro repetições de cada sentido
-da escada de degraus, lidos em vídeo conforme o protocolo da Seção \ref{sec:tracao}, ou do
+incertezas e as limitações. Todos os valores citados são provenientes das repetições da escada de degraus
+(quatro por sentido no ensaio de tração), lidos em vídeo conforme o protocolo da Seção \ref{sec:tracao}, ou do
 consolidado da aquisição contínua a $100$ Hz, conforme a Seção \ref{sec:tracao}.
 
 \section{Regiões de Operação e Tabela-Mestra}
@@ -67,8 +67,8 @@ reta.
 \section{A Curva Característica}
 \label{sec:rescurva}
 
-A Figura da curva característica (Seção \ref{sec:regioes}) reúne os pontos de força de tração
-em função do comando, para os dois sentidos da escada. A leitura por regiões organiza o que o
+Os pontos de força de tração em função do comando, para os dois sentidos da escada,
+reúnem-se na curva característica com as regiões sombreadas (a gerar na Seção \ref{sec:regioes}). A leitura por regiões organiza o que o
 ensaio mostrou.
 
 \textbf{Zona morta.} De $97^\circ$ a $99^\circ$, a força permanece residual, em torno de
@@ -102,18 +102,10 @@ a curva característica.
 
 \textbf{Histerese.} Comparando os dois sentidos na região de aderência, a força da descida
 fica sistematicamente acima da da subida, com diferenças de $+7\%$ a $+45\%$ entre $104^\circ$
-e $115^\circ$. O padrão não é a histerese do powertrain --- as diferenças mudam de sinal na
-fronteira da região e são acompanhadas de corrente maior na descida, o que aponta para causa
-fora do propulsor. A interpretação mais plausível é a memória térmica do pneu: a borracha,
-aquecida ao longo da subida, adere mais, de modo que, na descida, a roda trava sem
-\emph{stick-slip} e a força se sustenta em nível maior para o mesmo comando. Essa
-interpretação, contudo, não é a única compatível com os dados: o aquecimento da bateria ao
-longo da sessão reduz sua resistência interna e, com isso, o afundamento de tensão sob carga
---- de modo que a descida poderia apresentar corrente e força maiores mesmo com o pneu
-inalterado. As duas contribuições apontam no mesmo sentido e não foram separadas neste
-trabalho, por não terem sido registradas a temperatura do pneu nem a tensão da bateria
-durante os degraus; a distinção entre elas fica como proposta de continuidade, com o registro
-dessas grandezas ou com a repetição da descida após o resfriamento do conjunto.
+e $115^\circ$ --- cruzando a fronteira da saturação. O padrão não é a histerese do powertrain: as diferenças são acompanhadas de corrente
+maior na descida, o que aponta para causa fora do propulsor. As hipóteses compatíveis com os
+dados --- entre elas, o aquecimento do pneu e o da bateria ao longo da sessão --- não foram
+separadas neste trabalho e são discutidas nas considerações finais.
 
 \section{Validação do Modelo Torque versus Corrente}
 \label{sec:resvalidacao}
@@ -131,7 +123,8 @@ do motor e o raio efetivo $r_\mathrm{ef}$ --- todas grandezas do conjunto, não 
 operação.
 
 A validação consiste em confrontar o estimador com a força medida pela balança, padrão da
-caracterização. Rearranjando o estimador, obtém-se
+caracterização. Rearranjando o estimador, obtém-se a relação de validação da Equação
+\eqref{eq:regressao_validacao}:
 \begin{equation}\label{eq:regressao_validacao}
 y = \frac{F\,r_\mathrm{ef}\,u}{K_t\,i} = \eta\,(I_\mathrm{bat} - I_0(u)) = \eta\,x,
 \end{equation}
@@ -141,7 +134,7 @@ ela testa o modelo inteiro de uma vez, e o coeficiente de determinação $r^2$ m
 alinhamento.
 
 Os resultados, por sentido, na região de aderência: na descida, $\eta = 0{,}579$ com
-$r^2 = 0{,}962$ ($n = 56$ pontos, de $100^\circ$ a $113^\circ$); na subida, $\eta = 0{,}596$
+$r^2 = 0{,}962$ ($n = 56$ pontos, de $100^\circ$ a $113^\circ$, fronteira da saturação excluída); na subida, $\eta = 0{,}596$
 com $r^2 = 0{,}784$ ($n = 44$, de $100^\circ$ a $110^\circ$). A descida valida o modelo ---
 $96\%$ da variância dos pontos é explicada pela reta que passa pela origem. A subida, mais
 dispersa, é o retrato do \emph{stick-slip}: a força presa no limite de aderência enquanto a
@@ -183,14 +176,15 @@ aderência --- degraus de $100^\circ$ a $109^\circ$ --- é uma resposta ao degra
 bordas acima de $110^\circ$ não foram empregadas, pois a resposta já nasce contaminada pela
 patinagem. Dois métodos foram aplicados a cada borda: o da $63{,}2\%$, que toma o instante em
 que a resposta atinge $63{,}2\%$ do valor final como estimativa da constante de tempo, e o
-ajuste de mínimos quadrados ao modelo de primeira ordem com atraso,
+ajuste de mínimos quadrados ao modelo de primeira ordem com atraso da Equação
+\eqref{eq:fopdt}:
 \begin{equation}\label{eq:fopdt}
 G_1(s) = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1}.
 \end{equation}
 
 Os resultados das dez bordas convergem: o ganho estático, tomado do platô de cada resposta,
-varia de $116$ a $125$ A/u --- concordando com o valor estático de $120$ A/u obtido pela
-regressão da curva, o que cruza as duas identificações. O atraso puro é inferior a $0{,}1$ s:
+varia de $116$ a $125$ A/u --- envolvendo o valor estático de $120$ A/u da caracterização e
+cruzando as duas identificações. O atraso puro é inferior a $0{,}1$ s:
 a corrente começa a responder dentro da primeira janela de $100$ ms, de modo que a partida
 \emph{sensorless} do ESC não impõe atraso mensurável nesse caminho. A constante de tempo, pelo
 método da $63{,}2\%$, situa-se entre $1{,}8$ e $2{,}0$ s. O ajuste de mínimos quadrados reparte
@@ -203,10 +197,9 @@ adota-se a soma, de aproximadamente $2$ s, como descriptor da dinâmica.
 
 O valor de $\tau$ confronta o \emph{prior} usual para o caminho comando--corrente, que a
 literatura situa entre $0{,}05$ e $0{,}3$ s com base na constante elétrica $L/R$ do
-enrolamento --- constante que, de fato, vale milissegundos, mas que não é a observada no
-comportamento do conjunto. O valor medido indica que a dinâmica do caminho é dominada pelo
-próprio ESC, por seu escalonamento interno de corrente, e não pelo enrolamento do motor. A
-consequência para o projeto do controlador é examinada no Capítulo \ref{chap:conclusao}.
+enrolamento --- milissegundos, valor não observado no comportamento do conjunto. A dinâmica
+medida é dominada pelo ESC; a consequência para o projeto do controlador é examinada na
+Seção \ref{sec:rescontrolador}.
 
 O regime só se assenta após cerca de quatro constantes de tempo, $4\tau \approx 7$ s ---
 o que valida, \emph{a posteriori}, a janela de anotação da força nos segundos $7$ a $9$ do
@@ -234,7 +227,8 @@ e a validação experimental da malha fechada permanece como etapa pendente.
 
 A estrutura, em blocos, é a seguinte. A referência de torque $T_\mathrm{ref}$ alimenta dois
 caminhos. No caminho direto, um termo de \emph{feedforward} --- a inversa da característica
-estática --- converte a referência na corrente de bateria esperada:
+estática --- converte a referência na corrente de bateria esperada, pela Equação
+\eqref{eq:feedforward}:
 \begin{equation}\label{eq:feedforward}
 I_\mathrm{ref} = I_0(u) + u\,\frac{T_\mathrm{ref}\,r_\mathrm{ef}}{\eta\,i\,K_t},
 \end{equation}
@@ -257,18 +251,18 @@ a escolha defensável.
 \subsection{Controladores e sintonia}
 \label{sec:sintonia}
 
-O controlador do caminho de realimentação é um PI ajustado pelo método de modelo interno
+O controlador do caminho de realimentação é um controlador proporcional--integral (PI), ajustado pelo método de modelo interno (IMC)
 sobre a planta identificada (Equação \eqref{eq:g1_identificada}). Como a planta é lenta, o
 parâmetro de ajuste deve respeitá-la; adota-se $\lambda = 0{,}6$ s, que satisfaz a
 recomendação $\lambda \geq 0{,}25\,\tau \approx 0{,}45$ s. Os ganhos resultam das
-fórmulas do IMC,
+fórmulas do IMC, na Equação \eqref{eq:pi_imc}:
 \begin{equation}\label{eq:pi_imc}
 K_p = \frac{\tau}{K\,(\lambda + \theta_a)} \approx 0{,}025\ \mathrm{u/A},
 \qquad
 T_i = \tau = 1{,}8\ \mathrm{s},
 \end{equation}
 com os valores identificados $K = 120$ A/u e $\tau = 1{,}8$ s. A implementação é digital,
-com período de amostragem $T_s = 100$ ms --- uma década abaixo de $\lambda$, sem exigência
+com período de amostragem $T_s = 100$ ms --- bem menor que $\lambda$, sem exigência
 desnecessária de processamento ---, integração trapezoidal e anti-windup por limitação da
 integral quando o atuador satura, situação em que o limitador de aderência permanece ativo.
 
@@ -318,7 +312,7 @@ calibração e efeitos sistemáticos da Seção \ref{sec:incertezas}, resulta em
 da ordem de $\pm 0{,}1$ N$\cdot$m na faixa de maior torque --- valor de trabalho a ser
 refinado pela tabela completa por faixa de degrau.
 
-% TABELA: incertezas por faixa de degrau — u_A (repetibilidade), u_B, U(T) — gerar de
+% TABELA: incertezas por faixa de degrau — sigma_A (repetibilidade), sigma_B, U(T) — gerar de
 % ensaios/pfc kaka.xlsx.
 
 \section{Limitações}
@@ -338,7 +332,7 @@ sustenta.
 
 \section{Resumo do Capítulo}
 
-O capítulo entregou quatro resultados. O ensaio em vazio mediu a corrente de perdas
+O capítulo entregou cinco resultados. O ensaio em vazio mediu a corrente de perdas
 $I_0(u) = 0{,}54 + 9{,}36\,u$ ($r^2 = 0{,}97$), evidência da linearidade do ESC. A curva
 característica, organizada pelas regiões de zona morta, aderência e saturação, atingiu força
 máxima de $52$ N e revelou o \emph{stick-slip} do pneu frio, a memória térmica do pneu
