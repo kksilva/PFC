@@ -6,9 +6,10 @@ Este capítulo apresenta os resultados dos experimentos definidos na Seção
 define as regiões de operação que o ensaio revelou e apresenta a tabela-mestra dos dados; as
 Seções \ref{sec:resvazio}, \ref{sec:rescurva} e \ref{sec:resvalidacao} tratam do ensaio em
 vazio, da curva característica e da validação do modelo de torque; a Seção
-\ref{sec:resdinamica} apresenta a dinâmica identificada entre o comando e a corrente; e as
-Seções \ref{sec:resincerteza} e \ref{sec:reslimitacoes} fecham com as incertezas e as
-limitações. Todos os valores citados são provenientes das quatro repetições de cada sentido
+\ref{sec:resdinamica} apresenta a dinâmica identificada entre o comando e a corrente; a Seção
+\ref{sec:rescontrolador}, a resposta ao degrau e a análise do controlador sobre o modelo
+identificado; e as Seções \ref{sec:resincerteza} e \ref{sec:reslimitacoes} fecham com as
+incertezas e as limitações. Todos os valores citados são provenientes das quatro repetições de cada sentido
 da escada de degraus, lidos em vídeo conforme o protocolo da Seção \ref{sec:tracao}, ou do
 consolidado da aquisição contínua a $100$ Hz, conforme a Seção \ref{sec:tracao}.
 
@@ -212,6 +213,59 @@ O regime só se assenta após cerca de quatro constantes de tempo, $4\tau \appro
 o que valida, \emph{a posteriori}, a janela de anotação da força nos segundos $7$ a $9$ do
 protocolo experimental.
 
+\section{Resposta ao Degrau e Análise do Controlador}
+\label{sec:rescontrolador}
+
+Sobre a função de transferência identificada na Seção \ref{sec:resdinamica},
+\begin{equation}\label{eq:g1_identificada}
+G_1(s) = \frac{120\,e^{-\theta_a s}}{1{,}8\,s + 1},
+\qquad \theta_a < 0{,}1\ \mathrm{s},
+\end{equation}
+examinam-se, nesta seção, a resposta do sistema em malha aberta e o projeto do controlador
+de corrente que o modelo sustenta. Trata-se de análise sobre o modelo identificado --- os
+valores a seguir são calculados, não medidos; a validação experimental da malha fechada
+permanece como etapa pendente.
+
+\textbf{Resposta ao degrau em malha aberta.} A resposta de $G_1(s)$ a um degrau unitário em
+$u$ é a de primeira ordem pura: sem sobressinal, sem oscilação e sem atraso visível na escala
+do gráfico, uma vez que $\theta_a < 0{,}1$ s corresponde a menos de um décimo da constante
+de tempo. Os tempos característicos seguem diretamente de $\tau = 1{,}8$ s: a resposta
+atinge $63\%$ do valor final em $1{,}8$ s, $86\%$ em $3{,}6$ s e $95\%$ em $5{,}4$ s.
+% FIGURA: resposta ao degrau em malha aberta de G_1(s) — gerar com o MATLAB (step).
+
+\textbf{Projeto do controlador.} A malha proposta na Seção \ref{sec:proposta} fecha em
+corrente --- a grandeza disponível embarcada --- com estimativa de torque por feedforward.
+O controlador é um PI ajustado pelo método de modelo interno sobre a planta identificada.
+Como a planta é lenta, o parâmetro de ajuste deve respeitá-la; adota-se $\lambda = 0{,}6$ s,
+que satisfaz a recomendação $\lambda \geq 0{,}25\,\tau \approx 0{,}45$ s. Os ganhos
+resultam das fórmulas do IMC,
+\begin{equation}\label{eq:pi_imc}
+K_p = \frac{\tau}{K\,(\lambda + \theta_a)} \approx 0{,}025\ \mathrm{u/A},
+\qquad
+T_i = \tau = 1{,}8\ \mathrm{s},
+\end{equation}
+com período de amostragem de $100$ ms, anti-windup por limitação da integral e
+\emph{rate-limit} da referência. O limitador de aderência impõe $T_\mathrm{ref} \leq
+T_\mathrm{max}$, com o torque máximo transferível tomado da curva característica ---
+aproximadamente $3{,}9$ N$\cdot$m com o pneu aquecido e cerca de $2{,}4$ N$\cdot$m com o
+pneu frio --- pois comandar acima do limiar não produz mais torque, apenas patinagem.
+
+\textbf{Resposta em malha fechada.} Com o controlador ajustado sobre o próprio modelo da
+planta, a malha fecha como primeira ordem com constante de tempo $\lambda = 0{,}6$ s: a
+resposta ao degrau de referência atinge $63\%$ em $0{,}6$ s e $95\%$ em $1{,}8$ s, sem
+sobressinal e com erro nulo em regime --- o integrador elimina o erro estacionário mesmo com
+o desvio sistemático de ganho da cadeia de corrente (a regressão da verificação em bancada).
+A rejeição de perturbação segue o mesmo ritmo, com recuperação da ordem de $3\lambda$.
+% FIGURA: resposta em malha fechada (degrau de referência e de perturbação) — gerar com o
+% MATLAB (step em malha fechada / lsim).
+
+A robustez da sintonia foi examinada por variação paramétrica: com o ganho da planta variando
+$\pm 20\%$ e a constante de tempo $\pm 30\%$ em torno dos valores identificados, o
+comportamento da malha fechada se preserva qualitativamente --- sem oscilação crescente e com
+erro nulo em regime ---, o que é compatível com a margem propositalmente conservadora do
+ajuste. A análise completa, com margens de ganho e de fase, é apresentada em trabalho futuro,
+junto com a validação experimental.
+
 \section{Incertezas dos Resultados}
 \label{sec:resincerteza}
 
@@ -250,7 +304,8 @@ máxima de $52$ N e revelou o \emph{stick-slip} do pneu frio, a memória térmic
 aquecido e o corte cíclico do ESC nos degraus extremos. O modelo de torque foi validado pela
 descida, com rendimento $\eta = 0{,}579$ e $r^2 = 0{,}962$, delimitada à região de aderência.
 E a dinâmica comando--corrente foi identificada com constante de tempo de $1{,}8$ a $2{,}0$ s
-e atraso desprezível, em confronto com o \emph{prior} clássico do caminho comando--corrente.
+e atraso desprezível, em confronto com o \emph{prior} clássico do caminho comando--corrente. A resposta ao
+degrau e o projeto do controlador de corrente sobre o modelo identificado fecham a análise.
 As considerações finais que esses resultados sustentam são apresentadas no Capítulo
 \ref{chap:conclusao}.
 
