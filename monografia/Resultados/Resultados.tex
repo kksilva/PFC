@@ -120,7 +120,12 @@ C = \frac{\eta\,i\,K_t}{r_\mathrm{ef}},
 \end{equation}
 em que $C$ reúne o rendimento $\eta$ da transmissão, a redução $i$, a constante de torque $K_t$
 do motor e o raio efetivo $r_\mathrm{ef}$ --- todas grandezas do conjunto, não do ponto de
-operação.
+operação. A constante de torque deriva do \emph{speed constant} nominal do datasheet,
+$K_v = 2100$ rpm/V, pela conservação da energia --- a mesma constante que converte corrente em
+torque converte rotação em tensão:
+\begin{equation}\label{eq:kt_kv}
+K_t = \frac{60}{2\pi\,K_v} = \frac{9{,}55}{2100} \approx 4{,}55\ \mathrm{mN\cdot m/A}.
+\end{equation}
 
 A validação consiste em confrontar o estimador com a força medida pela balança, padrão da
 caracterização. Rearranjando o estimador, obtém-se a relação de validação da Equação

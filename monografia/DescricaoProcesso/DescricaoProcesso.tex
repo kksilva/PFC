@@ -172,7 +172,10 @@ nos quais o microcontrolador conta as transições em uma janela de tempo para e
 Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
 anel é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem fornece diretamente a
 velocidade $\omega_m$; com ele na roda, fornece $\omega_\mathrm{roda}$, que se relaciona com
-$\omega_m$ pela redução $i$ da transmissão. Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
+$\omega_m$ pela redução $i$ da transmissão.
+
+
+Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
 rotação se deseja medir, e o sensor é montado no chassi próximo ao anel, mantendo uma
 entreferência (o que é isso?) constante entre o elemento Hall e os polos (qual motivo?). A conexão com o
 microcontrolador é facilmente realizada com alimentação, terra e saída digital e a leitura por
@@ -180,7 +183,7 @@ interrupção dispensa circuitos de condicionamento adicionais (como assim? expl
 
 A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
-carga $T_L$, a segunda lei de Newton para a rotação resulta em:
+carga $T_L$, a Segunda Lei de Newton para rotação aplicada a motores elétricos, é dada por:
 \begin{equation}\label{eq:dinamica_rotacional}
 T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
@@ -190,22 +193,27 @@ que precisariam ser identificados separadamente. Há, ainda, um limite de resolu
 método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
 torna progressivamente mais grosseira. A derivada exigida pela Equação
 \eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
-torque sensível à resolução do sensor e, em última instância, ao número de polos do anel.
+torque sensível à resolução do sensor.
 
 Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
 de velocidade, sem nenhum modelo de torque, da mesma forma que a velocidade estimada pela IMU.
 Motores brushless com sensores Hall integrados já são controlados dessa maneira, com os mesmos
 sinais servindo à comutação e à realimentação.
 
-Em síntese, a utilização do SS41F/41G apresenta vantagens e limitações para a instrumentação
+Em síntese, a utilização do SS41F apresenta vantagens e limitações para a instrumentação
 e o controle do automodelo:
 
 \begin{itemize}
-    \item \textbf{Vantagens:} baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns; e fornece a velocidade por contagem direta dos pulsos.
-    \item \textbf{Limitações:} gera apenas pulsos associados à posição angular, sem informação sobre corrente elétrica ou torque; a estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme a Equação \eqref{eq:dinamica_rotacional}; e a instalação demanda alinhamento mecânico preciso entre o sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
+    \item \textbf{Vantagens:} baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz
+    , com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns;
+     e fornece a velocidade por contagem direta dos pulsos.
+    \item \textbf{Limitações:} gera apenas pulsos associados à posição angular, sem informação sobre corrente
+     elétrica ou torque; a estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme
+      a Equação \eqref{eq:dinamica_rotacional}; e a instalação demanda alinhamento mecânico preciso entre o 
+      sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
 \end{itemize}
 
-\subsection{Shunt Resistivo e Amplificador de Instrumentação (INA240)}
+\subsection{Shunt Resistivo + Amplificador de Instrumentação (INA240)}
 \label{sec:ina240}
 
 No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série com o
