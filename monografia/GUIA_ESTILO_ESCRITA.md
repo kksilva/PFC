@@ -293,6 +293,13 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
 - **O controlador vive no Capítulo 4 (Resultados), não na Conclusão.** Teoria (PI, IMC),
   estrutura, justificativas e valores na seção de malha de controle; a Conclusão discute
   consequências e remete.
+- **Padrão do leitor leigo (auditoria 27/10): cada termo na primeira ocorrência leva a frase
+  de apoio embutida** (duty cycle, platô, armado, 63,2%, sensorless, anti-windup, histerese,
+  K_v); **cada número leva referencial prático** (0,25 s está na faixa elétrica da
+  literatura; r² = 0,962 significa 96% da variância explicada); **cada dedução fecha todos os
+  elos** (por que a roda travada faz a corrente determinar a força; por que μ = 0,80 exige
+  transferência de carga; por que o intercepto é proibido). Figura citada = leitor guiado
+  sobre o que olhar + frase-síntese do que ela prova.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.
