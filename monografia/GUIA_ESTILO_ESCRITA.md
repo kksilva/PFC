@@ -281,6 +281,10 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   excesso (revisão do Shunt/SS41F): travessão é para aposto explicativo pontual, não para toda
   explicação; dois-pontos anunciam raramente, preferindo-se o período; ponto e vírgula vira
   ponto quando a oração for longa. Variação de pontuação é parte do ritmo.
+- **Cada seção de sensor define a malha de controle completa, no padrão da IMU.** Variável de
+  processo, variável manipulada e como a malha fecham, em parágrafo próprio antes do veredito.
+  Comparação de sensores não antecipa decisão do trabalho: modo de medição, calibrações e
+  adoções vivem na Metodologia; a seção de sensor é imparcial até o veredito.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.

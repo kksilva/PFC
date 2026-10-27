@@ -203,7 +203,10 @@ torque sensível à resolução do sensor.
 
 Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
 de velocidade, sem nenhum modelo de torque, da mesma forma que a velocidade estimada pela IMU.
-Motores brushless com sensores Hall integrados já são controlados dessa maneira, com os mesmos
+No sistema de controle, a variável de processo é a velocidade angular medida pela contagem dos
+pulsos, e a variável manipulada é o comando de aceleração $u$. A referência de velocidade é
+comparada à medida, e o controlador ajusta o comando até eliminar o erro. Motores brushless
+com sensores Hall integrados já são controlados dessa maneira, com os mesmos
 sinais servindo à comutação e à realimentação.
 
 Em síntese, a utilização do SS41F apresenta vantagens e limitações para a instrumentação
@@ -269,7 +272,11 @@ resistivo.}
 \end{figure}
 
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e implementar a
-proteção contra sobrecorrente por limiar. Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
+proteção contra sobrecorrente por limiar. No sistema de controle, a variável de processo é a
+corrente do propulsor, que se relaciona ao torque pelo modelo do motor, e a variável manipulada
+é o comando de aceleração $u$, aplicado ao ESC. A malha fecha comparando a corrente medida à
+referência calculada para o torque desejado e ajustando o comando; quando a leitura ultrapassa
+um limiar, o controlador reduz a excitação, protegendo o conjunto. Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
 instrumentação e o controle do automodelo:
 
 \begin{itemize}
@@ -302,33 +309,25 @@ corrente nula. A corrente é recuperada por
 I = \frac{V_\mathrm{out} - V_{CC}/2}{S}.
 \end{equation}
 
-
-Nas variantes bidirecionais da família ACS758, a sensibilidade é definida pela faixa escolhida:
-as versões de ±50 A, ±100 A, ±150 A e ±200 A apresentam, com alimentação nominal de $5$ V,
-sensibilidades típicas de $40$ mV/A, $20$ mV/A, $13{,}3$ mV/A e $10$ mV/A. A saída é
-ratiométrica, isto é, repouso e sensibilidade acompanham a tensão de alimentação. Uma faixa
-maior implica menor sensibilidade e, para a mesma conversão, menor resolução. Essa resolução é
-limitada pelo conversor analógico-digital de $n$ bits e por sua tensão de referência
-$V_\mathrm{ref}$, o menor degrau de tensão que o conversor distingue, conforme a Equação
-\eqref{eq:acs_resolucao}:
+Na variante de ±200 A, a de faixa mais ampla da família, a sensibilidade típica é de
+$10$ mV/A com alimentação de $5$ V, reduzindo-se proporcionalmente em alimentações menores,
+uma vez que a saída é ratiométrica, e o repouso, em corrente nula, é metade da alimentação.
+O condutor interno de corrente apresenta resistência da ordem de $100$ µ$\Omega$, de modo
+que a queda de tensão e a dissipação introduzidas pelo sensor são pequenas. A resolução da
+medida, por fim, é limitada pelo conversor analógico-digital de $n$ bits e por sua tensão de
+referência $V_\mathrm{ref}$, o menor degrau de tensão que o conversor distingue, conforme a
+Equação \eqref{eq:acs_resolucao}:
 
 \begin{equation}\label{eq:acs_resolucao}
 \Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
 \end{equation}
 
-
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
-pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, funções que
-os sensores de movimento não oferecem.
-
-O isolamento galvânico não introduz dissipação adicional significativa. Como limitações, o
-sensor permanece sujeito a ruído eletromagnético proveniente do chaveamento do ESC, o que pode exigir
-filtragem do sinal antes da aquisição. A faixa máxima das variantes, de ±200 A, é inferior ao
-pico de 760 A especificado para o ESC, o que deixa os picos extremos de corrente fora da
-faixa de medição. A operação fora da alimentação nominal desloca os valores de repouso e de sensibilidade,
-devendo ser tratada como condição de calibração experimental própria. Por fim, a relação
-entre corrente e torque pode deixar de ser aproximadamente linear em correntes elevadas,
-exigindo calibração experimental adicional.
+pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, assim como na
+solução com shunt e INA240. No sistema de controle, a variável de processo é o torque estimado
+a partir da corrente, e a variável manipulada é o comando de aceleração $u$: uma malha interna
+de corrente compara a corrente medida à referência e ajusta o comando, e o estimador converte
+a corrente em torque.
 
 Assim, entre os sensores de corrente avaliados, o ACS758 reúne o melhor compromisso entre
 isolamento galvânico, dissipação, faixa de medição e banda para as correntes e frequências deste
@@ -371,23 +370,33 @@ proposta deste trabalho.
 Com base na comparação apresentada na Seção~\ref{sec:sintese}, este trabalho propõe a
 caracterização do sistema de propulsão do automodelo por meio de sua curva característica torque
 versus corrente. Para tanto, emprega-se uma instrumentação combinada: o sensor de efeito Hall
-linear ACS758, instalado no ramo de alimentação do ESC, fornece a corrente elétrica consumida;
-uma balança digital de gancho, instalada na linha de tração com o veículo ancorado, serve de
-padrão para a força desenvolvida --- configuração que converte a tração do propulsor em tensão
-mensurável e o torque na roda em um produto da força pelo raio efetivo.
+linear ACS758, instalado no ramo de alimentação do ESC, fornece a corrente elétrica consumida, e
+o esforço mecânico é medido por um padrão de tração --- balança, célula de carga ou outro
+dispositivo ---, cujo modo de realização é definido na montagem experimental, no Capítulo 3. O
+torque na roda é obtido da força pelo raio efetivo da roda.
 
 Dois ensaios complementares fornecem os dois modelos que a caracterização exige. O primeiro é
 estático: degraus de comando aplicados ao ESC com o veículo ancorado, registrando, em cada
-platô, a corrente consumida e a força na balança, de modo a construir a curva torque versus
+platô, a corrente consumida e o esforço mecânico, de modo a construir a curva torque versus
 corrente ponto a ponto. O segundo é dinâmico: a corrente é amostrada em alta taxa durante os
 mesmos degraus, de modo a identificar a resposta temporal entre o comando e a corrente, sobre a
 qual a malha de controle atua.
 
-A validação do modelo de torque contra a força medida pela balança constitui o resultado central
-do trabalho. Sobre os dois modelos identificados estrutura-se, em sequência, uma proposta de
-malha de controle de torque para o automodelo. A montagem experimental e o procedimento de
-ensaio são apresentados no Capítulo 3; os resultados da caracterização, no Capítulo 4; e a
-estrutura e o projeto do controlador, no Capítulo 4.
+Sobre esses dois modelos estrutura-se a proposta de controle de torque. A variável de processo
+é o torque na roda, obtido por estimativa a partir da corrente medida, e a variável manipulada é
+o comando de aceleração $u$, aplicado ao ESC. A malha é organizada em cascata. Um termo de
+\emph{feedforward}, dado pela inversa da característica estática, converte diretamente a
+referência de torque na corrente de bateria esperada. Um controlador proporcional--integral,
+com anti-windup e limitação da taxa de variação do comando, atua sobre o erro entre essa
+referência e a corrente medida, ajustando $u$ conforme a dinâmica identificada. Um limitador de
+aderência impõe o torque máximo transferível antes da patinagem, de modo que a operação se
+mantenha na região em que o modelo é válido, e a leitura da corrente viabiliza, ainda, a
+proteção contra sobrecorrente por limiar. A malha fecha em corrente, e não em força, porque a
+força não é mensurável embarcada --- o padrão de tração é um instrumento de bancada, usado na
+caracterização.
+
+A montagem experimental e a definição do padrão de tração são apresentadas no Capítulo 3; os
+resultados da caracterização e o projeto do controlador, no Capítulo 4.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
@@ -397,14 +406,6 @@ mensuráveis para sua caracterização: aceleração, velocidade angular, corren
 tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
 \eqref{eq:newton} e \eqref{eq:dinamica_rotacional}. A
 comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
-sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores de corrente avaliados,
-sendo a balança digital de mala empregada como padrão de tração da caracterização.
-
-A proposta do projeto foi, então, detalhada: dois ensaios complementares --- o dinâmico, a 100 Hz,
-que identifica a função de transferência entre comando e corrente, e o de tração estática, com as
-forças anotadas, que constrói a curva torque versus corrente --- fundamentam a malha de controle de
-torque proposta, formada por \emph{feedforward} de inversa estática, PI de corrente e limitador de
-aderência. A montagem experimental e o procedimento de ensaio são detalhados no Capítulo 3, e os
-resultados da caracterização, no Capítulo 4.
+sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores avaliados.
 
 \clearpage
