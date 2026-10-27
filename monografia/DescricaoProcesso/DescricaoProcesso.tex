@@ -9,7 +9,7 @@ malha fechada, as vantagens e as limitações, de modo a fundamentar as decisõe
 \section{O Automodelo e seu Sistema de Propulsão}
 \label{sec:automodelo}
 
-O automodelo Kyosho Mad Force Kruiser 2.0 VE é equipado com um motor brushless Orion Ori28188, cuja
+O automodelo Kyosho Mad Force Kruiser 2.0 VE é equipado com um motor brushless Orion NEON 8BL (Ori28188), cuja
 constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- rotações por minuto por volt aplicado,
 em condições próximas à operação sem carga mecânica significativa.
 Esse motor é constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
@@ -60,7 +60,7 @@ discutem sua aplicabilidade na caracterização do sistema e fundamentam a opç�
 \subsection{Sensor Inercial (IMU) -- MPU-6050}
 \label{sec:imu}
 
-A Unidade de Medição Inercial (Inertial Measurement Unit — IMU) MPU-6050 reúne um acelerômetro 
+A Unidade de Medição Inercial (Inertial Measurement Unit --- IMU) MPU-6050 reúne um acelerômetro 
 e um giroscópio triaxiais, que medem, respectivamente, a aceleração \(a\) e a velocidade 
 angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). Para caracterizar o movimento do automodelo, 
 a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos 
@@ -96,9 +96,9 @@ m\,a_x = F_{\text{tra\c{c}\~{a}o}} - F_{\mathrm{resistivos}},
 em que \(m\) é a massa total do veículo, \(a_x\) é a aceleração longitudinal e \(F_{\mathrm{resistivos}}\) 
 representa a resultante das forças resistivas, como o atrito de rolamento e o arrasto aerodinâmico.
 
-No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, \(v(t)\), cuja 
-estimativa, denotada por \(\hat{v}(t)\), é obtida pela integração numérica da aceleração longitudinal estimada a 
-partir das medições da IMU:
+No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, \(v(t)\), cuja
+estimativa, denotada por \(\hat{v}(t)\), é obtida pela integração numérica da aceleração longitudinal estimada a
+partir das medições da IMU, e a variável manipulada é o comando de aceleração \(u\), enviado ao ESC:
 \begin{equation}\label{eq:integral}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
 \end{equation}
@@ -111,22 +111,14 @@ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t).
 \label{eq:erro_velocidade}
 \end{equation}
 
-A partir do erro de velocidade $e_v(t)$, o controlador calcula o comando de acionamento $u(t)$, utilizado para ajustar a atuação do motor e 
-reduzir a diferença entre a velocidade desejada e a velocidade estimada. Esse comando é transmitido ao ESC por meio de um sinal elétrico PWM, 
-sendo atualizado pelo sistema embarcado com base no erro de velocidade. Dessa forma, o funcionamento da malha de controle pode ser descrito 
-pela seguinte sequência:
-
-\begin{enumerate}
-    \item A velocidade de referência \(v_{\mathrm{ref}}(t)\) é comparada à velocidade estimada \(\hat{v}(t)\), produzindo o erro \(e_v(t)\).
-    \item O controlador de malha fechada utiliza esse erro para calcular o comando de acionamento \(u(t)\).
-    \item O comando é transmitido como sinal modulado em largura de pulsos (PWM);
-    \item O ESC interpreta o comando e controla eletronicamente a energia fornecida pela bateria aos enrolamentos do motor brushless.
-    \item O motor produz torque, transmitido às rodas pelo sistema de transmissão, gerando força de tração e movimento do veículo.
-    \item A IMU mede a aceleração específica do chassi. Após o processamento, a aceleração longitudinal estimada é integrada numericamente para atualizar \(\hat{v}(t)\).
-    \item A velocidade estimada é realimentada ao controlador, permitindo calcular um novo erro e atualizar o comando de acionamento.
-\end{enumerate}
-
-(essa sequencia ficou redundante com o texto anterior. complete o paragrafo para contemplar tudo e apague)
+A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando de acionamento
+\(u(t)\), a variável manipulada do sistema, utilizado para ajustar a atuação do motor e
+reduzir a diferença entre a velocidade desejada e a velocidade estimada. Esse comando é
+transmitido ao ESC por meio de um sinal elétrico PWM, e o ESC controla a energia fornecida
+pela bateria aos enrolamentos do motor. O motor produz torque, transmitido às rodas, e o
+veículo acelera. A IMU mede a nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é
+atualizada por integração e realimentada ao controlador, que calcula um novo erro e um novo
+comando, fechando o ciclo.
 
 A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
 A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e GND) e dois sinais de comunicação: SDA (Serial Data), responsável 
@@ -186,7 +178,7 @@ sinal analógico fraco, que exigiria amplificação e filtragem antes da convers
 
 A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
 momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
-carga $T_L$, a Segunda Lei de Newton para rotação aplicada a motores elétricos, é dada por:
+carga $T_L$, a Segunda Lei de Newton para a rotação, aplicada a motores elétricos, é dada por:
 \begin{equation}\label{eq:dinamica_rotacional}
 T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 \end{equation}
@@ -276,7 +268,9 @@ proteção contra sobrecorrente por limiar. No sistema de controle, a variável 
 corrente do propulsor, que se relaciona ao torque pelo modelo do motor, e a variável manipulada
 é o comando de aceleração $u$, aplicado ao ESC. A malha fecha comparando a corrente medida à
 referência calculada para o torque desejado e ajustando o comando; quando a leitura ultrapassa
-um limiar, o controlador reduz a excitação, protegendo o conjunto. Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
+um limiar, o controlador reduz a excitação, protegendo o conjunto.
+
+Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
 instrumentação e o controle do automodelo:
 
 \begin{itemize}
@@ -322,6 +316,17 @@ Equação \eqref{eq:acs_resolucao}:
 \Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
 \end{equation}
 
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.65\textwidth]{Figuras/acs758_cap2.png}
+\caption{Sensor de corrente de efeito Hall linear ACS758.}
+\label{fig:acs758}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
+saída analógica é ligada diretamente ao conversor do microcontrolador, conforme a Figura~ef{fig:acs758}.
+
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
 pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, assim como na
 solução com shunt e INA240. No sistema de controle, a variável de processo é o torque estimado
@@ -329,9 +334,8 @@ a partir da corrente, e a variável manipulada é o comando de aceleração $u$:
 de corrente compara a corrente medida à referência e ajusta o comando, e o estimador converte
 a corrente em torque.
 
-Assim, entre os sensores de corrente avaliados, o ACS758 reúne o melhor compromisso entre
-isolamento galvânico, dissipação, faixa de medição e banda para as correntes e frequências deste
-sistema.
+Assim, o ACS758 cumpre os requisitos de isolamento galvânico, dissipação, faixa de medição e
+banda para as correntes e frequências deste sistema.
 
 Em síntese, a utilização do ACS758 apresenta vantagens e limitações para a instrumentação e o
 controle do automodelo:
@@ -388,7 +392,7 @@ o comando de aceleração $u$, aplicado ao ESC. A malha é organizada em cascata
 \emph{feedforward}, dado pela inversa da característica estática, converte diretamente a
 referência de torque na corrente de bateria esperada. Um controlador proporcional--integral,
 com anti-windup e limitação da taxa de variação do comando, atua sobre o erro entre essa
-referência e a corrente medida, ajustando $u$ conforme a dinâmica identificada. Um limitador de
+referência e a corrente medida, ajustando $u$ conforme a dinâmica a ser identificada experimentalmente. Um limitador de
 aderência impõe o torque máximo transferível antes da patinagem, de modo que a operação se
 mantenha na região em que o modelo é válido, e a leitura da corrente viabiliza, ainda, a
 proteção contra sobrecorrente por limiar. A malha fecha em corrente, e não em força, porque a
