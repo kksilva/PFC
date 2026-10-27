@@ -290,6 +290,9 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   explicações em estilo de conversa. Preferir o indicativo com subordinação ("A malha compara
   ... e ajusta ..."), "como no arranjo com..." e períodos que amarram as ações. O texto da
   autora soa acadêmico, nunca didático-conversado.
+- **O controlador vive no Capítulo 4 (Resultados), não na Conclusão.** Teoria (PI, IMC),
+  estrutura, justificativas e valores na seção de malha de controle; a Conclusão discute
+  consequências e remete.
 - **Citações fora por decisão da autora: escrever primeiro, `\cite` depois, numa rodada única.**
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.

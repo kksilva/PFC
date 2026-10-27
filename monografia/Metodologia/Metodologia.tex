@@ -17,36 +17,38 @@ alimentação, de modo que a caracterização exige a medição simultânea de d
 força de tração desenvolvida pelas rodas e a corrente elétrica consumida pelo conjunto.
 
 A força de tração só se manifesta, em princípio, enquanto o veículo se move. O ensaio de
-tração estática contorna essa condição impedindo o deslocamento: com o automodelo ancorado, o
+estático contorna essa condição impedindo o deslocamento: com o automodelo ancorado, o
 pneu não consegue rolar, e a tração que seria entregue ao solo transfere-se integralmente
-para a estrutura de retenção, onde pode ser medida como a tensão em um cabo. Despacha-se, com
-isso, um dinamômetro dedicado. Há ainda uma vantagem de fundo: como o veículo permanece
+para a estrutura de retenção, onde pode ser medida como a tensão em um cabo. Como o veículo permanece
 parado, a tração medida corresponde à condição de partida, na qual o motor opera em baixa
-rotação e máxima exigência de torque, exatamente a região de maior interesse para o controle
-de aceleração.
+rotação e máxima exigência de torque, precisamente a condição que o controle de aceleração
+mais exige e que um ensaio dinâmico dificilmente capturaria com instrumentação simples.
 
-O instrumento escolhido como padrão de força é uma balança digital de mala com gancho. Sua
-leitura é expressa em quilogramas, mas o que ela mede quando tracionada é uma força: o valor
-exibido é a massa cuja força-peso equilibraria a tensão no gancho, o quilograma-força,
-equivalente a $9{,}81$ N. Como o gancho é puxado horizontalmente pela reação da ancoragem, e
-não sustenta massa alguma na vertical, a leitura representa força de tração, e não peso.
-Ao longo do trabalho, as leituras são convertidas por meio de $F\,[\mathrm{N}] = 9{,}81
-\times m_{\mathrm{lei}}\,[\mathrm{kg}]$. As alternativas ao instrumento e sua verificação
-com pesos padrão são tratadas na Seção \ref{sec:bancada}.
+O instrumento utilizado para medir a força de tração é uma balança digital de bagagem com gancho, 
+cuja indicação é expressa em quilogramas. Quando submetido à tração, o instrumento detecta a força 
+aplicada e a apresenta como uma massa equivalente, correspondente à força-peso que produziria a mesma 
+indicação sob a aceleração da gravidade de referência. Essa equivalência permite converter a leitura 
+em força, expressa em Newtons, por meio de
+
+\[
+F\,[\mathrm{N}] = 9{,}81\,m_{\mathrm{lei}}\,[\mathrm{kg}],
+\]
+
+em que $m_{\mathrm{lei}}$ representa o valor indicado pela balança.
 
 \subsection{Configuração de ancoragem e geometria do cabo}
 \label{sec:ancoragem}
 
-A montagem emprega um cabo de $126$ cm em cada lado da balança. De um lado, o gancho é
-engatado em uma estrutura traseira do veículo, posicionada acima do eixo de transmissão das
-rodas para que a linha de tração coincida com a direção longitudinal do automodelo; do outro,
-a balança é presa a uma estrutura fixa. A balança fica suspensa a $15$ cm do solo, e o engate
-no veículo, a $28$ cm. Todas as dimensões foram medidas três vezes, e os valores adotados
-são as médias das três leituras.
+A montagem experimental utiliza um cabo de $126$ cm, passado ao redor de uma gaveta pesada e fixa, que atua
+como estrutura de ancoragem, atando cada extremidade da alça da balança, conforme a Figura~\ref{fig:montagem}. O gancho é acoplado a uma estrutura 
+na parte traseira do automodelo, posicionada acima do eixo de transmissão das rodas, buscando manter a linha de 
+tração alinhada à direção longitudinal do veículo, minimizando componentes transversais da força. Durante o 
+ensaio, a balança permanece suspensa a $15$ cm do solo, e a gaveta a uma altura de $28$ cm. Todas as dimensões 
+foram medidas três vezes, adotando-se a média aritmética como valor representativo.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.8\textwidth]{Figuras/montagem_tracao.png}
+\includegraphics[width=0.72\textwidth]{Figuras/montagem_tracao.png}
 \caption{Montagem do ensaio de tração: automodelo ancorado pela balança de gancho suspensa
 entre o engate traseiro e a estrutura fixa, com a massa adicional sobre o centro de massa.}
 \label{fig:montagem}
@@ -59,11 +61,11 @@ O cabo, a linha horizontal entre os mesmos pontos e a diferença de altura forma
 retângulo cuja hipotenusa é o próprio cabo; o cateto vertical, oposto ao ângulo $\theta$
 entre o cabo e a horizontal, vale $28 - 15 = 13$ cm. Pela razão entre o cateto oposto e a
 hipotenusa,
-\begin{equation}\label{eq:sen_theta}
+\begin{equation*}
 \mathrm{sen}\,\theta = \frac{13}{126}
 \qquad\Rightarrow\qquad
 \theta = 5{,}9^\circ,
-\end{equation}
+\end{equation*}
 de modo que $\cos\theta = 0{,}995$. Tomar a leitura da balança diretamente como força de
 tração equivale a aproximar $\cos\theta$ por $1$; o erro cometido, fração da tensão que foge
 à direção horizontal, é
@@ -160,7 +162,7 @@ pulsos são gerados pelo circuito PCA9685, na faixa de $90^\circ$ a $180^\circ$.
 trabalho, o comando é usado na forma normalizada $u = (\alpha - 95)/85$, sendo $\alpha$ o
 ângulo do comando de aceleração.
 
-A automação do ensaio foi desenvolvida no âmbito deste trabalho. Um \emph{script} local
+O computador de bordo, com sua bateria dedicada, é apresentado na Figura \ref{fig:pi}. A automação do ensaio foi desenvolvida no âmbito deste trabalho. Um \emph{script} local
 percorre a escala de degraus em um laço, substituindo a cada iteração o ângulo e a duração e
 disparando o comando remoto correspondente, enquanto lê a serial do Arduino e grava cada
 amostra, com o tempo de ensaio, o tempo dentro do degrau, o ângulo e a corrente, em um
@@ -191,11 +193,11 @@ Antes de qualquer ensaio com o veículo, os instrumentos são validados em banca
 seus desvios sistemáticos sejam conhecidos e compensados ou declarados antes de entrarem na
 curva característica. Verificam-se a cadeia de corrente e a balança.
 
-A cadeia de corrente é confrontada com um multímetro de referência. Uma fonte ajustável de
+A cadeia de corrente é confrontada com um multímetro de referência, conforme a Figura \ref{fig:bancada}. Uma fonte ajustável de
 $0$ a $6$ A é ligada em série com o sensor, e as leituras do sistema, adquiridas pelo Arduino
 Due, são registradas junto com as do multímetro em valores distribuídos pela faixa, para o
 ajuste de uma regressão entre ambas. A balança é verificada com pesos padrão de $0{,}500$ kg,
-$1{,}000$ kg e $1{,}500$ kg aplicados sucessivamente ao gancho.
+$1{,}000$ kg e $1{,}500$ kg aplicados sucessivamente ao gancho, conforme a Figura \ref{fig:pesos}.
 
 \begin{figure}[htb]
 \centering
@@ -214,13 +216,7 @@ referência e sensor ACS758 com o Arduino Due.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-A resposta da cadeia de corrente foi linear em toda a faixa, com regressão $y = 1{,}0742\,x$
-entre os valores do multímetro ($x$) e os do sistema ($y$); os desvios, de até $\pm 7\%$, são
-compensáveis por um fator de correção em software, o que valida o sensor para o
-monitoramento da corrente do ensaio. Na balança, as indicações foram $0{,}490$ kg, $0{,}980$
-kg e $1{,}470$ kg para as cargas de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg, um desvio
-sistemático de $10$ g para cada $0{,}5$ kg, ou cerca de $2\%$ da leitura. Desvio e resolução
-de $10$ g são registrados como componentes de incerteza na Seção \ref{sec:incertezas}.
+Os resultados da verificação, a regressão da cadeia de corrente e os desvios sistemáticos de ambos os instrumentos, são apresentados na Seção \ref{sec:resbancada}.
 
 \section{Ensaio em Vazio}
 \label{sec:vazio}
@@ -324,8 +320,9 @@ do torque é obtida pela soma quadrática das componentes relativas, conforme a 
                         + \left(\frac{\sigma(r_\mathrm{ef})}{r_\mathrm{ef}}\right)^2
                         + \left(0{,}53\%\right)^2},
 \end{equation}
-e a incerteza expandida é $U = 2\,\sigma_c$, com $k = 2$, correspondente a um nível de
-confiança de aproximadamente $95\%$.
+em que $\sigma_A$ reúne as componentes estatísticas do Tipo A, dos dois níveis, e
+$\sigma_B$ as componentes do Tipo B. A incerteza expandida é $U = 2\,\sigma_c$, com
+$k = 2$, correspondente a um nível de confiança de aproximadamente $95\%$.
 
 % TABELA: incertezas por faixa de degrau — sigma_A (3 leituras e repetibilidade), sigma_B e
 % U(T), geradas de ensaios/pfc kaka.xlsx + ensaio_consolidado.csv.

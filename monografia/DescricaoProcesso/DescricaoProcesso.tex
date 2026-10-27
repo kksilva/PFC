@@ -9,7 +9,7 @@ malha fechada, as vantagens e as limitações, de modo a fundamentar as decisõe
 \section{O Automodelo e seu Sistema de Propulsão}
 \label{sec:automodelo}
 
-O automodelo Kyosho Mad Force Kruiser 2.0 VE é equipado com um motor brushless Orion NEON 8BL (Ori28188), cuja
+O automodelo Kyosho Mad Force Kruiser 2.0 VE, de escala 1/8, é equipado com um motor brushless Orion NEON 8BL (Ori28188), cuja
 constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- rotações por minuto por volt aplicado,
 em condições próximas à operação sem carga mecânica significativa.
 Esse motor é constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
@@ -43,7 +43,7 @@ A alimentação do sistema é realizada por uma bateria de polímero de lítio (
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
 preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC 
 pode ter duas origens, selecionadas por uma chave de comutação: o sinal
-PWM (\emph{Pulse Width Modulation} --- modulação por largura de pulso, na qual a largura dos pulsos codifica o comando)
+PWM (\emph{Pulse Width Modulation} --- modulação por largura de pulso, na qual a duração de cada pulso codifica o valor do comando)
 proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
 \emph{step-down} para alimentação em 5 V.
@@ -71,18 +71,16 @@ O torque produzido pelo motor \(T_{\mathrm{motor}}\) é transmitido às rodas pe
 resultando em um torque nas rodas \(T_{\mathrm{roda}}\). Considerando a relação de redução da transmissão \(i\) e o 
 rendimento mecânico \(\eta\), essa relação é expressa por:
 
-\begin{equation}
-\label{eq:transmissao}
+\begin{equation*}
 T_{\mathrm{roda}} = i\,\eta\,T_{\mathrm{motor}}.
-\end{equation}
+\end{equation*}
 
 Nas rodas, o torque é convertido em força de tração \(F_{\text{tra\c{c}\~{a}o}}\), que atua sobre o solo e impulsiona 
 o veículo. Considerando o raio efetivo \(r\) da roda e desprezando perdas no contato pneu-solo, essa força é dada por:
 
-\begin{equation}
-\label{eq:forca_tracao}
+\begin{equation*}
 F_{\text{tra\c{c}\~{a}o}} = \frac{T_{\mathrm{roda}}}{r}.
-\end{equation}
+\end{equation*}
 
 A aceleração longitudinal do automodelo depende da força resultante, obtida pela 
 diferença entre a força de tração e as forças resistivas ao movimento. De acordo com a segunda lei de Newton, 
@@ -99,29 +97,26 @@ representa a resultante das forças resistivas, como o atrito de rolamento e o a
 No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, \(v(t)\), cuja
 estimativa, denotada por \(\hat{v}(t)\), é obtida pela integração numérica da aceleração longitudinal estimada a
 partir das medições da IMU, e a variável manipulada é o comando de aceleração \(u\), enviado ao ESC:
-\begin{equation}\label{eq:integral}
+\begin{equation*}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
-\end{equation}
+\end{equation*}
 
 A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle:
 
-\begin{equation}
-e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t).
-\label{eq:erro_velocidade}
-\end{equation}
+\[ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t). \]
 
 A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando de acionamento
 \(u(t)\), a variável manipulada do sistema, utilizado para ajustar a atuação do motor e
 reduzir a diferença entre a velocidade desejada e a velocidade estimada. Esse comando é
 transmitido ao ESC por meio de um sinal elétrico PWM, com o qual o ESC controla a energia
-fornecida pela bateria aos enrolamentos do motor. O motor produz torque, que a transmissão leva
-às rodas, e o veículo acelera. A IMU mede a nova aceleração do chassi, a estimativa
-\(\hat{v}(t)\) é atualizada por integração e realimentada ao controlador, que calcula um novo
-erro e um novo comando, fechando o ciclo.
+fornecida pela bateria aos enrolamentos do motor, produz torque que a transmissão leva às
+rodas. A IMU mede a nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é atualizada por
+integração e realimentada ao controlador, que calcula um novo erro e um novo comando, de
+modo que o ciclo se repete a cada período de amostragem.
 
 A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
-A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e GND) e dois sinais de comunicação: SDA (Serial Data), responsável 
+A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e terra, GND) e dois sinais de comunicação: SDA (Serial Data), responsável 
 pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincronismo. 
 
 \begin{figure}[htb]
@@ -220,15 +215,15 @@ e o controle do automodelo:
 No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série no ramo de alimentação, 
 entre a bateria e o ESC, assim, pela Lei de Ohm, a queda de tensão sobre ele é:
 
-\begin{equation}\label{eq:shunt_ohm}
+\begin{equation*}
 V_s = R_s\,I.
-\end{equation}
+\end{equation*}
 
 Essa tensão, tipicamente da ordem de milivolts, é amplificada pelo circuito integrado INA240, cuja
 saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
-\begin{equation}\label{eq:shunt_ganho}
+\begin{equation*}
 V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
-\end{equation}
+\end{equation*}
 em que $G$ é o ganho fixo do amplificador. 
 
 A dissipação de potência no resistor cresce com o quadrado da corrente, então, considerando as correntes do
@@ -243,8 +238,8 @@ fração do período em que o PWM permanece ligado:
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
 \end{equation}
 
-O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt, sendo que a 
-saída é um sinal analógico na entrada do microcontrolador para tornar possível a leitura dos valores. 
+O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt, uma vez que a 
+saída é um sinal analógico na entrada do microcontrolador para tornar possível a leitura dos valores, conforme a Figura~\ref{fig:ina240}.
 O componente possui largura de banda de 400 kHz e
 rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
 simultâneas da tensão nos dois terminais de entrada, produzidas pelo chaveamento do
@@ -295,14 +290,14 @@ campo magnético, detectado por elementos Hall integrados ao sensor. A eletrôni
 campo em uma tensão de saída proporcional à corrente medida. Na variante bidirecional do ACS758, a tensão 
 de saída varia em torno de um nível de referência, permitindo medir correntes nos dois sentidos.
 
-\begin{equation}\label{eq:acs_saida}
+\begin{equation*}
 V_\mathrm{out} = \frac{V_{CC}}{2} + S\,I,
-\end{equation}
+\end{equation*}
 em que $S$ é a sensibilidade, em V/A, e $V_{CC}/2$ é a tensão de repouso, correspondente a
 corrente nula. A corrente é recuperada por
-\begin{equation}\label{eq:acs_corrente}
+\begin{equation*}
 I = \frac{V_\mathrm{out} - V_{CC}/2}{S}.
-\end{equation}
+\end{equation*}
 
 Na variante de ±200 A, a de faixa mais ampla da família, a sensibilidade típica é de
 $10$ mV/A com alimentação de $5$ V, reduzindo-se proporcionalmente em alimentações menores,
@@ -326,8 +321,7 @@ Equação \eqref{eq:acs_resolucao}:
 \end{figure}
 
 Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
-saída analógica é ligada diretamente ao conversor do microcontrolador, conforme a Figura~
-ef{fig:acs758}.
+saída analógica é ligada diretamente ao conversor do microcontrolador, conforme a Figura~\ref{fig:acs758}.
 
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
 pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, como no
@@ -350,10 +344,10 @@ controle do automodelo:
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
 
-A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque, sendo que a IMU e o
+A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque, uma vez que a IMU e o
 SS41F exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$),
 enquanto a corrente elétrica se relaciona diretamente. Dessa forma, esta oferece um caminho mais
-direto para a estimativa do esforço mecânico, sendo que o sensor Hall linear apresenta um equilíbrio adequado
+direto para a estimativa do esforço mecânico, uma vez que o sensor Hall linear apresenta um equilíbrio adequado
 entre isolamento, custo e simplicidade de montagem para as condições de operação do sistema.
 
 Entre os sensores de corrente, a comparação envolve isolamento, dissipação, faixa e desempenho

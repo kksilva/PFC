@@ -24,9 +24,9 @@ metrológica de tudo o que segue.
 A cadeia de corrente respondeu de forma linear em toda a faixa de $0$ a $6$ A. O ajuste pelo
 método dos mínimos quadrados entre os valores do multímetro de referência ($x$) e os lidos
 pelo sistema ($y$) resultou em
-\begin{equation}\label{eq:regressao_bancada}
+\begin{equation*}
 y = 1{,}0742\,x,
-\end{equation}
+\end{equation*}
 ou seja, um ganho $7{,}42\%$ acima do ideal, quase constante em toda a faixa. Desvio quase
 constante é o caso favorável, uma vez que pode ser compensado por um único fator
 multiplicativo em software, sem distorção da forma do sinal. Assim, o desvio sistemático de
@@ -58,14 +58,14 @@ não linear com o comando, o \emph{duty cycle} efetivo do ESC não acompanharia 
 forma linear, e o quociente $I/u$, base do modelo, perderia sentido. O resultado permite
 verificar essa hipótese.
 
-A curva de corrente de perdas por comando, com o ajuste linear sobre
+A curva de corrente de perdas por comando é apresentada a seguir, com o ajuste linear sobre
 os pontos válidos. Descartaram-se as execuções com pico inferior a $1$ A, nas quais o comando
 não foi efetivamente executado pelo ESC e que distorceriam a média para baixo. Na zona morta,
 $I_0$ vale $0{,}49$ A; na região de aderência, cresce de $1{,}04$ A a $2{,}22$ A entre $100^\circ$
 e $110^\circ$; no último degrau, atinge $2{,}84$ A. O ajuste linear
-\begin{equation}\label{eq:i0_ajuste}
+\begin{equation*}
 I_0(u) = 0{,}54 + 9{,}36\,u
-\end{equation}
+\end{equation*}
 apresenta coeficiente de determinação $r^2 = 0{,}97$. O coeficiente $r^2$ mede a fração da
 variância dos dados que o ajuste explica, de $0$ a $1$, e o valor encontrado indica que a
 relação é substancialmente linear. Conclui-se que o ESC responde de forma linear ao comando
@@ -120,7 +120,7 @@ cruza as duas fontes de dados.
 \label{sec:reszonamorta}
 
 De $97^\circ$ a $99^\circ$, a força permanece residual, em torno de $4{,}4$ N, enquanto a
-corrente consoma de $0{,}5$ A a $1{,}3$ A, valores compatíveis com a corrente de perdas do
+corrente consome de $0{,}5$ A a $1{,}3$ A, valores compatíveis com a corrente de perdas do
 ensaio em vazio. O ESC armado alimenta o motor, mas o torque entregue não vence as
 resistências internas do conjunto, e nenhuma tração útil se desenvolve. O limite superior da
 zona morta coincide com o início do crescimento sustentado da corrente de carga, o que a
@@ -176,9 +176,9 @@ a cada borda e concordaram.
 O primeiro é o método da $63{,}2\%$, que toma o instante em que a resposta atinge $63{,}2\%$
 do valor final como estimativa da constante de tempo, e o segundo é o ajuste pelo método dos
 mínimos quadrados ao modelo de primeira ordem com atraso,
-\begin{equation}\label{eq:fopdt}
+\begin{equation*}
 G_1(s) = \frac{K\,e^{-\theta_a s}}{\tau\,s + 1},
-\end{equation}
+\end{equation*}
 em que $K$ é o ganho estático, $\theta_a$ o atraso puro e $\tau$ a constante de tempo. As dez
 bordas convergem: o ganho, tomado do platô de cada resposta, varia de $116$ a $125$ A/u,
 envolvendo o valor estático da caracterização e cruzando as duas identificações. O atraso é
@@ -221,14 +221,14 @@ $K_t$ do motor e o raio efetivo $r_\mathrm{ef}$, todas grandezas do conjunto, n�
 de operação. A constante de torque deriva do \emph{speed constant} nominal do datasheet,
 $K_v = 2100$ rpm/V, pela conservação da energia, uma vez que a mesma constante que converte
 corrente em torque converte rotação em tensão:
-\begin{equation}\label{eq:kt_kv}
+\begin{equation*}
 K_t = \frac{60}{2\pi\,K_v} = \frac{9{,}55}{2100} \approx 4{,}55\ \mathrm{mN\cdot m/A}.
-\end{equation}
+\end{equation*}
 
 O critério de validação decorre de rearranjar o estimador. Isolando o rendimento,
-\begin{equation}\label{eq:regressao_validacao}
+\begin{equation*}
 \frac{F\,r_\mathrm{ef}\,u}{K_t\,i} = \eta\,(I_\mathrm{bat} - I_0(u)),
-\end{equation}
+\end{equation*}
 de modo que, se o modelo é válido, os pontos devem alinhar-se sobre uma reta que passa pela
 origem, com inclinação $\eta$. Trata-se de uma regressão linear sem intercepto, e ela testa
 o modelo inteiro de uma vez, com o coeficiente de determinação medindo o alinhamento.
@@ -285,9 +285,9 @@ variável manipulada é o comando de aceleração $u$, aplicado ao ESC. A refer�
 $T_\mathrm{ref}$ percorre dois caminhos. No caminho direto, um termo de
 \emph{feedforward}, a inversa da característica estática, converte a referência na corrente
 de bateria esperada,
-\begin{equation}\label{eq:feedforward}
+\begin{equation*}
 I_\mathrm{ref} = I_0(u) + u\,\frac{T_\mathrm{ref}\,r_\mathrm{ef}}{\eta\,i\,K_t},
-\end{equation}
+\end{equation*}
 em que $I_0(u)$ é a corrente de perdas do ensaio em vazio e o segundo termo é a corrente de
 fase equivalente ao torque desejado, vista do ramo de bateria. No caminho de realimentação,
 a corrente medida alimenta o estimador validado, que fornece $\hat{T}$, e o erro entre a
@@ -331,12 +331,12 @@ O método procede da seguinte forma. Deseja-se que a malha fechada se comporte c
 ordem com constante de tempo $\lambda$, o mais lento que se exige dela. Para a planta
 modelada $G_1(s)$, o controlador que cumpre essa especificação, sem cancelar polos
 instáveis e com o filtro de robustez, resulta em
-\begin{equation}\label{eq:pi_imc}
+\begin{equation*}
 K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
 \qquad
 T_i = \tau,
-\end{equation}
-com $K = 120$ A/u, $\tau = 1{,}8$ s e $\theta_a < 0{,}1$ s. Substitituindo os valores
+\end{equation*}
+com $K = 120$ A/u, $\tau = 1{,}8$ s e $\theta_a < 0{,}1$ s. Substituindo os valores
 identificados, os ganhos do controlador são $K_p \approx 0{,}025$ u/A e $T_i = 1{,}8$ s. O
 tempo integral reproduz a constante de tempo da planta, o que o método impõe, e o ganho
 proporcional diminui com $\lambda$, de modo que um ajuste mais conservador significa um
@@ -355,7 +355,7 @@ ganho substancial de desempenho sem agressividade excessiva junto à saturação
 A implementação é digital, a despeito do sensor ser analógico, e a razão está na cadeia de
 sinal. O sensor produz uma tensão analógica, mas essa tensão é amostrada pelo conversor do
 Arduino, e a partir desse instante o sinal é digital. O controlador executa em software, no
-computador de bordo, e o laço fecha sobre valores amostrados, de modo que não há
+computador de bordo, e o laço atua sobre valores amostrados, de modo que não há
 implementação analógica do controlador a considerar. O período de amostragem é $T_s = 100$
 ms, uma ordem de magnitude abaixo de $\lambda$, condição para que a aproximação discreta
 não distorça o projeto contínuo, com integração trapezoidal e anti-windup por limitação da
@@ -382,7 +382,7 @@ do valor final em $1{,}8$ s, $95\%$ em $5{,}4$ s.
 
 Em malha fechada, com o PI ajustado sobre o próprio modelo, o comportamento segue as
 especificações de projeto. Para o seguimento de referência, a resposta ao degrau é de
-primeira ordem com constante de tempo $\lambda = 0{,}6$ s: sobressinal nulo, limite de $10\%$
+primeira ordem com constante de tempo $\lambda = 0{,}6$ s: sobressinal nulo, limite de sobressinal de $10\%$
 respeitado com folga, tempo de acomodação da ordem de $3\lambda \approx 1{,}8$ s e erro nulo
 em regime, uma vez que o integrador elimina o erro estacionário mesmo diante do desvio
 sistemático de ganho quantificado na verificação em bancada. Para a rejeição de
