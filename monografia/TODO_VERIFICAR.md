@@ -4,11 +4,17 @@ Checklist de afirmações/valores que precisam ser conferidos contra a fonte pri
 ensaio, datasheet, medição própria) antes da entrega. Marcar `[x]` quando confirmado, anotando
 a fonte/valor correto.
 
-- [ ] **1. Valor de redução do motor** — `DescricaoProcesso.tex`, Seção 2.1: texto afirma
-  "redução mecânica total estimada em $i \approx 11{,}5$". Confirmar: (a) se o valor é 11,5
-  mesmo; (b) como foi obtido (medição própria, cálculo a partir da relação de dentes
-  pinhão/coroa, ou valor do orientador — conforme nota em `PLANEJAMENTO_MONOGRAFIA.md`); (c)
-  se cabe citar a fonte explicitamente no texto.
+- [x] **1. Valor de redução do motor (parcial, 26/10)** — origem: **valor do orientador**
+  (prof. Armando Alves, DELT/UFMG), medido por aluno anterior com o mesmo automodelo; sem
+  publicação localizada (buscas em repositório UFMG, BDTD, Scholar — 26/10). Verificação pelo
+  MANUAL (PDF escaneado, p. 10 e p. 31): motor Vortex 2100 KV (confirma datasheet, ORI 28188);
+  pinhão do motor MA010 = **11 dentes**; coroa TRA1-42 = **42 dentes** -> 1ª redução 42/11 =
+  3,82; transmissão central/diferenciais: pinhão 26T (p. 10), pinhão 16T (97044-16),
+  engrenagem chanfrada MA050 (dentes NÃO informados no manual), corrente MA017; diffs:
+  conjunto chanfrado IF102 20/10 dentes (internos, não multiplicam). Checagem: 11,5/3,82 =
+  3,01 -> estágio restante ~3:1 (ex.: 16T->48T), consistente com i ~ 11,45. PENDENTE para
+  fechar: (a) nome/ano do aluno (perguntar ao prof. Armando) para citar; (b) contagem física
+  dos dentes da MA050 ou medição direta no carro; (c) manter "estimada" no texto até lá.
 
 - [x] **2. Taxa de descarga máxima da bateria (C-rate)** — Confirmado: 60C. Corrente
   contínua máxima ≈ 312 A (60 × 5,2 Ah), acima do limite de 120 A do ESC — portanto o ESC é
