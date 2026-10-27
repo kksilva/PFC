@@ -162,7 +162,7 @@ pulsos são gerados pelo circuito PCA9685, na faixa de $90^\circ$ a $180^\circ$.
 trabalho, o comando é usado na forma normalizada $u = (\alpha - 95)/85$, sendo $\alpha$ o
 ângulo do comando de aceleração.
 
-O computador de bordo, com sua bateria dedicada, é apresentado na Figura \ref{fig:pi}. A automação do ensaio foi desenvolvida no âmbito deste trabalho. Um \emph{script} local
+A automação do ensaio foi desenvolvida no âmbito deste trabalho. Um \emph{script} local
 percorre a escala de degraus em um laço, substituindo a cada iteração o ângulo e a duração e
 disparando o comando remoto correspondente, enquanto lê a serial do Arduino e grava cada
 amostra, com o tempo de ensaio, o tempo dentro do degrau, o ângulo e a corrente, em um
@@ -177,14 +177,6 @@ tempo é reconstruído por índice: a $k$-ésima amostra do arquivo corresponde 
 10$ ms, com $k = 0, 1, 2, \ldots$ Cada degrau de $15$ s gera, assim, cerca de $1550$ amostras
 sem perda de resolução temporal.
 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.6\textwidth]{Figuras/bateria_pi.jpeg}
-\caption{Raspberry Pi embarcado com sua bateria dedicada e o conversor \emph{step-down} de
-alimentação.}
-\label{fig:pi}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
 
 \section{Testes em Bancada}
 \label{sec:bancada}

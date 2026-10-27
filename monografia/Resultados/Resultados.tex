@@ -349,17 +349,9 @@ validação experimental da malha fechada permanece como etapa pendente.
 \subsection{O caminho do sinal}
 \label{sec:estrutura}
 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.9\textwidth]{Figuras/diagrama_malha.png}
-\caption{Estrutura da malha de controle de torque.}
-\label{fig:malha}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
 
 A variável de processo é o torque na roda, obtido por estimativa, e a variável manipulada é
-o comando de aceleração $u$, aplicado ao ESC. A malha, apresentada na
-Figura~\ref{fig:malha}, fecha sobre a referência $T_\mathrm{ref}$, que percorre dois
+o comando de aceleração $u$, aplicado ao ESC. A malha fecha sobre a referência $T_\mathrm{ref}$, que percorre dois
 caminhos. No direto, a inversa da característica estática converte a referência na corrente
 de bateria esperada,
 \begin{equation}\label{eq:feedforward}
@@ -455,17 +447,8 @@ Em malha fechada, com o PI ajustado sobre o próprio modelo, o comportamento seg
 especificações de projeto: resposta de primeira ordem com constante de tempo
 $\lambda = 0{,}25$ s, sobressinal nulo, tempo de acomodação, quatro vezes a constante de malha fechada, da ordem de $1$ s, e erro nulo
 em regime, garantido pelo integrador mesmo diante do desvio sistemático de ganho da cadeia
-de corrente. O desempenho projetado está resumido na Figura~\ref{fig:mf}, com o seguimento
-de referência e a rejeição de perturbação no mesmo ritmo, com recuperação da ordem de
-$3\lambda$ e sem erro permanente.
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.66\textwidth]{Figuras/malha_fechada.png}
-\caption{Desempenho projetado da malha: seguimento de referência e rejeição de
-perturbação, em comparação com a planta em malha aberta.}
-\label{fig:mf}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+de corrente. O seguimento de referência e a rejeição de perturbação seguem o mesmo ritmo, com
+recuperação da ordem de $3\lambda$ e sem erro permanente.
 
 A robustez foi examinada por variação paramétrica, conforme as especificações do projeto:
 com o ganho da planta variando $\pm 20\%$ e a constante de tempo $\pm 30\%$ em torno dos
