@@ -22,7 +22,7 @@ import openpyxl
 PASTA_DADOS = Path(__file__).resolve().parent
 PASTA_FIGURAS = Path(__file__).resolve().parent
 
-G = 9.80665            # conversao de kgf para N
+G = 9.81               # conversao de kgf para N (mesmo valor da monografia)
 ANGULO_NEUTRO = 95.0   # comando neutro do ESC (graus)
 FAIXA_COMANDO = 85.0   # 95 a 180 graus -> u de 0 a 1
 RAIO_EFETIVO_M = 0.0751
@@ -123,6 +123,22 @@ def main():
             dpf = statistics.stdev(forcas) if len(forcas) > 1 else 0.0
             print(f"{degrau:>3} gr  I = {mediana(correntes):5.2f} +/- {dp:.2f} A   "
                   f"F = {mediana(forcas):5.2f} +/- {dpf:.2f} N")
+
+    # 3a) Repetibilidade Tipo A por faixa de operacao (para o orcamento de incertezas)
+    FAIXAS = {"zona morta": range(97, 100),
+              "aderencia": range(100, 111),
+              "saturacao": range(111, 118)}
+    for nome, faixa in FAIXAS.items():
+        forcas = []
+        for degrau in faixa:
+            forcas += [f for c, f in tracao["SUBIDA"].get(degrau, [])]
+            forcas += [f for c, f in tracao["DESCIDA"].get(degrau, [])]
+        dps = [statistics.stdev([f for c, f in tracao[sentido][d]])
+               for sentido in ("SUBIDA", "DESCIDA") for d in faixa
+               if len(tracao[sentido][d]) > 1]
+        sig = sum(dps) / len(dps)
+        print(f"sigma_A {nome}: medio dos desvios-padrao = {sig:.2f} N  "
+              f"(mediana da forca da faixa = {mediana(forcas):.1f} N)")
 
     # 3b) Tabela do ensaio em vazio (medias por degrau, para a monografia)
     print("--- VAZIO: medias por degrau ---")

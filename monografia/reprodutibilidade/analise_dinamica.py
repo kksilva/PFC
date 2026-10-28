@@ -101,9 +101,13 @@ def main():
     print(f"tau (minimos quadrados) = {tau:.2f} s | tau (63,2%) = {tau_632:.2f} s")
 
     # ganho de cada borda: plato por unidade de comando
+    ganhos = []
     for bloco, (normalizada, repouso, plato) in zip(usados, respostas):
         angulo = int(bloco[0][1])
-        print(f"{angulo} gr: plato = {plato:.2f} A | ganho = {plato / u_de(angulo):.0f} A/u")
+        ganho = plato / u_de(angulo)
+        ganhos.append(ganho)
+        print(f"{angulo} gr: plato = {plato:.2f} A | ganho = {ganho:.0f} A/u")
+    print(f"ganho medio das dez bordas = {statistics.mean(ganhos):.1f} A/u")
 
     # figura 1: janelas brutas de dois degraus, com media movel
     plt.rcParams.update({"font.size": 10, "axes.grid": True, "grid.alpha": 0.3,

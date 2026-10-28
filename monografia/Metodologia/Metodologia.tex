@@ -7,7 +7,7 @@ seus dados ocupam na estrutura de controle proposta no Capítulo
 \ref{chap:descricaoprocesso}. O ensaio em bancada valida os instrumentos, o
 sensor de corrente ACS758E CB-200B e a balança digital de gancho, antes que
 entrem na curva característica, enquanto o ensaio em vazio mede a corrente consumida
-pelo conjunto sem carga mecânica, ambos caracterizam a dinamica do estimador de torque. O ensaio de tração
+pelo conjunto sem carga mecânica, e ambos caracterizam o estimador de torque. O ensaio de tração
 de corrente versus força relaciona, degrau a degrau, a corrente à força de
 tração medida pela balança, fornecendo a dinâmica da malha escrava. A
 Seção \ref{sec:montagem} descreve a montagem comum, mecânica e elétrica. As
@@ -146,7 +146,7 @@ proporcionalmente a $6{,}6$ mV/A a $3{,}3$ V, e a tensão de repouso, em corrent
 metade da alimentação --- de modo que a alimentação do sensor precisa ser a mesma referência
 do conversor. O ADC de $12$ bits do Due, com sua
 tensão de referência, distingue degraus de $122$ mA na corrente, valor que define a
-resolução da medição e entra no orçamento de incertezas. (DE ONDE VEIO ISSO?)
+resolução da medição e entra no orçamento de incertezas.
 
 \subsection{Aquisição e registro de dados}
 \label{sec:registro}
@@ -182,8 +182,8 @@ degraus em um laço, substituindo a cada iteração o ângulo e a duração e di
 SSH correspondente, enquanto lê a porta serial do Arduino e grava cada amostra, com o tempo
 de ensaio, o tempo dentro do degrau, o ângulo e a corrente, em um arquivo CSV, um bloco de
 dados por degrau. No terminal, imprime-se somente a média das amostras de cada segundo, o
-tempo $t = 1, 2, \ldots, 15$ e a corrente média associada. A linha  aparece no vídeo do
-ensaio ao lado do display da balança, consolidados nos
+tempo $t = 1, 2, \ldots, 15$ e a corrente média associada, linha que aparece no vídeo do
+ensaio ao lado do display da balança e que consolida as leituras nos
 arquivos \texttt{ensaio\_vazio\_corrente.csv},
 \texttt{ensaio\_tracao\_corrente\_versus\_forca.xlsx} e
 \texttt{ensaio\_tracao\_corrente.csv}, um para cada experimento descrito nas Seções

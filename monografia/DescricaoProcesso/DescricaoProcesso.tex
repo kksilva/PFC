@@ -24,7 +24,7 @@ o torque responsável pela rotação do eixo, como ilustrado na Figura~\ref{fig:
 \includegraphics[width=0.8\textwidth]{Figuras/motor_explode.jpeg}
 \caption{Visão explodida de um motor brushless --- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
 \label{fig:motorbrushless}
-\footnotesize{Fonte: DIGI Electronics (s.d.).}
+\footnotesize{Fonte: \cite{digi_stator_rotor}.}
 \end{figure}
 
 A continuidade desse movimento depende da comutação eletrônica, processo pelo qual a alimentação das três fases
@@ -38,7 +38,7 @@ permitindo ao controlador detectar os cruzamentos por zero dessa tensão e estim
 próxima etapa. Dessa forma, o ESC mantém o campo do estator sincronizado com o movimento do rotor, possibilitando
 a conversão contínua da energia elétrica em energia mecânica.
 
-Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A.
+Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A \cite{kyosho_madforce}.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
 preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC 
@@ -142,10 +142,10 @@ pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincro
 \includegraphics[width=0.75\textwidth]{Figuras/imu_mpu6050_i2c.png}
 \caption{Conexão do módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C, com alimentação e sinais SDA e SCL.}
 \label{fig:imu_i2c}
-\footnotesize{Fonte: RudraNarayanG, via Instructables (s.d.).}
+\footnotesize{Fonte: \cite{instructables_mpu6050}.}
 \end{figure}
 
-Em síntese, a utilização da IMU apresenta vantagens e limitações para a instrumentação e o controle do automodelo.
+Em síntese, a IMU oferece uma cadeia de medição simples e de baixo custo, cuja limitação decisiva é a necessidade de identificar os parâmetros dinâmicos do veículo antes de qualquer estimativa de torque.
 
 \begin{itemize}
     \item \textbf{Vantagens:} permite medir a aceleração do chassi sem depender de um modelo mecânico para obter essa grandeza. 
@@ -216,12 +216,10 @@ proteção contra sobrecorrente por limiar não pode ser implementada com esse s
 ação preventiva disponível é a limitação da taxa de variação do comando, que suaviza a
 excitação do motor, sem garantia efetiva contra sobrecorrente.
 
-Em síntese, a utilização do SS41F apresenta vantagens e limitações para a instrumentação
-e o controle do automodelo.
+Em síntese, o SS41F mede a velocidade com robustez e simplicidade de interface, mas só se aproxima do torque depois de identificados a inércia, o atrito e a carga do conjunto.
 
 \begin{itemize}
-    \item \textbf{Vantagens:} baixo custo, robustez mecânica e velocidade de comutação superior a 100 kHz
-    , com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns.
+    \item \textbf{Vantagens:} baixo custo, robustez mecânica e velocidade de comutação superior a $100$ kHz, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns.
      Fornece a velocidade por contagem direta dos pulsos.
     \item \textbf{Limitações:} gera apenas pulsos associados à posição angular, sem informação sobre corrente
      elétrica ou torque. A estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme
@@ -295,8 +293,7 @@ diretamente, o arranjo viabiliza, ainda, a proteção do sistema. Sempre que a l
 ultrapassa um limiar, o controlador reduz a excitação, protegendo o conjunto contra
 sobrecorrente.
 
-Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
-instrumentação e o controle do automodelo.
+Em síntese, o arranjo com shunt e INA240 privilegia a precisão e o custo em troca da simplicidade de instalação, o que o torna adequado como referência de bancada, mas não como sensor embarcado.
 
 \begin{itemize}
     \item \textbf{Vantagens:} proporciona uma medida direta da corrente, com boa linearidade e
@@ -831,8 +828,8 @@ perturbações, sobre um propulsor caracterizado experimentalmente, operando den
 limites em que o
 modelo é válido e protegido contra sobrecorrente e patinagem. Com a estrutura, o projeto
 dos controladores e a implementação digital, a proposta do sistema de controle fica
-completamente especificada. A materialização experimental --- a montagem, os ensaios e o
-orçamento de incertezas --- é descrita na Metodologia, Capítulo~\ref{chap:metodologia}.
+completamente especificada, e a sua materialização experimental é descrita na Metodologia,
+Capítulo~\ref{chap:metodologia}.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
