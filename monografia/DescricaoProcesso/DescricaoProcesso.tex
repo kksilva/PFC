@@ -41,11 +41,11 @@ a conversão contínua da energia elétrica em energia mecânica.
 Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A \cite{kyosho_madforce}.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
-preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC 
+preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC
 pode ter duas origens, selecionadas por uma chave de comutação, que conduz o sinal
 PWM (\emph{Pulse Width Modulation} --- modulação por largura de pulso, na qual a duração de cada pulso codifica o valor do comando)
 proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
-gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
+gerado por uma Raspberry Pi embarcada no veículo, com bateria própria e conversor
 \emph{step-down} para alimentação em 5 V.
 
 \section{Situação Atual e Estado da Arte}
@@ -96,12 +96,13 @@ representa a resultante das forças resistivas, como o atrito de rolamento e o a
 
 No sistema de controle, emprega-se a estrutura básica de malha fechada com realimentação da
 variável de processo e comparação com a referência \cite{raffo_tcpi_variaveis}. A variável de
-processo é a velocidade longitudinal do automodelo, \(v(t)\), estimada por \(\hat{v}(t)\) a
-partir da integração numérica da aceleração longitudinal medida pela IMU, e a variável
-manipulada é o comando de aceleração \(u\), enviado ao ESC.
+processo é a velocidade longitudinal do automodelo, \(v(t)\), estimada como \(\hat{v}(t)\) pela
+integração numérica da aceleração longitudinal medida pela IMU, e a variável
+manipulada é o comando de aceleração \(u\), enviado ao ESC, de modo que
 \begin{equation*}
-\hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
+\hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi,
 \end{equation*}
+em que \(\hat{v}(0)\) é a condição inicial da estimativa.
 
 A estimativa por integração tem, contudo, uma implicação que condiciona todo o uso da
 IMU, pois qualquer erro de medição do acelerômetro, em particular o desvio de zero, a
@@ -148,11 +149,11 @@ pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincro
 Em síntese, a IMU oferece uma cadeia de medição simples e de baixo custo, cuja limitação decisiva é a necessidade de identificar os parâmetros dinâmicos do veículo antes de qualquer estimativa de torque.
 
 \begin{itemize}
-    \item \textbf{Vantagens:} permite medir a aceleração do chassi sem depender de um modelo mecânico para obter essa grandeza. 
-    apresenta dimensões reduzidas, baixo custo e interface digital simples. 
+    \item \textbf{Vantagens:} permite medir a aceleração do chassi sem depender de um modelo mecânico para obter essa grandeza.
+    Apresenta dimensões reduzidas, baixo custo e interface digital simples. 
     Fornece medições de velocidade angular que podem ser úteis em análises posteriores da dinâmica do veículo.
-    \item \textbf{Limitações:} a estimativa de velocidade por integração acumula erros e pode exigir filtragem e correção de deriva. 
-    as medições são sensíveis às vibrações e à projeção da gravidade nos eixos do sensor. 
+    \item \textbf{Limitações:} a estimativa de velocidade por integração acumula erros e pode exigir filtragem e correção de deriva.
+    As medições são sensíveis às vibrações e à projeção da gravidade nos eixos do sensor. 
     A aceleração não permite determinar diretamente a corrente elétrica para garantir
     a proteção dos componentes contra sobrecorrente.
 \end{itemize}
@@ -177,7 +178,7 @@ Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou 
 rotação se deseja medir, e o sensor é montado no chassi, fixo, próximo ao anel. Entre o elemento
 Hall e os polos mantém-se uma entreferência --- a distância entre o sensor e o anel --- pequena
 e constante. O campo magnético decai rapidamente com a distância, razão pela qual uma folga
-excessiva enfraquece o sinal, ao passo que uma folga mínima demais arrisca o contato
+excessiva enfraquece o sinal, enquanto uma folga mínima demais arrisca o contato
 mecânico. A conexão com o microcontrolador é direta --- alimentação, terra e saída digital ---,
 e a leitura por interrupção dispensa circuitos de condicionamento adicionais, uma vez que a
 saída do sensor já é um nível lógico compatível com a entrada do microcontrolador, ao contrário
@@ -249,8 +250,8 @@ ESC, um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W
 em regime e mais de $500$ W nos picos, o que faz o resistor aquecer e consumir parte da energia
 destinada ao motor. Observa-se, ainda, que o shunt instalado na alimentação do ESC mede a
 corrente média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
-usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento --- a
-fração do período em que o PWM permanece ligado
+usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento, a
+fração do período em que o PWM permanece ligado, o que resulta em
 
 \begin{equation}\label{eq:corrente_bateria}
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
@@ -293,7 +294,7 @@ diretamente, o arranjo viabiliza, ainda, a proteção do sistema. Sempre que a l
 ultrapassa um limiar, o controlador reduz a excitação, protegendo o conjunto contra
 sobrecorrente.
 
-Em síntese, o arranjo com shunt e INA240 privilegia a precisão e o custo em troca da simplicidade de instalação, o que o torna adequado como referência de bancada, mas não como sensor embarcado.
+Em síntese, o arranjo com shunt e INA240 privilegia a precisão e o baixo custo em troca da simplicidade de instalação, o que o torna adequado como referência de bancada, mas não como sensor embarcado.
 
 \begin{itemize}
     \item \textbf{Vantagens:} proporciona uma medida direta da corrente, com boa linearidade e
@@ -382,7 +383,7 @@ a campos magnéticos externos.
 A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A
 IMU e o SS41F exigem a identificação prévia de parâmetros mecânicos ($m$,
 $F_{\text{resistivos}}$, $J$, $B$ e $T_L$), que são propriedades do conjunto veículo--carga
-e mudam com a configuração, ao passo que a corrente elétrica se relaciona ao torque por
+e mudam com a configuração, enquanto a corrente elétrica se relaciona ao torque por
 constantes do próprio propulsor, identificáveis em bancada. Com isso, a corrente elétrica é a grandeza de cadeia mais curta até o torque, e o sensor Hall
 linear, o melhor equilíbrio entre os sensores de corrente para este sistema, já que possui isolamento
 galvânico para proteger o circuito das altas correntes, e não dissipa potência. 
@@ -446,9 +447,9 @@ tamanho e custo. A célula de carga foi afastada porque seu sinal, da ordem de
 milivolts, exige circuito de amplificação dedicado e uma fixação mecânica própria
 entre o veículo e o ponto de ancoragem do ensaio. O torquímetro demanda acoplamento mecânico no
 eixo da transmissão e tem custo elevado para a faixa de dezenas de newtons do
-ensaio . O dinamômetro de tração pressupõe bancada de escala automotiva, inadequada a
-um veículo de dezenas de newtons.  
-A balança de mala com gancho foi a opção escolhida,
+ensaio. O dinamômetro de tração pressupõe bancada de escala automotiva, inadequada a
+um veículo de dezenas de newtons.
+A balança de gancho foi a opção escolhida,
 pois mede diretamente a
 força, dispensa condicionamento de sinal e adaptação mecânica além do próprio gancho,
 e serve como padrão de bancada para o ajuste e a validação do coeficiente \(K_T\). O
@@ -688,7 +689,7 @@ T_i = \tau,
 \end{equation}
 em que $\tau$ e $K$ são a constante de tempo e o ganho da planta e $\theta_a$ o atraso.
 No método \cite{raffo_tcpi_imc}, o controle
-clássico realimenta apenas a saída medida, ao passo que o controle por modelo interno
+clássico realimenta apenas a saída medida, enquanto o controle por modelo interno
 compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, e o controlador contém
 a inversa da parte invertível do modelo e um filtro $F$ que torna o ajuste robusto, neste
 trabalho de primeira ordem, com constante de tempo $\lambda$.
@@ -790,18 +791,15 @@ Limite do comando à região de aderência & linhas 219 e 48--49 \\
 \end{tabular}
 \end{table}
 
-Duas escolhas de implementação condicionam o desempenho, sendo a primeira o
+Duas escolhas de implementação condicionam o desempenho. A primeira delas é o
 \emph{feedforward} duplo, no qual, além da corrente
 esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
 atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
 integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
-estimador, como revelou a simulação. A segunda é o anti-windup por \emph{clamping}
-(linhas 220--223 do script A.3), no qual, quando
-o comando satura, o integrador é ajustado para que a saída fique exatamente no limite, em
-vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da
-saturação imediatamente. A integração condicional, alternativa mais simples, travou o
-sistema em saturação nas simulações iniciais, e o \emph{clamping} é o padrão descrito nas
-notas de implementação digital \cite{raffo_tcpi_sintese}.
+estimador, como revelou a simulação. A segunda é o anti-\emph{windup} por \emph{clamping} (linhas 220--223 do script A.3),
+o condicionamento da ação integral descrito na Seção~\ref{sec:protecoes}, cuja alternativa
+mais simples, a integração condicional, travou o sistema em saturação nas simulações
+iniciais.
 
 Sobre a malha externa, duas salvaguardas se aplicam, pois o estimador é quase-estático e
 só é válido onde foi caracterizado. Em transientes em que corrente e comando desbalanceiam,
@@ -843,7 +841,7 @@ comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curt
 sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores avaliados.
 
 Sobre essa escolha, definiu-se a proposta do trabalho. Ela é um estimador de torque a partir da
-corrente medida, validado contra um padrão de tração obtido com uma balança de mala.
+corrente medida, validado contra um padrão de tração obtido com uma balança de gancho.
 A malha de controle em cascata, com \emph{feedforward}, anti-windup e as proteções de
 aderência e de sobrecorrente, estrutura-se para atender aos objetivos de controle em
 malha fechada do propulsor. Com a classificação das variáveis, o projeto dos

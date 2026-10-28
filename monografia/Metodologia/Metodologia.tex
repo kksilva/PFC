@@ -26,16 +26,16 @@ corrente ao esforço mecânico do propulsor. Caracterizar esse elo exige medir, 
 condição de operação, as duas grandezas que ele liga, a corrente elétrica consumida pelo
 conjunto e a força de tração desenvolvida pelas rodas.
 
-A força de tração só se manifesta, em princípio, enquanto o veículo se move, assim, o ensaio
+A força de tração só se manifesta, em princípio, enquanto o veículo se move. O ensaio
 estático contorna essa condição impedindo o deslocamento. Com o automodelo ancorado, o
 pneu não consegue rolar, e a força que seria trocada com o solo na direção do movimento
 transfere-se integralmente para a estrutura de retenção, onde é medida como a tensão em um
-cabo. Há, ainda, um segundo motivo para ancorar o veículo. Com a roda travada, o motor
-opera na condição de rotor bloqueado, na qual a exigência de torque é máxima --- é a
-condição de partida do veículo. 
+cabo. Com a roda travada, o motor opera na condição de rotor
+bloqueado, na qual a exigência de torque é máxima, sendo esse o segundo motivo para ancorar o
+veículo, pois é a sua condição de partida. 
 
-O instrumento utilizado para medir a força de tração é uma balança digital de bagagem com
-gancho, cuja indicação é expressa em quilogramas. Quando submetido à tração, o instrumento
+O instrumento utilizado para medir a força de tração é uma balança de gancho, comum como
+balança de bagagem, cuja indicação é expressa em quilogramas. Quando submetido à tração, o instrumento
 detecta a força aplicada e a apresenta como uma massa equivalente, correspondente à
 força-peso que produziria a mesma indicação sob a aceleração da gravidade de referência.
 Essa equivalência permite converter a leitura em força, expressa em newtons, por meio de
@@ -85,7 +85,9 @@ como componente de incerteza na Seção \ref{sec:incertezas}.
 \subsection{Massa adicional}
 \label{sec:massaaderencia}
 
-Em alguns ensaios, foram fixados halteres na dianteira do veículo, conforme ilustrado na Figura~\ref{fig:pesos}, aumentando a carga normal sobre os pneus e, consequentemente, o limite de aderência antes da patinagem. Essa massa adicional não interfere diretamente na curva de torque medida pela balança, pois, em condição estática, a força horizontal registrada corresponde à tração desenvolvida pelo motor. A massa total do conjunto, incluindo veículo, baterias e halteres, foi de $6{,}640$ kg, determinada pela média de três pesagens, sendo essa condição especificada uma vez que variações na massa podem alterar o limite de aderência e comprometer a comparabilidade dos resultados.
+Em alguns ensaios, foram fixados halteres na dianteira do veículo, conforme ilustrado na Figura~\ref{fig:pesos}, aumentando a carga normal sobre os pneus e, consequentemente, o limite de aderência antes da patinagem. Essa massa adicional não interfere diretamente na curva de torque medida pela balança, pois, em condição estática, a força horizontal registrada corresponde à tração desenvolvida pelo motor. A massa total do conjunto, incluindo veículo, baterias e halteres, foi de $6{,}640$ kg, determinada pela média de três pesagens. Essa condição é
+especificada porque variações na massa podem alterar o limite de aderência e comprometer a
+comparabilidade dos resultados.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.72\textwidth]{Figuras/visao_pesos.jpeg}
@@ -141,11 +143,12 @@ ESC, por adaptação com conector Deans-T.}
 \end{figure}
 
 A sensibilidade
-ratiométrica, ou seja, com alimentação nominal de $5$ V, ela é de $10$ mV/A, valor que se reduz
-proporcionalmente a $6{,}6$ mV/A a $3{,}3$ V, e a tensão de repouso, em corrente nula, é
-metade da alimentação --- de modo que a alimentação do sensor precisa ser a mesma referência
-do conversor. O ADC de $12$ bits do Due, com sua
-tensão de referência, distingue degraus de $122$ mA na corrente, valor que define a
+ratiométrica, isto é, a saída escala com a tensão de
+alimentação, de modo que, com os $5$ V nominais, ela é de $10$ mV/A e, com os $3{,}3$ V do
+Due, reduz-se proporcionalmente a $6{,}6$ mV/A. A tensão de repouso, em corrente nula, é
+metade da alimentação, e a alimentação do sensor precisa ser a mesma referência do
+conversor. O ADC de $12$ bits do Due, com referência
+de $3{,}3$ V, distingue degraus de $122$ mA na corrente, valor que define a
 resolução da medição e entra no orçamento de incertezas.
 
 \subsection{Aquisição e registro de dados}
@@ -183,10 +186,10 @@ SSH correspondente, enquanto lê a porta serial do Arduino e grava cada amostra,
 de ensaio, o tempo dentro do degrau, o ângulo e a corrente, em um arquivo CSV, um bloco de
 dados por degrau. No terminal, imprime-se somente a média das amostras de cada segundo, o
 tempo $t = 1, 2, \ldots, 15$ e a corrente média associada, linha que aparece no vídeo do
-ensaio ao lado do display da balança e que consolida as leituras nos
-arquivos \texttt{ensaio\_vazio\_corrente.csv},
+ensaio ao lado do display da balança. As amostras completas são gravadas por experimento,
+em \texttt{ensaio\_vazio\_corrente.csv} para o ensaio em vazio e em
 \texttt{ensaio\_tracao\_corrente\_versus\_forca.xlsx} e
-\texttt{ensaio\_tracao\_corrente.csv}, um para cada experimento descrito nas Seções
+\texttt{ensaio\_tracao\_corrente.csv} para os ensaios de tração das Seções
 \ref{sec:vazio} e \ref{sec:tracao}. 
 
 \section{Ensaio em Bancada}
@@ -248,18 +251,16 @@ conforme a Seção \ref{sec:incertezas}.
 
 O primeiro ensaio com o veículo é o ensaio em vazio, que mede a corrente consumida pelo
 conjunto propulsor quando ele não entrega tração alguma, com as rodas suspensas. Sua função
-decorre da forma como a corrente entra na malha de controle. No estimador, o torque é
-calculado descontando as perdas da corrente medida, $\hat{T} = K_T\,(I - I_0(u))/u$, de
-modo que $I_0(u)$ é subtraído de $I$ a cada amostra. No \emph{feedforward}, o cálculo inverso
-precisa saber quanta corrente corresponde ao torque pedido, $I_{\mathrm{ref}} = I_0(u) +
-u\,T_{\mathrm{ref}}/K_T$, e essa corrente esperada é a referência que a malha escrava deve
-seguir. Sem o ensaio em vazio, $I_0(u)$ seria desconhecido, o estimador absorveria as
-perdas como se fossem tração e o modelo ficaria enviesado principalmente nos degraus
-baixos, nos quais a fração de perdas é maior. Com as rodas livres no ar, a corrente
+decorre da forma como a corrente entra na malha de controle, pois o estimador desconta as
+perdas da corrente medida, conforme a Equação~\eqref{eq:estimador_proposta}, e o
+\emph{feedforward} converte o torque pedido na corrente esperada, conforme a
+Equação~\eqref{eq:iff}. Sem o ensaio em vazio, $I_0(u)$ seria desconhecido, o estimador
+absorveria as perdas como se fossem tração e o modelo ficaria enviesado principalmente nos
+degraus baixos, nos quais a fração de perdas é maior. Com as rodas livres no ar, a corrente
 registrada em cada comando é a própria corrente de perdas do conjunto, o valor que esses
 dois cálculos exigem.
 
-O ensaio tem, ainda, um segundo papel. O estimador representa a corrente de fase pelo
+O estimador representa a corrente de fase pelo
 quociente $I/u$, o que só é legítimo se o \emph{duty cycle} do ESC acompanhar o comando de
 forma linear, e em vazio a corrente de perdas é essencialmente a corrente de fase média.
 A verificação dessa hipótese, a partir da evolução de $I_0(u)$ com o comando, é apresentada
@@ -312,7 +313,7 @@ $K_T$ do estimador. A inversa da curva converte a referência de torque na corre
 do \emph{feedforward}, e o torque máximo medido calibra o limiar do seletor de aderência.
 
 A configuração segue a montagem da Seção \ref{sec:ancoragem}, com o veículo ancorado pela
-balança, os halteres fixados e a massa total de $6{,}640$ kg conferida por pesagem. Uma
+balança, os halteres fixados e a massa total conferida por pesagem (Seção~\ref{sec:massaaderencia}). Uma
 câmera registra a sessão, com o display da balança e o terminal do notebook no mesmo
 plano, este exibindo o horário, o tempo dentro do degrau e a corrente média do segundo.
 Antes da sessão, repetem-se as verificações comuns do ensaio em vazio e acrescentam-se a
@@ -342,8 +343,8 @@ A corrente, por sua vez, é registrada durante todo o ensaio, e empregam-se os p
 segundo impressos no terminal --- as médias de cada segundo, que representam o regime das
 medições ---, relacionados em vídeo, quadro a quadro, à força do mesmo degrau e do mesmo
 segundo. A leitura em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe
-da leitura ao vivo e dá rastreabilidade a cada valor anotado, uma vez que o display da
-balança não possui saída elétrica. O ensaio fornece a curva característica e todos os
+da leitura ao vivo e dá rastreabilidade a cada valor anotado, já que o display da
+balança não possui saída elétrica (Seção~\ref{sec:bancada}). O ensaio fornece a curva característica e todos os
 parâmetros que dela derivam, apresentados no Capítulo \ref{chap:resultados}.
 
 \subsection{Ensaio de Tração de Corrente}
@@ -361,9 +362,9 @@ viabiliza o ajuste da resposta ao degrau apresentado no Capítulo \ref{chap:resu
 \label{sec:incertezas}
 
 O orçamento de incertezas segue o método das notas de aula de instrumentação
-\cite{braga_instr_incerteza}. Cada componente é caracterizada como de Tipo A, avaliada
-estatisticamente a partir das repetições, ou de Tipo B, avaliada por propriedades do
-instrumento e do procedimento. As componentes se combinam em quadratura na incerteza
+\cite{braga_instr_incerteza}. Cada componente de incerteza é caracterizada como de Tipo A,
+quando avaliada estatisticamente a partir das repetições, ou de Tipo B, quando avaliada por
+propriedades do instrumento e do procedimento. As componentes se combinam em quadratura na incerteza
 combinada, e a incerteza expandida é $U = k\,\sigma_c$, com $k = 2$, aproximadamente $95\%$
 de confiança. Para não confundir com o comando normalizado $u$, adota-se $\sigma$ para as
 incertezas-padrão.
@@ -379,7 +380,7 @@ operação, adota-se a média dos desvios-padrão de seus degraus, o valor típi
 repetibilidade na faixa. Os valores resultantes, por faixa, são apresentados com os
 resultados do orçamento no Capítulo \ref{chap:resultados}.
 
-\textbf{Tipo B.} Cada componente é modelada por uma distribuição retangular de meia-largura
+\textbf{Tipo B.} Cada componente é modelado por uma distribuição retangular de meia-largura
 $a$, uma vez que o valor verdadeiro é conhecido apenas como pertencente a um intervalo, e
 equivale a $\sigma = a/\sqrt{3}$, conforme as notas de aula. As componentes da força são as
 seguintes.
@@ -407,8 +408,8 @@ seguintes.
     \[
     1 - \cos\theta = 1 - \sqrt{1 - (13/126)^2} = 0{,}53\%.
     \]
-    Como não é corrigido, é tratado como retangular de meia-largura $a = 0{,}53\%$
-    $\sigma_{\theta} = 0{,}53\%/\sqrt{3} = 0{,}31\%$ da força.
+    Como não é corrigido, é tratado como retangular de meia-largura $a = 0{,}53\%$,
+    e $\sigma_{\theta} = 0{,}53\%/\sqrt{3} = 0{,}31\%$ da força.
     \item \textbf{Raio efetivo:} a distância de $236$ cm resulta de duas marcações medidas
     com fita, com resolução prática de $1$ cm, ou meia-largura relativa de $1/236 =
     0{,}42\%$, tratada como retangular, $\sigma_r/r_\mathrm{ef} = 0{,}42\%/\sqrt{3} =

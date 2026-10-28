@@ -54,7 +54,7 @@ tração de corrente.
 \section{Regiões de operação}
 \label{sec:regioes}
 
-O ensaio de tração de corrente versus força, o experimento central do trabalho, revelou que
+O ensaio de tração de corrente versus força revelou que
 o propulsor opera de três maneiras distintas ao longo da escala de comando, nomeadas uma
 única vez aqui e usadas pelo restante do capítulo.
 
@@ -98,8 +98,8 @@ Tração de corrente & $97$--$99$ & $100$--$109$ & a partir de $110$\textsupersc
 \end{tabular}
 \end{table}
 
-Na subida, a força retoma o crescimento acima de $110^\circ$ e atinge $52$ N em $117^\circ$,
-o mesmo máximo da descida, de modo que o limiar de aderência não se manifesta na subida
+Na subida, a força retoma o crescimento acima de $110^\circ$ e atinge em $117^\circ$ o
+mesmo máximo da descida, e o limiar de aderência não se manifesta na subida
 dentro da escala percorrida. Já na descida, os dois últimos comandos são tomados pelo corte
 do ESC. A identificação da dinâmica emprega apenas os comandos de $100^\circ$ a $109^\circ$,
 pois acima de $110^\circ$ a resposta já nasce contaminada pela patinagem.
@@ -148,10 +148,8 @@ nenhum precisou ser descartado.
 \section{Ensaio em Vazio}
 \label{sec:resvazio}
 
-O primeiro ensaio com o veículo mede a corrente consumida pelo propulsor quando ele não
-entrega tração alguma, com as rodas suspensas, fornecendo a corrente de perdas $I_0(u)$ que
-o estimador desconta de cada leitura e que a pré-alimentação soma a cada referência, funções
-discutidas na metodologia. O ensaio testa, ainda, a hipótese estrutural do modelo, pois, com
+O ensaio em vazio forneceu a corrente de perdas $I_0(u)$ que o estimador desconta de cada
+leitura e que a pré-alimentação soma a cada referência, funções discutidas na metodologia. O ensaio testa, ainda, a hipótese estrutural do modelo, pois, com
 o veículo parado, a corrente de perdas é essencialmente a própria corrente de fase média,
 que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_bateria}, de
 modo que um ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
@@ -274,7 +272,7 @@ torno de $31$ N enquanto a corrente oscila entre as repetições com dispersão 
 até que o platô se encerra acima de $110^\circ$ e a força retoma o crescimento até o máximo
 da escala.
 
-O comportamento da descida é influenciado por um parâmetro observado desde o início do
+O comportamento da descida é influenciado por um efeito observado desde o início do
 percurso. O ESC demanda mais corrente para o mesmo comando ao longo de toda a descida, o que
 se percebe no ruído do motor, mais intenso, e no tremor do conjunto, verificados visual e
 sonoramente em bancada, e a corrente maior se acompanha de força maior. A diferença entre os
@@ -331,7 +329,7 @@ $r^2 = 0{,}79$, e na subida, $G_F = 0{,}368$ N/(A/u) com $r^2 = 0{,}11$. Os dois
 coeficientes praticamente coincidem, o que confirma que a constante do conjunto não depende
 do sentido da escada. Na descida, os pontos distribuem-se ao longo da reta que passa pela
 origem, e a variância não explicada, cerca de $21\%$, é da mesma ordem da dispersão entre
-repetições da Tabela \ref{tab:mestra}, de modo que o modelo é validado. Na subida, o ajuste
+repetições da Tabela \ref{tab:mestra}, e o modelo é validado. Na subida, o ajuste
 praticamente desaparece, e a razão é física, não estatística, pois a força estaciona em
 torno de $31$ N enquanto a corrente oscila entre as repetições, espalhando os pontos na
 horizontal, o retrato do platô discutido acima. A descida, mecanicamente quieta, é a
@@ -407,9 +405,9 @@ dez bordas e o ajuste de primeira ordem.}
 \end{figure}
 
 Os resultados são consistentes entre si. O atraso puro é inferior a $0{,}1$ s, uma vez que
-a corrente responde dentro da primeira janela de $100$ ms após o início elétrico, de modo
-que a partida sem sensor de rotação, na qual o ESC estima a posição do rotor, não impõe
-atraso mensurável nesse caminho. A constante de tempo da subida situa-se em $0{,}18$ s,
+a corrente responde dentro da primeira janela de $100$ ms após o início elétrico. A
+partida sem sensor de rotação, na qual o ESC estima a posição do rotor, não impõe atraso
+mensurável nesse caminho. A constante de tempo da subida situa-se em $0{,}18$ s,
 valor que os dois métodos reproduzem sobre a média das dez bordas, e a curva do ajuste
 acompanha o feixe de respostas ao longo de toda a subida, sem desvio sistemático aparente.
 O ganho, tomado do platô, o quociente da corrente final pelo comando, cresce de $82$ a
@@ -430,8 +428,8 @@ planta, desaparecendo quando a resposta é ancorada no seu início elétrico.
 Essa distinção tem consequência direta para o projeto da malha, conduzido no
 Capítulo~\ref{chap:descricaoprocesso}, pois a planta elétrica não limita a velocidade do
 controlador. A consequência prática se manifesta também no protocolo da força, já que,
-decorridos $7$ s do comando, a corrente está em regime há pelo menos $5$ s, de modo que a
-anotação da força nos segundos $7$ a $10$ é largamente confortável.
+decorridos $7$ s do comando, a corrente está em regime há pelo menos $5$ s, margem
+ampla sobre a constante de tempo de $0{,}18$ s da planta.
 
 \section{O desempenho da malha em simulação}
 \label{sec:desempenho}
@@ -454,7 +452,7 @@ Para o seguimento de referência, o degrau é seguido com sobressinal
 de cerca de $25\%$, com o pico limitado pelo teto do estimador, que não excede os
 $3{,}35$ N$\cdot$m da faixa validada. O erro em regime é residual, de $0{,}16$
 N$\cdot$m na amostra de $7{,}5$ s do script, cerca de $3$ s após o fim da rampa da
-referência, valor que o integrador do mestre continua a reduzir. A resposta se acomoda em cerca de $7$ s, compatíveis
+referência, valor que o integrador do mestre continua a reduzir. A resposta se acomoda em cerca de $7$ s, valor compatível
 com a soma dos $2{,}3$ s da rampa da referência, $(3{,}0 - 1{,}6) / 0{,}6$, com os
 $\approx 4{,}4$ s de quatro constantes de tempo $\lambda_1$ da especificação de malha
 fechada, de modo que a especificação de acomodação deve ser lida contra a referência
@@ -488,7 +486,7 @@ metodologia, resulta nas incertezas expandidas da Tabela \ref{tab:incertezas}, d
 $\pm 0{,}23$ N$\cdot$m na zona morta e na região de aderência e $\pm 0{,}27$ N$\cdot$m na
 saturação. Na região de aderência, onde o torque típico é de cerca de $2{,}4$ N$\cdot$m, a
 incerteza representa aproximadamente $10\%$ do torque medido. O percentual cresce na zona
-morta, onde a força é pequena, e cai na saturação.
+morta, onde a força típica é de apenas $4{,}6$ N, e cai na saturação.
 
 \begin{table}[htb]
 \centering
@@ -508,10 +506,10 @@ Saturação ($111$--$117^\circ$) & 46,1 & 1,6 & $\pm$ 0,27 \\
 
 \section{Resumo do Capítulo}
 
-O capítulo entregou cinco resultados, que sustentam o projeto da malha de controle. A
+A caracterização produziu os resultados que sustentam o projeto da malha de controle. A
 bancada calibrou a cadeia de corrente e quantificou o desvio da balança. O ensaio em vazio
 mediu a corrente de perdas e confirmou a linearidade do ESC. A curva característica, organizada
-pelas regiões de operação, atinge força máxima de $52$ N e revela a diferença sistemática
+pelas regiões de operação, atinge a força máxima da escala e revela a diferença sistemática
 entre os sentidos e o corte do ESC. O modelo de força--corrente é validado com o ajuste
 direto dos dados, $G_F = 0{,}372$ N/(A/u) com $r^2 = 0{,}79$, sem necessidade de conhecer a
 redução da transmissão. A dinâmica comando--corrente revela resposta rápida, com constante
