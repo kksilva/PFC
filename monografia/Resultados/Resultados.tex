@@ -34,20 +34,27 @@ A qualidade de cada ajuste é quantificada pelo coeficiente de determinação,
 \begin{equation}\label{eq:r2}
 r^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
 \end{equation}
-fração da variância dos dados, medida em torno de sua média $\bar{y}$. Quanto mais os pontos se 
-aproximam da reta, menor a soma dos quadrados dos resíduos no
-numerador e mais o $r^2$ se aproxima de um, ou seja, esse parametro mede linearidade (MELHORAR FRASE)
+fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica:
+quanto mais os pontos se aproximam da reta, menor a soma dos quadrados dos resíduos no
+numerador e mais o $r^2$ se aproxima de um. É, portanto, a medida do alinhamento dos
+pontos em torno da reta ajustada.
 
 Os quatro scripts do apêndice executam exatamente essas expressões. O primeiro lê a
 planilha de anotações de força e corrente do ensaio de tração de corrente versus força e o
 arquivo do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
 característica, e gera as figuras correspondentes; o segundo lê o ensaio de tração de
 corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a constante de
-tempo da planta; o
-terceiro executa a simulação da malha de controle e produz a figura do desempenho; e o
-quarto é a automação do ensaio, que dispara os degraus no Raspberry Pi e registra a
-corrente em CSV. Todas as figuras de dados deste capítulo saem desses programas, de modo
-que cada número apresentado a seguir é reproduzível a partir dos arquivos originais.
+tempo da planta; o terceiro executa a simulação da malha de controle e produz a figura do
+desempenho; e o quarto é a automação do ensaio, que dispara os degraus no Raspberry Pi e
+registra a corrente em CSV. Convém explicitar por que a análise ocupa dois scripts e não
+um por ensaio: a divisão segue os modelos que o controlador consome, e não os ensaios. O
+modelo estático --- a corrente de perdas e o coeficiente da curva, que alimentam o
+estimador e o feedforward --- é construído pelo primeiro script a partir de dois ensaios;
+o modelo dinâmico, a planta da malha escrava, é identificado pelo segundo a partir do
+ensaio de tração de corrente. Como cada modelo sustenta um elo da malha, reproduzir os
+scripts é reproduzir a cadeia que sustenta o controlador. Todas as figuras de dados deste
+capítulo saem desses programas, de modo que cada número apresentado a seguir é reproduzível
+a partir dos arquivos originais.
 
 \section{Testes em Bancada}
 \label{sec:resbancada}
