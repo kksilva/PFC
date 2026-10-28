@@ -277,10 +277,21 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   um bloco, uma ideia.
 - **Equações entram com anúncio simples**: "a Segunda Lei de Newton para rotação ..., é dada
   por:" — dois-pontos, sem cerimônia.
-- **Poucos dois-pontos, poucos ponto e vírgula, poucos travessões.** A autora reclamou do
-  excesso (revisão do Shunt/SS41F): travessão é para aposto explicativo pontual, não para toda
-  explicação; dois-pontos anunciam raramente, preferindo-se o período; ponto e vírgula vira
-  ponto quando a oração for longa. Variação de pontuação é parte do ritmo.
+- **Frase pontual de sinalização é proibida.** Construções como *"A primeira é direta."*,
+  *"A segunda é estrutural."*, *"O primeiro é o estimador."* — frases-carteiro que só
+  anunciam e não informam — destroem o ritmo. O conteúdo delas entra dentro de um período
+  corrido, amarrado pelo conectivo: *"O resultado entra na caracterização de duas maneiras:
+  diretamente, pois o estimador desconta..."* vira *"O resultado entra na caracterização de
+  duas maneiras, e a primeira é direta: o estimador desconta..."* — melhor ainda sem os
+  dois-pontos, com vírgula e subordinação. Frase curta é para fato e valor medido
+  (ver Seção 3), nunca para letreiro de parágrafo.
+- **Dois-pontos e ponto e vírgula são exceção, não pontuação de rotina.** Regra da autora
+  (revisão 28/10, após correção manual de todas as ocorrências): preferir sempre o período
+  ou a vírgula com conectivo. Dois-pontos no máximo uma vez por seção, e apenas para
+  anunciar equação ou enumeração que vem logo abaixo; nunca duas vezes no mesmo parágrafo.
+  Ponto e vírgula quase nunca — quando a oração seguinte é longa, vira ponto. Travessão
+  segue a regra antiga: só aposto explicativo pontual. Se um parágrafo precisa de dois
+  dois-pontos para funcionar, o parágrafo está mal construído, não a pontuação.
 - **Cada seção de sensor define a malha de controle completa, no padrão da IMU.** Variável de
   processo, variável manipulada e como a malha fecham, em parágrafo próprio antes do veredito.
   Comparação de sensores não antecipa decisão do trabalho: modo de medição, calibrações e
@@ -330,6 +341,8 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
 ## 17. Checklist rápido antes de finalizar uma seção
 
 - [ ] Cada parágrafo segue contextualização → princípio → mecanismo → implicação → síntese?
+- [ ] Nenhuma frase pontual de sinalização ("A primeira é direta.")? Todas absorvidas em períodos corridos?
+- [ ] Dois-pontos no máximo um por seção (e nunca dois no mesmo parágrafo); nenhum ponto e vírgula desnecessário?
 - [ ] Os períodos longos carregam raciocínio encadeado e as frases curtas, fatos? (ritmo fluido)
 - [ ] Advérbios qualificam condições e conclusões (normalmente, tipicamente, portanto, diretamente) — sem "obviamente/evidentemente"?
 - [ ] Cada bloco fecha com frase-síntese e abre ponte para o próximo?
