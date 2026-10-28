@@ -48,8 +48,6 @@ proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, que possui bateria própria e conversor
 \emph{step-down} para alimentação em 5 V.
 
-%RETIRAR INFO SOBRE BATERIA VELHA SE NAO FOR CITAR DADOS SOBRE%
-
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
 
@@ -168,8 +166,17 @@ magnetizado --- um ímã de ferrita com polos alternados ao longo da circunferê
 acoplado à roda ou ao eixo, o sensor produz $N$ transições digitais por revolução, sendo $N$ o número de
 alternâncias de polos. Esse é o princípio dos encoders de roda usualmente empregados em robótica,
 nos quais o microcontrolador conta as transições em uma janela de tempo para estimar a rotação.
+A Figura~\ref{fig:ss41f_arranjo} ilustra o arranjo, com o anel magnetizado girando com o eixo
+e o sensor fixo no chassi, separado do anel pela entreferência.
 
-% IMAGEM DO SENSOR
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{Figuras/ss41f_arranjo.png}
+\caption{Arranjo de medição com o SS41F. O anel magnetizado, acoplado ao eixo, apresenta polos
+alternados ao sensor, que produz um pulso digital a cada alternância de polo.}
+\label{fig:ss41f_arranjo}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
 anel é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem fornece diretamente a
@@ -418,25 +425,31 @@ estática do propulsor
 F_{\text{tra\c{c}\~{a}o}} = G_F\,(I_{\mathrm{bat}} - I_0(u))/u,
 \end{equation} 
 
-(QUAL É A DIFERENÇA ENTRE $K_T$ E $G_F$? )
 em que \(G_F\), em N/(A/u), é o coeficiente angular do ajuste, a força de tração produzida
 por unidade de corrente de fase equivalente.
 
 O torque na roda fecha a cadeia corrente--força. A força de tração atua no raio
 efetivo da roda, \(T = F_{\text{tra\c{c}\~{a}o}}\,r_{\mathrm{ef}}\), e a substituição
 da Equação~\eqref{eq:curva_caracteristica} resulta na estimativa
- 
-(NAO ENTENDI A RELAÇÃO DE G COM F E T. EXPLIQUE TUDO DE NOVO. ABSTRAIA A PARTE DO RAIO ESTAR CONTIDO TAMBEM NA DINAMICA, CONSIDERE QUE ESTÁ FORA PARA O MODELO)
 
 \begin{equation}\label{eq:estimador_proposta}
 \hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
 \end{equation}
 
-em que $K_T = G_F\,r_{\mathrm{ef}}$ reúne, num único coeficiente identificável em
-bancada, a constante de torque do motor, o rendimento e a redução da transmissão. Como
-$G_F$ é o coeficiente da força, o raio efetivo participa dele e é devolvido na
-multiplicação pelo raio, não permanecendo em $K_T$. A cadeia corrente, força e
-torque se resume, portanto, a um único coeficiente.
+em que $K_T = G_F\,r_{\mathrm{ef}}$, em N$\cdot$m/(A/u), é o torque na roda por unidade de
+corrente de fase equivalente. Os dois coeficientes medem grandezas diferentes, e a
+distinção está na unidade. $G_F$ relaciona corrente a força, e $K_T$ relaciona a mesma
+corrente a torque. A passagem de um ao outro é apenas a multiplicação pelo raio efetivo,
+que traduz estaticamente força em torque. Como $G_F$ já contém a constante de torque do
+motor, o rendimento e a redução da transmissão, $K_T$ reúne esses ganhos num único
+coeficiente identificável em bancada.
+
+Na cadeia do modelo, cada elo é estático, exceto um. O comando $u$ gera a corrente $I$
+através da dinâmica comando--corrente $G_2(s)$, da malha interna. A corrente se converte
+em torque pela relação estática da Equação~\eqref{eq:estimador_proposta}, com $K_T$, e o
+torque se converte em força pela relação estática $F = T/r_{\mathrm{ef}}$, com o raio
+efetivo. O raio efetivo, portanto, não participa da dinâmica da planta. Ele entra só na
+conversão estática da ponta da cadeia.
 
 A validação do estimador exige um instrumento capaz de medir a força de tração na
 escala do veículo, e a escolha desse instrumento foi precedida de um estudo conduzido
@@ -444,7 +457,7 @@ no início do projeto, que comparou célula de carga com amplificador, torquíme
 dinamômetro e balança de gancho sob os critérios de facilidade de implementação,
 tamanho e custo. A célula de carga foi afastada porque seu sinal, da ordem de
 milivolts, exige circuito de amplificação dedicado e uma fixação mecânica própria
-entre o veículo e a âncora do ensaio (ANCORA?). O torquímetro demanda acoplamento mecânico no
+entre o veículo e o ponto de ancoragem do ensaio. O torquímetro demanda acoplamento mecânico no
 eixo da transmissão e tem custo elevado para a faixa de dezenas de newtons do
 ensaio . O dinamômetro de tração pressupõe bancada de escala automotiva, inadequada a
 um veículo de dezenas de newtons.  
@@ -456,6 +469,30 @@ protocolo do experimento é detalhado na Metodologia, no
 Capítulo~\ref{chap:metodologia}.
 
 \subsection{A estrutura de controle}
+
+A Figura~\ref{fig:malha_controle} apresenta a estrutura de controle proposta. O torque
+pedido $T_{\mathrm{ref}}$ passa pelo seletor de mínimo, que o limita ao torque
+transferível, e a referência efetiva $T_{\mathrm{ref,ef}}$ alimenta dois caminhos. No
+caminho de pré-alimentação, o controlador \emph{feedforward} $C_{\mathrm{ff}}$ converte a
+referência na corrente esperada $I_{\mathrm{ff}}$ e no comando equivalente
+$u_{\mathrm{ff}}$. No caminho de realimentação, o controlador mestre $C_1$ compara a
+referência com o torque estimado $\hat{T}$ e produz a correção $\Delta I$. As duas
+parcelas somam-se na referência da malha interna $I_{\mathrm{ref}}$, que o controlador
+escravo $C_2$ persegue ajustando o comando $u$ sobre o pré-posicionamento
+$u_{\mathrm{ff}}$. O comando aciona a planta $G_2(s)$, cuja saída é a corrente $I$, e o
+estimador $\hat{G}$ reconstrói o torque a partir da corrente e do comando. As subseções
+a seguir detalham cada bloco.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Figuras/malha_controle.png}
+\caption{Estrutura de controle proposta. Seletor de mínimo, pré-alimentação
+$C_{\mathrm{ff}}$, cascata mestre--escravo e estimador $\hat{G}$. Os controladores
+aparecem como $C_{\mathrm{mestre}}$ e $C_{\mathrm{escravo}}$, correspondentes a $C_1$ e
+$C_2$ na notação das seções seguintes.}
+\label{fig:malha_controle}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 A descrição da estrutura proposta emprega a notação usual das notas de aula de controle, na qual o
 índice $1$ designa a malha mestra e o índice $2$ a malha escrava
@@ -480,6 +517,7 @@ $U_1$ & saída do mestre & correção de corrente $\Delta I$ \\
 $R_2$ & referência da malha escrava & $I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$ \\
 $Y_2$ & variável controlada secundária & corrente medida $I$ \\
 $C_2$ & controlador escravo & PI com anti-windup, $K_{p2}$, $T_{i2}$ \\
+$C_{\mathrm{ff}}$ & controlador \emph{feedforward} & curva característica aplicada à referência \\
 $U_2$ & variável manipulada & comando $u$, limitado à região de aderência \\
 $G_2(s)$ & planta da malha interna & dinâmica comando--corrente identificada \\
 $G_1(s)$ & planta da malha externa & escrava fechada seguida do estimador \\
@@ -502,7 +540,17 @@ T_{\mathrm{ref,ef}} = \min\left(T_{\mathrm{ref}},\,T_{\text{ader\^{e}ncia}}\righ
 \end{equation}
 
 em que $T_{\mathrm{ref}}$ é a referência, $T_{\text{ader\^{e}ncia}}$ o limiar de
-aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na malha.
+aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na malha, como
+mostra a Figura~\ref{fig:seletor}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{Figuras/estrutura_seletor.png}
+\caption{Seletor de mínimo. A referência efetiva é a menor candidata, o que limita o
+torque pedido ao limiar de aderência.}
+\label{fig:seletor}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 Quando a referência pedida excede o que o processo admite, segui-la pode causar danos ao
 equipamento ou tornar o modelo de controle inválido. Assim, o seletor corta a referência no
@@ -527,8 +575,7 @@ portanto, protege a aderência e a validade do modelo logo na entrada da estrutu
 A pré-alimentação da referência, ou \emph{feedforward}, é o bloco que converte a
 referência diretamente em uma parcela da ação de controle, sem esperar que o erro se
 manifeste \cite{raffo_tcpi_psrprp}. O fundamento é a divisão de esforço entre os dois
-caminhos da estrutura, e a Figura~\ref{fig:psrprp} reproduz o esquema geral de
-pré-alimentação e realimentação das notas de aula. O bloco de pré-alimentação antecipa a
+caminhos da estrutura. O bloco de pré-alimentação antecipa a
 resposta à referência, e o bloco de realimentação corrige o que a pré-alimentação não
 previu. Para que a referência se converta em ação de controle sem passar pelo erro, o
 caminho que ela atravessa precisa ser o inverso do modelo da malha
@@ -537,26 +584,29 @@ caminho que ela atravessa precisa ser o inverso do modelo da malha
 C_p(s) = \frac{1}{H_1(s)},
 \end{equation}
 
-em que $H_1(s)$ é o modelo que a referência atravessa. Na
-Figura~\ref{fig:psrprp}, o esquema separa os dois papéis: o bloco de pré-alimentação
-da referência antecipa a resposta, e o bloco de rejeição da perturbação compensa as
-variações do processo. A realimentação, por sua vez, atua depois que o desvio aparece.
+em que $H_1(s)$ é o modelo que a referência atravessa. A
+Figura~\ref{fig:psrprp} apresenta o caminho de pré-alimentação no projeto. O
+controlador $C_{\mathrm{ff}}$ recebe a referência efetiva e fornece a corrente esperada
+$I_{\mathrm{ff}}$, que se soma à correção $\Delta I$ do mestre para formar a referência
+da malha interna $I_{\mathrm{ref}}$. A realimentação, por sua vez, atua depois que o
+desvio aparece.
 
 Sem a pré-alimentação, o controlador dependeria apenas da realimentação, e o termo
 integrador carregaria sozinho todo o esforço de regime, deteriorando o transiente. A
-limitação da estrutura é a dependência do modelo: quanto mais o processo real se afasta de
-$H_1(s)$, maior o resíduo que recai sobre a realimentação. A pré-alimentação da
+limitação da estrutura é a dependência do modelo. Quanto mais o processo real se afasta
+de $H_1(s)$, maior o resíduo que recai sobre a realimentação. A pré-alimentação da
 perturbação, possível apenas quando a perturbação é medida ou estimada, não é
 empregada, pois nem o afundamento da tensão da bateria sob carga nem a variação
 térmica de $I_0$ são mensuráveis no veículo.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.95\textwidth]{Figuras/psrprp_raffo.png}
-\caption{Esquema geral de controle por pré-alimentação e realimentação, para seguimento de
-referência e rejeição de perturbações.}
+\includegraphics[width=0.8\textwidth]{Figuras/estrutura_feedforward.png}
+\caption{Pré-alimentação da referência no projeto. O bloco $C_{\mathrm{ff}}$ fornece a
+corrente esperada $I_{\mathrm{ff}}$, somada à correção $\Delta I$ do controlador mestre
+para formar a referência da malha interna.}
 \label{fig:psrprp}
-\footnotesize{Fonte: Raffo (2019).}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
 No projeto, o \emph{feedforward} é a inversa da curva característica. Aplica-se a
@@ -588,7 +638,7 @@ u(t) = K_c\left(e(t) + \frac{1}{T_i}\int_0^t e(\tau)\,d\tau\right),
 
 em que $K_c$ é o ganho e $T_i$ o tempo integral do controlador
 \cite{raffo_tcpi_pid2}. A justificativa da cascata está na rejeição da perturbação
-interna. Na Figura~\ref{fig:cascata_blocos}, a perturbação $L_2$ atua dentro da malha
+interna. Na Figura~\ref{fig:cascata}, a perturbação $L_2$ atua dentro da malha
 escrava, e a função de transferência entre ela e a variável secundária é
 
 \begin{equation}\label{eq:rejeicao_l2}
@@ -604,37 +654,18 @@ interna seja de três a dez vezes mais rápida que a externa.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.95\textwidth]{Figuras/cascata.png}
-\caption{Esquema em blocos da cascata genérica: o mestre impõe a referência do
-escravo, e cada malha tem sua perturbação e seu instrumento.}
-\label{fig:cascata_blocos}
-\footnotesize{Fonte: Raffo (2019).}
-\end{figure}
-
-A cascata, no entanto, nasce da instrumentação, e a Figura~\ref{fig:cascata} reproduz
-o diagrama de motivação das notas de aula \cite{raffo_tcpi_cascata}, em que o controlador de
-temperatura, mais lento, é o mestre e impõe o \emph{set-point} do controlador de
-pressão, mais rápido, que é o escravo. Os instrumentos de temperatura e de pressão
-fornecem as realimentações de cada malha.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.85\textwidth]{Figuras/cascata_raffo.png}
-\caption{Diagrama instrumental da cascata: o controlador mestre impõe o \emph{set-point}
-do escravo, e cada malha tem sua própria realimentação.}
+\includegraphics[width=0.95\textwidth]{Figuras/estrutura_cascata.png}
+\caption{Cascata no projeto. O mestre $C_1$ persegue o torque estimado, e o escravo
+$C_2$ persegue a referência de corrente formada com a pré-alimentação $C_{\mathrm{ff}}$.}
 \label{fig:cascata}
-\footnotesize{Fonte: Raffo (2019).}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-No projeto, o papel do mestre cabe ao controlador de torque e o do escravo ao
-controlador de corrente, mais rápido e sensível às perturbações elétricas. O
-comparador escravo forma o erro $e_2 = I_{\mathrm{ref}} - I$, e o controlador escravo,
-um PI com anti-windup, produz o comando $u$ sobre o pré-posicionamento
-$u_{\mathrm{ff}}$. O comando aciona o ESC e a planta $G_1(s)$, identificados nos
-ensaios, cuja saída é a corrente $I$ medida no ramo de alimentação, e as
-realimentações das duas malhas são o torque estimado e a corrente medida. A malha
-interna rejeita, pela Equação~\eqref{eq:rejeicao_l2}, as perturbações elétricas antes
-que se tornem erro de torque, enquanto a malha externa cuida do seguimento da
+Na Figura~\ref{fig:cascata}, a estrutura é aplicada ao propulsor. O mestre é o
+controlador de torque, e o escravo, o controlador de corrente, mais rápido e sensível às
+perturbações elétricas. A planta interna $G_2(s)$ é a dinâmica comando--corrente, e a
+malha interna rejeita, pela Equação~\eqref{eq:rejeicao_l2}, as perturbações elétricas
+antes que se tornem erro de torque, enquanto a malha externa cuida do seguimento da
 referência.
 
 \subsection{O controle inferencial}
@@ -642,27 +673,29 @@ referência.
 
 No controle inferencial, a variável controlada não pode ser medida on-line e é
 reconstruída por um modelo do processo a partir de uma variável secundária, medida e
-sensível a ela \cite{raffo_tcpi_cascata}. Na Figura~\ref{fig:inferencial}, a saída
-controlada $y$ não tem instrumento embarcado, e o modelo a reconstrói a partir da
-medida secundária $z$. O fundamento da decisão é a indisponibilidade de sensor. Sem
-instrumentação para a variável primária, o modelo é o único caminho de realimentação
-disponível. As notas de aula advertem que o desempenho de toda a estratégia depende da
-precisão desse modelo.
+sensível a ela \cite{raffo_tcpi_cascata}. A Figura~\ref{fig:inferencial} ilustra a
+estrutura no projeto. O comando $u$ alimenta a planta $G_2(s)$, cuja saída primária, o
+torque $T$, não é mensurável embarcada. A corrente $I$, variável secundária medida, e o
+próprio comando alimentam o modelo $\hat{G}$, que reconstrói o torque $\hat{T}$. O
+fundamento da decisão é a indisponibilidade de sensor para a variável primária. Sem
+instrumentação para ela, o modelo é o único caminho de realimentação disponível, e o
+desempenho de toda a estratégia depende da precisão desse modelo.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.8\textwidth]{Figuras/inferencial_raffo.png}
-\caption{Controle inferencial: a variável controlada, não mensurável, é reconstruída a
-partir da medida secundária por um modelo do processo.}
+\includegraphics[width=0.8\textwidth]{Figuras/estrutura_inferencial.png}
+\caption{Controle inferencial no projeto. O torque, não mensurável, é reconstruído a
+partir da corrente medida e do comando pelo modelo $\hat{G}$.}
 \label{fig:inferencial}
-\footnotesize{Fonte: Raffo (2019).}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-No projeto, $y$ é o torque na roda, $z$ é a corrente medida no ramo de alimentação e o
-modelo é a curva característica validada no ensaio de tração de corrente versus força,
+No projeto, o torque na roda é a saída primária, e a corrente do ramo de alimentação é
+a medida secundária. O modelo é a curva característica validada no ensaio de tração de
+corrente versus força,
 sintetizada pela
 Equação~\eqref{eq:estimador_proposta}. O estimador de torque fecha o laço externo:
-converte a corrente medida no torque $\hat{T}$, limita a estimativa à faixa validada e
+limita a estimativa à faixa validada e
 filtra-a antes de alimentar o mestre, pois é quase-estático e não deve reagir a
 transientes em que corrente e comando se desbalanceiam. O estimador, portanto,
 concentra em si a precisão do controle de torque.
@@ -674,17 +707,19 @@ O comando do ESC satura em dois pontos do seu curso. Um é a zona morta, abaixo 
 motor não acelera, e o outro é a fronteira da região validada. Quando o atuador satura, o erro
 continua alimentando o integrador do controlador, que acumula até a saída ficar presa
 no limite mesmo após a reversão do erro. O tratamento clássico dessa condição é o
-condicionamento da ação integral, também chamado de anti-\emph{windup}, reproduzido na
-Figura~\ref{fig:antiwindup} \cite{raffo_tcpi_pid2}, em que o integrador é tratado para não
-acumular o erro em excesso enquanto a saturação persiste.
+condicionamento da ação integral, também chamado de anti-\emph{windup}
+\cite{raffo_tcpi_pid2}. A Figura~\ref{fig:antiwindup} ilustra o condicionamento no
+controlador escravo. A saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
+o comando efetivo $u$ retorna ao controlador, de modo que o integrador não acumula o
+erro em excesso enquanto a saturação persiste.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.8\textwidth]{Figuras/antiwindup_raffo.png}
-\caption{Condicionamento da ação integral: quando o atuador satura, o integrador é
-tratado para não acumular o erro em excesso.}
+\includegraphics[width=0.7\textwidth]{Figuras/estrutura_antiwindup.png}
+\caption{Condicionamento da ação integral no controlador escravo. O comando efetivo,
+após a saturação, retorna ao controlador.}
 \label{fig:antiwindup}
-\footnotesize{Fonte: Raffo (2019).}
+\footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
 No projeto emprega-se o \emph{clamping} no integrador do controlador escravo, ajustado
@@ -694,9 +729,10 @@ validada, fronteira que mantém o modelo, o estimador e o controlador válidos.
 A segunda é a proteção contra sobrecorrente por limiar, possível porque a corrente é medida,
 que reduz a excitação sempre que a leitura ultrapassa o valor máximo admitido.
 
-O conjunto dessas decisões atende diretamente aos objetivos do trabalho: o controle em
-malha fechada do torque, com seguimento de referência e rejeição de perturbações, sobre
-um propulsor caracterizado experimentalmente, operando dentro dos limites em que o
+O conjunto dessas decisões atende diretamente aos objetivos do trabalho. A estrutura
+controla o torque em malha fechada, com seguimento de referência e rejeição de
+perturbações, sobre um propulsor caracterizado experimentalmente, operando dentro dos
+limites em que o
 modelo é válido e protegido contra sobrecorrente e patinagem. Os ganhos das malhas e a
 sintonia são apresentados no Capítulo~\ref{chap:resultados}, sobre os modelos
 identificados nos ensaios.

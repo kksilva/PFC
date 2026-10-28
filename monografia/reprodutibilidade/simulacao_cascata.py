@@ -1,6 +1,6 @@
 """Simulacao da cascata de controle de torque do automodelo (PSR / PRP / seletor).
 
-Le a caracterizacao estatica (ensaios/pfc kaka.xlsx), ajusta a planta nao-linear
+Le a caracterizacao estatica (ensaios/ensaio_tracao_corrente_versus_forca.xlsx), ajusta a planta nao-linear
 da corrente e o ganho de torque diretamente dos dados (sem reducao i, sem K_t),
 executa a simulacao da cascata mestre (torque estimado) / escrava (corrente) com
 todas as nao-linearidades e salvaguardas do projeto, e gera a figura
@@ -26,7 +26,7 @@ PASTA_ENSAIOS = Path(__file__).resolve().parent
 PASTA_FIGURAS = Path(__file__).resolve().parent
 # (na pasta reprodutibilidade, as figuras saem junto aos scripts)
 
-PLANILHA_DADOS = PASTA_ENSAIOS / "pfc kaka.xlsx"
+PLANILHA_DADOS = PASTA_ENSAIOS / "ensaio_tracao_corrente_versus_forca.xlsx"
 ABA_PLANILHA = "Pagina1"
 
 DEGRAU_MINIMO = 100          # faixa de ajuste: regiao de aderencia (descida)

@@ -1,7 +1,7 @@
 """Identificacao da dinamica entre comando e corrente (ensaio de tracao de
 corrente).
 
-Le 'ensaio_cego_subida.csv', isola a sessao de aquisicao rapida (100 Hz),
+Le 'ensaio_tracao_corrente.csv', isola a sessao de aquisicao rapida (100 Hz),
 ancora cada degrau da regiao de aderencia (100 a 109 graus) no seu inicio
 eletrico, normaliza as respostas, ajusta a constante de tempo por minimos
 quadrados sobre a media das dez bordas e gera as figuras blocos_degrau.png
@@ -36,7 +36,7 @@ def u_de(angulo):
 def carregar_sessao_rapida():
     """Segmento 100 Hz do CSV: o mais longo, com um bloco por degrau."""
     leituras = []
-    with open(PASTA_DADOS / "ensaio_cego_subida.csv") as arquivo:
+    with open(PASTA_DADOS / "ensaio_tracao_corrente.csv") as arquivo:
         for linha in csv.DictReader(arquivo, delimiter=";"):
             leituras.append((float(linha["t_ensaio_s"]),
                              float(linha["angulo"]),

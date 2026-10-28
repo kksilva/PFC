@@ -1,8 +1,8 @@
 """Processamento dos dados da caracterizacao estatica.
 
 Le a planilha de anotacoes do ensaio de tracao de corrente versus forca
-('pfc kaka.xlsx') e o ensaio
-em vazio ('ensaio_series_vazio.csv'), ajusta as retas por minimos quadrados,
+('ensaio_tracao_corrente_versus_forca.xlsx') e o ensaio
+em vazio ('ensaio_vazio_corrente.csv'), ajusta as retas por minimos quadrados,
 imprime os coeficientes com o r2 e gera as figuras i0_vazio.png e
 curva_forca_comando.png.
 
@@ -54,7 +54,7 @@ def minimos_quadrados_origem(x, y):
 def carregar_vazio():
     """Medias da corrente de perdas por degrau, do ensaio em vazio."""
     por_angulo = {}
-    with open(PASTA_DADOS / "ensaio_series_vazio.csv") as arquivo:
+    with open(PASTA_DADOS / "ensaio_vazio_corrente.csv") as arquivo:
         for linha in csv.DictReader(arquivo, delimiter=";"):
             por_angulo.setdefault(float(linha["angulo"]), []).append(float(linha["corrente_a"]))
     return {a: sum(v) / len(v) for a, v in por_angulo.items()}
@@ -62,7 +62,7 @@ def carregar_vazio():
 
 def carregar_tracao():
     """Pares (corrente_A, forca_N) por sentido e por degrau, das 4 repeticoes."""
-    planilha = openpyxl.load_workbook(PASTA_DADOS / "pfc kaka.xlsx", data_only=True)
+    planilha = openpyxl.load_workbook(PASTA_DADOS / "ensaio_tracao_corrente_versus_forca.xlsx", data_only=True)
     pagina = planilha.worksheets[0]
     degraus = [int(pagina.cell(row=1, column=c).value) for c in range(2, 44, 2)]
     tracao = {"SUBIDA": {a: [] for a in degraus}, "DESCIDA": {a: [] for a in degraus}}
@@ -124,18 +124,27 @@ def main():
             print(f"{degrau:>3} gr  I = {mediana(correntes):5.2f} +/- {dp:.2f} A   "
                   f"F = {mediana(forcas):5.2f} +/- {dpf:.2f} N")
 
+    # 3b) Tabela do ensaio em vazio (medias por degrau, para a monografia)
+    print("--- VAZIO: medias por degrau ---")
+    for angulo in sorted(vazio):
+        print(f"{int(angulo)} gr  u = {u_de(angulo):.3f}   I0 = {vazio[angulo]:.2f} A")
+
     # 4) Figuras
     plt.rcParams.update({"font.size": 10, "axes.grid": True, "grid.alpha": 0.3,
                          "axes.axisbelow": True})
 
     fig, eixo = plt.subplots(figsize=(6.4, 4.2))
-    eixo.plot(x, y, "o", color="#2166ac", label="Media por degrau (ensaio em vazio)")
+    eixo.axvspan(0.0, u_de(99.5), color="0.9")
+    eixo.text(u_de(98), 2.45, "zona morta", ha="center", fontsize=8)
+    eixo.plot(x, y, "o", color="#2166ac", ms=4.5,
+              label="Media por degrau (ensaio em vazio)")
     u_lin = [0.0, max(x)]
     eixo.plot(u_lin, [a0 + b0 * u for u in u_lin], "-", color="#b2182b",
               label=f"$I_0 = {a0:.2f} + {b0:.2f}\\,u$  ($r^2 = {r2_0:.2f}$)")
-    eixo.set_xlabel("Comando normalizado $u$")
+    eixo.set_xlabel("Comando normalizado $u$  ($u = (\\alpha - 95)/85$)")
     eixo.set_ylabel("Corrente de perdas $I_0$ (A)")
-    eixo.legend(fontsize=9)
+    eixo.set_ylim(0, 2.7)
+    eixo.legend(fontsize=9, loc="upper left")
     fig.tight_layout()
     fig.savefig(PASTA_FIGURAS / "i0_vazio.png", dpi=200)
     plt.close(fig)
