@@ -315,6 +315,45 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.
 
+## 15c. Vícios do assistente identificados nas correções da autora (28/10)
+
+Lições extraídas do diff entre o texto gerado pelo assistente e as correções manuais da
+autora. Cada item traz o exemplo real (meu → dela).
+
+- **Proibição de meta-discurso.** O assistente anuncia o que vai fazer em vez de fazer:
+  *"Convém explicitar por que a análise ocupa dois scripts e não um por ensaio: a divisão
+  segue..."* → *"A divisão segue os modelos que o controlador consome, assim,..."*. Proibido
+  escrever sobre o texto ("convém registrar", "merece destaque", "cabem aqui", "importa
+  notar"). A informação entra direta, sem cerimônia de apresentação.
+- **Sem frase-tópico que rotula o parágrafo.** *"A motivação da estrutura é proteger o
+  processo sem desligar o controle."* — a autora apagou. O parágrafo começa no conteúdo,
+  não num letreiro do que ele vai argumentar.
+- **Sem fecho elaborado ou metafórico.** *"Como cada modelo sustenta um elo da malha,
+  reproduzir os scripts é reproduzir a cadeia que sustenta o controlador."* — a autora
+  podou. Fecho é declaração simples do que ficou estabelecido, sem floreio nem rima
+  interna. O assistente tende a terminar parágrafos com uma frase de efeito; ela termina
+  com o fato.
+- **Sem exagero de consequência.** *"segui-la destruiria o equipamento"* → *"segui-la pode
+  causar danos ao equipamento"*. O assistente radicaliza verbos; a autora hedges. Toda
+  consequência física sem instrumentação vai no condicional ou no "pode".
+- **Atribuição uma vez só.** *"realimentação das notas de aula, o controlador..."* →
+  *"realimentação, o controlador..."*. Depois de citado e definido o conceito, o texto usa
+  o conceito diretamente. O assistente re-ancora a fonte a cada ocorrência; a autora
+  ancora uma vez e segue.
+- **Sem ilustração de terceiros quando o próprio sistema ilustra.** O parágrafo do exemplo
+  do reator (slide do Raffo) foi removido. Explicação didática boa é a que usa o próprio
+  automodelo como caso; exemplo alheio vira aula solta e sai.
+- **Redundância de qualificadores.** *"a referência pedida"* → *"a referência"*;
+  *"a validação depende desse desconto"* → *"a validação é dependente"*. O assistente
+  empilha sinônimos e apostos; cada palavra que não desambigua é cortada.
+- **Subscrito sempre semântico, nunca abreviado.** $T_{\mathrm{ader}}$ →
+  $T_{\mathrm{aderência}}$. A regra de símbolo único se estende: subscrito abreviado que
+  exige decodificação vira palavra inteira (aderência, repouso, tração).
+- **Conectivos da autora, em ordem de preferência observada:** "assim," (consequência
+  imediata), "Em compensação," (o custo do benefício), "Aqui" (mudança de caso dentro do
+  mesmo assunto), "Nesse caso", "Dessa forma", "Contudo". O assistente sobrecarrega "de
+  modo que" e "uma vez que"; ela os converte em "assim," + vírgula ou em ponto.
+
 ## 15b. Convenções LaTeX duras (quebram silenciosamente se esquecidas)
 
 - **Acentos em modo matemático**: `\mathrm{tração}` e `\text{tração}` perdem o `ç`/`ã` no PDF
