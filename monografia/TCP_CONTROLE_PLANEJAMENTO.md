@@ -56,53 +56,73 @@ $F(s) = 1/(\lambda s + 1)$; o controlador resulta da inversa do modelo filtrada,
 $C = Q/(1 - Q\hat{G})$ com $Q = \hat{G}^{-1}F$. O parâmetro $\lambda$ explicita o
 compromisso desempenho/robustez (vantagem do slide).
 
-**Escrava** (planta $\hat{G} = K/(\tau s+1)$, $K = 120$ A/u, $\tau = 0{,}25$ s, θ ≈ 0):
+**Sem a redução i.** O estimador e o mestre usam apenas o produto identificado dos dados:
+a caracterização estática fornece diretamente a relação força–corrente
+$F = G_F\,(I - I_0(u))/u$, com $G_F = 0{,}382$ N/(A/u) ajustado pela origem sobre a
+descida ($R^2 = 0{,}984$, $n = 56$). O torque estimado é $\hat{T} = K_T (I - I_0(u))/u$
+com $K_T = G_F\,r_\mathrm{ef} = 0{,}0287$ N·m/(A/u). Nenhum valor de i (nem de $K_t$)
+entra no projeto — o que o sistema precisa conhecer está todo nos ensaios.
+
+**Escrava** (planta local linearizada $K_\mathrm{loc} = \partial I/\partial u \approx 153$
+A/u no ponto nominal, $\tau = 0{,}25$ s, θ ≈ 0):
 - λ₂ = τ = 0,25 s (malha tão rápida quanto a planta permite)
-- PI₂: $T_{i2} = \tau = 0{,}25$ s; $K_{p2} = \tau/(K\lambda_2) = 8{,}3\times10^{-3}$ u/A
-- Malha fechada da escrava ≈ $1/(\lambda_2 s + 1)$.
+- PI₂: $T_{i2} = 0{,}25$ s; $K_{p2} = \tau/(K_\mathrm{loc}\lambda_2) \approx 6{,}5\times10^{-3}$ u/A
+- **Caminho direto também no comando**: $u = u_\mathrm{ff} + \mathrm{PI}_2$, com
+  $u_\mathrm{ff}$ da inversão da curva estática (lição da simulação: sem ele, o PI precisa
+  de integral para segurar $u$ e o transiente destrói o estimador).
 
-**Mestra** (planta = escrava fechada × conversão torque–corrente, ganho depende de u):
-- Do estimador: $\hat{T} = \frac{C}{u}(I - I_0)$, $C = \eta i K_t/r_\mathrm{ef} \approx 0{,}40$ N·m
-  (com η = 0,579). Ganho da "planta mestra" no ponto nominal u₀ = 0,118:
-  $K_o = C/u_0 \approx 3{,}4$ N·m/A, dinâmica ≈ λ₂.
-- λ₁ = 4λ₂ = 1 s (regra da cascata: mestre 3–10× mais lenta que a escrava — slide).
-- **Ganho programado** (linearização, slide "Linearização"): $K_{p1}(u) = \lambda_2 u/(C\lambda_1)$,
-  T_{i1} = λ₂ = 0,25 s. No nominal: $K_{p1} \approx 0{,}074$ u/(N·m)·u... (unidade: A por N·m
-  — ajustar no texto).
+**Mestra** (planta = escrava fechada × conversão $K_T/u$):
+- λ₁ = 1,5 s — origem: a **regra de separação da cascata** dos slides (mestre 3 a 10 vezes
+  mais lento que a escrava; adotado 6× λ₂), confirmada na simulação.
+- Ganho programado (linearização, slide): $K_{p1}(u) = \lambda_2 u/(K_T\lambda_1)
+  \approx 0{,}69$ A/(N·m) no nominal; $T_{i1} = 0{,}25$ s.
+- **Filtro de referência** da entrada do mestre (rampa de 0,6 N·m/s) e **filtro do
+  estimador** (0,6 s): lição da simulação — o estimador é quase-estático e pica quando $I$
+  e $u$ desbalanceiam; o mestre não pode ver esses picos.
+- **Estimador limitado à faixa validada** (0 a 3,35 N·m): lição da simulação — transientes
+  produziam leituras impossíveis; o estimador só é válido onde foi caracterizado.
 
-**Discretização** (slide "Implementação digital"): T_s = 10 ms (firmware rápido gravado;
-≤ T_i/10). Integração trapezoidal; anti-windup por clamp (saturnação do comando 0–1 e do
-seletor de aderência); rate-limit |du/dt| para proteger a transmissão.
+**Discretização** (slide "Implementação digital"): $T_s = 10$ ms (≤ $T_i/10$), integração
+trapezoidal, **anti-windup por clamping** (output tracking) nos dois PIs — lição da
+simulação: com integração condicional, o sistema travava em saturação (deadlock de
+windup). Comando limitado à região validada $u \in [0{,}045;\,0{,}21]$ — lição da
+simulação: a curva estática de torque **não é monotônica além da aderência** (cai após
+u ≈ 0,26); sem o limite, a malha externa entra em realimentação positiva. O limite do
+comando à região de aderência é, assim, parte do projeto, não apenas proteção.
 
-## 4. Especificações de desempenho (slide "PSR/PRP")
+## 4. Especificações e resultado da simulação (slide "PSR/PRP")
 
-- **PSR** (seguimento de referência): degrau de T_ref dentro da faixa de aderência →
-  resposta de 1ª ordem com λ₁ = 1 s (63% em 1 s, acomodação ~4 s), sobressinal nulo,
-  ess = 0. Feedforward garante que a maior parte do movimento vem do caminho direto.
-- **PRP** (rejeição de perturbação): degrau de carga (ex.: queda de tensão da bateria
-  modelada como variação de ganho de 20% no caminho da corrente, ou variação de I₀) em
-  t = 5 s → rejeição pela escrava em ~3λ₂ ≈ 0,75 s para perturbações no caminho da corrente,
-  e pelo mestre em ~3λ₁ para erro de modelo; ess = 0.
-- **Robustez** (vantagem IMC do slide): variação de K ±20% e τ ±30% → manter PSR/PRP
-  qualitativos; reportar margens ou, minimamente, o varredura paramétrica.
+Simulação da cascata completa em Python com todas as não-linearidades (curva estática
+quadrática da corrente, $I_0(u)$, divisão por $u$, seletor, limites do comando, sag de 20%
+na planta e deslocamento de $I_0$ como perturbações, $T_s = 10$ ms). Figura:
+`Figuras/simulacao_cascata.png`.
 
-## 5. Validação (antes de escrever o Cap. 4)
+| Cenário | Resultado |
+|---|---|
+| **PSR** (degrau 1,6 → 3,0 N·m) | ess = 0; sobressinal ≈ 25%, **pinado no teto do estimador** (3,35 N·m); acomodação ~5 s |
+| **PRP** (sag 20% + $I_0$ +0,3 A, 8–12 s) | desvio máx ≈ 1,0 N·m; recuperação completa com ess = 0 (o integrador mestre corrige o erro de modelo) |
+| **Seletor** (pedido 4,5 > limite 3,3 N·m) | segue o limite, sem windup, e retorna ao pedido menor ao liberar |
+| Retorno (3,0 → 1,6 N·m) | ess = 0 |
 
-1. Simular em Python (ou MATLAB) a cascata completa com não-linearidades (I₀(u), divisão
-   por u, seletor de aderência, saturação 0–1) e conferir PSR/PRP;
-2. Confirmar regra de separação das malhas (λ₁/λ₂ = 4) na simulação;
-3. Gerar as figuras: resposta PSR, resposta PRP, varredura de robustez (3 figuras novas
-   substituem as anteriores 4.5/4.6 que a autora removeu).
+Leitura honesta: o sobressinal residual é o preço do estimador quase-estático; dentro das
+especificações de um controle de tração (malha interna de um sistema cujo referencial vem
+de um perfil de aceleração), e declaramento como limitação.
 
-## 6. Mapa para o Cap. 4 (quando ela aprovar este plano)
+## 5. Validação
 
-- 4.1–4.3 (bancada, vazio, curva estática): como estavam (sem alteração de fundo);
+Concluída (esta simulação). Figura gerada; pendente apenas a escrita do Cap. 4.
+
+## 6. Mapa para o Cap. 4 (quando ela aprovar)
+
+- 4.1–4.3 (bancada, vazio, curva estática): reescritos com o ajuste direto $G_F$ (sem i,
+  sem $K_t$): a regressão de validação passa a ser $F = G_F (I - I_0(u))/u$ pela origem,
+  $R^2 = 0{,}984$;
 - 4.4 Dinâmica: como corrigido (τ = 0,25 s, âncora no início elétrico);
-- **4.5 A malha de controle**: 4.5.1 variáveis e enquadramento (seção 1 acima); 4.5.2
-  estrutura em cascata com inferência e seletivo (seção 2); 4.5.3 projeto por IMC com os
-  números (seção 3); 4.5.4 PSR/PRP e robustez com as figuras (seções 4–5).
+- **4.5 A malha de controle** (cascata): 4.5.1 variáveis e enquadramento (seção 1); 4.5.2
+  estrutura — cascata com estimador inferencial, caminho direto duplo, seletor de
+  aderência (seções 1–2, com as respostas: seletor, anti-windup, origem do λ₁); 4.5.3
+  projeto — ganhos, filtros e limites, cada um com a justificativa que a simulação
+  motivou (seção 3); 4.5.4 PSR/PRP e a figura da simulação (seção 4).
 
-**Decisões a confirmar pela autora**: (a) cascata mestre/escrava + feedforward + seletor
-(como neste plano) — coerente com a §2.3 da Proposta, que já diz "a malha organiza-se em
-cascata"; (b) λ₁ = 1 s (regra 3–10×); (c) validação por simulação com não-linearidades
-antes da escrita.
+**Decisões confirmadas pela autora**: cascata, simulação. **Pendente de confirmação**:
+nenhuma — pronto para escrever o Cap. 4 sobre este esqueleto.
