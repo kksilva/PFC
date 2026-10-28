@@ -490,8 +490,8 @@ referência com o torque estimado $\hat{T}$ e produz a correção $\Delta I$. As
 parcelas somam-se na referência da malha interna $I_{\mathrm{ref}}$, que o controlador
 escravo $C_2$ persegue ajustando o comando $u$ sobre o pré-posicionamento
 $u_{\mathrm{ff}}$. O comando aciona a planta $G_2(s)$, cuja saída é a corrente $I$, e o
-estimador $\hat{G}$ reconstrói o torque a partir da corrente e do comando. As subseções
-a seguir detalham cada bloco.
+estimador $\hat{G}$ reconstrói o torque a partir da corrente e do comando, e as
+subseções a seguir detalham cada bloco.
 
 A descrição da estrutura proposta emprega a notação usual das notas de aula de controle, na qual o
 índice $1$ designa a malha mestra e o índice $2$ a malha escrava
@@ -551,12 +551,13 @@ o controlador não persiga a referência inalcançável, é a referência efetiv
 que alimenta os dois caminhos da estrutura.
 
 No projeto, o limiar é o torque máximo transferível ao solo $T_{\text{ader\^{e}ncia}}$, e o
-ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação. No
-\emph{feedforward}, a referência efetiva é convertida na corrente esperada. Na
-realimentação, é contra ela que o torque estimado é comparado. O benefício é duplo. A roda
-não patina, pois o torque comandado nunca excede o transferível, e o modelo do propulsor
-permanece válido, pois ele só descreve o processo abaixo do limite de aderência. O seletor,
-portanto, protege a aderência e a validade do modelo logo na entrada da estrutura.
+ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação, de
+modo que a referência efetiva, já cortada, alimenta os dois caminhos da estrutura, sendo
+convertida na corrente esperada no \emph{feedforward} e servindo de termo de comparação do
+torque estimado na realimentação. Com isso, a roda não patina, pois o torque comandado
+nunca excede o transferível, e o modelo do propulsor permanece válido, pois só descreve o
+processo abaixo do limite de aderência, de forma que o seletor protege, logo na entrada da
+estrutura, tanto a aderência quanto a validade do modelo.
 
 \subsection{O \emph{feedforward}}
 \label{sec:feedforward}
@@ -730,11 +731,12 @@ malha tão rápido quanto a planta permite, a Equação \eqref{eq:pi_imc} fornec
 A \textbf{malha
 mestra}, de torque, vê uma planta composta pela escrava fechada seguida da conversão do
 estimador, cujo ganho depende do ponto de operação. Dois cuidados são próprios da
-cascata. O primeiro é a separação de velocidades. A regra da estrutura manda que o mestre
-seja de três a dez vezes mais lento que a escrava \cite{raffo_tcpi_cascata}, para que a
-escrava lhe pareça instantânea. Adota-se $\lambda_1 = 1{,}1$ s, seis vezes $\lambda_2$. O
-segundo é a variação do ganho com o comando, tratada por \textbf{ganho programado}, em
-que o ganho proporcional do mestre é atualizado com o comando vigente,
+cascata, sendo o primeiro a separação de velocidades, pois a regra da estrutura manda que
+o mestre seja de três a dez vezes mais lento que a escrava \cite{raffo_tcpi_cascata},
+para que a escrava lhe pareça instantânea, e adota-se $\lambda_1 = 1{,}1$ s, seis vezes
+$\lambda_2$. O segundo cuidado é a variação do ganho com o comando, tratada por
+\textbf{ganho programado}, na qual o ganho proporcional do mestre é atualizado com o
+comando vigente,
 $K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$, o que lineariza o caminho da malha externa
 ao longo da faixa de operação. No ponto nominal, $K_{p1} = 0{,}18 \times 0{,}118 /
 (0{,}028 \times 1{,}1) \approx 0{,}70$ A/(N$\cdot$m), e
@@ -813,7 +815,7 @@ Limite do comando à região de aderência & linhas 241 e 56--57 \\
 \end{tabular}
 \end{table}
 
-Duas escolhas de implementação condicionam o desempenho. A primeira delas é o
+Duas escolhas de implementação condicionam o desempenho, e a primeira delas é o
 \emph{feedforward} duplo, no qual, além da corrente
 esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
 atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular

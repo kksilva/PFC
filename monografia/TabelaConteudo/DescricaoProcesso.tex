@@ -1,0 +1,877 @@
+\chapter{Descrição do Processo}
+\label{chap:descricaoprocesso}
+
+Este capítulo apresenta o sistema de propulsão do automodelo utilizado como objeto de estudo
+e discute as abordagens de instrumentação consideradas para a caracterização de sua dinâmica.
+Para cada abordagem, são apresentados o princípio de funcionamento, a proposta de controle em
+malha fechada, as vantagens e as limitações, de modo a fundamentar as decisões do projeto.
+
+\section{O Automodelo e seu Sistema de Propulsão}
+\label{sec:automodelo}
+
+O automodelo Kyosho Mad Force Kruiser 2.0 VE, de escala 1/8, é equipado com um motor brushless Orion NEON 8BL (Ori28188), cuja
+constante de velocidade é de \(2100\,\mathrm{rpm/V}\) --- rotações por minuto por volt aplicado,
+em condições próximas à operação sem carga mecânica significativa.
+É constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
+enrolamentos de fio de cobre, e por um rotor, componente móvel com ímãs permanentes fixados na
+carcaça. No rotor, os ímãs permanentes produzem campo magnético próprio em razão das
+propriedades do material, ao passo que no estator a corrente elétrica que percorre os
+enrolamentos gera um campo eletromagnético. A interação entre esses dois campos produz
+o torque responsável pela rotação do eixo, como ilustrado na Figura~\ref{fig:motorbrushless}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{Figuras/motor_explode.jpeg}
+\caption{Visão explodida de um motor brushless --- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
+\label{fig:motorbrushless}
+\footnotesize{Fonte: \cite{digi_stator_rotor}.}
+\end{figure}
+
+A continuidade desse movimento depende da comutação eletrônica, processo pelo qual a alimentação das três fases
+do motor é alternada em uma sequência que modifica continuamente a orientação do campo magnético resultante do estator,
+produzindo um campo girante. Essa função é realizada pelo Controlador Eletrônico de Velocidade (\emph{Electronic
+Speed Controller} --- ESC) Orion Vortex R8, que recebe o comando de aceleração e controla a energia
+elétrica transferida da bateria para os enrolamentos. Como o motor é do tipo \emph{sensorless}, o ESC estima sua
+posição a partir da força contraeletromotriz (\emph{back-EMF}) --- a tensão induzida nos enrolamentos pela rotação dos
+ímãs permanentes do rotor. Para isso, uma das fases permanece temporariamente sem alimentação durante a comutação,
+permitindo ao controlador detectar os cruzamentos por zero dessa tensão e estimar os instantes adequados para a
+próxima etapa. Dessa forma, o ESC mantém o campo do estator sincronizado com o movimento do rotor, possibilitando
+a conversão contínua da energia elétrica em energia mecânica.
+
+Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A \cite{kyosho_madforce}.
+A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
+capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
+preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. O comando de aceleração aplicado ao ESC
+pode ter duas origens, selecionadas por uma chave de comutação, que conduz o sinal
+PWM (\emph{Pulse Width Modulation} --- modulação por largura de pulso, na qual a duração de cada pulso codifica o valor do comando)
+proveniente do controle remoto, por meio do receptor de rádio, ou o sinal
+gerado por uma Raspberry Pi embarcada no veículo, com bateria própria e conversor
+\emph{step-down} para alimentação em 5 V.
+
+\section{Situação Atual e Estado da Arte}
+\label{sec:estadoarte}
+
+Para atender os objetivos, podem ser consideradas
+diferentes alternativas de medição, e a escolha da mais adequada entre elas depende de fatores
+como precisão, complexidade de implementação, custo e adequação às condições experimentais.
+Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento de cada técnica,
+discutem sua aplicabilidade na caracterização do sistema e fundamentam a opção adotada.
+
+\subsection{Sensor Inercial (IMU) -- MPU-6050}
+\label{sec:imu}
+
+A Unidade de Medição Inercial (Inertial Measurement Unit --- IMU) MPU-6050 reúne um acelerômetro 
+e um giroscópio triaxiais, que medem, respectivamente, a aceleração \(a\) e a velocidade 
+angular \(\omega\) ao longo dos eixos \(x\), \(y\) e \(z\). Para caracterizar o movimento do automodelo, 
+a IMU deve ser fixada rigidamente em uma região próxima ao centro geométrico do chassi, com seus eixos 
+alinhados às direções longitudinal, lateral e vertical do veículo, de preferência afastada de fontes 
+intensas de vibração e protegida contra impactos.
+
+O torque produzido pelo motor \(T_{\mathrm{motor}}\) é transmitido às rodas pelo sistema de transmissão, 
+resultando em um torque nas rodas \(T_{\mathrm{roda}}\). Considerando a relação de redução da transmissão \(i\) e o 
+rendimento mecânico \(\eta\), essa relação é expressa por
+
+\begin{equation*}
+T_{\mathrm{roda}} = i\,\eta\,T_{\mathrm{motor}}.
+\end{equation*}
+
+Nas rodas, o torque é convertido em força de tração \(F_{\text{tra\c{c}\~{a}o}}\), que atua sobre o solo e impulsiona 
+o veículo. Considerando o raio efetivo \(r\) da roda e desprezando perdas no contato pneu-solo, essa força é dada por
+
+\begin{equation*}
+F_{\text{tra\c{c}\~{a}o}} = \frac{T_{\mathrm{roda}}}{r}.
+\end{equation*}
+
+A aceleração longitudinal do automodelo depende da força resultante, obtida pela 
+diferença entre a força de tração e as forças resistivas ao movimento. De acordo com a segunda lei de Newton, 
+essa relação é descrita por
+
+\begin{equation}
+\label{eq:newton}
+m\,a_x = F_{\text{tra\c{c}\~{a}o}} - F_{\mathrm{resistivos}},
+\end{equation}
+
+em que \(m\) é a massa total do veículo, \(a_x\) é a aceleração longitudinal e \(F_{\mathrm{resistivos}}\) 
+representa a resultante das forças resistivas, como o atrito de rolamento e o arrasto aerodinâmico.
+
+No sistema de controle, emprega-se a estrutura básica de malha fechada com realimentação da
+variável de processo e comparação com a referência \cite{raffo_tcpi_variaveis}. A variável de
+processo é a velocidade longitudinal do automodelo, \(v(t)\), estimada como \(\hat{v}(t)\) pela
+integração numérica da aceleração longitudinal medida pela IMU, e a variável
+manipulada é o comando de aceleração \(u\), enviado ao ESC, de modo que
+\begin{equation*}
+\hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi,
+\end{equation*}
+em que \(\hat{v}(0)\) é a condição inicial da estimativa.
+
+A estimativa por integração tem, contudo, uma implicação que condiciona todo o uso da
+IMU, pois qualquer erro de medição do acelerômetro, em particular o desvio de zero, a
+aceleração que o sensor indica mesmo parado, acumula-se na integral. Um desvio constante
+produz na velocidade estimada um erro que cresce linearmente com o tempo, de modo que a
+estimativa é confiável em trajetos curtos e se degrada progressivamente em operação
+prolongada, exigindo filtragem e correção contínuas. Para a malha de controle, isso
+significa que a realimentação obtida pela IMU demanda tratamento permanente do sinal,
+sob pena de transferir a deriva do sensor para o comando.
+
+A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
+erro de controle.
+
+\[ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t). \]
+
+A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando \(u(t)\),
+transmitido ao ESC por meio de um sinal elétrico PWM, com o qual o ESC controla a energia
+fornecida pela bateria aos enrolamentos do motor, produzindo o torque que a transmissão leva
+às rodas. As perturbações do processo são as variações das forças que agem sobre o veículo
+sem depender do comando, como o atrito de rolamento, a inclinação do solo e a perda de
+aderência, que alteram a aceleração resultante para um mesmo valor de \(u\). A IMU mede a
+nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é atualizada por integração e
+realimentada ao controlador, que calcula um novo erro e um novo comando, e o ciclo
+se repete a cada período de amostragem.
+
+Quanto à proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar
+a taxa de variação do comando \(u\), suavizando a aceleração e reduzindo os picos de torque
+na transmissão. Essa ação é apenas parcialmente preventiva, pois atua depois que o pico já
+começou a ser medido. Desse modo, o sensor cumpre o objetivo de realimentação de velocidade,
+mas não o de proteção elétrica direta dos componentes.
+
+A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
+A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e terra, GND) e dois sinais de comunicação, SDA (Serial Data), responsável 
+pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincronismo. 
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.75\textwidth]{Figuras/imu_mpu6050_i2c.png}
+\caption{Conexão do módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C, com alimentação e sinais SDA e SCL.}
+\label{fig:imu_i2c}
+\footnotesize{Fonte: \cite{instructables_mpu6050}.}
+\end{figure}
+
+Em síntese, a IMU oferece uma cadeia de medição simples e de baixo custo, cuja limitação decisiva é a necessidade de identificar os parâmetros dinâmicos do veículo antes de qualquer estimativa de torque.
+
+\begin{itemize}
+    \item \textbf{Vantagens:} permite medir a aceleração do chassi sem depender de um modelo mecânico para obter essa grandeza.
+    Apresenta dimensões reduzidas, baixo custo e interface digital simples. 
+    Fornece medições de velocidade angular que podem ser úteis em análises posteriores da dinâmica do veículo.
+    \item \textbf{Limitações:} a estimativa de velocidade por integração acumula erros e pode exigir filtragem e correção de deriva.
+    As medições são sensíveis às vibrações e à projeção da gravidade nos eixos do sensor. 
+    A aceleração não permite determinar diretamente a corrente elétrica para garantir
+    a proteção dos componentes contra sobrecorrente.
+\end{itemize}
+
+\subsection{Sensor Magnético de Efeito Hall SS41F}
+\label{sec:ss41f}
+
+O SS41F é um sensor digital de efeito Hall do tipo bipolar, cuja
+saída assume nível alto na presença do polo norte de um ímã e nível baixo na presença do polo sul. Quando um anel
+magnetizado --- um ímã de ferrita com polos alternados ao longo da circunferência --- gira rigidamente
+acoplado à roda ou ao eixo, o sensor produz $N$ transições digitais por revolução, sendo $N$ o número de
+alternâncias de polos. Esse é o princípio dos encoders de roda usualmente empregados em robótica,
+nos quais o microcontrolador conta as transições em uma janela de tempo para estimar a rotação.
+
+Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
+anel é $\omega = 2\pi c/(N T_j)$, sendo que a contagem fornece diretamente a velocidade $\omega_m$
+quando o anel está no eixo do motor e fornece $\omega_\mathrm{roda}$, que se relaciona com
+$\omega_m$ pela redução $i$ da transmissão, quando está na roda.
+
+
+Na fixação no veículo, o anel magnetizado é acoplado rigidamente à roda ou ao eixo cuja
+rotação se deseja medir, e o sensor é montado no chassi, fixo, próximo ao anel. Entre o elemento
+Hall e os polos mantém-se uma entreferência --- a distância entre o sensor e o anel --- pequena
+e constante. O campo magnético decai rapidamente com a distância, razão pela qual uma folga
+excessiva enfraquece o sinal, enquanto uma folga mínima demais arrisca o contato
+mecânico. A conexão com o microcontrolador é direta --- alimentação, terra e saída digital ---,
+e a leitura por interrupção dispensa circuitos de condicionamento adicionais, uma vez que a
+saída do sensor já é um nível lógico compatível com a entrada do microcontrolador, ao contrário
+de um sinal analógico fraco, que exigiria amplificação e filtragem antes da conversão.
+
+A estimativa de torque a partir da velocidade, contudo, requer a dinâmica rotacional do conjunto. Com
+momento de inércia $J$ refletido no eixo do motor, coeficiente de atrito viscoso $B$ e torque de
+carga $T_L$, a Segunda Lei de Newton para a rotação, aplicada a motores elétricos, é dada por
+\begin{equation}\label{eq:dinamica_rotacional}
+T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
+\end{equation}
+
+O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
+que precisam ser identificados separadamente, pois são propriedades do conjunto
+veículo--carga, não do sensor. $J$ depende da massa e da redução, $B$ do atrito interno da
+transmissão e $T_L$ da carga e da inclinação --- mudam com a configuração e não aparecem na
+leitura. Há, ainda, um limite de resolução inerente ao
+método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
+torna progressivamente mais grosseira. A derivada exigida pela Equação
+\eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
+torque sensível à resolução do sensor.
+
+Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
+de velocidade, sem nenhum modelo de torque, da mesma forma que a velocidade estimada pela IMU.
+No sistema de controle, a variável de processo é a velocidade angular obtida pela contagem dos
+pulsos, e a variável manipulada é o comando de aceleração $u$. A referência de velocidade é
+comparada à medida, e o controlador ajusta o comando até eliminar o erro, na estrutura de malha
+fechada simples com realimentação. As perturbações são as variações de carga que alteram o
+torque demandado para uma mesma velocidade, como a inclinação do terreno e a mudança de
+aderência, que se manifestam como variação de $T_L$ na Equação
+\eqref{eq:dinamica_rotacional}. Motores brushless com sensores Hall integrados já são
+controlados dessa maneira, com os mesmos sinais servindo à comutação e à realimentação.
+
+Quanto à proteção do sistema, o SS41F não fornece nenhuma grandeza elétrica, de modo que a
+proteção contra sobrecorrente por limiar não pode ser implementada com esse sensor. A única
+ação preventiva disponível é a limitação da taxa de variação do comando, que suaviza a
+excitação do motor, sem garantia efetiva contra sobrecorrente.
+
+Em síntese, o SS41F mede a velocidade com robustez e simplicidade de interface, mas só se aproxima do torque depois de identificados a inércia, o atrito e a carga do conjunto.
+
+\begin{itemize}
+    \item \textbf{Vantagens:} baixo custo, robustez mecânica e velocidade de comutação superior a $100$ kHz, com interface digital simples, compatível com a leitura por interrupção em microcontroladores comuns.
+     Fornece a velocidade por contagem direta dos pulsos.
+    \item \textbf{Limitações:} gera apenas pulsos associados à posição angular, sem informação sobre corrente
+     elétrica ou torque. A estimativa de torque só é possível após a determinação de $J$, $B$ e $T_L$, conforme
+      a Equação \eqref{eq:dinamica_rotacional}. A instalação demanda alinhamento mecânico preciso entre o 
+      sensor e o anel, pois desalinhamentos produzem pulsos assimétricos que distorcem a medida.
+\end{itemize}
+
+\subsection{Shunt Resistivo + Amplificador de Instrumentação (INA240)}
+\label{sec:ina240}
+
+No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série no ramo de alimentação, 
+entre a bateria e o ESC e, pela Lei de Ohm, a queda de tensão sobre ele é
+
+\begin{equation*}
+V_s = R_s\,I.
+\end{equation*}
+
+Essa tensão, tipicamente da ordem de milivolts, é amplificada pelo circuito integrado INA240, cuja
+saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
+\begin{equation*}
+V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
+\end{equation*}
+em que $G$ é o ganho fixo do amplificador. 
+
+A dissipação de potência no resistor cresce com o quadrado da corrente. Considerando as correntes do
+ESC, um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W
+em regime e mais de $500$ W nos picos, o que faz o resistor aquecer e consumir parte da energia
+destinada ao motor. Observa-se, ainda, que o shunt instalado na alimentação do ESC mede a
+corrente média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
+usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento, a
+fração do período em que o PWM permanece ligado, o que resulta em
+
+\begin{equation}\label{eq:corrente_bateria}
+\bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
+\end{equation}
+
+No motor, a corrente de fase se relaciona ao torque pela constante de torque $K_t$ do
+propulsor, $T_{\mathrm{motor}} = K_t\,I_{\mathrm{fase}}$, de modo que a corrente medida
+permite estimar o esforço mecânico produzido.
+
+O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do
+shunt, e sua saída, um sinal analógico, é ligada à entrada do microcontrolador, conforme a
+Figura~\ref{fig:ina240}.
+O componente possui largura de banda de 400 kHz e
+rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
+simultâneas da tensão nos dois terminais de entrada, produzidas pelo chaveamento do
+ESC. Sem essa rejeição, os picos de chaveamento saturariam a saída do amplificador e
+mascariam a corrente. Em altas
+frequências, ainda, a indutância parasita do próprio resistor --- de seus terminais e de sua
+construção --- soma-se à queda ômica, e a tensão deixa de ser proporcional à corrente
+instantânea, distorcendo a leitura durante as bordas de chaveamento.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.65\textwidth]{Figuras/ina240.jpeg}
+\caption{Amplificador de instrumentação INA240 para leitura de corrente por shunt
+resistivo.}
+\label{fig:ina240}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e
+implementar a proteção contra sobrecorrente por limiar. No sistema de controle, a variável de
+processo é a corrente do propulsor, relacionada ao torque pela constante $K_t$ do motor, e a
+variável manipulada é o comando de aceleração $u$, aplicado ao ESC. A referência de torque
+desejado é convertida na corrente correspondente e comparada à medida, e o controlador ajusta
+o comando até anular o erro, na estrutura de malha fechada simples com realimentação. As
+perturbações são as variações da carga mecânica que exigem mais corrente para um mesmo torque
+na roda, como a inclinação do terreno e a perda de aderência. Por medir a corrente
+diretamente, o arranjo viabiliza, ainda, a proteção do sistema. Sempre que a leitura
+ultrapassa um limiar, o controlador reduz a excitação, protegendo o conjunto contra
+sobrecorrente.
+
+Em síntese, o arranjo com shunt e INA240 privilegia a precisão e o baixo custo em troca da simplicidade de instalação, o que o torna adequado como referência de bancada, mas não como sensor embarcado.
+
+\begin{itemize}
+    \item \textbf{Vantagens:} proporciona uma medida direta da corrente, com boa linearidade e
+    ampla largura de banda a baixo custo. A polarização da saída permite a leitura bidirecional
+    com um único conversor. A rejeição a transientes de modo comum preserva o sinal sob o
+    chaveamento do ESC.
+    \item \textbf{Limitações:} dissipação de potência sob as correntes do ESC, com
+    aquecimento do resistor. Contato elétrico direto com o ramo de potência, pela ausência de
+    isolamento galvânico. Distorção da leitura em alta frequência, decorrente da indutância
+    parasita do resistor.
+\end{itemize}
+
+\subsection{Sensor de Efeito Hall Linear (ACS758)}
+\label{sec:acshall}
+
+O sensor de efeito Hall ACS758 mede a corrente elétrica indiretamente, proporcionando isolamento 
+galvânico, ou seja, não há conexão elétrica direta entre o circuito de potência e o circuito de medição. 
+Seu funcionamento baseia-se no efeito Hall. A corrente que percorre um condutor interno gera um
+campo magnético perpendicular a uma lâmina semicondutora do sensor, e a tensão desenvolvida
+nessa lâmina, a tensão de Hall, é proporcional ao campo e, portanto, à corrente medida. A
+tensão de saída varia em torno de um nível de referência, permitindo medir correntes nos dois sentidos.
+
+\begin{equation*}
+V_\mathrm{out} = V_{\mathrm{offset}} + S\,I,
+\qquad
+I = \frac{V_\mathrm{out} - V_{\mathrm{offset}}}{S},
+\end{equation*}
+em que $S$ é a sensibilidade, em V/A, e $V_{\mathrm{offset}} = V_{CC}/2$ é o \emph{offset} do
+sensor, ou tensão de repouso, isto é, a tensão de saída quando a corrente é nula ($I = 0$).
+
+O sensor ACS758ECB-200B possui sensibilidade típica de $10$ mV/A com alimentação de $5$ V, 
+reduzindo-se proporcionalmente em alimentações menores, uma vez que a saída é ratiométrica.
+O condutor interno de corrente apresenta resistência da ordem de $100$ µ$\Omega$, de modo
+que a queda de tensão e a dissipação introduzidas pelo sensor são pequenas. A resolução da
+medida, por fim, é limitada pelo conversor analógico-digital de $n$ bits e por sua tensão de
+referência $V_\mathrm{ref}$, que define o fundo de escala dividido em $2^n$ degraus, de
+modo que o menor degrau de tensão distinguível é $V_\mathrm{ref}/2^n$, conforme a
+Equação \eqref{eq:acs_resolucao}.
+
+\begin{equation}\label{eq:acs_resolucao}
+\Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
+\end{equation}
+
+Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
+saída analógica é ligada ao conversor analógico--digital (ADC) do microcontrolador, que
+converte a tensão de saída no número digital lido pelo programa, conforme a
+Figura~\ref{fig:acs758}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.65\textwidth]{Figuras/acs758_cap2.png}
+\caption{Sensor de corrente de efeito Hall linear ACS758.}
+\label{fig:acs758}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Em malha fechada, o ACS758 se comporta como o arranjo com shunt. A variável de processo é o
+torque estimado a partir da corrente, a variável manipulada é o comando de acionamento $u$, e
+a referência de torque desejado é convertida na corrente correspondente e comparada à
+medida, com o controlador ajustando o comando até anular o erro, na estrutura de malha
+fechada simples com realimentação. Por medir a corrente diretamente, o sensor viabiliza,
+ainda, a proteção contra sobrecorrente por limiar, com o controlador reduzindo a excitação
+sempre que a leitura ultrapassa o valor máximo admitido.
+
+Como no arranjo com shunt, o sensor instalado no ramo de alimentação mede a corrente
+média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. A
+conversão entre as duas se dá pela razão cíclica do comando, conforme a
+Equação~\eqref{eq:corrente_bateria}, o que faz a corrente medida preservar a
+informação de esforço mecânico do propulsor.
+
+Em síntese, o ACS758 isola eletricamente a medição e não dissipa potência no circuito de
+potência, ao custo de resolução limitada pela sensibilidade reduzida e de susceptibilidade
+a campos magnéticos externos.
+
+\begin{itemize}
+    \item \textbf{Vantagens:} isolamento galvânico, sem dissipação adicional significativa e com banda suficiente para o chaveamento do ESC.
+    \item \textbf{Limitações:} resolução limitada pelo conversor, inferior à do shunt para a
+    mesma faixa de corrente. Necessidade de compensação do nível de repouso, pois qualquer
+    deriva da tensão \(V_{CC}/2\) se confunde com corrente contínua e transfere erro para a
+    estimativa de torque. Sensibilidade a campos eletromagnéticos externos, que se somam ao
+    campo da corrente medida.
+\end{itemize}
+
+\subsection{Síntese Comparativa}
+\label{sec:sintese}
+
+A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A
+IMU e o SS41F exigem a identificação prévia de parâmetros mecânicos ($m$,
+$F_{\text{resistivos}}$, $J$, $B$ e $T_L$), que são propriedades do conjunto veículo--carga
+e mudam com a configuração, enquanto a corrente elétrica se relaciona ao torque por
+constantes do próprio propulsor, identificáveis em bancada. Com isso, a corrente elétrica é a grandeza de cadeia mais curta até o torque, e o sensor Hall
+linear, o melhor equilíbrio entre os sensores de corrente para este sistema, já que possui isolamento
+galvânico para proteger o circuito das altas correntes, e não dissipa potência. 
+
+\section{Proposta do Projeto}
+\label{sec:proposta}
+
+A proposta do trabalho é controlar o torque do propulsor do automodelo em malha fechada,
+sem sensor de torque embarcado. Como o torque na roda não é mensurável a bordo, ele é
+estimado a partir da corrente elétrica do ramo de alimentação, a única grandeza de cadeia
+curta até o torque entre as comparadas na Seção~\ref{sec:sintese}, e o modelo que faz
+essa tradução é validado contra a força de tração medida por uma balança de gancho, com
+o veículo ancorado. Sobre esse modelo, estrutura-se uma malha de controle em cascata,
+com estimador, pré-alimentação e proteções, cuja especificação completa é o objeto desta
+seção.
+
+A tradução da corrente em torque se dá em dois elos estáticos, corrente--força e
+força--torque, e cada elo tem o seu coeficiente. O primeiro, $G_F$, é a força de tração
+por unidade de corrente, identificado diretamente no ensaio, pois a balança mede força.
+O segundo, $K_T = G_F\,r_{\mathrm{ef}}$, é o torque por unidade da mesma corrente,
+obtido da multiplicação pelo raio efetivo da roda, e é o coeficiente que o controlador
+emprega, pois a variável de interesse é o torque. Os dois nomes designam uma mesma
+relação física entre a corrente e o esforço mecânico do propulsor, vista ora na grandeza
+que o ensaio mede, ora na grandeza que o controle comanda, e a distinção de nomes evita
+confundir as unidades ao longo do texto. A Subseção~\ref{sec:estimador} deriva os dois
+coeficientes da curva característica, e as subseções seguintes detalham a malha de
+controle construída sobre eles.
+
+\subsection{O estimador de torque}
+\label{sec:estimador}
+
+A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758
+e convertida em torque por um estimador que não exige o conhecimento da redução da
+transmissão. O ponto de partida é a curva característica estática do propulsor,
+obtida no ensaio de tração de corrente versus força, no qual o veículo é mantido parado e a força de
+tração na roda é medida para cada comando aplicado. Para empregar a corrente medida no
+ramo de alimentação, define-se a corrente de fase equivalente como o quociente da
+corrente de bateria, com as perdas descontadas, pelo comando
+
+\begin{equation}\label{eq:corrente_fase}
+I_{\mathrm{fase,eq}} = (I_{\mathrm{bat}} - I_0(u))/u,
+\end{equation}
+na qual \(I_0(u)\) é a corrente de perdas do conjunto, medida em ensaio em vazio. A
+divisão pelo comando recupera a corrente de fase que o chaveamento esconde da medida,
+conforme a Equação~\eqref{eq:corrente_bateria}, relacionando-se pela curva característica 
+estática do propulsor
+
+\begin{equation}\label{eq:curva_caracteristica}
+F_{\text{tra\c{c}\~{a}o}} = G_F\,I_{\mathrm{fase,eq}},
+\end{equation} 
+
+em que \(G_F\), em N/(A/u), é o coeficiente angular do ajuste, a força de tração produzida
+por unidade de corrente de fase equivalente.
+
+O torque na roda fecha a cadeia corrente--força--torque. A força de tração atua no raio
+efetivo da roda, \(T = F_{\text{tra\c{c}\~{a}o}}\,r_{\mathrm{ef}}\), e a substituição
+da Equação~\eqref{eq:curva_caracteristica} nessa relação resulta na estimativa
+
+\begin{equation}\label{eq:estimador_proposta}
+\hat{T} = K_T\,I_{\mathrm{fase,eq}},
+\end{equation}
+
+em que $K_T = G_F\,r_{\mathrm{ef}}$, em N$\cdot$m/(A/u), é o torque na roda por unidade de
+corrente de fase equivalente, o mesmo coeficiente $G_F$ da curva característica,
+multiplicado pelo raio efetivo. Fisicamente, $K_T$ é o produto da constante de torque do
+motor pela redução e pelo rendimento do caminho até a roda, o torque entregue por
+ampère de fase, e o conhecimento de cada um desses fatores isolados não é necessário,
+pois o produto é identificado em bancada de uma só vez.
+
+Na cadeia do modelo, cada elo é estático, exceto um, pois o comando $u$ gera a corrente $I$
+através da dinâmica comando--corrente $G_2(s)$ da malha interna. A corrente se converte
+em torque pela relação estática da Equação~\eqref{eq:estimador_proposta}, com $K_T$, e o
+torque se converte em força pela relação estática $F = T/r_{\mathrm{ef}}$, com o raio
+efetivo, de modo que a única dinâmica da cadeia é a da corrente, tratada na malha
+interna.
+
+A validação do estimador exige um instrumento capaz de medir a força de tração na
+escala do veículo, e a escolha desse instrumento foi precedida de um estudo conduzido
+no início do projeto, que comparou célula de carga com amplificador, torquímetro,
+dinamômetro e balança de gancho sob os critérios de facilidade de implementação,
+tamanho e custo. A célula de carga foi afastada porque seu sinal, da ordem de
+milivolts, exige circuito de amplificação dedicado e uma fixação mecânica própria
+entre o veículo e o ponto de ancoragem do ensaio. O torquímetro demanda acoplamento mecânico no
+eixo da transmissão e tem custo elevado para a faixa de dezenas de newtons do
+ensaio. O dinamômetro de tração pressupõe bancada de escala automotiva, inadequada a
+um veículo de dezenas de newtons.
+A balança de gancho foi a opção escolhida,
+pois mede diretamente a
+força, dispensa condicionamento de sinal e adaptação mecânica além do próprio gancho,
+e serve como padrão de bancada para o ajuste e a validação do coeficiente \(K_T\). O
+protocolo do experimento é detalhado na Metodologia, no
+Capítulo~\ref{chap:metodologia}.
+
+\subsection{A estrutura de controle}
+
+A estrutura de controle proposta organiza-se em torno de dois caminhos que partem da
+referência. O torque pedido $T_{\mathrm{ref}}$ passa pelo seletor de mínimo, que o limita ao torque
+transferível, e a referência efetiva $T_{\mathrm{ref,ef}}$ alimenta dois caminhos. No
+caminho de pré-alimentação, o controlador \emph{feedforward} $C_{\mathrm{ff}}$ converte a
+referência na corrente esperada $I_{\mathrm{ff}}$ e no comando equivalente
+$u_{\mathrm{ff}}$. No caminho de realimentação, o controlador mestre $C_1$ compara a
+referência com o torque estimado $\hat{T}$ e produz a correção $\Delta I$. As duas
+parcelas somam-se na referência da malha interna $I_{\mathrm{ref}}$, que o controlador
+escravo $C_2$ persegue ajustando o comando $u$ sobre o pré-posicionamento
+$u_{\mathrm{ff}}$. O comando aciona a planta $G_2(s)$, cuja saída é a corrente $I$, e o
+estimador $\hat{G}$ reconstrói o torque a partir da corrente e do comando, e as
+subseções a seguir detalham cada bloco.
+
+A descrição da estrutura proposta emprega a notação usual das notas de aula de controle, na qual o
+índice $1$ designa a malha mestra e o índice $2$ a malha escrava
+\cite{raffo_tcpi_cascata}, em que $R$ é a referência, $Y$ a variável controlada, $C$ o
+controlador, $U$ a saída do controlador e $L$ a perturbação. A
+Tabela~\ref{tab:nomenclatura} fixa a correspondência entre esses símbolos e as variáveis
+do projeto, e a leitura do diagrama e do texto se apoia nos mesmos nomes.
+
+\begin{table}[htb]
+\centering
+\caption{Correspondência entre a notação das notas de aula e as variáveis do projeto.}
+\label{tab:nomenclatura}
+\small
+\begin{tabular}{l l l}
+\hline
+Símbolo & Nome & Variável do projeto \\
+\hline
+$R_1$ & referência da malha mestra & torque pedido $T_{\mathrm{ref}}$, após o seletor $T_{\mathrm{ref,ef}}$ \\
+$Y_1$ & variável controlada primária & torque estimado $\hat{T}$ \\
+$C_1$ & controlador mestre & Controlador de Torque, $K_{p1}(u)$, $T_{i1}$ \\
+$U_1$ & saída do mestre & correção de corrente $\Delta I$ \\
+$R_2$ & referência da malha escrava & $I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$ \\
+$Y_2$ & variável controlada secundária & corrente medida $I$ \\
+$C_2$ & controlador escravo & PI com anti-windup, $K_{p2}$, $T_{i2}$ \\
+$C_{\mathrm{ff}}$ & controlador \emph{feedforward} & curva característica aplicada à referência \\
+$U_2$ & variável manipulada & comando $u$, limitado à região de aderência \\
+$G_2(s)$ & planta da malha interna & dinâmica comando--corrente identificada \\
+$G_1(s)$ & planta da malha externa & escrava fechada seguida do estimador \\
+$L$ & perturbações & afundamento de tensão; variação térmica de $I_0$ \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{O seletor de mínimo}
+\label{sec:seletor}
+
+O controle seletivo, também chamado de controle \emph{override}, é a estrutura na qual
+duas ou mais referências candidatas disputam o comando do processo e um seletor
+escolhe, a cada instante, aquela que governa o controlador \cite{raffo_tcpi_cascata}.
+No seletor de mínimo, empregado neste trabalho, a escolha se dá pela comparação do torque
+de referência com o limiar de aderência.
+
+\begin{equation}\label{eq:seletor}
+T_{\mathrm{ref,ef}} = \min\left(T_{\mathrm{ref}},\,T_{\text{ader\^{e}ncia}}\right),
+\end{equation}
+
+em que $T_{\mathrm{ref}}$ é a referência, $T_{\text{ader\^{e}ncia}}$ o limiar de
+aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na malha.
+
+Quando a referência pedida excede o que o processo admite, segui-la pode causar danos ao
+equipamento ou tornar o modelo de controle inválido. Assim, o seletor corta a referência no
+limiar, e o controlador nunca recebe um pedido inexecutável. Em compensação, enquanto o
+limite atua, o torque entregue difere do torque pedido, e essa divergência é deliberada. A
+malha passa a regular o processo contra o limiar transferível, não contra a referência, e o
+erro persistente entre ambos não é falha de controle, mas a proteção em exercício. Para que
+o controlador não persiga a referência inalcançável, é a referência efetiva, já cortada, a
+que alimenta os dois caminhos da estrutura.
+
+No projeto, o limiar é o torque máximo transferível ao solo $T_{\text{ader\^{e}ncia}}$, e o
+ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação, de
+modo que a referência efetiva, já cortada, alimenta os dois caminhos da estrutura, sendo
+convertida na corrente esperada no \emph{feedforward} e servindo de termo de comparação do
+torque estimado na realimentação. Com isso, a roda não patina, pois o torque comandado
+nunca excede o transferível, e o modelo do propulsor permanece válido, pois só descreve o
+processo abaixo do limite de aderência, de forma que o seletor protege, logo na entrada da
+estrutura, tanto a aderência quanto a validade do modelo.
+
+\subsection{O \emph{feedforward}}
+\label{sec:feedforward}
+
+A pré-alimentação da referência, ou \emph{feedforward}, é o bloco que converte a
+referência diretamente em uma parcela da ação de controle, sem esperar que o erro se
+manifeste \cite{raffo_tcpi_psrprp}. O fundamento é a divisão de esforço entre os dois
+caminhos da estrutura. O bloco de pré-alimentação antecipa a
+resposta à referência, e o bloco de realimentação corrige o que a pré-alimentação não
+previu. Para que a referência se converta em ação de controle sem passar pelo erro, o
+caminho que ela atravessa precisa ser o inverso do modelo da malha
+
+\begin{equation}\label{eq:controlador_ideal}
+C_p(s) = \frac{1}{H_1(s)},
+\end{equation}
+
+em que $H_1(s)$ é o modelo que a referência atravessa. No
+projeto, o controlador $C_{\mathrm{ff}}$ recebe a referência efetiva e fornece a corrente esperada
+$I_{\mathrm{ff}}$, que se soma à correção $\Delta I$ do mestre para formar a referência
+da malha interna $I_{\mathrm{ref}}$. A realimentação, por sua vez, atua depois que o
+desvio aparece.
+
+Sem a pré-alimentação, o controlador dependeria apenas da realimentação, e o termo
+integrador carregaria sozinho todo o esforço de regime, deteriorando o transiente. A
+limitação da estrutura é a dependência do modelo. Quanto mais o processo real se afasta
+de $H_1(s)$, maior o resíduo que recai sobre a realimentação. A pré-alimentação da
+perturbação, possível apenas quando a perturbação é medida ou estimada, não é
+empregada, pois nem o afundamento da tensão da bateria sob carga nem a variação
+térmica de $I_0$ são mensuráveis no veículo.
+
+No projeto, o \emph{feedforward} é a inversa da curva característica. Aplica-se a
+Equação~\eqref{eq:estimador_proposta} no sentido da referência, o que fornece a
+corrente esperada
+
+\begin{equation}\label{eq:iff}
+I_{\mathrm{ff}} = I_0(u) + \frac{u\,T_{\mathrm{ref,ef}}}{K_T},
+\end{equation}
+
+e o comando equivalente $u_{\mathrm{ff}}$ é o valor que resolve essa equação. A saída
+do controlador mestre, a correção de corrente $\Delta I$, responde pelo que a
+pré-alimentação não previu, e o somador forma a referência da malha interna
+$I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$. Dessa forma, a pré-alimentação age antes do
+erro e a realimentação corrige o que resta.
+
+\subsection{A cascata}
+\label{sec:cascata}
+
+A estrutura em cascata organiza duas malhas aninhadas. O controlador mestre compara a
+referência com a variável controlada primária, e sua saída é a referência do
+controlador escravo, que compara essa referência com a variável secundária
+\cite{raffo_tcpi_cascata}. Cada malha obedece à lei de controle proporcional-integral,
+em que o erro $e = R - Y$ alimenta
+
+\begin{equation}\label{eq:pi}
+u(t) = K_c\left(e(t) + \frac{1}{T_i}\int_0^t e(\tau)\,d\tau\right),
+\end{equation}
+
+em que $K_c$ é o ganho e $T_i$ o tempo integral do controlador
+\cite{raffo_tcpi_pid2}. A justificativa da cascata está na rejeição da perturbação
+interna. Na estrutura, a perturbação $L_2$ atua dentro da malha
+escrava, e a função de transferência entre ela e a variável secundária é
+
+\begin{equation}\label{eq:rejeicao_l2}
+\frac{Y_2}{L_2} = \frac{G_{L2}}{1 + C_2\,G_2\,G_{m2}},
+\end{equation}
+
+em que $G_{L2}$ é o caminho da perturbação até a saída secundária, $C_2$ o controlador
+escravo, $G_2$ a planta interna e $G_{m2}$ o instrumento que realimenta a malha. Com o
+ganho de malha grande na banda de frequência da perturbação, o denominador reduz o
+efeito de $L_2$ antes que ela se transforme em erro na malha externa. Para que as duas
+malhas não disputem o mesmo atuador, a regra de separação de velocidades exige que a
+interna seja de três a dez vezes mais rápida que a externa.
+
+No projeto, o mestre é o
+controlador de torque, e o escravo, o controlador de corrente, mais rápido e sensível às
+perturbações elétricas. A planta interna $G_2(s)$ é a dinâmica comando--corrente, e a
+malha interna rejeita, pela Equação~\eqref{eq:rejeicao_l2}, as perturbações elétricas
+antes que se tornem erro de torque, enquanto a malha externa cuida do seguimento da
+referência.
+
+\subsection{O controle inferencial}
+\label{sec:inferencial}
+
+No controle inferencial, a variável controlada não pode ser medida on-line e é
+reconstruída por um modelo do processo a partir de uma variável secundária, medida e
+sensível a ela \cite{raffo_tcpi_cascata}. No projeto, o comando $u$ alimenta a planta $G_2(s)$, cuja saída primária, o
+torque $T$, não é mensurável embarcada. A corrente $I$, variável secundária medida, e o
+próprio comando alimentam o modelo $\hat{G}$, que reconstrói o torque $\hat{T}$. O
+fundamento da decisão é a indisponibilidade de sensor para a variável primária. Sem
+instrumentação para ela, o modelo é o único caminho de realimentação disponível, e o
+desempenho de toda a estratégia depende da precisão desse modelo.
+
+No projeto, o torque na roda é a saída primária, e a corrente do ramo de alimentação é
+a medida secundária. O modelo é a curva característica validada no ensaio de tração de
+corrente versus força,
+sintetizada pela
+Equação~\eqref{eq:estimador_proposta}. O estimador de torque fecha o laço externo:
+limita a estimativa à faixa validada e
+filtra-a antes de alimentar o mestre, pois é quase-estático e não deve reagir a
+transientes em que corrente e comando se desbalanceiam. O estimador, portanto,
+concentra em si a precisão do controle de torque.
+
+\subsection{As proteções do comando}
+\label{sec:protecoes}
+
+O comando do ESC satura em dois pontos do seu curso, sendo um a zona morta, abaixo da qual o
+motor não acelera, e o outro a fronteira da região validada. Quando o atuador satura, o erro
+continua alimentando o integrador do controlador, que acumula até a saída ficar presa
+no limite mesmo após a reversão do erro. O tratamento clássico dessa condição é o
+condicionamento da ação integral, também chamado de anti-\emph{windup}
+\cite{raffo_tcpi_pid2}. No condicionamento,
+a saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
+o comando efetivo $u$ retorna ao controlador, de modo que o integrador não acumula o
+erro em excesso enquanto a saturação persiste.
+
+No projeto emprega-se o \emph{clamping} no integrador do controlador escravo, ajustado
+para que a saída fique exatamente no limite, em vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da saturação imediatamente. Duas
+proteções completam a estrutura sobre o comando, sendo a primeira a limitação à região de aderência
+validada, fronteira que mantém o modelo, o estimador e o controlador válidos.
+A segunda é a proteção contra sobrecorrente por limiar, que reduz a excitação sempre que a
+leitura ultrapassa o valor máximo admitido, o que só é possível porque a corrente é medida.
+
+\subsection{A classificação das variáveis}
+\label{sec:variaveis}
+
+Na classificação das variáveis de processo, o controle de torque deste propulsor segue o
+perfil do controle de vazão, de dinâmica rápida com tempo morto desprezível, perturbações
+frequentes porém pequenas e ruído de alta frequência na medição
+\cite{raffo_tcpi_variaveis}. A variável controlada primária é o torque na roda, que não é
+mensurável embarcada, e a variável controlada secundária é a corrente de bateria, lida pelo
+sensor. A variável manipulada é o comando $u$, e as perturbações são o afundamento de
+tensão da bateria sob carga e a variação da corrente de perdas com a temperatura, ambas
+sem sensor no veículo e ambas grandezas de influência clássicas, que alteram a medição e o
+processo sem serem o objeto do controle \cite{braga_instr_config}.
+
+\subsection{O projeto dos controladores}
+\label{sec:projeto_controladores}
+
+O projeto não se deu de uma vez, pois cada proteção responde a uma falha, e a ordem de
+apresentação é a ordem em que as decisões foram tomadas. O projeto dos controladores
+segue o método de modelo interno, uma síntese direta na qual a lei de controle deriva do
+modelo do processo, com o parâmetro de ajuste explicitando o compromisso entre desempenho
+e robustez \cite{garcia1982internal, raffo_tcpi_imc}. Especifica-se que a malha fechada se
+comporte como primeira ordem com constante de tempo $\lambda$, o mais lento que se deseja
+exigir dela, e a especificação é filtrada por $1/(\lambda s + 1)$, que torna o ajuste
+robusto. O cancelamento do polo da planta e a solução para o controlador resultam, para o
+PI, em
+\begin{equation}\label{eq:pi_imc}
+K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
+\qquad
+T_i = \tau,
+\end{equation}
+em que $\tau$ e $K$ são a constante de tempo e o ganho da planta e $\theta_a$ o atraso.
+No método \cite{raffo_tcpi_imc}, o controle
+clássico realimenta apenas a saída medida, enquanto o controle por modelo interno
+compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, e o controlador contém
+a inversa da parte invertível do modelo e um filtro $F$ que torna o ajuste robusto, neste
+trabalho de primeira ordem, com constante de tempo $\lambda$.
+
+A \textbf{malha escrava}, de corrente, atua sobre a planta identificada no ensaio de
+tração de corrente, apresentada no Capítulo~\ref{chap:resultados}. Como a curva estática
+não é uma reta --- o ganho do platô cresce de $82$ a $126$ A/u ---, emprega-se para o
+projeto o ganho local da planta, a
+inclinação da curva estática no ponto de operação, e não a média. Essa curva é ajustada
+por uma quadrática sobre os dados da descida, $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 +
+175{,}6\,u - 5{,}76$ (o script da simulação, apresentado no repositório do trabalho, ajusta
+e imprime esses coeficientes), cuja inclinação no ponto nominal, o comando de $105^\circ$
+($u = 0{,}118$), vale $153$ A/u. Com a escolha $\lambda_2 = \tau = 0{,}18$ s, que fecha a
+malha tão rápido quanto a planta permite, a Equação \eqref{eq:pi_imc} fornece $T_{i2} =
+0{,}18$ s e $K_{p2} = 0{,}18/(153 \times 0{,}18) \approx 6{,}5\times10^{-3}$ u/A.
+A \textbf{malha
+mestra}, de torque, vê uma planta composta pela escrava fechada seguida da conversão do
+estimador, cujo ganho depende do ponto de operação. Dois cuidados são próprios da
+cascata, sendo o primeiro a separação de velocidades, pois a regra da estrutura manda que
+o mestre seja de três a dez vezes mais lento que a escrava \cite{raffo_tcpi_cascata},
+para que a escrava lhe pareça instantânea, e adota-se $\lambda_1 = 1{,}1$ s, seis vezes
+$\lambda_2$. O segundo cuidado é a variação do ganho com o comando, tratada por
+\textbf{ganho programado}, na qual o ganho proporcional do mestre é atualizado com o
+comando vigente,
+$K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$, o que lineariza o caminho da malha externa
+ao longo da faixa de operação. No ponto nominal, $K_{p1} = 0{,}18 \times 0{,}118 /
+(0{,}028 \times 1{,}1) \approx 0{,}70$ A/(N$\cdot$m), e
+$T_{i1} = 0{,}18$ s.
+
+As duas malhas, cada uma com sua planta, seu controlador e seus ganhos, consolidam-se na
+Tabela~\ref{tab:malhas}. Os demais elementos da estrutura --- o \emph{feedforward}, o seletor
+de aderência, os limites, o anti-windup, o estimador e as rampas --- não são
+controladores, mas as proteções e as conversões que cercam os dois.
+
+\begin{table}[htb]
+\centering
+\caption{As duas malhas da cascata e seus elementos de projeto.}
+\label{tab:malhas}
+\small
+\begin{tabular}{l c c}
+\hline
+ & Malha interna (escrava) & Malha externa (mestra) \\
+\hline
+Variável controlada & Corrente $I$ & Torque estimado $\hat{T}$ \\
+Variável manipulada & Comando $u$ & Referência de corrente \\
+Planta & $G_2(s)$, identificada na Seção~\ref{sec:resdinamica} & Escrava fechada + estimador \\
+Controlador & PI & PI com ganho programado \\
+Ajuste (IMC) & $\lambda_2 = 0{,}18$ s & $\lambda_1 = 1{,}1$ s \\
+Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$ \\
+ & $T_{i2} = 0{,}18$ s & $K_{p1} \approx 0{,}70$ A/(N$\cdot$m), $T_{i1} = 0{,}18$ s \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{A implementação digital}
+\label{sec:implementacao}
+
+A teoria do projeto é contínua, ao passo que a implementação é necessariamente digital, pois o
+laço passa integralmente por computadores. A corrente é amostrada pelo conversor do
+Arduino, o controlador executa como programa no computador de bordo e o comando segue por
+pulso digital ao ESC. O controlador contínuo é, assim, traduzido em equações de diferenças
+executadas a cada período de amostragem $T_s$, e o projeto permanece válido se $T_s$ for
+pequeno frente às dinâmicas controladas, conforme as regras clássicas de discretização
+\cite{raffo_tcpi_sintese}. Adota-se $T_s = 10$ ms, o regime do \emph{firmware} rápido já
+gravado no Arduino, menor que um décimo dos tempos integrais de ambas as malhas.
+
+As duas malhas se discretizam da mesma forma. A escrava executa, a cada amostra,
+\[
+u[k] = u_\mathrm{ff}[k] + K_{p2}\left(e_2[k] + \frac{T_s}{T_{i2}}\sum_j e_2[j]\right),
+\]
+e o mestre,
+\[
+I_1[k] = K_{p1}(u[k])\left(e_1[k] + \frac{T_s}{T_{i1}}\sum_j e_1[j]\right),
+\]
+com as somas dos erros substituídas, na prática, por acumuladores atualizados a cada
+amostra. O filtro do estimador e as rampas da pré-alimentação e da referência são
+recursões de primeira ordem idênticas, todas no mesmo relógio de $10$ ms. Cada elemento da
+malha corresponde a um bloco do script da simulação (apresentado no repositório do trabalho,
+A.3), que é a versão de referência da implementação, e o mapa entre elementos e linhas de
+código consolida-se na Tabela \ref{tab:implementacao}.
+
+\begin{table}[htb]
+\centering
+\caption{Implementação da malha: onde cada elemento vive no código (script A.3).}
+\label{tab:implementacao}
+\small
+\begin{tabular}{l l}
+\hline
+Elemento & Localização no script \\
+\hline
+Constantes do projeto ($\lambda$, $T_s$, limites, rampas, filtro) & linhas 49--62 \\
+Corrente de perdas $I_0(u)$ e comando equivalente & linhas 108 e 150--160 \\
+Ganhos IMC ($K_{p2}$ e $K_{p1}$ programado) & linhas 175--177 \\
+Estimador de torque, com teto e filtro & linhas 212--217 \\
+Seletor de aderência e rampa da referência & linhas 219--223 \\
+\emph{Feedforward} de corrente e caminho direto & linhas 229--235 \\
+PI escravo, com anti-windup por clamping & linhas 238--248 \\
+Limite do comando à região de aderência & linhas 241 e 56--57 \\
+\hline
+\end{tabular}
+\end{table}
+
+Duas escolhas de implementação condicionam o desempenho, e a primeira delas é o
+\emph{feedforward} duplo, no qual, além da corrente
+esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
+atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
+integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
+estimador, como revelou a simulação. A segunda é o anti-\emph{windup} por \emph{clamping} (linhas 244--246 do script A.3),
+o condicionamento da ação integral descrito na Seção~\ref{sec:protecoes}, cuja alternativa
+mais simples, a integração condicional, travou o sistema em saturação nas simulações
+iniciais.
+
+Sobre a malha externa, duas salvaguardas se aplicam, pois o estimador é quase-estático e
+só é válido onde foi caracterizado. Em transientes em que corrente e comando desbalanceiam,
+ele produz valores fisicamente impossíveis, e sua saída é limitada à faixa
+validada. O teto, $3{,}35$ N$\cdot$m, é o torque que o próprio estimador atinge no topo da
+região de aderência, e a estimativa é, ainda, filtrada por $0{,}6$ s, constante de
+tempo escolhida em simulação para rejeitar o ruído da divisão sem atrasar a malha. A
+referência que entra no mestre é rampada a $0{,}6$ N$\cdot$m/s. O filtro da
+especificação de malha fechada no método de modelo interno já filtra a referência
+\cite{raffo_tcpi_imc}, e a rampa é sua versão prática, que evita que degraus grandes de
+referência carreguem o integrador do mestre. A rampa está no caminho da referência, não
+da realimentação, e a rejeição de perturbação não fica mais lenta por causa
+dela. Por fim, o próprio comando é limitado à região de aderência validada,
+$u \in [0{,}045;\ 0{,}21]$, que corresponde, pela normalização da metodologia,
+aproximadamente aos comandos de $99^\circ$ a $113^\circ$. O limite inferior tira a malha da
+zona morta, e o superior a mantém na fronteira da aderência. A simulação mostrou esse
+limite ser necessário, pois a curva de torque do propulsor não é monotônica além dessa região
+e comandar nela inverte o sinal da planta e
+desestabiliza a malha externa. O limite não é apenas proteção, mas a fronteira que mantém o
+modelo, o estimador e o controlador válidos.
+
+O conjunto dessas decisões atende diretamente aos objetivos do trabalho. A estrutura
+controla o torque em malha fechada, com seguimento de referência e rejeição de
+perturbações, sobre um propulsor caracterizado experimentalmente, operando dentro dos
+limites em que o
+modelo é válido e protegido contra sobrecorrente e patinagem. Com a estrutura, o projeto
+dos controladores e a implementação digital, a proposta do sistema de controle fica
+completamente especificada, e a sua materialização experimental é descrita na Metodologia,
+Capítulo~\ref{chap:metodologia}.
+
+\section{Resumo do Capítulo}
+\label{sec:resumocap2}
+
+Este capítulo apresentou o sistema de propulsão do automodelo e comparou as principais grandezas
+mensuráveis para sua caracterização, a saber, aceleração, velocidade angular, corrente elétrica e
+força de tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
+\eqref{eq:newton} e \eqref{eq:dinamica_rotacional}. A
+comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
+sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores avaliados.
+
+Sobre essa escolha, definiu-se a proposta do trabalho. Ela é um estimador de torque a partir da
+corrente medida, validado contra um padrão de tração obtido com uma balança de gancho.
+A malha de controle em cascata, com \emph{feedforward}, anti-windup e as proteções de
+aderência e de sobrecorrente, estrutura-se para atender aos objetivos de controle em
+malha fechada do propulsor. Com a classificação das variáveis, o projeto dos
+controladores por modelo interno e a implementação digital, a proposta fica completamente
+especificada. A materialização experimental dessa proposta --- a montagem,
+os ensaios e o orçamento de incertezas --- é descrita na Metodologia,
+Capítulo~\ref{chap:metodologia}.
+
+\clearpage

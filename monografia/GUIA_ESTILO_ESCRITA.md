@@ -58,6 +58,16 @@ curtas**.
 - **Frases curtas para fatos e comandos.** Afirmações pontuais, valores e instruções ficam em
   frases de 8–15 palavras. Alternar período longo (raciocínio) e frase curta (fato) é o que dá
   dinamismo ao texto.
+- **Proibida a frase-solta que só anuncia.** Uma frase curta cujo único papel é
+  anunciar o que vem a seguir ("O benefício é duplo.", "O procedimento é o seguinte.",
+  "A Tabela X consolida os dados.") quebra o encadeamento. A informação do anúncio entra
+  fundida ao período seguinte com conectivo ("...e, com isso, a roda não patina, pois...").
+  Cada ideia tem início, meio e fim dentro do fluxo, com conectivos, não em letreiro
+  separado.
+- **Proibida a clívula enfática "é ... que" para ideias correntes.** "Na realimentação,
+  é contra ela que o torque estimado é comparado" vira "na realimentação, o torque
+  estimado é comparado a ela". A construção "é ... que" fica para ênfases realmente
+  contrastivas, uma por capítulo no máximo.
 - **Proibida a sequência de frases curtas que carrega raciocínio.** Quando duas ou três frases
   seguidas de menos de 15 palavras estabelecem relação de causa, consequência ou qualificação,
   elas devem ser fundidas em um único período conectado, com *"que"*, *"pois"*, *"sendo"*,
