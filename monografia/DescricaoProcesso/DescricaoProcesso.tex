@@ -166,17 +166,8 @@ magnetizado --- um ímã de ferrita com polos alternados ao longo da circunferê
 acoplado à roda ou ao eixo, o sensor produz $N$ transições digitais por revolução, sendo $N$ o número de
 alternâncias de polos. Esse é o princípio dos encoders de roda usualmente empregados em robótica,
 nos quais o microcontrolador conta as transições em uma janela de tempo para estimar a rotação.
-A Figura~\ref{fig:ss41f_arranjo} ilustra o arranjo, com o anel magnetizado girando com o eixo
-e o sensor fixo no chassi, separado do anel pela entreferência.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.9\textwidth]{Figuras/ss41f_arranjo.png}
-\caption{Arranjo de medição com o SS41F. O anel magnetizado, acoplado ao eixo, apresenta polos
-alternados ao sensor, que produz um pulso digital a cada alternância de polo.}
-\label{fig:ss41f_arranjo}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+Na montagem, o anel magnetizado gira rigidamente com o eixo e o sensor fica fixo no
+chassi, separado do anel pela entreferência.
 
 Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
 anel é $\omega = 2\pi c/(N T_j)$. Com o anel no eixo do motor, a contagem fornece diretamente a
@@ -470,8 +461,8 @@ Capítulo~\ref{chap:metodologia}.
 
 \subsection{A estrutura de controle}
 
-A Figura~\ref{fig:malha_controle} apresenta a estrutura de controle proposta. O torque
-pedido $T_{\mathrm{ref}}$ passa pelo seletor de mínimo, que o limita ao torque
+A estrutura de controle proposta organiza-se em torno de dois caminhos que partem da
+referência. O torque pedido $T_{\mathrm{ref}}$ passa pelo seletor de mínimo, que o limita ao torque
 transferível, e a referência efetiva $T_{\mathrm{ref,ef}}$ alimenta dois caminhos. No
 caminho de pré-alimentação, o controlador \emph{feedforward} $C_{\mathrm{ff}}$ converte a
 referência na corrente esperada $I_{\mathrm{ff}}$ e no comando equivalente
@@ -482,17 +473,6 @@ escravo $C_2$ persegue ajustando o comando $u$ sobre o pré-posicionamento
 $u_{\mathrm{ff}}$. O comando aciona a planta $G_2(s)$, cuja saída é a corrente $I$, e o
 estimador $\hat{G}$ reconstrói o torque a partir da corrente e do comando. As subseções
 a seguir detalham cada bloco.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.95\textwidth]{Figuras/malha_controle.png}
-\caption{Estrutura de controle proposta. Seletor de mínimo, pré-alimentação
-$C_{\mathrm{ff}}$, cascata mestre--escravo e estimador $\hat{G}$. Os controladores
-aparecem como $C_{\mathrm{mestre}}$ e $C_{\mathrm{escravo}}$, correspondentes a $C_1$ e
-$C_2$ na notação das seções seguintes.}
-\label{fig:malha_controle}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
 
 A descrição da estrutura proposta emprega a notação usual das notas de aula de controle, na qual o
 índice $1$ designa a malha mestra e o índice $2$ a malha escrava
@@ -540,17 +520,7 @@ T_{\mathrm{ref,ef}} = \min\left(T_{\mathrm{ref}},\,T_{\text{ader\^{e}ncia}}\righ
 \end{equation}
 
 em que $T_{\mathrm{ref}}$ é a referência, $T_{\text{ader\^{e}ncia}}$ o limiar de
-aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na malha, como
-mostra a Figura~\ref{fig:seletor}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.6\textwidth]{Figuras/estrutura_seletor.png}
-\caption{Seletor de mínimo. A referência efetiva é a menor candidata, o que limita o
-torque pedido ao limiar de aderência.}
-\label{fig:seletor}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na malha.
 
 Quando a referência pedida excede o que o processo admite, segui-la pode causar danos ao
 equipamento ou tornar o modelo de controle inválido. Assim, o seletor corta a referência no
@@ -584,9 +554,8 @@ caminho que ela atravessa precisa ser o inverso do modelo da malha
 C_p(s) = \frac{1}{H_1(s)},
 \end{equation}
 
-em que $H_1(s)$ é o modelo que a referência atravessa. A
-Figura~\ref{fig:psrprp} apresenta o caminho de pré-alimentação no projeto. O
-controlador $C_{\mathrm{ff}}$ recebe a referência efetiva e fornece a corrente esperada
+em que $H_1(s)$ é o modelo que a referência atravessa. No
+projeto, o controlador $C_{\mathrm{ff}}$ recebe a referência efetiva e fornece a corrente esperada
 $I_{\mathrm{ff}}$, que se soma à correção $\Delta I$ do mestre para formar a referência
 da malha interna $I_{\mathrm{ref}}$. A realimentação, por sua vez, atua depois que o
 desvio aparece.
@@ -598,16 +567,6 @@ de $H_1(s)$, maior o resíduo que recai sobre a realimentação. A pré-alimenta
 perturbação, possível apenas quando a perturbação é medida ou estimada, não é
 empregada, pois nem o afundamento da tensão da bateria sob carga nem a variação
 térmica de $I_0$ são mensuráveis no veículo.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.8\textwidth]{Figuras/estrutura_feedforward.png}
-\caption{Pré-alimentação da referência no projeto. O bloco $C_{\mathrm{ff}}$ fornece a
-corrente esperada $I_{\mathrm{ff}}$, somada à correção $\Delta I$ do controlador mestre
-para formar a referência da malha interna.}
-\label{fig:psrprp}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
 
 No projeto, o \emph{feedforward} é a inversa da curva característica. Aplica-se a
 Equação~\eqref{eq:estimador_proposta} no sentido da referência, o que fornece a
@@ -638,7 +597,7 @@ u(t) = K_c\left(e(t) + \frac{1}{T_i}\int_0^t e(\tau)\,d\tau\right),
 
 em que $K_c$ é o ganho e $T_i$ o tempo integral do controlador
 \cite{raffo_tcpi_pid2}. A justificativa da cascata está na rejeição da perturbação
-interna. Na Figura~\ref{fig:cascata}, a perturbação $L_2$ atua dentro da malha
+interna. Na estrutura, a perturbação $L_2$ atua dentro da malha
 escrava, e a função de transferência entre ela e a variável secundária é
 
 \begin{equation}\label{eq:rejeicao_l2}
@@ -652,16 +611,7 @@ efeito de $L_2$ antes que ela se transforme em erro na malha externa. Para que a
 malhas não disputem o mesmo atuador, a regra de separação de velocidades exige que a
 interna seja de três a dez vezes mais rápida que a externa.
 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.95\textwidth]{Figuras/estrutura_cascata.png}
-\caption{Cascata no projeto. O mestre $C_1$ persegue o torque estimado, e o escravo
-$C_2$ persegue a referência de corrente formada com a pré-alimentação $C_{\mathrm{ff}}$.}
-\label{fig:cascata}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
-
-Na Figura~\ref{fig:cascata}, a estrutura é aplicada ao propulsor. O mestre é o
+No projeto, o mestre é o
 controlador de torque, e o escravo, o controlador de corrente, mais rápido e sensível às
 perturbações elétricas. A planta interna $G_2(s)$ é a dinâmica comando--corrente, e a
 malha interna rejeita, pela Equação~\eqref{eq:rejeicao_l2}, as perturbações elétricas
@@ -673,22 +623,12 @@ referência.
 
 No controle inferencial, a variável controlada não pode ser medida on-line e é
 reconstruída por um modelo do processo a partir de uma variável secundária, medida e
-sensível a ela \cite{raffo_tcpi_cascata}. A Figura~\ref{fig:inferencial} ilustra a
-estrutura no projeto. O comando $u$ alimenta a planta $G_2(s)$, cuja saída primária, o
+sensível a ela \cite{raffo_tcpi_cascata}. No projeto, o comando $u$ alimenta a planta $G_2(s)$, cuja saída primária, o
 torque $T$, não é mensurável embarcada. A corrente $I$, variável secundária medida, e o
 próprio comando alimentam o modelo $\hat{G}$, que reconstrói o torque $\hat{T}$. O
 fundamento da decisão é a indisponibilidade de sensor para a variável primária. Sem
 instrumentação para ela, o modelo é o único caminho de realimentação disponível, e o
 desempenho de toda a estratégia depende da precisão desse modelo.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.8\textwidth]{Figuras/estrutura_inferencial.png}
-\caption{Controle inferencial no projeto. O torque, não mensurável, é reconstruído a
-partir da corrente medida e do comando pelo modelo $\hat{G}$.}
-\label{fig:inferencial}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
 
 No projeto, o torque na roda é a saída primária, e a corrente do ramo de alimentação é
 a medida secundária. O modelo é a curva característica validada no ensaio de tração de
@@ -708,19 +648,10 @@ motor não acelera, e o outro é a fronteira da região validada. Quando o atuad
 continua alimentando o integrador do controlador, que acumula até a saída ficar presa
 no limite mesmo após a reversão do erro. O tratamento clássico dessa condição é o
 condicionamento da ação integral, também chamado de anti-\emph{windup}
-\cite{raffo_tcpi_pid2}. A Figura~\ref{fig:antiwindup} ilustra o condicionamento no
-controlador escravo. A saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
+\cite{raffo_tcpi_pid2}. No condicionamento,
+a saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
 o comando efetivo $u$ retorna ao controlador, de modo que o integrador não acumula o
 erro em excesso enquanto a saturação persiste.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.7\textwidth]{Figuras/estrutura_antiwindup.png}
-\caption{Condicionamento da ação integral no controlador escravo. O comando efetivo,
-após a saturação, retorna ao controlador.}
-\label{fig:antiwindup}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
 
 No projeto emprega-se o \emph{clamping} no integrador do controlador escravo, ajustado
 para que a saída fique exatamente no limite, em vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da saturação imediatamente. Duas
