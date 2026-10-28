@@ -5,7 +5,18 @@ Este capítulo apresenta os resultados dos experimentos definidos na metodologia
 que foram conduzidos, e o controlador projetado sobre eles. Convém antecipar a lógica que
 organiza a apresentação, pois ela só se torna evidente ao final da sequência.
 
-(ESCREVER ALGO COMPATIVEL COM O QUE TEMOS AGORA)
+A caracterização produziu dois modelos complementares do propulsor, e a apresentação a
+seguir acompanha a ordem em que foram obtidos. O primeiro é estático: a corrente de perdas
+do ensaio em vazio e os pares corrente-força do ensaio de tração de corrente versus força
+constroem, ponto a ponto, a curva característica que traduz a corrente em esforço mecânico
+--- o modelo que alimenta o estimador de torque e o feedforward da malha. O segundo é
+dinâmico: o ensaio de tração de corrente registra a evolução temporal da corrente após
+cada degrau e dela emerge a planta sobre a qual a malha escrava atua. No controlador, os
+dois se encadeiam: a referência de torque é convertida em corrente esperada pela inversa
+da curva estática, a malha interna faz a corrente seguir essa referência sobre a dinâmica
+identificada, e a corrente medida é convertida de volta em torque pela mesma curva. Cada
+ensaio alimenta um elo dessa cadeia, e a validação de cada modelo é o que torna o
+fechamento da malha defensável.
 
 \section{O processamento dos dados e o ajuste das retas}
 \label{sec:processamento}
