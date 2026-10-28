@@ -94,9 +94,11 @@ m\,a_x = F_{\text{tra\c{c}\~{a}o}} - F_{\mathrm{resistivos}},
 em que \(m\) é a massa total do veículo, \(a_x\) é a aceleração longitudinal e \(F_{\mathrm{resistivos}}\) 
 representa a resultante das forças resistivas, como o atrito de rolamento e o arrasto aerodinâmico.
 
-No sistema de controle proposto, a variável de processo é a velocidade longitudinal do automodelo, \(v(t)\), cuja
-estimativa, denotada por \(\hat{v}(t)\), é obtida pela integração numérica da aceleração longitudinal estimada a
-partir das medições da IMU, e a variável manipulada é o comando de aceleração \(u\), enviado ao ESC:
+No sistema de controle, emprega-se a estrutura básica de malha fechada com realimentação da
+variável de processo e comparação com a referência \cite{raffo_tcpi_variaveis}. A variável de
+processo é a velocidade longitudinal do automodelo, \(v(t)\), estimada por \(\hat{v}(t)\) a
+partir da integração numérica da aceleração longitudinal medida pela IMU, e a variável
+manipulada é o comando de aceleração \(u\), enviado ao ESC:
 \begin{equation*}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
 \end{equation*}
@@ -106,14 +108,21 @@ erro de controle:
 
 \[ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t). \]
 
-A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando de acionamento
-\(u(t)\), a variável manipulada do sistema, utilizado para ajustar a atuação do motor e
-reduzir a diferença entre a velocidade desejada e a velocidade estimada. Esse comando é
+A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando \(u(t)\),
 transmitido ao ESC por meio de um sinal elétrico PWM, com o qual o ESC controla a energia
-fornecida pela bateria aos enrolamentos do motor, produz torque que a transmissão leva às
-rodas. A IMU mede a nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é atualizada por
-integração e realimentada ao controlador, que calcula um novo erro e um novo comando, de
-modo que o ciclo se repete a cada período de amostragem.
+fornecida pela bateria aos enrolamentos do motor, produzindo o torque que a transmissão leva
+às rodas. As perturbações do processo são as variações das forças que agem sobre o veículo
+sem depender do comando, como o atrito de rolamento, a inclinação do solo e a perda de
+aderência, que alteram a aceleração resultante para um mesmo valor de \(u\). A IMU mede a
+nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é atualizada por integração e
+realimentada ao controlador, que calcula um novo erro e um novo comando, de modo que o ciclo
+se repete a cada período de amostragem.
+
+Quanto à proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar
+a taxa de variação do comando \(u\), suavizando a aceleração e reduzindo os picos de torque
+na transmissão. Essa ação é apenas parcialmente preventiva, pois atua depois que o pico já
+começou a ser medido. Desse modo, o sensor cumpre o objetivo de realimentação de velocidade,
+mas não o de proteção elétrica direta dos componentes.
 
 A Figura~\ref{fig:imu_i2c} ilustra a conexão de um módulo MPU-6050 a um microcontrolador Arduino por meio do barramento I\(^2\)C. 
 A interface utiliza as conexões de alimentação (\(V_{\mathrm{CC}}\) e terra, GND) e dois sinais de comunicação: SDA (Serial Data), responsável 
@@ -126,10 +135,6 @@ pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincro
 \label{fig:imu_i2c}
 \footnotesize{Fonte: RudraNarayanG, via Instructables (s.d.).}
 \end{figure}
-
-Para a proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar a taxa de variação do comando \(u\), suavizando a
-aceleração e reduzindo os picos de torque na transmissão. Essa ação é apenas parcialmente preventiva, pois atua depois que o pico já começou
-a ser medido. Desse modo, o sensor cumpre o objetivo de realimentação de velocidade, mas não o de proteção elétrica direta dos componentes.
 
 Em síntese, a utilização da IMU apresenta vantagens e limitações para a instrumentação e o controle do automodelo:
 
@@ -190,11 +195,19 @@ torque sensível à resolução do sensor.
 
 Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
 de velocidade, sem nenhum modelo de torque, da mesma forma que a velocidade estimada pela IMU.
-No sistema de controle, a variável de processo é a velocidade angular medida pela contagem dos
+No sistema de controle, a variável de processo é a velocidade angular obtida pela contagem dos
 pulsos, e a variável manipulada é o comando de aceleração $u$. A referência de velocidade é
-comparada à medida, e o controlador ajusta o comando até eliminar o erro. Motores brushless
-com sensores Hall integrados já são controlados dessa maneira, com os mesmos
-sinais servindo à comutação e à realimentação.
+comparada à medida, e o controlador ajusta o comando até eliminar o erro, na estrutura de malha
+fechada simples com realimentação. As perturbações são as variações de carga que alteram o
+torque demandado para uma mesma velocidade, como a inclinação do terreno e a mudança de
+aderência, que se manifestam como variação de $T_L$ na Equação
+\eqref{eq:dinamica_rotacional}. Motores brushless com sensores Hall integrados já são
+controlados dessa maneira, com os mesmos sinais servindo à comutação e à realimentação.
+
+Quanto à proteção do sistema, o SS41F não fornece nenhuma grandeza elétrica, de modo que a
+proteção contra sobrecorrente por limiar não pode ser implementada com esse sensor. A única
+ação preventiva disponível é a limitação da taxa de variação do comando, que suaviza a
+excitação do motor, sem garantia efetiva contra sobrecorrente.
 
 Em síntese, a utilização do SS41F apresenta vantagens e limitações para a instrumentação
 e o controle do automodelo:
@@ -238,6 +251,10 @@ fração do período em que o PWM permanece ligado:
 \bar{I}_\mathrm{bat} \approx D\,I_\mathrm{fase}.
 \end{equation}
 
+No motor, a corrente de fase se relaciona ao torque pela constante de torque $K_t$ do
+propulsor, $T_{\mathrm{motor}} = K_t\,I_{\mathrm{fase}}$, de modo que a corrente medida
+permite estimar o esforço mecânico produzido.
+
 O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt, uma vez que a 
 saída é um sinal analógico na entrada do microcontrolador para tornar possível a leitura dos valores, conforme a Figura~\ref{fig:ina240}.
 O componente possui largura de banda de 400 kHz e
@@ -258,12 +275,16 @@ resistivo.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e implementar a
-proteção contra sobrecorrente por limiar. No sistema de controle, a variável de processo é a
-corrente do propulsor, que se relaciona ao torque pelo modelo do motor, e a variável manipulada
-é o comando de aceleração $u$, aplicado ao ESC. A malha compara a corrente medida à
-referência calculada para o torque desejado e ajusta o comando, e o controlador reduz a
-excitação sempre que a leitura ultrapassa um limiar, protegendo o conjunto contra
+Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e
+implementar a proteção contra sobrecorrente por limiar. No sistema de controle, a variável de
+processo é a corrente do propulsor, relacionada ao torque pela constante $K_t$ do motor, e a
+variável manipulada é o comando de aceleração $u$, aplicado ao ESC. A referência de torque
+desejado é convertida na corrente correspondente e comparada à medida, e o controlador ajusta
+o comando até anular o erro, na estrutura de malha fechada simples com realimentação. As
+perturbações são as variações da carga mecânica que exigem mais corrente para um mesmo torque
+na roda, como a inclinação do terreno e a perda de aderência. Por medir a corrente
+diretamente, o arranjo viabiliza, ainda, a proteção do sistema: sempre que a leitura
+ultrapassa um limiar, o controlador reduz a excitação, protegendo o conjunto contra
 sobrecorrente.
 
 Em síntese, a utilização do arranjo com shunt e INA240 apresenta vantagens e limitações para a
@@ -286,22 +307,19 @@ instrumentação e o controle do automodelo:
 O sensor de efeito Hall ACS758 mede a corrente elétrica indiretamente, proporcionando isolamento 
 galvânico, ou seja, não há conexão elétrica direta entre o circuito de potência e o circuito de medição. 
 Seu funcionamento baseia-se no efeito Hall, no qual a corrente que percorre um condutor interno gera um 
-campo magnético, detectado por elementos Hall integrados ao sensor. A eletrônica interna converte esse 
-campo em uma tensão de saída proporcional à corrente medida. Na variante bidirecional do ACS758, a tensão 
+campo magnético com tensão de saída proporcional à corrente medida. A tensão 
 de saída varia em torno de um nível de referência, permitindo medir correntes nos dois sentidos.
 
 \begin{equation*}
-V_\mathrm{out} = \frac{V_{CC}}{2} + S\,I,
+V_\mathrm{out} = V_{\mathrm{offset}} + S\,I,
+\qquad
+I = \frac{V_\mathrm{out} - V_{\mathrm{offset}}}{S},
 \end{equation*}
-em que $S$ é a sensibilidade, em V/A, e $V_{CC}/2$ é a tensão de repouso, correspondente a
-corrente nula. A corrente é recuperada por
-\begin{equation*}
-I = \frac{V_\mathrm{out} - V_{CC}/2}{S}.
-\end{equation*}
+em que $S$ é a sensibilidade, em V/A, e $V_{\mathrm{offset}} = V_{CC}/2$ é o \emph{offset} do
+sensor, ou tensão de repouso, isto é, a tensão de saída quando a corrente é nula ($I = 0$).
 
-Na variante de ±200 A, a de faixa mais ampla da família, a sensibilidade típica é de
-$10$ mV/A com alimentação de $5$ V, reduzindo-se proporcionalmente em alimentações menores,
-uma vez que a saída é ratiométrica, e o repouso, em corrente nula, é metade da alimentação.
+O sensor ACS758ECB-200B possui sensibilidade típica é de $10$ mV/A com alimentação de $5$ V, 
+reduzindo-se proporcionalmente em alimentações menores, uma vez que a saída é ratiométrica.
 O condutor interno de corrente apresenta resistência da ordem de $100$ µ$\Omega$, de modo
 que a queda de tensão e a dissipação introduzidas pelo sensor são pequenas. A resolução da
 medida, por fim, é limitada pelo conversor analógico-digital de $n$ bits e por sua tensão de
@@ -312,6 +330,10 @@ Equação \eqref{eq:acs_resolucao}:
 \Delta I = \frac{V_\mathrm{ref}}{2^{n}\,S}.
 \end{equation}
 
+Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
+saída analógica é ligada diretamente ao conversor analógico--digital (ADC) do microcontrolador, que
+converte a tensão de saída em um número digital para a leitura, conforme a Figura~\ref{fig:acs758}.
+
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.65\textwidth]{Figuras/acs758_cap2.png}
@@ -320,25 +342,25 @@ Equação \eqref{eq:acs_resolucao}:
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
-saída analógica é ligada diretamente ao conversor do microcontrolador, conforme a Figura~\ref{fig:acs758}.
-
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
-pelo modelo do motor, e implementar a proteção contra sobrecorrente por limiar, como no
-arranjo com shunt e INA240. No sistema de controle, a variável de processo é o torque estimado
-a partir da corrente, e a variável manipulada é o comando de aceleração $u$. Uma malha interna
-de corrente compara a medida à referência e ajusta o comando, enquanto o estimador converte a
-corrente em torque.
+pelo modelo do motor, como no arranjo com shunt. No sistema de controle, a variável de
+processo é o torque estimado a partir da corrente, e a variável manipulada é o comando de
+acionamento $u$. A referência de torque desejado é convertida na corrente correspondente e
+comparada à medida, e o controlador ajusta o comando até anular o erro, na estrutura de malha
+fechada simples com realimentação. As perturbações são as mesmas variações de carga mecânica
+já descritas, que exigem mais corrente para um mesmo torque na roda. Por medir a corrente
+diretamente, o sensor viabiliza, ainda, a proteção contra sobrecorrente por limiar, com o
+controlador reduzindo a excitação sempre que a leitura ultrapassa o valor máximo admitido.
 
-Assim, o ACS758 cumpre os requisitos de isolamento galvânico, dissipação, faixa de medição e
-banda para as correntes e frequências deste sistema.
-
-Em síntese, a utilização do ACS758 apresenta vantagens e limitações para a instrumentação e o
+Em síntese, a utilização apresenta vantagens e limitações para a instrumentação e o
 controle do automodelo:
 
 \begin{itemize}
     \item \textbf{Vantagens:} isolamento galvânico, sem dissipação adicional significativa e com banda suficiente para o chaveamento do ESC.
-    \item \textbf{Limitações:} resolução inferior à do shunt para a mesma faixa, faixa máxima inferior ao pico do ESC, sensibilidade dependente da alimentação e sensibilidade a ruído eletromagnético.
+    \item \textbf{Limitações:} resolução limitada pelo conversor, inferior à do shunt para a
+    mesma faixa de corrente; saída ratiométrica, isto é, sensibilidade proporcional à
+    tensão de alimentação, que precisa ser estável para não introduzir erro; e sensibilidade
+    a campos eletromagnéticos externos, que se somam ao campo da corrente medida.
 \end{itemize}
 
 \subsection{Síntese Comparativa}
