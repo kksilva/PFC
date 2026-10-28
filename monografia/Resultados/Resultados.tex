@@ -22,13 +22,14 @@ fechamento da malha defensável.
 \section{O processamento dos dados e o ajuste das retas}
 \label{sec:processamento}
 
-Todos os ajustes deste capítulo são retas obtidas pelo método dos mínimos quadrados e
-implementadas nos scripts apresentados no Apêndice~\ref{apendice:codigos}, que leem os
-arquivos de dados brutos e geram as figuras. O método escolhe os coeficientes da reta que
-minimizam a soma dos quadrados dos resíduos, isto é, das diferenças entre cada valor
-medido e o valor que a reta prevê para ele. Para a reta $y = a + b\,x$, a soma
-$S = \sum_i (y_i - a - b\,x_i)^2$ é mínima quando suas derivadas em relação a $a$ e a $b$
-se anulam, condição que fornece a solução fechada
+Todos os ajustes deste capítulo são retas obtidas pelo método dos mínimos quadrados, o
+mesmo procedimento empregado na obtenção da reta de calibração de instrumentos
+\cite{braga_instr_calibracao}, implementado nos scripts apresentados no
+Apêndice~\ref{apendice:codigos}, que leem os arquivos de dados brutos e geram as figuras.
+O método escolhe os coeficientes da reta que minimizam a soma dos quadrados dos
+resíduos, isto é, das diferenças entre cada valor medido e o valor que a reta prevê para
+ele. Para a reta $y = a + b\,x$, a soma $S = \sum_i (y_i - a - b\,x_i)^2$ é mínima quando
+suas derivadas em relação a $a$ e a $b$ se anulam, condição que fornece a solução fechada
 \begin{equation}\label{eq:mq}
 b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
 \qquad
@@ -86,8 +87,8 @@ leitura na faixa do ensaio. Aqui a situação é outra: a leitura da balança é
 grandeza de referência da caracterização, não há canal de correção em software, uma vez
 que o display não possui saída elétrica, e o desvio é declarado como componente
 sistemática, junto com a resolução de $10$ g. Em ambos os casos, a linearidade verificada
-justifica o tratamento dos desvios como sistemáticos simples, e nenhum instrumento precisou
-ser descartado.
+justifica o tratamento dos desvios como sistemáticos simples, e nenhum instrumento
+precisou ser descartado.
 
 \section{Ensaio em Vazio}
 \label{sec:resvazio}
@@ -109,10 +110,10 @@ inteira perderia fundamento. O ensaio em vazio testa exatamente isso.
 
 Os valores citados a seguir são as médias da corrente em cada degrau, calculadas pelo
 script da caracterização estática (Apêndice~\ref{apendice:codigos}, A.1) a partir do
-arquivo bruto do ensaio em vazio. Na zona morta, a corrente de perdas permanece abaixo de $1{,}2$ A; entre $100^\circ$ e
-$110^\circ$, situa-se em torno de $1$ A, com pouca variação; nos degraus altos, a partir
-de $115^\circ$, cresce e atinge $2{,}35$ A no último degrau. O ajuste linear sobre as
-médias por degrau, apresentado na Figura \ref{fig:i0},
+arquivo bruto do ensaio em vazio. Na zona morta, a corrente de perdas permanece abaixo de
+$1{,}2$ A; entre $100^\circ$ e $110^\circ$, situa-se em torno de $1$ A, com pouca variação;
+nos degraus altos, a partir de $115^\circ$, cresce e atinge $2{,}35$ A no último degrau. O
+ajuste linear sobre essas médias, apresentado na Figura \ref{fig:i0},
 \[
 I_0(u) = 0{,}53 + 6{,}70\,u,
 \]
@@ -173,10 +174,10 @@ de cada degrau segue a definição da metodologia, $u = (\alpha - 95)/85$, com $
 ângulo do degrau; para cada degrau, as células trazem as medianas da corrente e da força
 das quatro repetições, com o desvio-padrão amostral entre parênteses, calculadas pelo
 script da caracterização estática (Apêndice~\ref{apendice:codigos}, A.1), que imprime
-exatamente esta tabela a partir da planilha de anotações. A corrente do ensaio a $100$ Hz, adquirida
-independentemente, concordou com a anotada dentro da dispersão entre repetições, o que
-cruza as duas fontes de dados. Os travessos marcam o degrau $98^\circ$ da descida, não
-executado nessa sessão e excluído do consolidado.
+exatamente esta tabela a partir da planilha de anotações. A corrente do ensaio a $100$ Hz,
+adquirida independentemente, concordou com a anotada dentro da dispersão entre repetições,
+o que cruza as duas fontes de dados. Os travessos marcam o degrau $98^\circ$ da descida,
+não executado nessa sessão e excluído do consolidado.
 
 \begin{table}[htb]
 \centering
@@ -221,11 +222,11 @@ mas o torque entregue não vence as resistências internas do conjunto. O limite
 região coincide com o início do crescimento sustentado da corrente de carga.
 
 Na região de aderência, os dois sentidos contam histórias diferentes. Na descida, a força
-cresce de $1{,}47$ kgf em $100^\circ$ até $50{,}8$ N em $113^\circ$, atingindo o máximo de
-$52$ N já na fronteira da saturação, com dispersão típica de $\pm 0{,}1$ kgf entre
+cresce de $14{,}4$ N em $100^\circ$ até $50{,}8$ N em $113^\circ$, atingindo o máximo de
+$52$ N já na fronteira da saturação, com dispersão típica de $\pm 1$ N entre
 repetições, o comportamento esperado de um propulsor abaixo do limite de aderência e a
 base da validação do modelo. Na subida, entre $105^\circ$ e $110^\circ$, a força estaciona
-em torno de $3{,}2$ kgf enquanto a corrente oscila entre as repetições com dispersão muito
+em torno de $31$ N enquanto a corrente oscila entre as repetições com dispersão muito
 maior. O padrão é o \emph{stick-slip}, a oscilação de relaxamento do atrito seco no limite
 da aderência: o pneu, ainda frio no início da sessão, alterna travamento e
 microderrapagens, a força fica presa no limite e a corrente acompanha a alternância, e o
@@ -242,7 +243,7 @@ discussão é remetida às considerações finais.
 
 Na região de saturação, a mudança de comportamento ocorre nos dois últimos degraus da
 descida. A corrente, que chegava a $26$--$29$ A nos degraus vizinhos, cai para cerca de
-$15$ A, e a força recua de $5{,}1$ kgf para $3{,}9$--$4{,}5$ kgf, enquanto o veículo, em
+$15$ A, e a força recua de $50$ N para $38$--$44$ N, enquanto o veículo, em
 bancada, apresenta um comportamento cíclico de aceleração e parada. O padrão, queda
 abrupta da corrente seguida de retorno, é compatível com o corte de subtensão do ESC: sob
 alta corrente, a tensão da bateria cai abaixo do limiar de proteção, o ESC interrompe o
@@ -278,10 +279,11 @@ de fase equivalente,
 F = G_F\,\frac{I_\mathrm{bat} - I_0(u)}{u},
 \end{equation}
 em que $G_F$ é um único coeficiente do conjunto, que absorve a constante de torque do
-motor, o rendimento do caminho elétrico--mecânico, a redução e o raio efetivo, este no
-denominador --- de modo que o raio se cancela quando a curva é convertida em torque, no
-estimador adiante. Conhecer
-cada fator isoladamente não é necessário ao controlador, que trabalha com o produto.
+motor, o rendimento do caminho elétrico--mecânico, a redução e o raio efetivo. Conhecer
+cada fator isoladamente não é necessário ao controlador, que trabalha com o produto. Como
+a curva é ajustada em força, a conversão em torque, adiante, multiplica o coeficiente
+pelo raio efetivo medido: o raio não participa da relação entre corrente e torque, mas
+traduz a força da balança no esforço na roda.
 
 O critério de validação decorre da própria forma do modelo. Se a Equação
 \eqref{eq:modelo_forca} é válida, os pontos medidos devem alinhar-se sobre uma reta que
@@ -311,9 +313,12 @@ aderência enquanto a corrente oscila, espalhando os pontos na horizontal. A des
 termicamente estável e mecanicamente quieta, é a evidência do modelo; a subida é a
 evidência de onde ele deixa de valer.
 
-O estimador de torque usado no controlador é o produto do coeficiente pelo raio efetivo,
+O estimador de torque usado no controlador converte o coeficiente de força em coeficiente
+de torque pelo raio efetivo,
 $\hat{T} = K_T\,(I_\mathrm{bat} - I_0(u))/u$, com $K_T = G_F\,r_\mathrm{ef} = 0{,}028$
-N$\cdot$m/(A/u). Ele é a realimentação da malha externa de torque: converte a corrente
+N$\cdot$m/(A/u), que absorve apenas a constante de torque do motor, o rendimento e a
+redução --- as constantes do caminho entre corrente de fase e torque no eixo, sem
+participação do raio. Ele é a realimentação da malha externa de torque: converte a corrente
 medida no torque comparado à referência, enquanto a inversa da mesma curva, no caminho
 direto, converte a referência na corrente esperada e no comando equivalente. O modelo, em
 ambos os usos, estende-se apenas pela região de aderência: acima dela, o
@@ -356,7 +361,9 @@ subida é rápida uma vez iniciada.}
 \end{figure}
 
 O tratamento adotado, executado pelo script da dinâmica (Apêndice~\ref{apendice:codigos},
-A.2), foi ancorar cada resposta no seu início elétrico e analisar a subida a partir dele.
+A.2), foi ancorar cada resposta no seu início elétrico e analisar a subida a partir dele,
+na linha da caracterização dinâmica clássica por resposta ao degrau
+\cite{braga_instr_dinamica}.
 O script define o nível de repouso como a média dos primeiros $1{,}5$ s do bloco, o
 platô como a média dos últimos $3$ s e o início elétrico como a primeira amostra acima de
 $20\%$ da excursão entre ambos; a partir dele, guarda $6$ s de resposta, normalizados
@@ -427,8 +434,9 @@ frequentes porém pequenas e ruído de alta frequência na medição \cite{raffo
 As variáveis do problema são: a variável controlada primária, o torque na roda, que não é
 mensurável embarcada; a variável controlada secundária, a corrente de bateria, lida pelo
 sensor; a variável manipulada, o comando $u$; e as perturbações, o afundamento de tensão da
-bateria sob carga e a variação da corrente de perdas com a temperatura, ambas sem sensor
-no veículo.
+bateria sob carga e a variação da corrente de perdas com a temperatura. Estas duas últimas
+são grandezas de influência clássicas, que alteram a medição e o processo sem serem o objeto
+do controle \cite{braga_instr_config}, e ambas são sem sensor no veículo.
 
 A estrutura é a de \textbf{controle em cascata} \cite{raffo_tcpi_cascata}, na qual o sinal
 do controlador mestre serve de referência ao escravo. A motivação da cascata, no esquema
@@ -626,17 +634,18 @@ de fase.
 \section{Incertezas dos Resultados}
 \label{sec:resincerteza}
 
-As incertezas seguem o orçamento da Seção \ref{sec:incertezas}. A repetibilidade entre as
-escadas é quantificada pelo desvio-padrão das quatro repetições em cada degrau, presente
-entre parênteses na Tabela \ref{tab:mestra}; para o orçamento, adota-se em cada faixa o
-valor típico desses desvios, que cresce com o nível de força. A
-propagação pela Equação \eqref{eq:propagacao}, com as componentes de resolução,
-calibração e efeitos sistemáticos, resulta nas incertezas expandidas da Tabela
-\ref{tab:incertezas}, de $\pm 0{,}30$ N$\cdot$m na zona morta, $\pm 0{,}56$
-N$\cdot$m na região de aderência e $\pm 0{,}87$ N$\cdot$m na saturação, acompanhando o
-crescimento da repetibilidade. Na região de aderência, onde o torque típico, a média da
-faixa convertida pelo raio efetivo, é de cerca de $2{,}5$ N$\cdot$m, a incerteza
-representa aproximadamente $20\%$ do torque medido.
+As incertezas seguem o orçamento da Seção \ref{sec:incertezas}, no método do Tipo A e Tipo
+B com propagação por soma quadrática \cite{braga_instr_incerteza}. A repetibilidade entre
+as escadas é quantificada pelo desvio-padrão das quatro repetições em cada degrau,
+presente entre parênteses na Tabela \ref{tab:mestra}; para o orçamento, adota-se em cada
+faixa o valor típico desses desvios, que cresce com o nível de força. A propagação pela
+Equação \eqref{eq:propagacao}, com as componentes de resolução, calibração e efeitos
+sistemáticos, resulta nas incertezas expandidas da Tabela \ref{tab:incertezas}, de
+$\pm 0{,}30$ N$\cdot$m na zona morta, $\pm 0{,}56$ N$\cdot$m na região de aderência e
+$\pm 0{,}87$ N$\cdot$m na saturação, acompanhando o crescimento da repetibilidade. Na
+região de aderência, onde o torque típico, a média da faixa convertida pelo raio efetivo,
+é de cerca de $2{,}5$ N$\cdot$m, a incerteza representa aproximadamente $20\%$ do torque
+medido.
 
 \begin{table}[htb]
 \centering

@@ -23,17 +23,17 @@ força de tração desenvolvida pelas rodas e a corrente elétrica consumida pel
 A força de tração só se manifesta, em princípio, enquanto o veículo se move. O ensaio
 estático contorna essa condição impedindo o deslocamento: com o automodelo ancorado, o
 pneu não consegue rolar, e a tração que seria entregue ao solo transfere-se integralmente
-para a estrutura de retenção, onde pode ser medida como a tensão em um cabo. Como o veículo permanece
-parado, a tração medida corresponde à condição de partida, na qual o motor opera em baixa
-rotação e máxima exigência de torque, precisamente a condição que o controle de torque em
-malha fechada mais exige e que um ensaio dinâmico dificilmente capturaria com
+para a estrutura de retenção, onde pode ser medida como a tensão em um cabo. Como o veículo
+permanece parado, a tração medida corresponde à condição de partida, na qual o motor opera
+em baixa rotação e máxima exigência de torque, precisamente a condição que o controle de
+torque em malha fechada mais exige e que um ensaio dinâmico dificilmente capturaria com
 instrumentação simples.
 
-O instrumento utilizado para medir a força de tração é uma balança digital de bagagem com gancho, 
-cuja indicação é expressa em quilogramas. Quando submetido à tração, o instrumento detecta a força 
-aplicada e a apresenta como uma massa equivalente, correspondente à força-peso que produziria a mesma 
-indicação sob a aceleração da gravidade de referência. Essa equivalência permite converter a leitura 
-em força, expressa em Newtons, por meio de
+O instrumento utilizado para medir a força de tração é uma balança digital de bagagem com
+gancho, cuja indicação é expressa em quilogramas. Quando submetido à tração, o instrumento
+detecta a força aplicada e a apresenta como uma massa equivalente, correspondente à
+força-peso que produziria a mesma indicação sob a aceleração da gravidade de referência.
+Essa equivalência permite converter a leitura em força, expressa em newtons, por meio de
 
 \[
 F\,[\mathrm{N}] = 9{,}81\,m_{\mathrm{lei}}\,[\mathrm{kg}],
@@ -44,12 +44,14 @@ em que $m_{\mathrm{lei}}$ representa o valor indicado pela balança.
 \subsection{Configuração de ancoragem e geometria do cabo}
 \label{sec:ancoragem}
 
-A montagem experimental utiliza um cabo de $126$ cm, passado ao redor de uma gaveta pesada e fixa, que atua
-como estrutura de ancoragem, atando cada extremidade da alça da balança, conforme a Figura~\ref{fig:montagem}. O gancho é acoplado a uma estrutura 
-na parte traseira do automodelo, posicionada acima do eixo de transmissão das rodas, buscando manter a linha de 
-tração alinhada à direção longitudinal do veículo, minimizando componentes transversais da força. Durante o 
-ensaio, a balança permanece suspensa a $15$ cm do solo, e a gaveta a uma altura de $28$ cm. Todas as dimensões 
-foram medidas três vezes, adotando-se a média aritmética como valor representativo.
+A montagem experimental utiliza um cabo de $126$ cm, passado ao redor de uma gaveta pesada
+e fixa, que atua como estrutura de ancoragem, atando cada extremidade da alça da balança,
+conforme a Figura~\ref{fig:montagem}. O gancho é acoplado a uma estrutura na parte
+traseira do automodelo, posicionada acima do eixo de transmissão das rodas, buscando
+manter a linha de tração alinhada à direção longitudinal do veículo, minimizando
+componentes transversais da força. Durante o ensaio, a balança permanece suspensa a $15$
+cm do solo, e a gaveta a uma altura de $28$ cm. Todas as dimensões foram medidas três
+vezes, adotando-se a média aritmética como valor representativo.
 
 \begin{figure}[htb]
 \centering
@@ -146,7 +148,9 @@ resposta de $4$ µs, largura de banda interna de $120$ kHz e resistência do con
 da ordem de $100$ µ$\Omega$, de modo que o sensor acompanha o chaveamento do ESC sem
 subamostrar a corrente e quase não dissipa potência. Antes da conversão analógico-digital,
 realizada pelo ADC de $12$ bits do Due, um filtro RC de cerca de $24$ Hz limita a banda do
-sinal; a resolução resultante é de $122$ mA por degrau de conversão.
+sinal, o condicionamento usual para proteger a medição do ruído de alta frequência do
+chaveamento \cite{braga_instr_sinais}; a resolução resultante é de $122$ mA por degrau de
+conversão.
 
 \subsection{Aquisição e registro de dados}
 \label{sec:registro}
@@ -189,8 +193,8 @@ sem perda de resolução temporal.
 Antes de qualquer ensaio com o veículo, os instrumentos são validados em bancada, para que
 seus desvios sistemáticos sejam conhecidos e compensados ou declarados antes de entrarem na
 curva característica. O motivo está na estrutura do controle: a corrente medida alimenta o
-estimador de torque e a malha escrava, e a força lida pela balança é o padrão contra o qual
-o coeficiente do estimador é validado, de modo que um desvio sistemático de qualquer um dos
+estimador de torque e a malha escrava, e a força lida pela balança é o padrão contra o qual o
+coeficiente do estimador é validado, de modo que um desvio sistemático de qualquer um dos
 dois se propagaria diretamente para o modelo que o controlador passará a confiar.
 Verificam-se, por isso, a cadeia de corrente e a balança.
 
@@ -202,15 +206,18 @@ terminal de corrente do sensor retorna ao terminal negativo da fonte, fechando o
 O ESC e o motor não participam: atravessa o laço apenas o condutor interno do sensor,
 enquanto seu circuito de medição, alimentado a $3{,}3$ V pelo Arduino Due, permanece
 isolado galvanicamente, exatamente como na operação embarcada. A saída do sensor é ligada
-à entrada analógica do Due, e, a cada valor ajustado na fonte, distribuído pela faixa,
+à entrada analógica do Due e, a cada valor ajustado na fonte, distribuído pela faixa,
 registra-se um par de leituras, a do multímetro, tomada como referência, e a do sistema,
-formada pelo sensor, pela conversão e pelo registro. A regressão entre ambas, apresentada
-na Seção \ref{sec:resbancada}, quantifica o desvio sistemático da cadeia. Como esse
-desvio é quase constante em toda a faixa e sempre no mesmo sentido, ele é corrigível por
-um único fator multiplicativo em software, sem distorcer a forma do sinal.
+formada pelo sensor, pela conversão e pelo registro. O confronto entre ambas segue o
+procedimento clássico de calibração estática, no qual a reta de ajuste entre os valores
+de referência e os indicados é obtida por mínimos quadrados
+\cite{braga_instr_calibracao}; a regressão, apresentada na Seção \ref{sec:resbancada},
+quantifica o desvio sistemático da cadeia. Como esse desvio é quase constante em toda a
+faixa e sempre no mesmo sentido, ele é corrigível por um único fator multiplicativo em
+software, sem distorcer a forma do sinal.
 
 A verificação da balança tem objetivo diferente, pois a balança é a própria referência da
-força e não dispõe de canal de correção, pois seu display não tem saída elétrica.
+força e não dispõe de canal de correção, uma vez que seu display não tem saída elétrica.
 Ela é confrontada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg aplicados
 sucessivamente ao gancho, conforme a Figura \ref{fig:pesos}, e o desvio verificado é
 declarado como componente sistemática do orçamento de incertezas, junto com sua resolução
@@ -233,7 +240,8 @@ referência e sensor ACS758 com o Arduino Due.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-Os resultados da verificação, a regressão da cadeia de corrente e os desvios sistemáticos de ambos os instrumentos, são apresentados na Seção \ref{sec:resbancada}.
+Os resultados da verificação, a regressão da cadeia de corrente e os desvios sistemáticos
+de ambos os instrumentos, são apresentados na Seção \ref{sec:resbancada}.
 
 \section{Ensaio em Vazio}
 \label{sec:vazio}
@@ -254,14 +262,14 @@ forma linear; em vazio, a corrente de perdas é essencialmente a corrente de fas
 sua evolução com o comando testa essa hipótese. O ensaio em vazio mede, portanto, um
 parâmetro do modelo e, ao mesmo tempo, verifica a hipótese sobre a qual o modelo se apoia.
 
-O veículo é apoiado sobre uma caixa, de forma que as rodas motrizes fiquem suspensas, sem contato
-com a mesa, conforme a Figura \ref{fig:vazio}, e a cadeia de aquisição é empregada sem
-alterações. Antes da sessão, verificam-se as condições comuns a todo ensaio com o veículo: a
-bateria LiPo 2S carregada e em bom estado, uma vez que baterias degradadas comprimem os
-degraus mais altos, e em repouso abaixo de $7{,}7$ V o corte de baixa tensão do ESC reduz a
-resposta do motor; a bateria do Raspberry Pi carregada, com a tensão de saída do
-\emph{step-down} conferida; e o notebook conectado à rede do Raspberry, com o acesso remoto
-por \texttt{ssh} funcionando.
+O veículo é apoiado sobre uma caixa, de forma que as rodas motrizes fiquem suspensas, sem
+contato com a mesa, conforme a Figura \ref{fig:vazio}, e a cadeia de aquisição é empregada
+sem alterações. Antes da sessão, verificam-se as condições comuns a todo ensaio com o
+veículo: a bateria LiPo 2S carregada e em bom estado, uma vez que baterias degradadas
+comprimem os degraus mais altos, e em repouso abaixo de $7{,}7$ V o corte de baixa tensão
+do ESC reduz a resposta do motor; a bateria do Raspberry Pi carregada, com a tensão de
+saída do \emph{step-down} conferida; e o notebook conectado à rede do Raspberry, com o
+acesso remoto por \texttt{ssh} funcionando.
 
 \begin{figure}[htb]
 \centering
@@ -283,24 +291,23 @@ do caminho direto da malha, cujos resultados são apresentados no Capítulo
 \label{sec:tracao}
 
 O experimento central do trabalho é o ensaio de tração estática. O veículo ancorado, na
-configuração da Seção \ref{sec:ancoragem}, recebe degraus de comando, e cada platô fornece um
-par de valores, a corrente consumida e a força de tração, que compõem a curva
+configuração da Seção \ref{sec:ancoragem}, recebe degraus de comando, e cada platô fornece
+um par de valores, a corrente consumida e a força de tração, que compõem a curva
 característica ponto a ponto. Dessa curva saem os elementos que a estrutura de controle
 consome: o coeficiente $G_F$, que, multiplicado pelo raio efetivo, define $K_T$ do
 estimador; a inversa da curva, que converte a referência de torque na corrente esperada do
 caminho direto; e o torque máximo medido, que calibra o limiar do seletor de aderência.
 Sem este ensaio, o estimador não teria coeficiente e o caminho direto não teria curva a
-inverter, e a malha de torque não poderia ser projetada. A sessão é gravada em
-vídeo, com o display da balança e o
-terminal do notebook no mesmo plano, este exibindo o horário, o tempo dentro do degrau e a
-corrente média do segundo.
+inverter, e a malha de torque não poderia ser projetada. A sessão é gravada em vídeo, com
+o display da balança e o terminal do notebook no mesmo plano, este exibindo o horário, o
+tempo dentro do degrau e a corrente média do segundo.
 
 O protocolo de cada degrau é o mesmo em toda a escala. A balança é tarada nos $3$ s de
 neutro entre um degrau e o seguinte, pois a corda relaxa a cada puxada e deixa um
 deslocamento residual de $0{,}1$ a $0{,}2$ kg entre leituras consecutivas; tarar a cada
-degrau elimina o erro acumulado. Dispara-se o comando remoto e, decorridos $7$ s, anota-se a
-força exibida nos segundos $7$, $8$ e $9$, sendo o ponto da curva a média das três leituras.
-A resposta de corrente se assenta em menos de um segundo, conforme a dinâmica
+degrau elimina o erro acumulado. Dispara-se o comando remoto e, decorridos $7$ s, anota-se
+a força exibida nos segundos $7$, $8$ e $9$, sendo o ponto da curva a média das três
+leituras. A resposta de corrente se assenta em menos de um segundo, conforme a dinâmica
 identificada no Capítulo \ref{chap:resultados}, de modo que, decorridos $7$ s, a força é
 anotada largamente em regime. A escala é
 percorrida duas vezes, na subida de $97^\circ$ a $117^\circ$ e na descida de $117^\circ$ a
@@ -308,7 +315,7 @@ $97^\circ$.
 
 Cada ponto é lido no vídeo da sessão, pausado quadro a quadro após o experimento. A leitura
 em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe da leitura ao vivo e
-dá rastreabilidade a cada valor anotado, pois o display da balança não possui saída
+dá rastreabilidade a cada valor anotado, uma vez que o display da balança não possui saída
 elétrica.
 
 Em sessão complementar, o mesmo protocolo foi executado com aquisição contínua a $100$ Hz e
@@ -329,10 +336,10 @@ $G_1(s)$ sobre a qual a malha escrava de corrente é projetada.
 \section{Incertezas de Medição}
 \label{sec:incertezas}
 
-O orçamento de incertezas segue o método clássico de metrologia, com os componentes estatísticos (Tipo
-A) separados dos avaliados por propriedades do instrumento (Tipo B), combinados em incerteza
-combinada e expandida. Para não confundir com o comando normalizado $u$, adota-se $\sigma$
-para as incertezas-padrão.
+O orçamento de incertezas segue o método clássico de metrologia, com os componentes
+estatísticos (Tipo A) separados dos avaliados por propriedades do instrumento (Tipo B),
+combinados em incerteza combinada e expandida \cite{braga_instr_incerteza}. Para não
+confundir com o comando normalizado $u$, adota-se $\sigma$ para as incertezas-padrão.
 
 O Tipo A é avaliado em dois níveis. No nível do ponto, a dispersão das três leituras de força
 nos segundos $7$, $8$ e $9$ informa a flutuação de curta duração da tração somada à
@@ -373,14 +380,13 @@ tensão mensurável, com o ângulo do cabo quantificado em $0{,}53\%$ e o raio e
 em $0{,}0751$ m. A corrente é adquirida por um sensor de efeito Hall instalado por adaptação
 com conector Deans-T, sob degraus gerados por \emph{script} e registrados em CSV. A
 verificação em bancada validou os instrumentos e quantificou seus desvios, distinguindo o
-que é corrigido em software do que é declarado como incerteza; o ensaio em vazio
-forneceu a corrente de perdas, parâmetro do estimador e do caminho direto; e o ensaio de
-tração, com a força lida em vídeo nos segundos de regime, construiu a curva
-característica da qual saem o coeficiente do estimador, a inversa do caminho direto e o
-limiar do seletor de aderência, enquanto a sessão complementar a $100$ Hz identificou a
-dinâmica da malha escrava. As incertezas foram estruturadas em
-dois níveis de repetibilidade e em componentes de resolução, calibração e efeitos
-sistemáticos pequenos. O Capítulo \ref{chap:resultados} apresenta os resultados obtidos com
-este procedimento.
+que é corrigido em software do que é declarado como incerteza; o ensaio em vazio forneceu a
+corrente de perdas, parâmetro do estimador e do caminho direto; e o ensaio de tração, com a
+força lida em vídeo nos segundos de regime, construiu a curva característica da qual saem o
+coeficiente do estimador, a inversa do caminho direto e o limiar do seletor de aderência,
+enquanto a sessão complementar a $100$ Hz identificou a dinâmica da malha escrava. As
+incertezas foram estruturadas em dois níveis de repetibilidade e em componentes de
+resolução, calibração e efeitos sistemáticos pequenos. O Capítulo \ref{chap:resultados}
+apresenta os resultados obtidos com este procedimento.
 
 \clearpage
