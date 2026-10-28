@@ -50,13 +50,15 @@ fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a
 quanto mais os pontos se aproximam da reta, menor a soma dos quadrados dos resíduos no
 numerador e mais o $r^2$ se aproxima de um.
 
-Os dois scripts do apêndice executam exatamente essas expressões. O primeiro lê a
+Os quatro scripts do apêndice executam exatamente essas expressões. O primeiro lê a
 planilha de anotações do ensaio de tração e o arquivo do ensaio em vazio, ajusta a
 corrente de perdas e o coeficiente da curva característica, e gera as figuras
 correspondentes; o segundo lê o ensaio de aquisição contínua a $100$ Hz, ancora as
-respostas ao degrau no seu início elétrico e ajusta a constante de tempo da planta. Todas
-as figuras de dados deste capítulo saem desses programas, de modo que cada número
-apresentado a seguir é reproduzível a partir dos arquivos originais.
+respostas ao degrau no seu início elétrico e ajusta a constante de tempo da planta; o
+terceiro executa a simulação da malha de controle e produz a figura do desempenho; e o
+quarto é a automação do ensaio, que dispara os degraus no Raspberry Pi e registra a
+corrente em CSV. Todas as figuras de dados deste capítulo saem desses programas, de modo
+que cada número apresentado a seguir é reproduzível a partir dos arquivos originais.
 
 \section{Testes em Bancada}
 \label{sec:resbancada}
@@ -648,31 +650,37 @@ de fase.
 \section{Incertezas dos Resultados}
 \label{sec:resincerteza}
 
-As incertezas seguem o orçamento da Seção \ref{sec:incertezas}, no método do Tipo A e Tipo
-B com propagação por soma quadrática \cite{braga_instr_incerteza}. A repetibilidade entre
-as escadas é quantificada pelo desvio-padrão das quatro repetições em cada degrau,
-presente entre parênteses na Tabela \ref{tab:mestra}; para o orçamento, adota-se em cada
-faixa o valor típico desses desvios, que cresce com o nível de força. A propagação pela
-Equação \eqref{eq:propagacao}, com as componentes de resolução, calibração e efeitos
-sistemáticos, resulta nas incertezas expandidas da Tabela \ref{tab:incertezas}, de
-$\pm 0{,}30$ N$\cdot$m na zona morta, $\pm 0{,}56$ N$\cdot$m na região de aderência e
-$\pm 0{,}87$ N$\cdot$m na saturação, acompanhando o crescimento da repetibilidade. Na
-região de aderência, onde o torque típico, a média da faixa convertida pelo raio efetivo,
-é de cerca de $2{,}5$ N$\cdot$m, a incerteza representa aproximadamente $20\%$ do torque
-medido.
+As incertezas seguem o orçamento da Seção \ref{sec:incertezas}, com cada componente
+caracterizada no Tipo A ou no Tipo B e combinada por propagação em soma quadrática
+\cite{braga_instr_incerteza}.
+
+A repetibilidade, componente do Tipo A, é quantificada pelo desvio-padrão amostral das
+quatro repetições em cada degrau, Equação \eqref{eq:tipo_a}, e a Tabela
+\ref{tab:mestra} apresenta esses valores entre parênteses. Para o orçamento, adota-se em
+cada faixa a média dos desvios-padrão de seus degraus: $1{,}5$ N na zona morta, $1{,}5$ N
+na região de aderência e $1{,}6$ N na saturação. O valor típico da força de cada faixa, a
+mediana de seus pontos, é $4{,}6$ N, $32{,}2$ N e $46{,}1$ N, respectivamente, e o torque
+típico segue de $T = F\,r_\mathrm{ef}$.
+
+A propagação pela Equação \eqref{eq:propagacao}, com as componentes do Tipo B derivadas na
+metodologia, resulta nas incertezas expandidas da Tabela \ref{tab:incertezas}, de
+$\pm 0{,}23$ N$\cdot$m na zona morta e na região de aderência e $\pm 0{,}27$ N$\cdot$m na
+saturação. Na região de aderência, onde o torque típico é de cerca de $2{,}4$ N$\cdot$m, a
+incerteza representa aproximadamente $10\%$ do torque medido; o percentual cresce na zona
+morta, onde a força é pequena, e cai na saturação.
 
 \begin{table}[htb]
 \centering
 \caption{Incerteza expandida do torque por faixa de operação ($k = 2$).}
 \label{tab:incertezas}
 \small
-\begin{tabular}{l c c}
+\begin{tabular}{l c c c}
 \hline
-Faixa & $\sigma_A(F)$ (N) & $U(T)$ (N$\cdot$m) \\
+Faixa & $F$ típica (N) & $\sigma_A(F)$ (N) & $U(T)$ (N$\cdot$m) \\
 \hline
-Zona morta ($98$--$99^\circ$) & 2,0 & $\pm$ 0,30 \\
-Aderência ($100$--$110^\circ$) & 3,6 & $\pm$ 0,56 \\
-Saturação ($111$--$117^\circ$) & 5,7 & $\pm$ 0,87 \\
+Zona morta ($98$--$99^\circ$) & 4,6 & 1,5 & $\pm$ 0,23 \\
+Aderência ($100$--$110^\circ$) & 32,2 & 1,5 & $\pm$ 0,23 \\
+Saturação ($111$--$117^\circ$) & 46,1 & 1,6 & $\pm$ 0,27 \\
 \hline
 \end{tabular}
 \end{table}

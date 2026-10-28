@@ -16,7 +16,8 @@ característica, e produz as figuras do ensaio em vazio e da curva de força; o 
 identifica a dinâmica entre comando e corrente, com a constante de tempo da planta, e
 produz as figuras das janelas brutas e da resposta normalizada; o terceiro executa a
 simulação da malha de controle em cascata e produz a figura do desempenho em
-simulação.
+simulação; e o quarto é a automação do ensaio, que percorre a escala de degraus,
+dispara os comandos no Raspberry Pi e registra a corrente em CSV.
 
 \section*{\normalsize A.1 Caracterização estática}
 \addcontentsline{toc}{section}{A.1 Caracterização estática}
@@ -29,5 +30,9 @@ simulação.
 \section*{\normalsize A.3 Simulação da malha de controle}
 \addcontentsline{toc}{section}{A.3 Simulação da malha de controle}
 \lstinputlisting[language=Python]{reprodutibilidade/simulacao_cascata.py}
+
+\section*{\normalsize A.4 Automação do ensaio}
+\addcontentsline{toc}{section}{A.4 Automação do ensaio}
+\lstinputlisting[language=Python]{reprodutibilidade/rodar_ensaio_cego.py}
 
 \clearpage
