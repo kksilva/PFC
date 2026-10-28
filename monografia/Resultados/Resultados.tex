@@ -292,10 +292,15 @@ evidência de onde ele deixa de valer.
 
 O estimador de torque usado no controlador é o produto do coeficiente pelo raio efetivo,
 $\hat{T} = K_T\,(I_\mathrm{bat} - I_0(u))/u$, com $K_T = G_F\,r_\mathrm{ef} = 0{,}028$
-N$\cdot$m/(A/u). O modelo se estende apenas pela região de aderência: acima dela, o
+N$\cdot$m/(A/u). Ele é a realimentação da malha externa de torque: converte a corrente
+medida no torque comparado à referência, enquanto a inversa da mesma curva, no caminho
+direto, converte a referência na corrente esperada e no comando equivalente. O modelo, em
+ambos os usos, estende-se apenas pela região de aderência: acima dela, o
 quociente $I/u$ deixa de representar a corrente de fase e a força deixa de ser
 determinada pela corrente, o que a própria regressão confirma ao produzir valores
-incompatíveis com a física fora da faixa.
+incompatíveis com a física fora da faixa. A malha externa herda essa limitação, e ela é a
+origem das cercas de proteção projetadas adiante, o seletor de aderência e a limitação do
+comando à faixa validada.
 
 Da força máxima de $52$ N e do peso do conjunto, $65{,}1$ N, resulta um coeficiente de
 atrito aparente $\mu \approx 0{,}80$, quociente da tração do eixo motriz pelo peso de
