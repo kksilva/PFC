@@ -412,29 +412,20 @@ estimativa assume a forma
 \begin{equation}\label{eq:estimador_proposta}
 \hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
 \end{equation}
-em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T$ é
-um único coeficiente que absorve a constante de torque do motor, o rendimento do caminho
-elétrico--mecânico, a redução e o raio efetivo. Nenhuma dessas constantes precisa ser
+em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T =
+G_F\,r_{\mathrm{ef}}$ é o produto do coeficiente da regressão pelo raio efetivo. Convém
+registrar o que esse produto esconde: como a regressão ajusta força, seu coeficiente $G_F$
+já contém o raio no denominador, de modo que, no produto, o raio se cancela e $K_T$ absorve
+apenas a constante de torque do motor, o rendimento e a redução --- exatamente as
+constantes que relacionam corrente de fase e torque no eixo, sem papel do raio da roda. O
+raio efetivo, ainda assim, precisa ser medido: é ele quem converte a força da balança em
+torque, na validação do coeficiente e nos limiares de aderência do controlador.
+Nenhuma dessas constantes precisa ser
 conhecida isoladamente, pois o coeficiente é identificado experimentalmente como um todo.
 O estimador é quase-estático e só é válido onde foi caracterizado, de modo que sua saída
 é empregada apenas dentro da faixa de aderência.
 
-O estimador constitui a realimentação da malha de controle: sem ele, o torque, que não é
-mensurável embarcada, não poderia ser a variável controlada.
-
-\subsection{O padrão de tração com a balança de mala}
-
-O estimador somente é defensável se o seu coeficiente for confrontado com uma medida
-independente do esforço mecânico. Como o veículo é pequeno e a força de tração é da
-ordem de dezenas de newtons, emprega-se como padrão uma balança de mala de gancho. No
-experimento, o veículo é ancorado pelo gancho da balança a uma estrutura fixa e comanda-se
-o motor por degraus: ao acelerar, o veículo puxa o gancho contra si, e a balança indica a
-força de tração em cada degrau, uma vez alcançado o regime. A leitura, em
-quilograma-força, é convertida em newtons, e o torque segue do produto da força pelo raio
-efetivo da roda. A balança não embarca no veículo: ela é o instrumento de bancada que
-fornece o padrão para o ajuste e a validação do coeficiente $K_T$. O protocolo do
-experimento, com a montagem, os degraus aplicados e os instantes de leitura, é detalhado
-na Metodologia, no Capítulo~\ref{chap:metodologia}.
+(REESCREVA O PARAGRAFO ACIMA, EXPLICITANDO COMO O TORQUE SE RELACIONA COM A CORRENTE MEDIDA, SE NAO ESTIVER BEM DEFINIDO ANTERIORMENTE. DEPOIS, DEFINA A FORÇA DE TRAÇÃO, SE NAO FOI ANTERIOMENTE, E COMO SSE RELACIONA COM O AUTOMODELO E COMO PODE SER FACILMENTE IMPLEMENTADA EM RELAÇÃO AOS OUTROS METODOS -- CITE BREVEMENTE QUE FOI FEITO UM ESTUDO PREVIO CONSIDERANDO FACIL IMPLEMENTAÇÃO, TAMANHO DO PROJETO, ETC, E DECIDIU POR USAR A BALANÇA DE MALA COM GANCHO....)
 
 \subsection{A estrutura de controle em cascata}
 
