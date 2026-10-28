@@ -388,8 +388,8 @@ IMU e o SS41F exigem a identificação prévia de parâmetros mecânicos ($m$,
 $F_{\text{resistivos}}$, $J$, $B$ e $T_L$), que são propriedades do conjunto veículo--carga
 e mudam com a configuração, ao passo que a corrente elétrica se relaciona ao torque por
 constantes do próprio propulsor, identificáveis em bancada. Assim, a corrente elétrica é a grandeza de cadeia mais curta até o torque, e o sensor Hall
-linear, o melhor equilíbrio entre os sensores de corrente para este sistema, já que possui isolamento galvanico para proteger o circuito das altas correntes,
-e não dissipa potência. 
+linear, o melhor equilíbrio entre os sensores de corrente para este sistema, já que possui isolamento
+galvânico para proteger o circuito das altas correntes, e não dissipa potência. 
 
 \section{Proposta do Projeto}
 \label{sec:proposta}
@@ -399,7 +399,7 @@ e não dissipa potência.
 A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758
 e convertida em torque por um estimador que não exige o conhecimento da redução da
 transmissão. O ponto de partida é a curva característica estática do propulsor,
-obtida no ensaio de tração estática, no qual o veículo é mantido parado e a força de
+obtida no ensaio de tração de corrente versus força, no qual o veículo é mantido parado e a força de
 tração na roda é medida para cada comando aplicado. Para empregar a corrente medida no
 ramo de alimentação, define-se a corrente de fase equivalente como o quociente da
 corrente de bateria, com as perdas descontadas, pelo comando:
@@ -420,8 +420,8 @@ fornece a curva característica estática do propulsor:
 F_{\text{tra\c{c}\~{a}o}} = G_F\,(I_{\mathrm{bat}} - I_0(u))/u,
 \end{equation}
 
-em que \(G_F\), em N/A, é o coeficiente angular do ajuste, a força de tração produzida
-por ampère de corrente de fase equivalente.
+em que \(G_F\), em N/(A/u), é o coeficiente angular do ajuste, a força de tração produzida
+por unidade de corrente de fase equivalente.
 
 O torque na roda fecha a cadeia corrente--força. A força de tração atua no raio
 efetivo da roda, \(T = F_{\text{tra\c{c}\~{a}o}}\,r_{\mathrm{ef}}\), e a substituição
@@ -431,9 +431,11 @@ da Equação~\eqref{eq:curva_caracteristica} resulta na estimativa
 \hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
 \end{equation}
 
-em que \(K_T = G_F\,r_{\mathrm{ef}}\) reúne o coeficiente da curva característica e o
-raio efetivo da roda. A cadeia corrente, força e torque se resume, portanto, a um
-único coeficiente identificável em bancada.
+em que $K_T = G_F\,r_{\mathrm{ef}}$ reúne, num único coeficiente identificável em
+bancada, a constante de torque do motor, o rendimento e a redução da transmissão. Como
+$G_F$ é o coeficiente da força, o raio efetivo participa dele e é devolvido na
+multiplicação pelo raio, de modo que não permanece em $K_T$. A cadeia corrente, força e
+torque se resume, portanto, a um único coeficiente.
 
 A validação do estimador exige um instrumento capaz de medir a força de tração na
 escala do veículo, e a escolha desse instrumento foi precedida de um estudo conduzido
@@ -490,52 +492,44 @@ $L$ & perturbações & afundamento de tensão; variação térmica de $I_0$ \\
 O controle seletivo, também chamado de controle \emph{override}, é a estrutura na qual
 duas ou mais referências candidatas disputam o comando do processo e um seletor
 escolhe, a cada instante, aquela que governa o controlador \cite{raffo_tcpi_cascata}.
-No seletor de mínimo, empregado neste trabalho, a escolha se dá pela comparação da
-referência pedida com o limiar que a protege:
+No seletor de mínimo, empregado neste trabalho, a escolha se dá pela comparação do torque
+de referência com o limiar de aderência:
 
 \begin{equation}\label{eq:seletor}
-T_{\mathrm{ref,ef}} = \min\left(T_{\mathrm{ref}},\,T_{\mathrm{ader}}\right),
+T_{\mathrm{ref,ef}} = \min\left(T_{\mathrm{ref}},\,T_{\text{ader\^{e}ncia}}\right),
 \end{equation}
 
-em que $T_{\mathrm{ref}}$ é a referência pedida, $T_{\mathrm{ader}}$ o limiar de
+em que $T_{\mathrm{ref}}$ é a referência, $T_{\text{ader\^{e}ncia}}$ o limiar de
 aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na malha.
 
-A motivação da estrutura é proteger o processo sem desligar o controle. Quando a
-referência pedida excede o que o processo admite, segui-la destruiria o equipamento ou
-invalidaria o modelo de controle; o seletor corta a referência no limiar, de modo que
-o controlador nunca recebe um pedido inexecutável. Na Figura~\ref{fig:seletor}, o
-exemplo das notas de aula mostra o caso dual, o de maior valor: dentre as
-várias medições de temperatura de um reator, escolhe-se a mais alta para o
-controlador, de forma que o ponto mais quente nunca ultrapasse o limite permitido. Em
-ambos os casos, o princípio é o mesmo, e o seletor entrega ao controlador a candidata
-mais restritiva para a grandeza protegida.
+Quando a referência pedida excede o que o processo admite, segui-la pode causar danos ao
+equipamento ou tornar o modelo de controle inválido. Assim, o seletor corta a referência no
+limiar, e o controlador nunca recebe um pedido inexecutável. Em compensação, enquanto o
+limite atua, o torque entregue difere do torque pedido, e essa divergência é deliberada: a
+malha passa a regular o processo contra o limiar transferível, não contra a referência, e o
+erro persistente entre ambos não é falha de controle, mas a proteção em exercício. Para que
+o controlador não persiga a referência inalcançável, é a referência efetiva, já cortada, a
+que alimenta os dois caminhos da estrutura.
 
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.7\textwidth]{Figuras/seletor_raffo.png}
-\caption{Controle seletivo: o seletor escolhe, dentre as candidatas, a que governa o
-controlador.}
-\label{fig:seletor}
-\footnotesize{Fonte: Raffo (2019).}
-\end{figure}
-
-No projeto, o limiar é o torque máximo transferível ao solo $T_{\mathrm{ader}}$, e o
-ponto de inserção é a entrada da malha, antes dos dois caminhos da estrutura, de modo
-que a referência efetiva alimenta tanto o \emph{feedforward} quanto o de realimentação.
-O benefício é duplo: a roda não patina, pois o torque comandado nunca excede o
-transferível, e o modelo do propulsor permanece válido, pois ele só descreve o
-processo abaixo do limite de aderência. O custo é que, enquanto o limite atua, o
-torque comandado deixa de ser o torque pedido. O seletor, portanto, protege a
-aderência e a validade do modelo logo na entrada da estrutura.
+No projeto, o limiar é o torque máximo transferível ao solo $T_{\text{ader\^{e}ncia}}$, e o
+ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação. No
+\emph{feedforward}, a referência efetiva é convertida na corrente esperada; na
+realimentação, é contra ela que o torque estimado é comparado. O benefício é duplo: a roda
+não patina, pois o torque comandado nunca excede o transferível, e o modelo do propulsor
+permanece válido, pois ele só descreve o processo abaixo do limite de aderência. O seletor,
+portanto, protege a aderência e a validade do modelo logo na entrada da estrutura.
 
 \subsection{O \emph{feedforward}}
-\label{sec:caminhodireto}
+\label{sec:feedforward}
 
 A pré-alimentação da referência, ou \emph{feedforward}, é o bloco que converte a
 referência diretamente em uma parcela da ação de controle, sem esperar que o erro se
-manifeste \cite{raffo_tcpi_psrprp}. No esquema geral de pré-alimentação e
-realimentação das notas de aula, o controlador que garantiria o seguimento perfeito da
-referência seria a inversa do modelo da malha:
+manifeste \cite{raffo_tcpi_psrprp}. O fundamento é a divisão de esforço entre os dois
+caminhos da estrutura, e a Figura~\ref{fig:psrprp} reproduz o esquema geral de
+pré-alimentação e realimentação das notas de aula: o bloco de pré-alimentação antecipa a
+resposta à referência, e o bloco de realimentação corrige o que a pré-alimentação não
+previu. Para que a referência se converta em ação de controle sem passar pelo erro, o
+caminho que ela atravessa precisa ser o inverso do modelo da malha:
 
 \begin{equation}\label{eq:controlador_ideal}
 C_p(s) = \frac{1}{H_1(s)},
@@ -544,13 +538,11 @@ C_p(s) = \frac{1}{H_1(s)},
 em que $H_1(s)$ é o modelo que a referência atravessa. Na
 Figura~\ref{fig:psrprp}, o esquema separa os dois papéis: o bloco de pré-alimentação
 da referência antecipa a resposta, e o bloco de rejeição da perturbação compensa as
-variações do processo. A realimentação, por sua vez, atua depois que o desvio aparece
-e corrige o que a pré-alimentação não previu.
+variações do processo. A realimentação, por sua vez, atua depois que o desvio aparece.
 
-O fundamento da decisão é a divisão de esforço entre os dois caminhos. Sem caminho
-direto, o controlador dependeria apenas da realimentação, e o termo integrador
-carregaria sozinho todo o esforço de regime, deteriorando o transiente. A limitação
-da estrutura é a dependência do modelo: quanto mais o processo real se afasta de
+Sem a pré-alimentação, o controlador dependeria apenas da realimentação, e o termo
+integrador carregaria sozinho todo o esforço de regime, deteriorando o transiente. A
+limitação da estrutura é a dependência do modelo: quanto mais o processo real se afasta de
 $H_1(s)$, maior o resíduo que recai sobre a realimentação. A pré-alimentação da
 perturbação, possível apenas quando a perturbação é medida ou estimada, não é
 empregada, pois nem o afundamento da tensão da bateria sob carga nem a variação
@@ -574,8 +566,8 @@ I_{\mathrm{ff}} = I_0(u) + \frac{u\,T_{\mathrm{ref,ef}}}{K_T},
 \end{equation}
 
 e o comando equivalente $u_{\mathrm{ff}}$ é o valor que resolve essa equação. A saída
-do controlador mestre, a correção de corrente $\Delta I$, responde pelo que o caminho
-direto não sabe, e o somador forma a referência da malha interna
+do controlador mestre, a correção de corrente $\Delta I$, responde pelo que a
+pré-alimentação não previu, e o somador forma a referência da malha interna
 $I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$. Assim, a pré-alimentação age antes do
 erro e a realimentação corrige o que resta.
 
@@ -665,7 +657,8 @@ partir da medida secundária por um modelo do processo.}
 \end{figure}
 
 No projeto, $y$ é o torque na roda, $z$ é a corrente medida no ramo de alimentação e o
-modelo é a curva característica validada no ensaio de tração, sintetizada pela
+modelo é a curva característica validada no ensaio de tração de corrente versus força,
+sintetizada pela
 Equação~\eqref{eq:estimador_proposta}. O estimador de torque fecha o laço externo:
 converte a corrente medida no torque $\hat{T}$, limita a estimativa à faixa validada e
 filtra-a antes de alimentar o mestre, pois é quase-estático e não deve reagir a
@@ -721,6 +714,8 @@ Sobre essa escolha, definiu-se a proposta do trabalho: um estimador de torque a 
 corrente medida, validado contra um padrão de tração obtido com uma balança de mala, e
 uma malha de controle em cascata, com \emph{feedforward}, anti-windup e as proteções de
 aderência e de sobrecorrente, estruturada para atender aos objetivos de controle em
-malha fechada do propulsor.
+malha fechada do propulsor. A materialização experimental dessa proposta --- a montagem,
+os ensaios e o orçamento de incertezas --- é descrita na Metodologia,
+Capítulo~\ref{chap:metodologia}.
 
 \clearpage

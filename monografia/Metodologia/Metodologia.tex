@@ -206,8 +206,8 @@ ensaio ao lado do display da balança. O script da automação encontra-se no
 Apêndice~\ref{apendice:codigos} (A.4) e é o mesmo que gerou os arquivos de dados dos
 ensaios.
 
-Um efeito prático da transmissão serial merece registro, pois condiciona a leitura dos
-arquivos. O envio bufferiza as amostras, que chegam ao computador em rajadas de cerca de
+Um efeito prático da transmissão serial condiciona a leitura dos arquivos. O envio
+bufferiza as amostras, que chegam ao computador em rajadas de cerca de
 dez, com o mesmo carimbo de tempo, em blocos de $100$ ms. Os carimbos, assim, não
 distinguem as amostras dentro da rajada; para não perder a resolução temporal, o tempo é
 reconstruído por índice: a $k$-ésima amostra do arquivo corresponde a $t = k \times 10$ ms,
@@ -425,7 +425,7 @@ Equação \eqref{eq:propagacao}.
 
 \section{Resumo do Capítulo}
 
-Este capítulo construiu o ensaio da montagem ao orçamento de confiança. A balança de gancho
+Este capítulo construiu o ensaio da montagem ao orçamento de incertezas. A balança de gancho
 foi adotada como padrão de força, e a montagem ancora o automodelo, convertendo a tração em
 tensão mensurável, com a geometria do cabo quantificada e o raio efetivo medido em
 $0{,}0751$ m. A corrente é adquirida por um sensor de efeito Hall instalado por adaptação

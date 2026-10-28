@@ -2,8 +2,8 @@
 \label{chap:resultados}
 
 Este capítulo apresenta os resultados dos experimentos definidos na metodologia, na ordem em
-que foram conduzidos, e o controlador projetado sobre eles. Convém antecipar a lógica que
-organiza a apresentação, pois ela só se torna evidente ao final da sequência.
+que foram conduzidos, e o controlador projetado sobre eles. A lógica que organiza a
+apresentação só se torna evidente ao final da sequência, e por isso a antecipamos aqui.
 
 A caracterização produziu dois modelos complementares do propulsor, e a apresentação a
 seguir acompanha a ordem em que foram obtidos. O primeiro é estático: a corrente de perdas
@@ -57,15 +57,11 @@ característica, e gera as figuras correspondentes; o segundo lê o ensaio de tr
 corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a constante de
 tempo da planta; o terceiro executa a simulação da malha de controle e produz a figura do
 desempenho; e o quarto é a automação do ensaio, que dispara os degraus no Raspberry Pi e
-registra a corrente em CSV. Convém explicitar por que a análise ocupa dois scripts e não
-um por ensaio: a divisão segue os modelos que o controlador consome, e não os ensaios. O
-modelo estático --- a corrente de perdas e o coeficiente da curva, que alimentam o
-estimador e o feedforward --- é construído pelo primeiro script a partir de dois ensaios;
-o modelo dinâmico, a planta da malha escrava, é identificado pelo segundo a partir do
-ensaio de tração de corrente. Como cada modelo sustenta um elo da malha, reproduzir os
-scripts é reproduzir a cadeia que sustenta o controlador. Todas as figuras de dados deste
-capítulo saem desses programas, de modo que cada número apresentado a seguir é reproduzível
-a partir dos arquivos originais.
+registra a corrente em CSV. A divisão segue os modelos que o controlador consome, assim,
+o modelo estático --- a corrente de perdas e o coeficiente da curva, que alimentam o
+estimador e o feedforward --- é construído pelo primeiro script a partir de dois ensaios,
+e o modelo dinâmico, a planta da malha escrava, é identificado pelo segundo a partir do
+ensaio de tração de corrente.
 
 \section{Testes em Bancada}
 \label{sec:resbancada}
@@ -90,14 +86,18 @@ software, o próprio $1/1{,}0742$, o compensa sem distorcer a forma do sinal. A 
 fica, assim, calibrada, e o resíduo da correção entra como componente de incerteza.
 
 A balança foi verificada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg, e
-as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático,
-cresce linearmente com a carga e soma $10$ g para cada $0{,}5$ kg, cerca de $2\%$ da
-leitura na faixa do ensaio. Aqui a situação é outra: a leitura da balança é a própria
+as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático e
+cresce linearmente com a carga: o déficit soma $10$ g para cada $0{,}5$ kg, proporção
+constante nos três pontos verificados, correspondente a $2\%$ da leitura na faixa do
+ensaio.
+
+
+Aqui a situação é outra: a leitura da balança é a própria
 grandeza de referência da caracterização, não há canal de correção em software, uma vez
 que o display não possui saída elétrica, e o desvio é declarado como componente
 sistemática, junto com a resolução de $10$ g. Em ambos os casos, a linearidade verificada
 justifica o tratamento dos desvios como sistemáticos simples, e nenhum instrumento
-precisou ser descartado.
+precisou ser descartado. 
 
 \section{Ensaio em Vazio}
 \label{sec:resvazio}
@@ -106,9 +106,9 @@ O primeiro ensaio com o veículo mede a corrente consumida pelo propulsor quando
 entrega tração alguma, com as rodas suspensas. O resultado, a corrente de perdas $I_0(u)$
 em cada comando, entra na caracterização de duas maneiras, e por isso abre a sequência.
 
-A primeira é direta. O torque é produzido pela corrente que excede as perdas do conjunto,
-de modo que o estimador desconta $I_0(u)$ de cada leitura, e o alinhamento dos pontos na
-validação depende desse desconto. A segunda é estrutural. O modelo representa a corrente
+A primeira é direta: o torque é produzido pela corrente que excede as perdas do
+conjunto, de modo que o estimador desconta $I_0(u)$ de cada leitura, e o alinhamento dos
+pontos na validação é dependente. A segunda é estrutural: o modelo representa a corrente
 de fase pelo quociente $I/u$, o que só é legítimo se o \emph{duty cycle} --- a fração do
 período de chaveamento em que o ESC permanece ligado --- acompanhar o comando de forma
 linear. Com o veículo parado, a corrente de perdas é essencialmente a própria corrente de
@@ -326,8 +326,8 @@ $\hat{T} = K_T\,(I_\mathrm{bat} - I_0(u))/u$, com $K_T = G_F\,r_\mathrm{ef} = 0{
 N$\cdot$m/(A/u), que absorve apenas a constante de torque do motor, o rendimento e a
 redução --- as constantes do caminho entre corrente de fase e torque no eixo, sem
 participação do raio. Ele é a realimentação da malha externa de torque: converte a corrente
-medida no torque comparado à referência, enquanto a inversa da mesma curva, no caminho
-direto, converte a referência na corrente esperada e no comando equivalente. O modelo, em
+medida no torque comparado à referência, ao passo que a inversa da mesma curva, na
+pré-alimentação, converte a referência na corrente esperada e no comando equivalente. O modelo, em
 ambos os usos, estende-se apenas pela região de aderência: acima dela, o
 quociente $I/u$ deixa de representar a corrente de fase e a força deixa de ser
 determinada pela corrente, o que a própria regressão confirma ao produzir valores
@@ -573,9 +573,9 @@ e o mestre,
 I_1[k] = K_{p1}(u[k])\left(e_1[k] + \frac{T_s}{T_{i1}}\sum_j e_1[j]\right),
 \]
 com as somas dos erros substituídas, na prática, por acumuladores atualizados a cada
-amostra. O filtro do estimador e as rampas dos caminhos direto e de referência são
+amostra. O filtro do estimador e as rampas da pré-alimentação e da referência são
 recursões de primeira ordem idênticas, todas no mesmo relógio de $10$ ms. Duas escolhas
-de implementação merecem destaque. A primeira é o \emph{feedforward} duplo: além da corrente
+de implementação condicionam o desempenho. A primeira é o \emph{feedforward} duplo: além da corrente
 esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
 atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
 integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
@@ -645,7 +645,7 @@ de malha fechada, de modo que a especificação de
 acomodação deve ser lida contra a referência efetivamente aplicada. Para a rejeição de
 perturbação, o afundamento e o deslocamento produzem desvio máximo de $1{,}0$
 N$\cdot$m, corrigido pelo integrador do mestre com erro nulo em regime, o que ilustra o
-papel da malha externa: corrigir o que o \emph{feedforward} não sabe. O seletor, por fim,
+papel da malha externa, que corrige o que o \emph{feedforward} não prevê. O seletor, por fim,
 segue o limite de $3{,}3$ N$\cdot$m sem acumular erro
 integral, e retorna ao pedido menor ao liberar.
 
