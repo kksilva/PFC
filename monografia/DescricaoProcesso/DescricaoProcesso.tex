@@ -412,22 +412,32 @@ estimativa assume a forma
 \begin{equation}\label{eq:estimador_proposta}
 \hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
 \end{equation}
-em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T =
-G_F\,r_{\mathrm{ef}}$ é o produto do coeficiente da regressão pelo raio efetivo. Convém
-registrar o que esse produto esconde: como a regressão ajusta força, seu coeficiente $G_F$
-já contém o raio no denominador, de modo que, no produto, o raio se cancela e $K_T$ absorve
-apenas a constante de torque do motor, o rendimento e a redução --- exatamente as
-constantes que relacionam corrente de fase e torque no eixo, sem papel do raio da roda. O
-raio efetivo, ainda assim, precisa ser medido: é ele quem converte a força da balança em
-torque, na validação do coeficiente e nos limiares de aderência do controlador.
-Nenhuma dessas constantes precisa ser
+em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T$ é
+um único coeficiente que absorve a constante de torque do motor, o rendimento do caminho
+elétrico--mecânico, a redução e o raio efetivo. Nenhuma dessas constantes precisa ser
 conhecida isoladamente, pois o coeficiente é identificado experimentalmente como um todo.
 O estimador é quase-estático e só é válido onde foi caracterizado, de modo que sua saída
 é empregada apenas dentro da faixa de aderência.
 
-(REESCREVA O PARAGRAFO ACIMA, EXPLICITANDO COMO O TORQUE SE RELACIONA COM A CORRENTE MEDIDA, SE NAO ESTIVER BEM DEFINIDO ANTERIORMENTE. DEPOIS, DEFINA A FORÇA DE TRAÇÃO, SE NAO FOI ANTERIOMENTE, E COMO SSE RELACIONA COM O AUTOMODELO E COMO PODE SER FACILMENTE IMPLEMENTADA EM RELAÇÃO AOS OUTROS METODOS -- CITE BREVEMENTE QUE FOI FEITO UM ESTUDO PREVIO CONSIDERANDO FACIL IMPLEMENTAÇÃO, TAMANHO DO PROJETO, ETC, E DECIDIU POR USAR A BALANÇA DE MALA COM GANCHO....)
+A relação entre a corrente medida e o torque fica, com isso, definida: o caminho da
+corrente de bateria até o torque na roda passa pela corrente de fase equivalente, com as
+perdas descontadas, e o coeficiente $K_T$ resume, em um único número identificável em
+bancada, tudo o que o modelo precisa conhecer da planta.
 
-\subsection{A estrutura de controle em cascata}
+Resta definir como o esforço mecânico real é medido, para que o coeficiente seja
+validado. O esforço do propulsor é a força de tração, a força com que o veículo puxa sua
+estrutura de retenção quando o motor acelera, e que, conforme a Seção~\ref{sec:automodelo},
+é o torque na roda dividido pelo raio efetivo. Medi-la exige um instrumento compatível com
+a escala do veículo, e a escolha desse instrumento foi precedida de um estudo prévio,
+conduzido no início do projeto, que comparou as alternativas --- célula de carga com
+amplificador, torquímetro, dinamômetro e balança de gancho --- sob os critérios de
+facilidade de implementação, tamanho e custo. A balança de mala com gancho foi a opção
+escolhida: mede diretamente a força na faixa de dezenas de newtons do ensaio, dispensa
+condicionamento de sinal e adaptação mecânica além do próprio gancho, e serve como padrão
+de bancada para o ajuste e a validação do coeficiente $K_T$. O protocolo do experimento é
+detalhado na Metodologia, no Capítulo~\ref{chap:metodologia}.
+
+\subsection{A estrutura de controle}
 
 Sobre o estimador validado estrutura-se a malha de controle de torque, em cascata, cuja
 topologia é apresentada na Figura~\ref{fig:diagrama_malha} e cujas decisões de projeto se
@@ -437,51 +447,54 @@ raffo_tcpi_psrprp, raffo_tcpi_sintese}.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.95\textwidth]{Figuras/diagrama_malha.png}
-\caption{Topologia da malha de controle de torque: o limitador de aderência corta a
-referência no torque máximo transferível, o caminho direto converte a referência na
-corrente esperada pela inversa da curva característica, o controlador corrige o erro
-residual, a corrente medida é convertida de volta em torque pelo estimador, e a
-realimentação fecha o laço.}
+\caption{}
 \label{fig:diagrama_malha}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-A referência de torque $T_{\mathrm{ref}}$ percorre, na entrada da malha, um limitador de
-aderência, que funciona como um seletor de mínimo: acima do torque máximo transferível
-ao solo não há esforço a comandar, apenas patinagem, de modo que referências maiores que
-esse limiar são cortadas nele. Essa é a primeira proteção da malha e preserva também
-a validade do modelo, que só descreve o propulsor abaixo do limite de aderência.
+A leitura do diagrama segue o fluxo dos sinais, e cada bloco tem nome e papel definidos.
+A referência de torque $T_{\mathrm{ref}}$ entra no \textbf{seletor de mínimo}: acima do
+torque máximo transferível ao solo não há esforço a comandar, apenas patinagem, de modo
+que referências maiores que o limiar de aderência são cortadas, e a referência efetiva
+$T_{\mathrm{ref,ef}}$ segue adiante. Essa é a primeira proteção da malha e preserva
+também a validade do modelo, que só descreve o propulsor abaixo do limite de aderência.
 
-A referência limitada segue por dois caminhos. No caminho direto, a inversa da curva
-característica converte o torque pedido na corrente esperada e no comando equivalente do
-ESC. Essa pré-alimentação é necessária porque, sem ela, o controlador dependeria apenas
-da realimentação, e o termo integrador carregaria sozinho todo o esforço de regime,
-deteriorando o transiente. No caminho de realimentação, o torque estimado pela Equação
-\eqref{eq:estimador_proposta} é comparado à referência, e o erro residual aciona o
-controlador, que corrige o que o caminho direto não sabe: as perturbações sem sensor no
-veículo, como o afundamento da tensão da bateria sob carga e a variação da corrente de
-perdas com a temperatura.
+A referência efetiva segue por dois caminhos. No \textbf{caminho direto}, o bloco
+\emph{inversa da curva característica} converte $T_{\mathrm{ref,ef}}$ na corrente esperada
+$I_{\mathrm{ff}}$ e no comando equivalente $u_{\mathrm{ff}}$. Essa pré-alimentação é
+necessária porque, sem ela, o controlador dependeria apenas da realimentação, e o termo
+integrador carregaria sozinho todo o esforço de regime, deteriorando o transiente. No
+\textbf{caminho de realimentação}, o \textbf{comparador mestre} forma o erro de torque
+$e_1 = T_{\mathrm{ref,ef}} - \hat{T}$, e o \textbf{controlador mestre} --- um PI de ganho
+programado --- converte esse erro na correção de corrente $\Delta I$, que responde pelo
+que o caminho direto não sabe: as perturbações sem sensor no veículo, como o afundamento
+da tensão da bateria sob carga e a variação da corrente de perdas com a temperatura. O
+\textbf{somador} forma a referência da malha interna, $I_{\mathrm{ref}} = I_{\mathrm{ff}}
++ \Delta I$.
 
-A correção soma-se à corrente esperada e forma a referência da malha interna, de
-corrente, cujo controlador ajusta o comando $u$ enviado ao ESC. A justificativa da
-cascata é a da própria estrutura \cite{raffo_tcpi_cascata}: a corrente é mais rápida que
-o torque e sensível às perturbações elétricas, de modo que a malha interna as rejeita
-antes que se transformem em erro de torque, enquanto a malha externa cuida do
-seguimento da referência e da rejeição do restante, com erro nulo em regime em ambas as
-funções \cite{raffo_tcpi_psrprp}.
+Na malha interna, o \textbf{comparador escravo} forma o erro de corrente $e_2 =
+I_{\mathrm{ref}} - I$, e o \textbf{controlador escravo} --- um PI com anti-windup por
+\emph{clamping} --- produz o comando $u$ sobre o pré-posicionamento $u_{\mathrm{ff}}$. A
+justificativa da cascata é a da própria estrutura \cite{raffo_tcpi_cascata}: a corrente é
+mais rápida que o torque e sensível às perturbações elétricas, de modo que a malha
+interna as rejeita antes que se transformem em erro de torque, enquanto a malha externa
+cuida do seguimento da referência e da rejeição do restante, com erro nulo em regime em
+ambas as funções \cite{raffo_tcpi_psrprp}. O comando aciona o \textbf{ESC e a planta}
+$G_1(s)$, identificados nos ensaios, cuja saída é a corrente $I$ medida no ramo de
+alimentação.
 
-Duas proteções fecham a estrutura. A primeira é o anti-windup por \emph{clamping}: o
-comando satura tanto na zona morta do ESC quanto na fronteira da região validada e,
-nessas condições, o integrador é ajustado para que a saída fique exatamente no limite,
-em vez de simplesmente congelar, de forma que qualquer reversão do erro tira a saída da
-saturação imediatamente, conforme as práticas clássicas de implementação
-\cite{raffo_tcpi_sintese}. A
-segunda é a proteção contra sobrecorrente por limiar, possível porque a corrente é
-medida: sempre que a leitura ultrapassa o valor máximo admitido, a excitação é reduzida,
-protegendo o conjunto elétrico. Somam-se a elas a limitação do próprio comando à região
-de aderência, onde o modelo, o estimador e o controlador são válidos, e a filtragem da
-estimativa, que é quase-estática e não deve alimentar a malha externa em transientes
-desbalanceados.
+O \textbf{estimador de torque} fecha o laço externo: converte a corrente medida no torque
+$\hat{T}$ pela Equação \eqref{eq:estimador_proposta}, limitando a estimativa à faixa
+validada e filtrando-a antes de alimentar o mestre, pois o estimador é quase-estático e
+não deve reagir a transientes em que corrente e comando desbalanceiam. Duas proteções
+completam a estrutura sobre o comando: a limitação à região de aderência validada, que é a
+fronteira que mantém o modelo, o estimador e o controlador válidos, e a proteção contra
+sobrecorrente por limiar, possível porque a corrente é medida, que reduz a excitação
+sempre que a leitura ultrapassa o valor máximo admitido. Quanto ao anti-windup, o
+\emph{clamping} ajusta o integrador do controlador escravo para que a saída fique
+exatamente no limite quando o comando satura, em vez de simplesmente congelar, de forma
+que qualquer reversão do erro tira a saída da saturação imediatamente, conforme as
+práticas clássicas de implementação \cite{raffo_tcpi_sintese}.
 
 O conjunto dessas decisões atende diretamente aos objetivos do trabalho: o controle em
 malha fechada do torque, com seguimento de referência e rejeição de perturbações, sobre
