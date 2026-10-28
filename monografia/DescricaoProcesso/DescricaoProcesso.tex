@@ -779,14 +779,14 @@ código consolida-se na Tabela \ref{tab:implementacao}.
 \hline
 Elemento & Localização no script \\
 \hline
-Constantes do projeto ($\lambda$, $T_s$, limites, rampas, filtro) & linhas 41--54 \\
-Corrente de perdas $I_0(u)$ e comando equivalente & linhas 102 e 137--144 \\
-Ganhos IMC ($K_{p2}$ e $K_{p1}$ programado) & linhas 153--155 \\
-Estimador de torque, com teto e filtro & linhas 190--195 \\
-Seletor de aderência e rampa da referência & linhas 197--201 \\
-\emph{Feedforward} de corrente e caminho direto & linhas 207--214 \\
-PI escravo, com anti-windup por clamping & linhas 216--226 \\
-Limite do comando à região de aderência & linhas 219 e 48--49 \\
+Constantes do projeto ($\lambda$, $T_s$, limites, rampas, filtro) & linhas 49--62 \\
+Corrente de perdas $I_0(u)$ e comando equivalente & linhas 108 e 150--160 \\
+Ganhos IMC ($K_{p2}$ e $K_{p1}$ programado) & linhas 175--177 \\
+Estimador de torque, com teto e filtro & linhas 212--217 \\
+Seletor de aderência e rampa da referência & linhas 219--223 \\
+\emph{Feedforward} de corrente e caminho direto & linhas 229--235 \\
+PI escravo, com anti-windup por clamping & linhas 238--248 \\
+Limite do comando à região de aderência & linhas 241 e 56--57 \\
 \hline
 \end{tabular}
 \end{table}
@@ -796,7 +796,7 @@ Duas escolhas de implementação condicionam o desempenho. A primeira delas é o
 esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
 atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
 integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
-estimador, como revelou a simulação. A segunda é o anti-\emph{windup} por \emph{clamping} (linhas 220--223 do script A.3),
+estimador, como revelou a simulação. A segunda é o anti-\emph{windup} por \emph{clamping} (linhas 244--246 do script A.3),
 o condicionamento da ação integral descrito na Seção~\ref{sec:protecoes}, cuja alternativa
 mais simples, a integração condicional, travou o sistema em saturação nas simulações
 iniciais.

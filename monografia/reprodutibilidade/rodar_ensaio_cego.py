@@ -11,6 +11,14 @@ Uso: python3 rodar_ensaio_cego.py
 Gera os dados do ensaio de tracao de corrente (sem anotacao de forca).
 """
 
+# ---------------------------------------------------------------------------
+# MAPA
+# 1) Configuracao do ensaio: faixa de degraus, direcao, limiares eletricos, CSV de saida (linhas 34-45)
+# 2) le_corrente e aguardar_repouso: leitura da serial e sincronizacao eletrica entre degraus (linhas 48-64)
+# 3) disparar_e_medir: disparo fogo-e-esqueca, deteccao da resposta na corrente e gravacao da janela (linhas 66-153)
+# 4) main: escada de degraus, lock de instancia unica, abertura da serial e loop do ensaio (linhas 156-190)
+# ---------------------------------------------------------------------------
+
 import csv
 import os
 import time
@@ -38,11 +46,15 @@ CABECALHO_CSV = "t_ensaio_s;t_degrau_s;angulo;corrente_a"
 
 
 def le_corrente(ser):
+    # Uma linha da serial do Arduino = uma leitura de corrente; a decodificacao
+    # tolerante (errors="replace") aguenta bytes quebrados quando a rede cai.
     return extrair_corrente(ser.readline().decode(errors="replace"))
 
 
 def aguardar_repouso(ser, timeout_s=20):
     """Espera a corrente ficar abaixo do limiar (fim do degrau anterior)."""
+    # A sincronizacao entre degraus e eletrica, nao de rede: so se dispara o
+    # proximo angulo quando o motor voltou ao repouso.
     fim = time.time() + timeout_s
     while time.time() < fim:
         i = le_corrente(ser)
@@ -59,6 +71,11 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0, gravar_por_segundo=Fals
     gravar_por_segundo=True : CSV recebe so a media de cada segundo
                               (15 pontos por degrau; a aquisicao continua
                               a 100 Hz e o resumo usa todas as leituras)."""
+    # Como nao ha confirmacao de rede, o degrau so "aconteceu" quando a
+    # corrente passa do limiar; ate la, re-dispara ate TENTATIVAS_CEGAS vezes
+    # (o Pi pode estar reiniciando por brown-out). A janela comeca na resposta,
+    # nao no disparo, e o resumo por segundo (com media movel) vai para o
+    # terminal em tempo real.
     ser.reset_input_buffer()
     t0 = primeira = None
     probar = True                # so sonda a rede ate ela falhar; depois dispara direto
@@ -138,6 +155,9 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0, gravar_por_segundo=Fals
 
 def main(direcao=DIRECAO, nome_csv=NOME_CSV,
          angulo_inicial=ANGULO_INICIAL, angulo_final=ANGULO_FINAL):
+    # Monta a escada de degraus na direcao pedida, fixa o cwd junto ao script
+    # (o CSV cai sempre na pasta do ensaio), trava a instancia unica e percorre
+    # a escada com pausa e repouso entre degraus.
     if direcao == "descida":
         escada = range(angulo_final, angulo_inicial - 1, -1)
     else:

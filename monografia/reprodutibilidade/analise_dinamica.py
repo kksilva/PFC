@@ -10,6 +10,16 @@ e resposta_degrau.png.
 Uso:  python3 analise_dinamica.py
 """
 
+# ---------------------------------------------------------------------------
+# MAPA
+# 1) Constantes do projeto: normalizacao do comando, faixa de degraus da identificacao, taxa de amostragem (linhas 36-39)
+# 2) Leitura do CSV: segmento 100 Hz, quebra em blocos por degrau (linhas 46-70)
+# 3) Ancoragem eletrica de cada borda: repouso, plato e inicio eletrico, mais a resposta normalizada (linhas 72-90)
+# 4) Ajuste da constante de tempo tau (funcoes e bloco em main) (linhas 92-119)
+# 5) main: ganhos de plato de cada borda e ganho medio (linhas 121-127)
+# 6) Figuras: blocos_degrau.png (janelas brutas com media movel) e resposta_degrau.png (respostas alinhadas com ajuste de 1a ordem) (linhas 130-170)
+# ---------------------------------------------------------------------------
+
 import csv
 import math
 import statistics
@@ -35,6 +45,9 @@ def u_de(angulo):
 
 def carregar_sessao_rapida():
     """Segmento 100 Hz do CSV: o mais longo, com um bloco por degrau."""
+    # O CSV concatena varias sessoes de aquisicao; o timestamp que reseta marca
+    # a fronteira entre elas. A sessao mais longa e a de 100 Hz, e nela cada
+    # trecho de comando constante vira um bloco (um degrau).
     leituras = []
     with open(PASTA_DADOS / "ensaio_tracao_corrente.csv") as arquivo:
         for linha in csv.DictReader(arquivo, delimiter=";"):
@@ -58,6 +71,9 @@ def carregar_sessao_rapida():
 
 def iniciar_em(bloco):
     """Ancora o bloco no inicio eletrico: primeira amostra acima de 20% da excursao."""
+    # O inicio eletrico (quando a corrente comeca a subir) nao coincide com o
+    # inicio da janela de comando; ancorar na primeira amostra acima de 20% da
+    # excursao repouso->plato alinha as dez bordas para a media e o ajuste.
     correntes = [leitura[2] for leitura in bloco]
     repouso = statistics.mean(correntes[:150])       # 1,5 s iniciais (neutro)
     plato = statistics.mean(correntes[-300:])        # 3 s finais (regime)
@@ -75,6 +91,8 @@ def resposta_normalizada(bloco):
 
 def ajustar_tau(media):
     """Minimiza a soma dos quadrados dos residuos de y = 1 - exp(-t/tau)."""
+    # Ajuste direto da resposta de primeira ordem sobre a media das dez bordas,
+    # por varredura de tau; serve de contraste ao metodo grafico de 63,2%.
     def residuo(tau):
         return sum((y - (1 - math.exp(-i / AMOSTRAS_POR_SEGUNDO / tau))) ** 2
                    for i, y in enumerate(media))

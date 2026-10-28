@@ -9,6 +9,18 @@ curva_forca_comando.png.
 Uso:  python3 analise_estatica.py
 """
 
+# ---------------------------------------------------------------------------
+# MAPA
+# 1) Constantes do projeto: conversao kgf->N, normalizacao do comando, raio efetivo (linhas 37-40)
+# 2) Funcoes auxiliares: u_de, minimos quadrados (com e sem origem), leitura do vazio e da tracao (linhas 43-115)
+# 3) main: ajuste de I0(u) sobre as medias do ensaio em vazio (linhas 118-127)
+# 4) main: ganho G_F da curva F = G_F (I - I0(u))/u, ajustado por sentido (linhas 128-135)
+# 5) main: medianas de corrente e forca por degrau, para conferencia com a tabela da monografia (linhas 136-151)
+# 6) main: repetibilidade Tipo A (sigma_A) por faixa de operacao, para o orcamento de incertezas (linhas 152-171)
+# 7) main: tabela do ensaio em vazio (medias por degrau) (linhas 172-176)
+# 8) main: figuras i0_vazio.png e curva_forca_comando.png (linhas 177-227)
+# ---------------------------------------------------------------------------
+
 import csv
 import statistics
 from pathlib import Path
@@ -33,6 +45,11 @@ def u_de(angulo):
     return (angulo - ANGULO_NEUTRO) / FAIXA_COMANDO
 
 
+# Reta y = a + b x por minimos quadrados. E a versao forcada pela origem
+# (y = g x), usada no ganho G_F porque a curva F = G_F (I - I0)/u nao tem
+# termo independente.
+
+
 def minimos_quadrados(x, y):
     """Reta y = a + b x por minimos quadrados. Devolve (a, b, r2)."""
     xm = statistics.mean(x)
@@ -53,6 +70,8 @@ def minimos_quadrados_origem(x, y):
 
 def carregar_vazio():
     """Medias da corrente de perdas por degrau, do ensaio em vazio."""
+    # O ensaio em vazio repete cada degrau varias vezes; aqui as leituras sao
+    # agrupadas por angulo e medias, servindo de base para o ajuste de I0(u).
     por_angulo = {}
     with open(PASTA_DADOS / "ensaio_vazio_corrente.csv") as arquivo:
         for linha in csv.DictReader(arquivo, delimiter=";"):
@@ -62,6 +81,8 @@ def carregar_vazio():
 
 def carregar_tracao():
     """Pares (corrente_A, forca_N) por sentido e por degrau, das 4 repeticoes."""
+    # A planilha de anotacoes tem as 4 repeticoes empilhadas em linhas; cada
+    # par de colunas e um degrau. A forca vem em kgf e e convertida para N.
     planilha = openpyxl.load_workbook(PASTA_DADOS / "ensaio_tracao_corrente_versus_forca.xlsx", data_only=True)
     pagina = planilha.worksheets[0]
     degraus = [int(pagina.cell(row=1, column=c).value) for c in range(2, 44, 2)]
@@ -82,6 +103,8 @@ def mediana(valores):
 
 def ajuste_gf(pares, degraus, i0_a, i0_b):
     """G_F da reta F = G_F (I - I0(u))/u sobre os pares dos degraus dados."""
+    # Subtrai a corrente de perdas e divide pelo comando para linearizar a
+    # caracteristica; so entao a reta por minimos quadrados tem sentido.
     x, y = [], []
     for degrau in degraus:
         u = u_de(degrau)
@@ -111,6 +134,8 @@ def main():
     print(f"K_T = G_F * r_ef = {gf_d * RAIO_EFETIVO_M:.4f} N*m/(A/u)")
 
     # 3) Medianas por degrau (conferencia com a tabela da monografia)
+    # Mediana e desvio-padrao das 4 repeticoes em cada degrau, impressos para
+    # confronto com a tabela de resultados da monografia (descida e subida).
     for sentido in ("SUBIDA", "DESCIDA"):
         print(f"--- {sentido} ---")
         for degrau in sorted(tracao[sentido]):
@@ -125,6 +150,10 @@ def main():
                   f"F = {mediana(forcas):5.2f} +/- {dpf:.2f} N")
 
     # 3a) Repetibilidade Tipo A por faixa de operacao (para o orcamento de incertezas)
+    # A repetibilidade e avaliada separadamente na zona morta, na aderencia e
+    # na saturacao: sao regioes com fisicas distintas. O sigma_A de cada faixa
+    # e a media dos desvios-padrao por degrau e alimenta o orcamento de
+    # incertezas da monografia (Tabela 4.4).
     FAIXAS = {"zona morta": range(97, 100),
               "aderencia": range(100, 111),
               "saturacao": range(111, 118)}
@@ -146,6 +175,10 @@ def main():
         print(f"{int(angulo)} gr  u = {u_de(angulo):.3f}   I0 = {vazio[angulo]:.2f} A")
 
     # 4) Figuras
+    # i0_vazio.png: corrente de perdas versus comando com o ajuste linear e a
+    # zona morta destacada. curva_forca_comando.png: mediana da tracao por
+    # degrau nos dois sentidos, com as tres faixas de operacao e os pontos de
+    # corte do ESC (116-117) ocos, fora da curva.
     plt.rcParams.update({"font.size": 10, "axes.grid": True, "grid.alpha": 0.3,
                          "axes.axisbelow": True})
 

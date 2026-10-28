@@ -10,6 +10,14 @@ Uso:  python3 simulacao_cascata.py
 Saida: figura PNG + metricas PSR/PRP impressas no terminal.
 """
 
+# ---------------------------------------------------------------------------
+# MAPA
+# 1) Constantes do projeto: ajuste da planta, sintese IMC, salvaguardas e cenario de simulacao (linhas 30-74)
+# 2) Leitura e ajuste dos dados de ensaio: repeticoes da descida, I0(u), planta I_ss(u), ganho de torque, comando equivalente (linhas 76-170)
+# 3) Simulacao da cascata: ganhos IMC, cenario PSR/PRP/seletor, estimador, seletor, mestre, caminho direto com feedforward, PI escravo com clamping, planta (linhas 163-261)
+# 4) Metricas PSR/PRP/retorno/seletor e figura simulacao_cascata.png (linhas 264-345)
+# ---------------------------------------------------------------------------
+
 from pathlib import Path
 
 import matplotlib
@@ -70,6 +78,8 @@ DESLOCAMENTO_I0_PRP_A = 0.3
 # --------------------------------------------------------------------------- #
 def carregar_repeticoes_descida(caminho_planilha):
     """Retorna dicionario {degrau: (correntes_A, forcas_kgf)} das repeticoes."""
+    # So a descida e usada: e o sentido em que a caracteristica foi validada
+    # ate a saturacao, sem os pontos de corte do ESC que contaminam a subida.
     planilha = openpyxl.load_workbook(caminho_planilha, data_only=True)
     pagina = planilha.worksheets[0]
     linhas = list(pagina.iter_rows(values_only=True))
@@ -106,6 +116,9 @@ def corrente_perdas_a(u):
 
 def ajustar_planta_corrente(repeticoes):
     """Planta estatica I_ss(u): quadratica sobre a descida, regiao de aderencia."""
+    # A corrente de regime nao e linear no comando (ganho cai na saturacao);
+    # um ajuste quadratico sobre a regiao de aderencia captura essa curvatura
+    # com os dados brutos das repeticoes, sem reducao intermediaria.
     comodos, correntes = [], []
     for rep in repeticoes:
         for degrau in range(DEGRAU_MINIMO, DEGRAU_MAXIMO + 1):
@@ -136,6 +149,9 @@ def ajustar_ganho_torque(repeticoes):
 
 def comando_equivalente(torque_desejado, coef_planta, ganho_torque):
     """Inverte a curva estatica: u tal que K_T (I_ss(u) - I0(u))/u = torque."""
+    # A inversao analitica (raiz do polinomio) e o caminho direto do
+    # feedforward: posiciona o comando no ponto de equilibrio do torque
+    # pedido, deixando ao PI escravo apenas o desvio.
     c2, c1, c0 = coef_planta
     coeficientes = [c2, (c1 - I0_B) - torque_desejado / ganho_torque, c0 - I0_A]
     raizes = np.roots(coeficientes)
@@ -147,6 +163,12 @@ def comando_equivalente(torque_desejado, coef_planta, ganho_torque):
 # --------------------------------------------------------------------------- #
 # Simulacao da cascata
 # --------------------------------------------------------------------------- #
+# Passo a passo de 10 ms, com o cenario PSR/PRP/seletor injetado como funcoes
+# do tempo e todas as salvaguardas do projeto ativas. A ordem de cada passo e:
+# estimador, seletor+rampa, mestre, caminho direto com feedforward, escravo com
+# clamping e, por fim, a planta.
+
+
 def simular_cascata(coef_planta, ganho_torque):
     c2, c1, c0 = coef_planta
     ganho_local = 2 * c2 * comando_normalizado(105) + c1   # dI/du no nominal
@@ -242,6 +264,11 @@ def simular_cascata(coef_planta, ganho_torque):
 # --------------------------------------------------------------------------- #
 # Metricas e figura
 # --------------------------------------------------------------------------- #
+# As metricas leem o torque estimado nos trechos de cada transicao (media de
+# 0,5 s antes do instante indicado) e alimentam os resultados PSR/PRP da
+# monografia.
+
+
 def amostra_media(vetor, tempo, alvo_s, janela_s=0.5):
     fim = int(alvo_s / TEMPO_AMOSTRAGEM_S)
     inicio = fim - int(janela_s / TEMPO_AMOSTRAGEM_S)
@@ -271,6 +298,8 @@ def imprimir_metricas(tempos, historico):
 
 
 def gerar_figura(tempos, historico, caminho_saida):
+    # Tres eixos empilhados: referencias e torque estimado, corrente e comando,
+    # com as linhas de evento do cenario (PSR, PRP, retorno, seletor).
     plt.rcParams.update({"font.size": 10, "axes.grid": True,
                          "grid.alpha": 0.3, "axes.axisbelow": True})
     fig, eixos = plt.subplots(3, 1, figsize=(7.2, 6.6), sharex=True)
@@ -316,6 +345,8 @@ def gerar_figura(tempos, historico, caminho_saida):
 
 
 def main():
+    # Pipeline: ajusta planta e ganho a partir das repeticoes da descida,
+    # simula a cascata, imprime as metricas e gera a figura.
     repeticoes = carregar_repeticoes_descida(PLANILHA_DADOS)
     coef_planta = ajustar_planta_corrente(repeticoes)
     ganho_torque = ajustar_ganho_torque(repeticoes)
