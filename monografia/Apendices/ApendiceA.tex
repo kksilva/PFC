@@ -1,0 +1,33 @@
+\chapter{Scripts de processamento dos dados}
+\label{apendice:codigos}
+
+Os scripts a seguir implementam o processamento descrito na Seção
+\ref{sec:processamento} e geram as figuras de dados do
+Capítulo~\ref{chap:resultados}, a partir dos arquivos brutos dos ensaios. Executam-se em
+Python~3 e dependem apenas das bibliotecas \texttt{numpy}, \texttt{openpyxl} e
+\texttt{matplotlib}. Cada script é acompanhado dos arquivos que lê, de modo que a
+execução reproduz os números e as figuras apresentados no texto. Os três arquivos de
+dados são a planilha de anotações do ensaio de tração (\texttt{pfc kaka.xlsx}), o
+registro do ensaio em vazio (\texttt{ensaio\_series\_vazio.csv}) e o registro da
+aquisição contínua a $100$ Hz (\texttt{ensaio\_cego\_subida.csv}).
+
+O primeiro script ajusta a corrente de perdas $I_0(u)$ e o coeficiente $G_F$ da curva
+característica, e produz as figuras do ensaio em vazio e da curva de força; o segundo
+identifica a dinâmica entre comando e corrente, com a constante de tempo da planta, e
+produz as figuras das janelas brutas e da resposta normalizada; o terceiro executa a
+simulação da malha de controle em cascata e produz a figura do desempenho em
+simulação.
+
+\section*{\normalsize A.1 Caracterização estática}
+\addcontentsline{toc}{section}{A.1 Caracterização estática}
+\lstinputlisting[language=Python]{reprodutibilidade/analise_estatica.py}
+
+\section*{\normalsize A.2 Dinâmica entre comando e corrente}
+\addcontentsline{toc}{section}{A.2 Dinâmica entre comando e corrente}
+\lstinputlisting[language=Python]{reprodutibilidade/analise_dinamica.py}
+
+\section*{\normalsize A.3 Simulação da malha de controle}
+\addcontentsline{toc}{section}{A.3 Simulação da malha de controle}
+\lstinputlisting[language=Python]{reprodutibilidade/simulacao_cascata.py}
+
+\clearpage
