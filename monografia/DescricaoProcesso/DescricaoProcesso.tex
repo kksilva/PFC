@@ -494,6 +494,22 @@ que referências maiores que o limiar de aderência são cortadas, e a referênc
 $T_{\mathrm{ref,ef}}$ segue adiante. Essa é a primeira proteção da malha e preserva
 também a validade do modelo, que só descreve o propulsor abaixo do limite de aderência.
 
+O seletor é a estratégia de controle seletivo das notas de aula
+\cite{raffo_tcpi_cascata}, reproduzida na Figura~\ref{fig:seletor}: diante de mais de
+uma candidata, o seletor escolhe aquela que deve governar o controlador. Na estratégia
+\emph{override} ilustrada, um seletor de maior valor escolhe entre as medições recebidas;
+no projeto, o seletor é de mínimo, e as candidatas são o torque pedido e o limiar de
+aderência, de modo que a referência efetiva é sempre a mais restritiva das duas.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.85\textwidth]{Figuras/seletor_raffo.png}
+\caption{Controle seletivo: o seletor escolhe, dentre as candidatas, a que governa o
+controlador.}
+\label{fig:seletor}
+\footnotesize{Fonte: Raffo (2019).}
+\end{figure}
+
 A referência efetiva segue por dois caminhos. No \textbf{caminho direto}, o bloco
 \emph{inversa da curva característica} converte $T_{\mathrm{ref,ef}}$ na corrente esperada
 $I_{\mathrm{ff}}$ e no comando equivalente $u_{\mathrm{ff}}$. Essa pré-alimentação é
@@ -507,6 +523,25 @@ da tensão da bateria sob carga e a variação da corrente de perdas com a tempe
 \textbf{somador} forma a referência da malha interna, $I_{\mathrm{ref}} = I_{\mathrm{ff}}
 + \Delta I$.
 
+A partição entre caminho direto e realimentação é o esquema geral de seguimento de
+referência e rejeição de perturbações das notas de aula \cite{raffo_tcpi_psrprp},
+reproduzido na Figura~\ref{fig:psrprp}: a pré-alimentação age antes de o erro se
+manifestar, e a realimentação corrige o que resta. No projeto, a pré-alimentação da
+referência é a inversa da curva característica --- o análogo da inversa do modelo das
+notas de aula --- e a realimentação é o PI mestre sobre o erro de torque. A pré-alimentação
+da perturbação, possível apenas quando a perturbação é medida ou estimada, não é
+empregada, uma vez que nem o sag da bateria nem a variação térmica de $I_0$ são
+mensuráveis no veículo.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Figuras/psrprp_raffo.png}
+\caption{Esquema geral de controle por pré-alimentação e realimentação, para seguimento de
+referência e rejeição de perturbações.}
+\label{fig:psrprp}
+\footnotesize{Fonte: Raffo (2019).}
+\end{figure}
+
 Na malha interna, o \textbf{comparador escravo} forma o erro de corrente $e_2 =
 I_{\mathrm{ref}} - I$, e o \textbf{controlador escravo} --- um PI com anti-windup por
 \emph{clamping} --- produz o comando $u$ sobre o pré-posicionamento $u_{\mathrm{ff}}$. A
@@ -514,22 +549,69 @@ justificativa da cascata é a da própria estrutura \cite{raffo_tcpi_cascata}: a
 mais rápida que o torque e sensível às perturbações elétricas, de modo que a malha
 interna as rejeita antes que se transformem em erro de torque, enquanto a malha externa
 cuida do seguimento da referência e da rejeição do restante, com erro nulo em regime em
-ambas as funções \cite{raffo_tcpi_psrprp}. O comando aciona o \textbf{ESC e a planta}
+ambas as funções \cite{raffo_tcpi_psrprp}.
+
+A cascata, no entanto, nasce da instrumentação, e a Figura~\ref{fig:cascata} reproduz o
+diagrama de motivação das notas de aula \cite{raffo_tcpi_cascata}: o controlador de
+temperatura, mais lento, é o mestre e impõe o \emph{set-point} do controlador de pressão,
+mais rápido, que é o escravo; os instrumentos de temperatura e de pressão fornecem as
+realimentações de cada malha. No projeto, o papel do mestre cabe ao controlador de
+torque, o do escravo ao controlador de corrente, e as realimentações são o torque
+estimado e a corrente medida.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.85\textwidth]{Figuras/cascata_raffo.png}
+\caption{Diagrama instrumental da cascata: o controlador mestre impõe o \emph{set-point}
+do escravo, e cada malha tem sua própria realimentação.}
+\label{fig:cascata}
+\footnotesize{Fonte: Raffo (2019).}
+\end{figure}
+
+O comando aciona o \textbf{ESC e a planta}
 $G_1(s)$, identificados nos ensaios, cuja saída é a corrente $I$ medida no ramo de
 alimentação.
 
 O \textbf{estimador de torque} fecha o laço externo: converte a corrente medida no torque
 $\hat{T}$ pela Equação \eqref{eq:estimador_proposta}, limitando a estimativa à faixa
 validada e filtrando-a antes de alimentar o mestre, pois o estimador é quase-estático e
-não deve reagir a transientes em que corrente e comando desbalanceiam. Duas proteções
-completam a estrutura sobre o comando: a limitação à região de aderência validada, que é a
-fronteira que mantém o modelo, o estimador e o controlador válidos, e a proteção contra
-sobrecorrente por limiar, possível porque a corrente é medida, que reduz a excitação
-sempre que a leitura ultrapassa o valor máximo admitido. Quanto ao anti-windup, o
-\emph{clamping} ajusta o integrador do controlador escravo para que a saída fique
-exatamente no limite quando o comando satura, em vez de simplesmente congelar, de forma
-que qualquer reversão do erro tira a saída da saturação imediatamente, conforme as
-práticas clássicas de implementação \cite{raffo_tcpi_sintese}.
+não deve reagir a transientes em que corrente e comando desbalanceiam. Ele é o caso de
+controle inferencial das notas de aula \cite{raffo_tcpi_cascata}, reproduzido na
+Figura~\ref{fig:inferencial}: a saída controlada $y$ não pode ser medida on-line, e um
+modelo do processo a reconstrói a partir da medida secundária $z$, sensível a ela. No
+projeto, $y$ é o torque na roda, $z$ é a corrente e o modelo é a curva característica
+validada no ensaio de tração --- cuja precisão condiciona o desempenho da estratégia,
+como as notas de aula advertem e como a validação experimental deste trabalho confirma.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{Figuras/inferencial_raffo.png}
+\caption{Controle inferencial: a variável controlada, não mensurável, é reconstruída a
+partir da medida secundária por um modelo do processo.}
+\label{fig:inferencial}
+\footnotesize{Fonte: Raffo (2019).}
+\end{figure}
+
+Duas proteções completam a estrutura sobre o comando: a limitação à região de aderência
+validada, que é a fronteira que mantém o modelo, o estimador e o controlador válidos, e a
+proteção contra sobrecorrente por limiar, possível porque a corrente é medida, que reduz a
+excitação sempre que a leitura ultrapassa o valor máximo admitido. Quanto ao anti-windup,
+o comando do ESC satura tanto na zona morta quanto na fronteira da região validada, e o
+tratamento clássico da ação integral nessas condições
+\cite{raffo_tcpi_pid2}, reproduzido na Figura~\ref{fig:antiwindup}, é o condicionamento do
+integrador para a condição de saturação. No projeto, emprega-se o \emph{clamping}: o
+integrador do controlador escravo é ajustado para que a saída fique exatamente no limite,
+em vez de simplesmente congelar, de forma que qualquer reversão do erro tira a saída da
+saturação imediatamente.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{Figuras/antiwindup_raffo.png}
+\caption{Condicionamento da ação integral: quando o atuador satura, o integrador é
+tratado para não acumular o erro em excesso.}
+\label{fig:antiwindup}
+\footnotesize{Fonte: Raffo (2019).}
+\end{figure}
 
 O conjunto dessas decisões atende diretamente aos objetivos do trabalho: o controle em
 malha fechada do torque, com seguimento de referência e rejeição de perturbações, sobre

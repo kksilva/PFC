@@ -481,6 +481,20 @@ K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
 T_i = \tau,
 \end{equation}
 em que $\tau$ e $K$ são a constante de tempo e o ganho da planta e $\theta_a$ o atraso.
+A Figura~\ref{fig:imc} reproduz a estrutura do método \cite{raffo_tcpi_imc}: o controle
+clássico realimenta apenas a saída medida, ao passo que o controle por modelo interno
+compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, de modo que o
+controlador contém a inversa da parte invertível do modelo e um filtro $F$ que torna o
+ajuste robusto --- neste trabalho, de primeira ordem, com constante de tempo $\lambda$.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/imc_raffo.png}
+\caption{Controle clássico por realimentação e controle por modelo interno, no qual o
+modelo do processo realimenta a diferença entre a saída medida e a prevista.}
+\label{fig:imc}
+\footnotesize{Fonte: Raffo (2019).}
+\end{figure}
 
 A \textbf{malha escrava}, de corrente, atua sobre a planta identificada na Equação
 \eqref{eq:g2_identificada}. Como a curva estática não é uma reta --- o ganho do platô
