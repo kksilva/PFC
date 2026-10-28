@@ -330,7 +330,8 @@ reduzindo-se proporcionalmente em alimentações menores, uma vez que a saída �
 O condutor interno de corrente apresenta resistência da ordem de $100$ µ$\Omega$, de modo
 que a queda de tensão e a dissipação introduzidas pelo sensor são pequenas. A resolução da
 medida, por fim, é limitada pelo conversor analógico-digital de $n$ bits e por sua tensão de
-referência $V_\mathrm{ref}$, o menor degrau de tensão que o conversor distingue, conforme a
+referência $V_\mathrm{ref}$, que define o fundo de escala dividido em $2^n$ degraus, de
+modo que o menor degrau de tensão distinguível é $V_\mathrm{ref}/2^n$, conforme a
 Equação \eqref{eq:acs_resolucao}.
 
 \begin{equation}\label{eq:acs_resolucao}
@@ -391,7 +392,29 @@ galvânico para proteger o circuito das altas correntes, e não dissipa potênci
 \section{Proposta do Projeto}
 \label{sec:proposta}
 
+A proposta do trabalho é controlar o torque do propulsor do automodelo em malha fechada,
+sem sensor de torque embarcado. Como o torque na roda não é mensurável a bordo, ele é
+estimado a partir da corrente elétrica do ramo de alimentação, a única grandeza de cadeia
+curta até o torque entre as comparadas na Seção~\ref{sec:sintese}, e o modelo que faz
+essa tradução é validado contra a força de tração medida por uma balança de gancho, com
+o veículo ancorado. Sobre esse modelo, estrutura-se uma malha de controle em cascata,
+com estimador, pré-alimentação e proteções, cuja especificação completa é o objeto desta
+seção.
+
+A tradução da corrente em torque se dá em dois elos estáticos, corrente--força e
+força--torque, e cada elo tem o seu coeficiente. O primeiro, $G_F$, é a força de tração
+por unidade de corrente, identificado diretamente no ensaio, pois a balança mede força.
+O segundo, $K_T = G_F\,r_{\mathrm{ef}}$, é o torque por unidade da mesma corrente,
+obtido da multiplicação pelo raio efetivo da roda, e é o coeficiente que o controlador
+emprega, pois a variável de interesse é o torque. Os dois nomes designam uma mesma
+relação física entre a corrente e o esforço mecânico do propulsor, vista ora na grandeza
+que o ensaio mede, ora na grandeza que o controle comanda, e a distinção de nomes evita
+confundir as unidades ao longo do texto. A Subseção~\ref{sec:estimador} deriva os dois
+coeficientes da curva característica, e as subseções seguintes detalham a malha de
+controle construída sobre eles.
+
 \subsection{O estimador de torque}
+\label{sec:estimador}
 
 A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758
 e convertida em torque por um estimador que não exige o conhecimento da redução da
@@ -401,43 +424,42 @@ tração na roda é medida para cada comando aplicado. Para empregar a corrente 
 ramo de alimentação, define-se a corrente de fase equivalente como o quociente da
 corrente de bateria, com as perdas descontadas, pelo comando
 
-\begin{equation*}
+\begin{equation}\label{eq:corrente_fase}
 I_{\mathrm{fase,eq}} = (I_{\mathrm{bat}} - I_0(u))/u,
-\end{equation*}
+\end{equation}
 na qual \(I_0(u)\) é a corrente de perdas do conjunto, medida em ensaio em vazio. A
 divisão pelo comando recupera a corrente de fase que o chaveamento esconde da medida,
 conforme a Equação~\eqref{eq:corrente_bateria}, relacionando-se pela curva característica 
 estática do propulsor
 
 \begin{equation}\label{eq:curva_caracteristica}
-F_{\text{tra\c{c}\~{a}o}} = G_F\,(I_{\mathrm{bat}} - I_0(u))/u,
+F_{\text{tra\c{c}\~{a}o}} = G_F\,I_{\mathrm{fase,eq}},
 \end{equation} 
 
 em que \(G_F\), em N/(A/u), é o coeficiente angular do ajuste, a força de tração produzida
 por unidade de corrente de fase equivalente.
 
-O torque na roda fecha a cadeia corrente--força. A força de tração atua no raio
+O torque na roda fecha a cadeia corrente--força--torque. A força de tração atua no raio
 efetivo da roda, \(T = F_{\text{tra\c{c}\~{a}o}}\,r_{\mathrm{ef}}\), e a substituição
-da Equação~\eqref{eq:curva_caracteristica} resulta na estimativa
+da Equação~\eqref{eq:curva_caracteristica} nessa relação resulta na estimativa
 
 \begin{equation}\label{eq:estimador_proposta}
-\hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
+\hat{T} = K_T\,I_{\mathrm{fase,eq}},
 \end{equation}
 
 em que $K_T = G_F\,r_{\mathrm{ef}}$, em N$\cdot$m/(A/u), é o torque na roda por unidade de
-corrente de fase equivalente. Os dois coeficientes medem grandezas diferentes, e a
-distinção está na unidade, pois $G_F$ relaciona corrente a força, ao passo que $K_T$ relaciona
-a mesma corrente a torque. A passagem de um ao outro é apenas a multiplicação pelo raio
-efetivo, que traduz estaticamente força em torque. Como $G_F$ já contém a constante de torque do
-motor, o rendimento e a redução da transmissão, $K_T$ reúne esses ganhos num único
-coeficiente identificável em bancada.
+corrente de fase equivalente, o mesmo coeficiente $G_F$ da curva característica,
+multiplicado pelo raio efetivo. Fisicamente, $K_T$ é o produto da constante de torque do
+motor pela redução e pelo rendimento do caminho até a roda, o torque entregue por
+ampère de fase, e o conhecimento de cada um desses fatores isolados não é necessário,
+pois o produto é identificado em bancada de uma só vez.
 
 Na cadeia do modelo, cada elo é estático, exceto um, pois o comando $u$ gera a corrente $I$
 através da dinâmica comando--corrente $G_2(s)$ da malha interna. A corrente se converte
 em torque pela relação estática da Equação~\eqref{eq:estimador_proposta}, com $K_T$, e o
 torque se converte em força pela relação estática $F = T/r_{\mathrm{ef}}$, com o raio
-efetivo, que portanto não participa da dinâmica da planta, entrando apenas na conversão
-estática da ponta da cadeia.
+efetivo, de modo que a única dinâmica da cadeia é a da corrente, tratada na malha
+interna.
 
 A validação do estimador exige um instrumento capaz de medir a força de tração na
 escala do veículo, e a escolha desse instrumento foi precedida de um estudo conduzido
