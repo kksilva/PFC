@@ -453,8 +453,8 @@ do máximo de $3{,}9$ N$\cdot$m, para exercitar o corte.
 Para o seguimento de referência, o degrau é seguido com sobressinal
 de cerca de $25\%$, com o pico limitado pelo teto do estimador, que não excede os
 $3{,}35$ N$\cdot$m da faixa validada. O erro em regime é residual, de $0{,}16$
-N$\cdot$m $1{,}5$ s após o fim da rampa, valor que o integrador do mestre continua a
-reduzir. A resposta se acomoda em cerca de $7$ s, compatíveis
+N$\cdot$m na amostra de $7{,}5$ s do script, cerca de $3$ s após o fim da rampa da
+referência, valor que o integrador do mestre continua a reduzir. A resposta se acomoda em cerca de $7$ s, compatíveis
 com a soma dos $2{,}3$ s da rampa da referência, $(3{,}0 - 1{,}6) / 0{,}6$, com os
 $\approx 4{,}4$ s de quatro constantes de tempo $\lambda_1$ da especificação de malha
 fechada, de modo que a especificação de acomodação deve ser lida contra a referência
@@ -463,7 +463,7 @@ produzem desvio máximo de $1{,}0$ N$\cdot$m durante a perturbação, reduzido a
 $0{,}35$ N$\cdot$m $1{,}5$ s após o seu fim pelo integrador do mestre, o que ilustra o
 papel da malha externa, que corrige o que o \emph{feedforward} não prevê. O seletor, por
 fim, segue o limite de $3{,}3$ N$\cdot$m sem acumular erro integral e retorna ao pedido
-menor ao liberar, com erro residual de $0{,}06$ N$\cdot$m nesse instante.
+menor ao liberar, com erro residual de $0{,}06$ N$\cdot$m na amostra de $19{,}5$ s.
 
 Os resultados são de análise sobre o modelo identificado. A validação experimental da
 malha fechada e as margens formais de ganho e de fase permanecem como etapas pendentes.
@@ -519,6 +519,6 @@ de tempo de $0{,}18$ s, e o atraso aparente das janelas brutas, pertencente ao p
 disparo, é distinguido da planta. Com os modelos identificados, avalia-se por simulação
 não-linear o desempenho da malha projetada no
 Capítulo~\ref{chap:descricaoprocesso}, que atende ao seguimento de referência e à rejeição
-de perturbação com erro nulo em regime.
+de perturbação com erro residual inferior a $0{,}2$ N$\cdot$m em regime.
 
 \clearpage
