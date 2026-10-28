@@ -103,6 +103,15 @@ manipulada é o comando de aceleração \(u\), enviado ao ESC:
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi.
 \end{equation*}
 
+A estimativa por integração tem, contudo, uma implicação que condiciona todo o uso da
+IMU. Qualquer erro de medição do acelerômetro, em particular o desvio de zero, a
+aceleração que o sensor indica mesmo parado, acumula-se na integral: um desvio constante
+produz na velocidade estimada um erro que cresce linearmente com o tempo, de modo que a
+estimativa é confiável em trajetos curtos e se degrada progressivamente em operação
+prolongada, exigindo filtragem e correção contínuas. Para a malha de controle, isso
+significa que a realimentação obtida pela IMU demanda tratamento permanente do sinal,
+sob pena de transferir a deriva do sensor para o comando.
+
 A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle:
 
@@ -389,45 +398,119 @@ proposta deste trabalho.
 \section{Proposta do Projeto}
 \label{sec:proposta}
 
-Com base na comparação apresentada na Seção~\ref{sec:sintese}, este trabalho propõe a
-caracterização do sistema de propulsão do automodelo por meio de sua curva característica torque
-versus corrente. Para tanto, emprega-se uma instrumentação combinada: o sensor de efeito Hall
-linear ACS758, instalado no ramo de alimentação do ESC, fornece a corrente elétrica consumida, e
-o esforço mecânico é medido por um padrão de tração --- balança, célula de carga ou outro
-dispositivo ---, cujo modo de realização é definido na montagem experimental, no Capítulo 3. O
-torque na roda é obtido da força pelo raio efetivo da roda.
+\subsection{O estimador de torque a partir da corrente}
 
-Dois ensaios complementares fornecem os dois modelos que a caracterização exige. O primeiro é
-estático: degraus de comando aplicados ao ESC com o veículo ancorado, registrando, em cada
-platô, a corrente consumida e o esforço mecânico, de modo a construir a curva torque versus
-corrente ponto a ponto. O segundo é dinâmico: a corrente é amostrada em alta taxa durante os
-mesmos degraus, de modo a identificar a resposta temporal entre o comando e a corrente, sobre a
-qual a malha de controle atua.
+A comparação das seções anteriores evidenciou a corrente elétrica como a grandeza de
+cadeia mais curta até o torque. Neste trabalho, ela é medida no ramo de alimentação pelo
+sensor de efeito Hall linear ACS758 e convertida em torque por um estimador quase-estático,
+que não exige o conhecimento da redução da transmissão. Na região em que a roda não
+patinha, a força de tração é proporcional à corrente de fase equivalente, obtida do
+quociente da corrente de bateria pelo comando, com as perdas do conjunto descontadas, e o
+torque na roda é o produto da força pelo raio efetivo $r_{\mathrm{ef}}$, de modo que a
+estimativa assume a forma
+\begin{equation}\label{eq:estimador_proposta}
+\hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
+\end{equation}
+em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T$ é
+um único coeficiente que absorve a constante de torque do motor, o rendimento do caminho
+elétrico--mecânico, a redução e o raio efetivo. Nenhuma dessas constantes precisa ser
+conhecida isoladamente, pois o coeficiente é identificado experimentalmente como um todo.
+O estimador é quase-estático e só é válido onde foi caracterizado, de modo que sua saída
+é empregada apenas dentro da faixa de aderência.
 
-Sobre esses dois modelos estrutura-se a proposta de controle de torque. A variável de processo
-é o torque na roda, obtido por estimativa a partir da corrente medida, e a variável manipulada é
-o comando de aceleração $u$, aplicado ao ESC. A malha organiza-se em cascata. Um termo de
-\emph{feedforward}, dado pela inversa da característica estática, converte diretamente a
-referência de torque na corrente de bateria esperada. Um controlador proporcional--integral,
-com anti-windup e limitação da taxa de variação do comando, atua sobre o erro entre essa
-referência e a corrente medida, ajustando $u$ conforme a dinâmica a ser identificada experimentalmente. Um limitador de
-aderência impõe o torque máximo transferível antes da patinagem, de modo que a operação se
-mantenha na região em que o modelo é válido, e a leitura da corrente viabiliza, ainda, a
-proteção contra sobrecorrente por limiar. A realimentação é feita em corrente, e não em força, uma
-vez que a força não é mensurável embarcada. O padrão de tração é um instrumento de bancada,
-empregado apenas na caracterização.
+O estimador constitui a realimentação da malha de controle: sem ele, o torque, que não é
+mensurável embarcada, não poderia ser a variável controlada.
 
-A montagem experimental e a definição do padrão de tração são apresentadas no Capítulo 3; os
-resultados da caracterização e o projeto do controlador, no Capítulo 4.
+\subsection{O padrão de tração com a balança de mala}
+
+O estimador somente é defensável se o seu coeficiente for confrontado com uma medida
+independente do esforço mecânico. Como o veículo é pequeno e a força de tração é da
+ordem de dezenas de newtons, emprega-se como padrão uma balança de mala de gancho. No
+experimento, o veículo é ancorado pelo gancho da balança a uma estrutura fixa e comanda-se
+o motor por degraus: ao acelerar, o veículo puxa o gancho contra si, e a balança indica a
+força de tração em cada degrau, uma vez alcançado o regime. A leitura, em
+quilograma-força, é convertida em newtons, e o torque segue do produto da força pelo raio
+efetivo da roda. A balança não embarca no veículo: ela é o instrumento de bancada que
+fornece o padrão para o ajuste e a validação do coeficiente $K_T$. O protocolo do
+experimento, com a montagem, os degraus aplicados e os instantes de leitura, é detalhado
+na Metodologia, no Capítulo~\ref{chap:metodologia}.
+
+\subsection{A estrutura de controle em cascata}
+
+Sobre o estimador validado estrutura-se a malha de controle de torque, em cascata, cuja
+topologia é apresentada na Figura~\ref{fig:diagrama_malha} e cujas decisões de projeto se
+apoiem na teoria clássica de controle de processos \cite{raffo_tcpi_cascata,
+raffo_tcpi_psrprp, raffo_tcpi_sintese}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Figuras/diagrama_malha.png}
+\caption{Topologia da malha de controle de torque: o limitador de aderência corta a
+referência no torque máximo transferível, o caminho direto converte a referência na
+corrente esperada pela inversa da curva característica, o controlador corrige o erro
+residual, a corrente medida é convertida de volta em torque pelo estimador, e a
+realimentação fecha o laço.}
+\label{fig:diagrama_malha}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+A referência de torque $T_{\mathrm{ref}}$ percorre, na entrada da malha, um limitador de
+aderência, que funciona como um seletor de mínimo: acima do torque máximo transferível
+ao solo não há esforço a comandar, apenas patinagem, de modo que referências maiores que
+esse limiar são cortadas nele. Essa é a primeira proteção da malha, e ela preserva também
+a validade do modelo, que só descreve o propulsor abaixo do limite de aderência.
+
+A referência limitada segue por dois caminhos. No caminho direto, a inversa da curva
+característica converte o torque pedido na corrente esperada e no comando equivalente do
+ESC. Essa pré-alimentação é necessária porque, sem ela, o controlador dependeria apenas
+da realimentação, e o termo integrador carregaria sozinho todo o esforço de regime,
+deteriorando o transiente. No caminho de realimentação, o torque estimado pela Equação
+\eqref{eq:estimador_proposta} é comparado à referência, e o erro residual aciona o
+controlador, que corrige o que o caminho direto não sabe: as perturbações sem sensor no
+veículo, como o afundamento da tensão da bateria sob carga e a variação da corrente de
+perdas com a temperatura.
+
+A correção soma-se à corrente esperada e forma a referência da malha interna, de
+corrente, cujo controlador ajusta o comando $u$ enviado ao ESC. A justificativa da
+cascata é a da própria estrutura \cite{raffo_tcpi_cascata}: a corrente é mais rápida que
+o torque e sensível às perturbações elétricas, de modo que a malha interna as rejeita
+antes que se transformem em erro de torque, enquanto a malha externa cuida do
+seguimento da referência e da rejeição do restante, com erro nulo em regime em ambas as
+funções \cite{raffo_tcpi_psrprp}.
+
+Duas proteções fecham a estrutura. A primeira é o anti-windup por \emph{clamping}: o
+comando satura tanto na zona morta do ESC quanto na fronteira da região validada, e,
+nessas condições, o integrador é ajustado para que a saída fique exatamente no limite,
+em vez de simplesmente congelar, de modo que a saída responde imediatamente à reversão
+do erro, conforme as práticas clássicas de implementação \cite{raffo_tcpi_sintese}. A
+segunda é a proteção contra sobrecorrente por limiar, possível porque a corrente é
+medida: sempre que a leitura ultrapassa o valor máximo admitido, a excitação é reduzida,
+protegendo o conjunto elétrico. Somam-se a elas a limitação do próprio comando à região
+de aderência, onde o modelo, o estimador e o controlador são válidos, e a filtragem da
+estimativa, que é quase-estática e não deve alimentar a malha externa em transientes
+desbalanceados.
+
+O conjunto dessas decisões atende diretamente aos objetivos do trabalho: o controle em
+malha fechada do torque, com seguimento de referência e rejeição de perturbações, sobre
+um propulsor caracterizado experimentalmente, operando dentro dos limites em que o
+modelo é válido e protegido contra sobrecorrente e patinagem. Os ganhos das malhas e a
+sintonia são apresentados no Capítulo~\ref{chap:resultados}, sobre os modelos
+identificados nos ensaios.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
 
 Este capítulo apresentou o sistema de propulsão do automodelo e comparou as principais grandezas
-mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e força de
+mensuráveis para sua caracterização: aceleração, velocidade angular e corrente elétrica e força de
 tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
 \eqref{eq:newton} e \eqref{eq:dinamica_rotacional}. A
 comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
 sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores avaliados.
+
+Sobre essa escolha, definiu-se a proposta do trabalho: um estimador de torque a partir da
+corrente medida, validado contra um padrão de tração obtido com uma balança de mala, e
+uma malha de controle em cascata, com caminho direto, anti-windup e as proteções de
+aderência e de sobrecorrente, estruturada para atender aos objetivos de controle em
+malha fechada do propulsor.
 
 \clearpage
