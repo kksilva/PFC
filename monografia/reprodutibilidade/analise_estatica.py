@@ -1,6 +1,7 @@
 """Processamento dos dados da caracterizacao estatica.
 
-Le a planilha de anotacoes do ensaio de tracao ('pfc kaka.xlsx') e o ensaio
+Le a planilha de anotacoes do ensaio de tracao de corrente versus forca
+('pfc kaka.xlsx') e o ensaio
 em vazio ('ensaio_series_vazio.csv'), ajusta as retas por minimos quadrados,
 imprime os coeficientes com o r2 e gera as figuras i0_vazio.png e
 curva_forca_comando.png.

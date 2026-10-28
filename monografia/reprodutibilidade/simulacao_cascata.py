@@ -35,7 +35,7 @@ ANGULO_NEUTRO_GRAUS = 95.0   # u = (angulo - neutro) / faixa_total
 FAIXA_COMANDO = 85.0
 RAIO_EFETIVO_M = 0.0751      # roll-out (metodologia)
 
-CONSTANTE_TEMPO_PLANTA_S = 0.18   # dinamica comando->corrente (ensaio 100 Hz)
+CONSTANTE_TEMPO_PLANTA_S = 0.18   # dinamica comando->corrente (ensaio de tracao de corrente)
 
 # Controladores (sintese IMC, conforme planejamento do controle)
 LAMBDA_ESCRAVA_S = 0.18           # malha de corrente: tao rapida quanto a planta

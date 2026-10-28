@@ -4,11 +4,12 @@
 Este capítulo descreve os métodos experimentais empregados na caracterização do sistema de
 propulsão do automodelo. A Seção \ref{sec:montagem} apresenta a montagem do ensaio, mecânica
 e elétrica, comum a todos os experimentos. A Seção \ref{sec:ensaios} descreve os ensaios
-realizados, a verificação em bancada, o ensaio em vazio e o ensaio de tração estática. A
+realizados, a verificação em bancada, o ensaio em vazio e o ensaio de tração de corrente
+versus força. A
 Seção \ref{sec:incertezas} fecha o capítulo com o orçamento de incertezas. Cada ensaio é
 apresentado pelo seu motivo, isto é, pelo papel que seus dados ocupam na estrutura de
 controle proposta no Capítulo \ref{chap:descricaoprocesso} --- a corrente de perdas e a
-curva característica alimentam o estimador e o caminho direto, e a dinâmica
+curva característica alimentam o estimador e o \emph{feedforward}, e a dinâmica
 comando--corrente define a planta da malha escrava. Para cada escolha, indicam-se o
 critério e as alternativas consideradas, de modo a permitir a reprodução integral do
 procedimento.
@@ -266,7 +267,7 @@ O primeiro ensaio com o veículo é o ensaio em vazio, que mede a corrente consu
 conjunto propulsor quando ele não entrega tração alguma, com as rodas suspensas. Sua função
 decorre da forma como a corrente entra na malha de controle. No estimador, o torque é
 calculado descontando as perdas da corrente medida, $\hat{T} = K_T\,(I - I_0(u))/u$, de
-modo que $I_0(u)$ é subtraído de $I$ a cada amostra. No caminho direto, o cálculo inverso
+modo que $I_0(u)$ é subtraído de $I$ a cada amostra. No \emph{feedforward}, o cálculo inverso
 precisa saber quanta corrente corresponde ao torque pedido, $I_{\mathrm{ref}} = I_0(u) +
 u\,T_{\mathrm{ref}}/K_T$, e essa corrente esperada é a referência que a malha escrava deve
 seguir. Sem o ensaio em vazio, $I_0(u)$ seria desconhecido, o estimador absorveria as
@@ -303,20 +304,21 @@ um. O tratamento dos dados de cada degrau é o mesmo em todos os ensaios: tomam-
 amostras em regime, isto é, após a subida transiente, e descartam-se as execuções com pico
 inferior a $1$ A, nas quais o comando não foi efetivamente executado pelo ESC e que
 distorceriam a média para baixo. O resultado é a curva $I_0(u)$, parâmetro do estimador e
-do caminho direto da malha, cujos resultados são apresentados no Capítulo
+do \emph{feedforward} da malha, cujos resultados são apresentados no Capítulo
 \ref{chap:resultados}.
 
-\subsection{Ensaio de Tração Estática}
+\subsection{Ensaio de Tração de Corrente versus Força}
 \label{sec:tracao}
 
-O experimento central do trabalho é o ensaio de tração estática, no qual o veículo
+O experimento central do trabalho é o ensaio de tração de corrente versus força, no qual o
+veículo
 ancorado recebe degraus de comando e cada platô --- o trecho em que a resposta permanece
 constante após a subida --- fornece um par de valores, a corrente consumida e a força de
 tração, que compõem a curva característica ponto a ponto. Dessa curva saem os elementos que
 a estrutura de controle consome: o coeficiente $G_F$, a inclinação da curva, que converte
 a corrente de fase equivalente em força e, multiplicado pelo raio efetivo, define $K_T$ do
 estimador; a inversa da curva, que converte a referência de torque na corrente esperada do
-caminho direto; e o torque máximo medido, que calibra o limiar do seletor de aderência. A
+\emph{feedforward}; e o torque máximo medido, que calibra o limiar do seletor de aderência. A
 sessão é gravada em vídeo, com o display da balança e o terminal do notebook no mesmo
 plano, este exibindo o horário, o tempo dentro do degrau e a corrente média do segundo.
 
@@ -331,15 +333,19 @@ decorridos $7$ s, anotam-se nos segundos $7$, $8$ e $9$ a força exibida em regi
 estacionário, sendo o ponto da curva a média das três leituras. A escala é percorrida duas
 vezes, na subida de $97^\circ$ a $117^\circ$ e na descida de $117^\circ$ a $97^\circ$.
 
-A corrente, por sua vez, é registrada durante todo o ensaio na taxa de $100$ Hz. Para a
-caracterização estática, empregam-se os pontos por segundo impressos no terminal --- as
-médias de cada segundo, que representam o regime das medições ---, relacionados em vídeo,
-quadro a quadro, à força do mesmo degrau e do mesmo segundo; a leitura em vídeo padroniza o
-processo, elimina os erros de pressa e de paralaxe da leitura ao vivo e dá rastreabilidade
-a cada valor anotado, uma vez que o display da balança não possui saída elétrica. O
-registro contínuo a $100$ Hz, completo em cada degrau, tem outro destino: viabiliza a
-identificação da dinâmica entre o comando e a corrente, a planta $G_2(s)$ sobre a qual a
-malha escrava é projetada, apresentada no Capítulo \ref{chap:resultados}.
+A corrente, por sua vez, é registrada durante todo o ensaio, e empregam-se os pontos por
+segundo impressos no terminal --- as médias de cada segundo, que representam o regime das
+medições ---, relacionados em vídeo, quadro a quadro, à força do mesmo degrau e do mesmo
+segundo; a leitura em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe da
+leitura ao vivo e dá rastreabilidade a cada valor anotado, uma vez que o display da balança
+não possui saída elétrica.
+
+A identificação da dinâmica entre o comando e a corrente, que define a planta $G_2(s)$ sobre
+a qual a malha escrava é projetada, é conduzida em sessão própria, o ensaio de tração de
+corrente: o mesmo protocolo de degraus, sem anotação de força na balança, com a corrente
+amostrada a $100$ Hz e registrada por inteiro em cada degrau. Sem a leitura em vídeo, a
+escala é percorrida com folga de tempo, e o registro completo de cada platô viabiliza o
+ajuste da resposta ao degrau apresentado no Capítulo \ref{chap:resultados}.
 
 \section{Incertezas de Medição}
 \label{sec:incertezas}
@@ -426,10 +432,11 @@ $0{,}0751$ m. A corrente é adquirida por um sensor de efeito Hall instalado por
 com conector Deans-T, sob degraus gerados por \emph{script} e registrados em CSV. A
 verificação em bancada validou os instrumentos e quantificou seus desvios, distinguindo o
 que é corrigido em software do que é declarado como incerteza; o ensaio em vazio forneceu a
-corrente de perdas, parâmetro do estimador e do caminho direto; e o ensaio de tração, com a
-força lida em vídeo nos segundos de regime, construiu a curva característica da qual saem o
-coeficiente do estimador, a inversa do caminho direto e o limiar do seletor de aderência,
-enquanto o registro contínuo a $100$ Hz identificou a dinâmica da malha escrava. As
+corrente de perdas, parâmetro do estimador e do \emph{feedforward}; e o ensaio de tração de
+corrente versus força, com a força lida em vídeo nos segundos de regime, construiu a curva
+característica da qual saem o coeficiente do estimador, a inversa do \emph{feedforward} e o
+limiar do seletor de aderência, enquanto o ensaio de tração de corrente identificou a
+dinâmica da malha escrava. As
 incertezas foram caracterizadas componente a componente, no método do Tipo A e do Tipo B, e
 combinadas por propagação em soma quadrática. O Capítulo \ref{chap:resultados} apresenta os
 resultados obtidos com este procedimento.

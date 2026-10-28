@@ -7,6 +7,8 @@ corrente responde, nao quando o Pi confirma. A rede, quando viva, so serve para
 limpar processos orfaos (pkill) antes de cada disparo.
 
 Uso: python3 rodar_ensaio_cego.py
+
+Gera os dados do ensaio de tracao de corrente (sem anotacao de forca).
 """
 
 import csv

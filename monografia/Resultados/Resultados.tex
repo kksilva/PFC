@@ -5,19 +5,7 @@ Este capítulo apresenta os resultados dos experimentos definidos na metodologia
 que foram conduzidos, e o controlador projetado sobre eles. Convém antecipar a lógica que
 organiza a apresentação, pois ela só se torna evidente ao final da sequência.
 
-A caracterização produziu dois modelos complementares do propulsor. O primeiro vem do
-ensaio com aquisição contínua a $100$ Hz, a sessão complementar da metodologia, que capta
-como a corrente elétrica evolui após cada degrau de comando aplicado ao ESC. É a dinâmica
-da planta, isto é, o comportamento temporal do sistema sobre o qual o controlador atua
-diretamente quando ajusta o comando. O segundo vem do ensaio de tração, com a balança
-ancorando o veículo, e responde o que a corrente significa em termos de torque. É a
-relação estática que permite traduzir a grandeza medida embarcada, barata e contínua, no
-esforço mecânico de interesse. No controlador, os dois modelos se encadeiam: a referência
-de torque é convertida em corrente esperada pela inversa da curva estática, um
-controlador atua sobre a dinâmica identificada a $100$ Hz para que a corrente siga essa
-referência, e a corrente medida é convertida de volta em torque pela mesma curva. Cada
-ensaio alimenta um elo dessa cadeia, e a validação de cada modelo é o que torna o
-fechamento da malha defensável.
+(ESCREVER ALGO COMPATIVEL COM O QUE TEMOS AGORA)
 
 \section{O processamento dos dados e o ajuste das retas}
 \label{sec:processamento}
@@ -36,7 +24,7 @@ b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
 a = \bar{y} - b\,\bar{x},
 \end{equation}
 em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. Para a reta forçada pela origem,
-$y = g\,x$, usada na validação por impor que corrente nula produz força nula, minimiza-se
+$y = g\,x$, usada na validação para impor que corrente nula produz força nula, minimiza-se
 a mesma soma apenas em $g$, o que resulta em
 \begin{equation}\label{eq:mq_origem}
 g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
@@ -46,15 +34,16 @@ A qualidade de cada ajuste é quantificada pelo coeficiente de determinação,
 \begin{equation}\label{eq:r2}
 r^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
 \end{equation}
-fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica:
-quanto mais os pontos se aproximam da reta, menor a soma dos quadrados dos resíduos no
-numerador e mais o $r^2$ se aproxima de um.
+fração da variância dos dados, medida em torno de sua média $\bar{y}$. Quanto mais os pontos se 
+aproximam da reta, menor a soma dos quadrados dos resíduos no
+numerador e mais o $r^2$ se aproxima de um, ou seja, esse parametro mede linearidade (MELHORAR FRASE)
 
 Os quatro scripts do apêndice executam exatamente essas expressões. O primeiro lê a
-planilha de anotações do ensaio de tração e o arquivo do ensaio em vazio, ajusta a
-corrente de perdas e o coeficiente da curva característica, e gera as figuras
-correspondentes; o segundo lê o ensaio de aquisição contínua a $100$ Hz, ancora as
-respostas ao degrau no seu início elétrico e ajusta a constante de tempo da planta; o
+planilha de anotações de força e corrente do ensaio de tração de corrente versus força e o
+arquivo do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
+característica, e gera as figuras correspondentes; o segundo lê o ensaio de tração de
+corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a constante de
+tempo da planta; o
 terceiro executa a simulação da malha de controle e produz a figura do desempenho; e o
 quarto é a automação do ensaio, que dispara os degraus no Raspberry Pi e registra a
 corrente em CSV. Todas as figuras de dados deste capítulo saem desses programas, de modo
@@ -144,8 +133,8 @@ linear.}
 \section{A Curva Característica Estática}
 \label{sec:restracao}
 
-O ensaio de tração estática é o experimento central do trabalho e o mais rico em
-informação. Em cada degrau da escada, o protocolo fornece um par de valores em regime, a
+O ensaio de tração de corrente versus força é o experimento central do trabalho e o mais
+rico em informação. Em cada degrau da escada, o protocolo fornece um par de valores em regime, a
 corrente consumida e a força de tração lidas nos segundos $7$ a $9$, e o conjunto dos
 pontos compõe a curva característica. O comportamento do propulsor, contudo, não é
 uniforme ao longo da escala, e a análise se organiza pelas três regiões de operação que o
@@ -176,9 +165,9 @@ de cada degrau segue a definição da metodologia, $u = (\alpha - 95)/85$, com $
 ângulo do degrau; para cada degrau, as células trazem as medianas da corrente e da força
 das quatro repetições, com o desvio-padrão amostral entre parênteses, calculadas pelo
 script da caracterização estática (Apêndice~\ref{apendice:codigos}, A.1), que imprime
-exatamente esta tabela a partir da planilha de anotações. A corrente do ensaio a $100$ Hz,
-adquirida independentemente, concordou com a anotada dentro da dispersão entre repetições,
-o que cruza as duas fontes de dados. Os travessos marcam o degrau $98^\circ$ da descida,
+exatamente esta tabela a partir da planilha de anotações. A corrente do ensaio de tração de
+corrente, adquirida em sessão própria, concordou com a anotada dentro da dispersão entre
+repetições, o que cruza as duas fontes de dados. Os travessos marcam o degrau $98^\circ$ da descida,
 não executado nessa sessão e excluído do consolidado.
 
 \begin{table}[htb]
@@ -272,23 +261,21 @@ regiões de operação e os pontos do corte do ESC destacados.}
 \subsection{A validação do estimador de torque}
 \label{sec:resvalidacao}
 
-Chega-se ao resultado central, a validação do modelo de torque contra a balança. O
-trabalho não dispõe do valor da redução da transmissão, e a validação foi construída para
-não depender dele: a relação buscada é a da força de tração com a corrente, diretamente
-dos dados. O modelo afirma que, na região de aderência, a força é proporcional à corrente
-de fase equivalente,
-\begin{equation}\label{eq:modelo_forca}
-F = G_F\,\frac{I_\mathrm{bat} - I_0(u)}{u},
-\end{equation}
-em que $G_F$ é um único coeficiente do conjunto, que absorve a constante de torque do
-motor, o rendimento do caminho elétrico--mecânico, a redução e o raio efetivo. Conhecer
-cada fator isoladamente não é necessário ao controlador, que trabalha com o produto. Como
-a curva é ajustada em força, a conversão em torque, adiante, multiplica o coeficiente
-pelo raio efetivo medido: o raio não participa da relação entre corrente e torque, mas
-traduz a força da balança no esforço na roda.
+Chega-se ao resultado central, a validação do modelo de torque contra a balança. O modelo
+a validar é a curva característica definida na Seção~\ref{sec:proposta}
+(Equação~\eqref{eq:curva_caracteristica}), que relaciona, na região de aderência, a força
+de tração à corrente de fase equivalente, $(I_\mathrm{bat} - I_0(u))/u$, por um único
+coeficiente $G_F$. O trabalho não dispõe do valor da redução da transmissão, e a validação
+foi construída para não depender dele: a relação buscada é a da força de tração com a
+corrente, diretamente dos dados. O coeficiente $G_F$ absorve a constante de torque do
+motor, o rendimento do caminho elétrico--mecânico, a redução e o raio efetivo, e
+conhecer cada fator isoladamente não é necessário ao controlador, que trabalha com o
+produto. Como a curva é ajustada em força, a conversão em torque, adiante, multiplica o
+coeficiente pelo raio efetivo medido: o raio não participa da relação entre corrente e
+torque, mas traduz a força da balança no esforço na roda.
 
 O critério de validação decorre da própria forma do modelo. Se a Equação
-\eqref{eq:modelo_forca} é válida, os pontos medidos devem alinhar-se sobre uma reta que
+\eqref{eq:curva_caracteristica} é válida, os pontos medidos devem alinhar-se sobre uma reta que
 passa pela origem, com inclinação $G_F$, e o ajuste é feito sem termo independente, pois
 corrente nula não pode produzir força. O coeficiente de determinação mede o alinhamento, e
 a regressão testa o modelo inteiro de uma vez, com todos os seus pressupostos: a
@@ -342,7 +329,8 @@ esses valores delimitam o limitador da malha de controle.
 \section{A Dinâmica entre Comando e Corrente}
 \label{sec:resdinamica}
 
-O segundo modelo vem do ensaio a $100$ Hz. Cada borda de subida na região de aderência, os
+O segundo modelo vem do ensaio de tração de corrente, conduzido sem anotação de força em
+sessão própria. Cada borda de subida na região de aderência, os
 degraus de $100^\circ$ a $109^\circ$, registra a corrente ao longo de todo o degrau, e a
 análise dessas janelas exigiu um cuidado que só se torna evidente na Figura
 \ref{fig:blocos}: os blocos não começam no degrau. Os primeiros $1{,}5$ a $2$ s de cada
@@ -355,7 +343,7 @@ atraso do protocolo com a dinâmica da planta.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.9\textwidth]{Figuras/blocos_degrau.png}
-\caption{Janelas brutas de dois degraus da aquisição a $100$ Hz, com corrente bruta
+\caption{Janelas brutas de dois degraus do ensaio de tração de corrente, com corrente bruta
 (cinza) e média móvel (vermelho): o patamar inicial é o neutro que precede o degrau, e a
 subida é rápida uma vez iniciada.}
 \label{fig:blocos}
@@ -410,7 +398,7 @@ que, com a roda travada, a força contra-eletromotriz é baixa e a corrente acom
 comando quase sem oposição. A
 aparente lentidão observada nas janelas brutas pertence ao protocolo de disparo, não à
 planta, e desaparece quando a resposta é ancorada no seu início elétrico, como o próprio
-script do ensaio cego faz ao abrir a janela na resposta da corrente.
+script do ensaio de tração de corrente faz ao abrir a janela na resposta da corrente.
 
 Essa distinção tem consequência direta para o projeto da malha: a planta elétrica não
 limita a velocidade do controlador. A consequência prática se manifesta também no
@@ -451,7 +439,7 @@ partir da secundária e de variáveis auxiliares. O estimador validado na Seçã
 \ref{sec:resvalidacao}, com $r^2 = 0{,}79$, é o sensor virtual da malha externa.
 
 A referência de torque percorre dois caminhos, no esquema geral de seguimento de
-referência e rejeição de perturbações \cite{raffo_tcpi_psrprp}. No caminho direto, a
+referência e rejeição de perturbações \cite{raffo_tcpi_psrprp}. No \emph{feedforward}, a
 inversa da característica estática converte a referência na corrente esperada e no comando
 equivalente, com as perdas, avaliadas no comando vigente, descontadas. No caminho de
 realimentação, a corrente medida é convertida em torque estimado, e o erro entre a
@@ -460,7 +448,7 @@ veículo, de modo que sua rejeição fica a cargo da realimentação, sem pré-a
 perturbação \cite{raffo_tcpi_psrprp}.
 
 Por fim, um \textbf{seletor de mínimo} --- o controle seletivo das notas de aula
-\cite{raffo_tcpi_cascata} --- impõe, antes do caminho direto, que a referência efetiva seja
+\cite{raffo_tcpi_cascata} --- impõe, antes do \emph{feedforward}, que a referência efetiva seja
 o menor valor entre o torque pedido e o limiar de aderência, tomado da curva
 característica: $3{,}9$ N$\cdot$m com o pneu aquecido, produto da força máxima da descida,
 $52$ N, pelo raio efetivo, e cerca de $2{,}4$ N$\cdot$m com o pneu frio, produto dos
@@ -522,7 +510,7 @@ ao longo da faixa de operação. No ponto nominal, $K_{p1} = 0{,}18 \times 0{,}1
 $T_{i1} = 0{,}18$ s.
 
 As duas malhas, cada uma com sua planta, seu controlador e seus ganhos, consolidam-se na
-Tabela~\ref{tab:malhas}. Os demais elementos da estrutura --- o caminho direto, o seletor
+Tabela~\ref{tab:malhas}. Os demais elementos da estrutura --- o \emph{feedforward}, o seletor
 de aderência, os limites, o anti-windup, o estimador e as rampas --- não são
 controladores: são as proteções e as conversões que cercam os dois.
 
@@ -569,7 +557,7 @@ I_1[k] = K_{p1}(u[k])\left(e_1[k] + \frac{T_s}{T_{i1}}\sum_j e_1[j]\right),
 com as somas dos erros substituídas, na prática, por acumuladores atualizados a cada
 amostra. O filtro do estimador e as rampas dos caminhos direto e de referência são
 recursões de primeira ordem idênticas, todas no mesmo relógio de $10$ ms. Duas escolhas
-de implementação merecem destaque. A primeira é o caminho direto duplo: além da corrente
+de implementação merecem destaque. A primeira é o \emph{feedforward} duplo: além da corrente
 esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
 atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
 integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
@@ -639,7 +627,7 @@ de malha fechada, de modo que a especificação de
 acomodação deve ser lida contra a referência efetivamente aplicada. Para a rejeição de
 perturbação, o afundamento e o deslocamento produzem desvio máximo de $1{,}0$
 N$\cdot$m, corrigido pelo integrador do mestre com erro nulo em regime, o que ilustra o
-papel da malha externa: corrigir o que o caminho direto não sabe. O seletor, por fim,
+papel da malha externa: corrigir o que o \emph{feedforward} não sabe. O seletor, por fim,
 segue o limite de $3{,}3$ N$\cdot$m sem acumular erro
 integral, e retorna ao pedido menor ao liberar.
 
@@ -692,8 +680,10 @@ Quatro limitações delimitam a validade dos resultados. A dinâmica identificad
 o caminho comando--corrente, sobre o qual a malha atua; a dinâmica da força não foi
 identificada, uma vez que ela só existe como leitura anotada em platô, e sua medição
 dinâmica exigiria uma célula de carga com registrador, proposta de continuidade. A
-aquisição contínua ficou sem a descida abaixo de $113^\circ$, interrompida pela queda da
-rede na sessão, lacuna que não atinge a sessão com força, completa nos dois sentidos. Os
+aquisição do ensaio de tração de corrente ficou sem a descida abaixo de $113^\circ$,
+interrompida pela queda da
+rede na sessão, lacuna que não atinge o ensaio de tração de corrente versus força, completo
+nos dois sentidos. Os
 degraus extremos da descida foram contaminados pelo corte cíclico do ESC e excluídos da
 curva. E o desempenho da malha de controle é de simulação sobre o modelo identificado, sem
 validação experimental em bancada.

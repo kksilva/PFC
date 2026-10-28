@@ -6,18 +6,22 @@ Os scripts a seguir implementam o processamento descrito na Seção
 Capítulo~\ref{chap:resultados}, a partir dos arquivos brutos dos ensaios. Executam-se em
 Python~3 e dependem apenas das bibliotecas \texttt{numpy}, \texttt{openpyxl} e
 \texttt{matplotlib}. Cada script é acompanhado dos arquivos que lê, de modo que a
-execução reproduz os números e as figuras apresentados no texto. Os três arquivos de
-dados são a planilha de anotações do ensaio de tração (\texttt{pfc kaka.xlsx}), o
-registro do ensaio em vazio (\texttt{ensaio\_series\_vazio.csv}) e o registro da
-aquisição contínua a $100$ Hz (\texttt{ensaio\_cego\_subida.csv}).
+execução reproduz os números e as figuras apresentados no texto. O mapeamento entre
+ensaios, modelos e scripts é direto: o ensaio em vazio e o ensaio de tração de corrente
+versus força alimentam o primeiro script (A.1), que produz o modelo estático --- a
+corrente de perdas $I_0(u)$ e o coeficiente $G_F$ da curva característica; o ensaio de
+tração de corrente alimenta o segundo script (A.2), que produz o modelo dinâmico, a
+planta $G_2(s)$; o terceiro (A.3) simula a malha de controle sobre esses dois modelos e
+produz a figura do desempenho; e o quarto (A.4) é a automação do ensaio, que percorre a
+escala de degraus, dispara os comandos no Raspberry Pi e registra a corrente em CSV. Os
+três arquivos de dados são a planilha de anotações do ensaio de tração de corrente versus
+força (\texttt{pfc kaka.xlsx}), o registro do ensaio em vazio (\texttt{ensaio\_series\_vazio.csv}) e o registro do ensaio de tração de corrente
+(\texttt{ensaio\_cego\_subida.csv}).
 
-O primeiro script ajusta a corrente de perdas $I_0(u)$ e o coeficiente $G_F$ da curva
-característica, e produz as figuras do ensaio em vazio e da curva de força; o segundo
-identifica a dinâmica entre comando e corrente, com a constante de tempo da planta, e
-produz as figuras das janelas brutas e da resposta normalizada; o terceiro executa a
-simulação da malha de controle em cascata e produz a figura do desempenho em
-simulação; e o quarto é a automação do ensaio, que percorre a escala de degraus,
-dispara os comandos no Raspberry Pi e registra a corrente em CSV.
+A análise se divide em dois scripts, A.1 e A.2, não porque haja uma separação natural
+entre os ensaios, mas porque o controlador consome dois modelos distintos --- o estático,
+do estimador e do \emph{feedforward}, e o dinâmico, da malha escrava ---, e cada script
+entrega um deles, com as figuras respectivas.
 
 \section*{\normalsize A.1 Caracterização estática}
 \addcontentsline{toc}{section}{A.1 Caracterização estática}

@@ -1,4 +1,5 @@
-"""Identificacao da dinamica entre comando e corrente (ensaio a 100 Hz).
+"""Identificacao da dinamica entre comando e corrente (ensaio de tracao de
+corrente).
 
 Le 'ensaio_cego_subida.csv', isola a sessao de aquisicao rapida (100 Hz),
 ancora cada degrau da regiao de aderencia (100 a 109 graus) no seu inicio
