@@ -397,8 +397,8 @@ corrente final pelo comando, cresce de $82$ a $126$ A/u ao longo da região, aco
 a curva estática e cruzando as duas identificações, e a sobreposição das respostas
 normalizadas indica que a planta é a mesma para todos os degraus da região de aderência.
 A planta é, portanto,
-\begin{equation}\label{eq:g1_identificada}
-G_1(s) = \frac{110}{0{,}18\,s + 1},
+\begin{equation}\label{eq:g2_identificada}
+G_2(s) = \frac{110}{0{,}18\,s + 1},
 \end{equation}
 sem atraso apreciável: o ganho $110$ A/u é a média dos quocientes platô por comando das
 dez bordas, e a resposta se assenta em cerca de quatro vezes $0{,}18$ s, pela regra usual
@@ -483,7 +483,7 @@ T_i = \tau,
 em que $\tau$ e $K$ são a constante de tempo e o ganho da planta e $\theta_a$ o atraso.
 
 A \textbf{malha escrava}, de corrente, atua sobre a planta identificada na Equação
-\eqref{eq:g1_identificada}. Como a curva estática não é uma reta --- o ganho do platô
+\eqref{eq:g2_identificada}. Como a curva estática não é uma reta --- o ganho do platô
 cresce de $82$ a $126$ A/u ---, emprega-se para o projeto o ganho local da planta, a
 inclinação da curva estática no ponto de operação, e não a média. Essa curva é ajustada
 por uma quadrática sobre os dados da descida, $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 +
@@ -521,7 +521,7 @@ controladores: são as proteções e as conversões que cercam os dois.
 \hline
 Variável controlada & Corrente $I$ & Torque estimado $\hat{T}$ \\
 Variável manipulada & Comando $u$ & Referência de corrente \\
-Planta & $G_1(s)$, Eq. \eqref{eq:g1_identificada} & Escrava fechada + estimador \\
+Planta & $G_2(s)$, Eq. \eqref{eq:g2_identificada} & Escrava fechada + estimador \\
 Controlador & PI & PI com ganho programado \\
 Ajuste (IMC) & $\lambda_2 = 0{,}18$ s & $\lambda_1 = 1{,}1$ s \\
 Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$ \\

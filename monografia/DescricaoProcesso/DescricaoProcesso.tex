@@ -412,9 +412,10 @@ estimativa assume a forma
 \begin{equation}\label{eq:estimador_proposta}
 \hat{T} = K_T\,\frac{I_{\mathrm{bat}} - I_0(u)}{u},
 \end{equation}
-em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T$ é
-um único coeficiente que absorve a constante de torque do motor, o rendimento do caminho
-elétrico--mecânico, a redução e o raio efetivo. Nenhuma dessas constantes precisa ser
+em que $I_0(u)$ é a corrente de perdas do conjunto, medida em ensaio próprio, e $K_T$
+é um único coeficiente que absorve a constante de torque do motor, o rendimento do caminho
+elétrico--mecânico e a redução; o raio efetivo não participa dessa relação e só é
+necessário para converter a força medida em torque. Nenhuma dessas constantes precisa ser
 conhecida isoladamente, pois o coeficiente é identificado experimentalmente como um todo.
 O estimador é quase-estático e só é válido onde foi caracterizado, de modo que sua saída
 é empregada apenas dentro da faixa de aderência.
@@ -436,6 +437,40 @@ escolhida: mede diretamente a força na faixa de dezenas de newtons do ensaio, d
 condicionamento de sinal e adaptação mecânica além do próprio gancho, e serve como padrão
 de bancada para o ajuste e a validação do coeficiente $K_T$. O protocolo do experimento é
 detalhado na Metodologia, no Capítulo~\ref{chap:metodologia}.
+
+\subsection{Nomenclatura da estrutura}
+\label{sec:nomenclatura}
+
+A descrição da estrutura emprega a notação usual das notas de aula de controle, na qual o
+índice $1$ designa a malha mestra e o índice $2$ a malha escrava
+\cite{raffo_tcpi_cascata}: $R$ é a referência, $Y$ a variável controlada, $C$ o
+controlador, $U$ a saída do controlador e $L$ a perturbação. A
+Tabela~\ref{tab:nomenclatura} fixa a correspondência entre esses símbolos e as variáveis
+do projeto, de modo que a leitura do diagrama e do texto se apoie nos mesmos nomes.
+
+\begin{table}[htb]
+\centering
+\caption{Correspondência entre a notação das notas de aula e as variáveis do projeto.}
+\label{tab:nomenclatura}
+\small
+\begin{tabular}{l l l}
+\hline
+Símbolo & Nome & Variável do projeto \\
+\hline
+$R_1$ & referência da malha mestra & torque pedido $T_{\mathrm{ref}}$, após o seletor $T_{\mathrm{ref,ef}}$ \\
+$Y_1$ & variável controlada primária & torque estimado $\hat{T}$ \\
+$C_1$ & controlador mestre & PI de ganho programado, $K_{p1}(u)$, $T_{i1}$ \\
+$U_1$ & saída do mestre & correção de corrente $\Delta I$ \\
+$R_2$ & referência da malha escrava & $I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$ \\
+$Y_2$ & variável controlada secundária & corrente medida $I$ \\
+$C_2$ & controlador escravo & PI com anti-windup, $K_{p2}$, $T_{i2}$ \\
+$U_2$ & variável manipulada & comando $u$, limitado à região de aderência \\
+$G_2(s)$ & planta da malha interna & dinâmica comando--corrente identificada \\
+$G_1(s)$ & planta da malha externa & escrava fechada seguida do estimador \\
+$L$ & perturbações & afundamento de tensão; variação térmica de $I_0$ \\
+\hline
+\end{tabular}
+\end{table}
 
 \subsection{A estrutura de controle}
 
