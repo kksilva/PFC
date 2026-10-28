@@ -660,13 +660,181 @@ validada, fronteira que mantém o modelo, o estimador e o controlador válidos.
 A segunda é a proteção contra sobrecorrente por limiar, possível porque a corrente é medida,
 que reduz a excitação sempre que a leitura ultrapassa o valor máximo admitido.
 
+\subsection{A classificação das variáveis}
+\label{sec:variaveis}
+
+Na classificação das variáveis de processo, o controle de torque deste propulsor segue o
+perfil do controle de vazão, de dinâmica rápida com tempo morto desprezível, perturbações
+frequentes porém pequenas e ruído de alta frequência na medição
+\cite{raffo_tcpi_variaveis}. A variável controlada primária é o torque na roda, que não é
+mensurável embarcada, e a variável controlada secundária é a corrente de bateria, lida pelo
+sensor. A variável manipulada é o comando $u$, e as perturbações são o afundamento de
+tensão da bateria sob carga e a variação da corrente de perdas com a temperatura, ambas
+sem sensor no veículo e ambas grandezas de influência clássicas, que alteram a medição e o
+processo sem serem o objeto do controle \cite{braga_instr_config}.
+
+\subsection{O projeto dos controladores}
+\label{sec:projeto_controladores}
+
+O projeto não se deu de uma vez. Cada proteção responde a uma falha, e a ordem de
+apresentação é a ordem em que as decisões foram tomadas. O projeto dos controladores
+segue o método de modelo interno, uma síntese direta na qual a lei de controle deriva do
+modelo do processo, com o parâmetro de ajuste explicitando o compromisso entre desempenho
+e robustez \cite{garcia1982internal, raffo_tcpi_imc}. Especifica-se que a malha fechada se
+comporte como primeira ordem com constante de tempo $\lambda$, o mais lento que se deseja
+exigir dela, e a especificação é filtrada por $1/(\lambda s + 1)$, que torna o ajuste
+robusto. O cancelamento do polo da planta e a solução para o controlador resultam, para o
+PI, em
+\begin{equation}\label{eq:pi_imc}
+K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
+\qquad
+T_i = \tau,
+\end{equation}
+em que $\tau$ e $K$ são a constante de tempo e o ganho da planta e $\theta_a$ o atraso.
+No método \cite{raffo_tcpi_imc}, o controle
+clássico realimenta apenas a saída medida, ao passo que o controle por modelo interno
+compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, e o controlador contém
+a inversa da parte invertível do modelo e um filtro $F$ que torna o ajuste robusto, neste
+trabalho de primeira ordem, com constante de tempo $\lambda$.
+
+A \textbf{malha escrava}, de corrente, atua sobre a planta identificada no ensaio de
+tração de corrente, apresentada no Capítulo~\ref{chap:resultados}. Como a curva estática
+não é uma reta --- o ganho do platô cresce de $82$ a $126$ A/u ---, emprega-se para o
+projeto o ganho local da planta, a
+inclinação da curva estática no ponto de operação, e não a média. Essa curva é ajustada
+por uma quadrática sobre os dados da descida, $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 +
+175{,}6\,u - 5{,}76$ (o script da simulação, Apêndice~\ref{apendice:codigos}, A.3, ajusta
+e imprime esses coeficientes), cuja inclinação no ponto nominal, o comando de $105^\circ$
+($u = 0{,}118$), vale $153$ A/u. Com a escolha $\lambda_2 = \tau = 0{,}18$ s, que fecha a
+malha tão rápido quanto a planta permite, a Equação \eqref{eq:pi_imc} fornece $T_{i2} =
+0{,}18$ s e $K_{p2} = 0{,}18/(153 \times 0{,}18) \approx 6{,}5\times10^{-3}$ u/A.
+A \textbf{malha
+mestra}, de torque, vê uma planta composta pela escrava fechada seguida da conversão do
+estimador, cujo ganho depende do ponto de operação. Dois cuidados são próprios da
+cascata. O primeiro é a separação de velocidades. A regra da estrutura manda que o mestre
+seja de três a dez vezes mais lento que a escrava \cite{raffo_tcpi_cascata}, para que a
+escrava lhe pareça instantânea. Adota-se $\lambda_1 = 1{,}1$ s, seis vezes $\lambda_2$. O
+segundo é a variação do ganho com o comando, tratada por \textbf{ganho programado}, em
+que o ganho proporcional do mestre é atualizado com o comando vigente,
+$K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$, o que lineariza o caminho da malha externa
+ao longo da faixa de operação. No ponto nominal, $K_{p1} = 0{,}18 \times 0{,}118 /
+(0{,}028 \times 1{,}1) \approx 0{,}70$ A/(N$\cdot$m), e
+$T_{i1} = 0{,}18$ s.
+
+As duas malhas, cada uma com sua planta, seu controlador e seus ganhos, consolidam-se na
+Tabela~\ref{tab:malhas}. Os demais elementos da estrutura --- o \emph{feedforward}, o seletor
+de aderência, os limites, o anti-windup, o estimador e as rampas --- não são
+controladores. São as proteções e as conversões que cercam os dois.
+
+\begin{table}[htb]
+\centering
+\caption{As duas malhas da cascata e seus elementos de projeto.}
+\label{tab:malhas}
+\small
+\begin{tabular}{l c c}
+\hline
+ & Malha interna (escrava) & Malha externa (mestra) \\
+\hline
+Variável controlada & Corrente $I$ & Torque estimado $\hat{T}$ \\
+Variável manipulada & Comando $u$ & Referência de corrente \\
+Planta & $G_2(s)$, identificada na Seção~\ref{sec:resdinamica} & Escrava fechada + estimador \\
+Controlador & PI & PI com ganho programado \\
+Ajuste (IMC) & $\lambda_2 = 0{,}18$ s & $\lambda_1 = 1{,}1$ s \\
+Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$ \\
+ & $T_{i2} = 0{,}18$ s & $K_{p1} \approx 0{,}70$ A/(N$\cdot$m), $T_{i1} = 0{,}18$ s \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{A implementação digital}
+\label{sec:implementacao}
+
+A teoria do projeto é contínua. A implementação, porém, é necessariamente digital, pois o
+laço passa inteiro por computadores. A corrente é amostrada pelo conversor do
+Arduino, o controlador executa como programa no computador de bordo e o comando segue por
+pulso digital ao ESC. O controlador contínuo é, assim, traduzido em equações de diferenças
+executadas a cada período de amostragem $T_s$, e o projeto permanece válido se $T_s$ for
+pequeno frente às dinâmicas controladas, conforme as regras clássicas de discretização
+\cite{raffo_tcpi_sintese}. Adota-se $T_s = 10$ ms, o regime do \emph{firmware} rápido já
+gravado no Arduino, menor que um décimo dos tempos integrais de ambas as malhas.
+
+As duas malhas se discretizam da mesma forma. A escrava executa, a cada amostra,
+\[
+u[k] = u_\mathrm{ff}[k] + K_{p2}\left(e_2[k] + \frac{T_s}{T_{i2}}\sum_j e_2[j]\right),
+\]
+e o mestre,
+\[
+I_1[k] = K_{p1}(u[k])\left(e_1[k] + \frac{T_s}{T_{i1}}\sum_j e_1[j]\right),
+\]
+com as somas dos erros substituídas, na prática, por acumuladores atualizados a cada
+amostra. O filtro do estimador e as rampas da pré-alimentação e da referência são
+recursões de primeira ordem idênticas, todas no mesmo relógio de $10$ ms. Cada elemento da
+malha corresponde a um bloco do script da simulação (Apêndice~\ref{apendice:codigos},
+A.3), que é a versão de referência da implementação, e o mapa entre elementos e linhas de
+código consolida-se na Tabela \ref{tab:implementacao}.
+
+\begin{table}[htb]
+\centering
+\caption{Implementação da malha: onde cada elemento vive no código (script A.3).}
+\label{tab:implementacao}
+\small
+\begin{tabular}{l l}
+\hline
+Elemento & Localização no script \\
+\hline
+Constantes do projeto ($\lambda$, $T_s$, limites, rampas, filtro) & linhas 41--54 \\
+Corrente de perdas $I_0(u)$ e comando equivalente & linhas 102 e 137--144 \\
+Ganhos IMC ($K_{p2}$ e $K_{p1}$ programado) & linhas 153--155 \\
+Estimador de torque, com teto e filtro & linhas 190--195 \\
+Seletor de aderência e rampa da referência & linhas 197--201 \\
+\emph{Feedforward} de corrente e caminho direto & linhas 207--214 \\
+PI escravo, com anti-windup por clamping & linhas 216--226 \\
+Limite do comando à região de aderência & linhas 219 e 48--49 \\
+\hline
+\end{tabular}
+\end{table}
+
+Duas escolhas de implementação condicionam o desempenho. A primeira é o
+\emph{feedforward} duplo. Além da corrente
+esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
+atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
+integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
+estimador, como revelou a simulação. A segunda é o anti-windup por \emph{clamping}
+(linhas 220--223 do script A.3). Quando
+o comando satura, o integrador é ajustado para que a saída fique exatamente no limite, em
+vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da
+saturação imediatamente. A integração condicional, alternativa mais simples, travou o
+sistema em saturação nas simulações iniciais, e o \emph{clamping} é o padrão descrito nas
+notas de implementação digital \cite{raffo_tcpi_sintese}.
+
+Sobre a malha externa, duas salvaguardas próprias. O estimador é quase-estático e só é
+válido onde foi caracterizado. Em transientes em que corrente e comando desbalanceiam,
+ele produz valores fisicamente impossíveis, e sua saída é limitada à faixa
+validada. O teto, $3{,}35$ N$\cdot$m, é o torque que o próprio estimador atinge no topo da
+região de aderência, e a estimativa é, ainda, filtrada por $0{,}6$ s, constante de
+tempo escolhida em simulação para rejeitar o ruído da divisão sem atrasar a malha. E a
+referência que entra no mestre é rampada a $0{,}6$ N$\cdot$m/s. O filtro da
+especificação de malha fechada no método de modelo interno já filtra a referência
+\cite{raffo_tcpi_imc}, e a rampa é sua versão prática, que evita que degraus grandes de
+referência carreguem o integrador do mestre. A rampa está no caminho da referência, não
+da realimentação, e a rejeição de perturbação não fica mais lenta por causa
+dela. Por fim, o próprio comando é limitado à região de aderência validada,
+$u \in [0{,}045;\ 0{,}21]$, que corresponde, pela normalização da metodologia,
+aproximadamente aos comandos de $99^\circ$ a $113^\circ$. O limite inferior tira a malha da
+zona morta, e o superior a mantém na fronteira da aderência. A simulação mostrou esse
+limite ser necessário. A curva de torque do propulsor não é monotônica além dessa região,
+e comandar nela inverte o sinal da planta e
+desestabiliza a malha externa. O limite não é apenas proteção. É a fronteira que mantém o
+modelo, o estimador e o controlador válidos.
+
 O conjunto dessas decisões atende diretamente aos objetivos do trabalho. A estrutura
 controla o torque em malha fechada, com seguimento de referência e rejeição de
 perturbações, sobre um propulsor caracterizado experimentalmente, operando dentro dos
 limites em que o
-modelo é válido e protegido contra sobrecorrente e patinagem. Os ganhos das malhas e a
-sintonia são apresentados no Capítulo~\ref{chap:resultados}, sobre os modelos
-identificados nos ensaios.
+modelo é válido e protegido contra sobrecorrente e patinagem. Com a estrutura, o projeto
+dos controladores e a implementação digital, a proposta do sistema de controle fica
+completamente especificada. A materialização experimental --- a montagem, os ensaios e o
+orçamento de incertezas --- é descrita na Metodologia, Capítulo~\ref{chap:metodologia}.
 
 \section{Resumo do Capítulo}
 \label{sec:resumocap2}
@@ -682,7 +850,9 @@ Sobre essa escolha, definiu-se a proposta do trabalho. Ela é um estimador de to
 corrente medida, validado contra um padrão de tração obtido com uma balança de mala.
 A malha de controle em cascata, com \emph{feedforward}, anti-windup e as proteções de
 aderência e de sobrecorrente, estrutura-se para atender aos objetivos de controle em
-malha fechada do propulsor. A materialização experimental dessa proposta --- a montagem,
+malha fechada do propulsor. Com a classificação das variáveis, o projeto dos
+controladores por modelo interno e a implementação digital, a proposta fica completamente
+especificada. A materialização experimental dessa proposta --- a montagem,
 os ensaios e o orçamento de incertezas --- é descrita na Metodologia,
 Capítulo~\ref{chap:metodologia}.
 

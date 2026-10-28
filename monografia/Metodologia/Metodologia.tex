@@ -6,11 +6,10 @@ sistema de propulsão do automodelo. Cada ensaio é apresentado pelo papel que
 seus dados ocupam na estrutura de controle proposta no Capítulo
 \ref{chap:descricaoprocesso}. O ensaio em bancada valida os instrumentos, o
 sensor de corrente ACS758E CB-200B e a balança digital de gancho, antes que
-entrem na curva característica. O ensaio em vazio mede a corrente consumida
-pelo conjunto sem carga mecânica, com as rodas suspensas. O ensaio de tração
+entrem na curva característica, enquanto o ensaio em vazio mede a corrente consumida
+pelo conjunto sem carga mecânica, ambos caracterizam a dinamica do estimador de torque. O ensaio de tração
 de corrente versus força relaciona, degrau a degrau, a corrente à força de
-tração medida pela balança. O ensaio de tração de corrente registra a corrente
-a $100$ Hz durante os degraus, fornecendo a dinâmica da malha escrava. A
+tração medida pela balança, fornecendo a dinâmica da malha escrava. A
 Seção \ref{sec:montagem} descreve a montagem comum, mecânica e elétrica. As
 Seções \ref{sec:bancada} a \ref{sec:tracao} seguem o mesmo roteiro, definição
 e objetivo, configuração, verificações pré-ensaio, procedimento e resultados
@@ -27,16 +26,13 @@ corrente ao esforço mecânico do propulsor. Caracterizar esse elo exige medir, 
 condição de operação, as duas grandezas que ele liga, a corrente elétrica consumida pelo
 conjunto e a força de tração desenvolvida pelas rodas.
 
-A força de tração só se manifesta, em princípio, enquanto o veículo se move. O ensaio
+A força de tração só se manifesta, em princípio, enquanto o veículo se move, assim, o ensaio
 estático contorna essa condição impedindo o deslocamento. Com o automodelo ancorado, o
 pneu não consegue rolar, e a força que seria trocada com o solo na direção do movimento
 transfere-se integralmente para a estrutura de retenção, onde é medida como a tensão em um
 cabo. Há, ainda, um segundo motivo para ancorar o veículo. Com a roda travada, o motor
 opera na condição de rotor bloqueado, na qual a exigência de torque é máxima --- é a
-condição de partida do veículo. Um ensaio em movimento mediria torques menores, exigiria
-instrumentação embarcada para acompanhar o carro e dificilmente capturaria com
-instrumentação simples justamente a condição que o controle de torque em malha fechada
-mais exige.
+condição de partida do veículo. 
 
 O instrumento utilizado para medir a força de tração é uma balança digital de bagagem com
 gancho, cuja indicação é expressa em quilogramas. Quando submetido à tração, o instrumento
@@ -89,20 +85,7 @@ como componente de incerteza na Seção \ref{sec:incertezas}.
 \subsection{Massa adicional}
 \label{sec:massaaderencia}
 
-Para alguns ensaios, halteres foram fixados na dianteira do veículo, conforme a
-Figura~\ref{fig:pesos}. O peso é uma força vertical, e a massa adicional atua justamente
-nessa direção. Ela aumenta a carga normal sobre os pneus e, com ela, o atrito disponível
-na interface pneu--piso, retardando o início da patinagem nos degraus mais altos. A
-tração, por sua vez, é horizontal, e as duas se relacionam pelo atrito. A força máxima que
-o pneu pode transferir ao piso sem derrapar é proporcional à carga normal que o prende
-contra o solo. Na medição, contudo, a massa não participa do equilíbrio. Em condição
-estática, a força horizontal registrada na balança iguala a tração desenvolvida pelo motor,
-seja qual for a massa do veículo. Resta que a tração máxima transferível antes da
-patinagem depende do carregamento, de modo que a condição de massa total de $6{,}640$ kg
---- veículo, baterias e massa adicional, pesada em conjunto como média de três pesagens ---
-integra a especificação do ensaio e das curvas obtidas. Medidas tomadas sob outro
-carregamento teriam outro limite de aderência e não seriam diretamente comparáveis.
-
+Em alguns ensaios, foram fixados halteres na dianteira do veículo, conforme ilustrado na Figura~\ref{fig:pesos}, aumentando a carga normal sobre os pneus e, consequentemente, o limite de aderência antes da patinagem. Essa massa adicional não interfere diretamente na curva de torque medida pela balança, pois, em condição estática, a força horizontal registrada corresponde à tração desenvolvida pelo motor. A massa total do conjunto, incluindo veículo, baterias e halteres, foi de $6{,}640$ kg, determinada pela média de três pesagens, sendo essa condição especificada uma vez que variações na massa podem alterar o limite de aderência e comprometer a comparabilidade dos resultados.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.72\textwidth]{Figuras/visao_pesos.jpeg}
@@ -116,9 +99,7 @@ pneus.}
 \label{sec:raioefetivo}
 
 O torque da roda depende do produto da força pelo raio efetivo de rolamento sob carga, pois o
-pneu se deforma sob o peso do conjunto e trabalha com um raio menor que o nominal.
-
-Empregou-se o método de \emph{roll-out}. Com o veículo encostado em uma parede, para que o
+pneu se deforma sob o peso do conjunto e trabalha com um raio menor que o nominal. Empregou-se o método de \emph{roll-out}. Com o veículo encostado em uma parede, para que o
 deslocamento se desse em linha reta, marcou-se o pneu e o solo em um mesmo alinhamento e
 movimentou-se o automodelo até completar cinco voltas da roda. A distância percorrida entre
 as marcas, anotada em três medições independentes, foi de $236$ cm em média, e o raio
@@ -137,9 +118,6 @@ conjunto. A cadeia mecânica da medida fecha com a Equação \eqref{eq:torque_f_
 \begin{equation}\label{eq:torque_f_r}
 T_\mathrm{roda} = F\,r_\mathrm{ef}.
 \end{equation}
-O emprego do raio nominal em lugar do efetivo inflaria todos os pontos da curva na mesma
-razão de $6{,}1\%$. A incerteza da própria medida de $r_\mathrm{ef}$ é orçada na Seção
-\ref{sec:incertezas}.
 
 \subsection{Adaptação do sensor de corrente}
 \label{sec:aquisicao}
@@ -162,13 +140,13 @@ ESC, por adaptação com conector Deans-T.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-Dois parâmetros da folha de dados condicionam a medição. O primeiro é a sensibilidade
-ratiométrica. Com alimentação nominal de $5$ V, ela é de $10$ mV/A, valor que se reduz
+A sensibilidade
+ratiométrica, ou seja, com alimentação nominal de $5$ V, ela é de $10$ mV/A, valor que se reduz
 proporcionalmente a $6{,}6$ mV/A a $3{,}3$ V, e a tensão de repouso, em corrente nula, é
 metade da alimentação --- de modo que a alimentação do sensor precisa ser a mesma referência
-do conversor. O segundo é a resolução do conversor. O ADC de $12$ bits do Due, com sua
+do conversor. O ADC de $12$ bits do Due, com sua
 tensão de referência, distingue degraus de $122$ mA na corrente, valor que define a
-resolução da medição e entra no orçamento de incertezas.
+resolução da medição e entra no orçamento de incertezas. (DE ONDE VEIO ISSO?)
 
 \subsection{Aquisição e registro de dados}
 \label{sec:registro}
