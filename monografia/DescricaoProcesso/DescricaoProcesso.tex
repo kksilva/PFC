@@ -235,7 +235,7 @@ e o controle do automodelo:
 \label{sec:ina240}
 
 No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em série no ramo de alimentação, 
-entre a bateria e o ESC, assim, pela Lei de Ohm, a queda de tensão sobre ele é:
+entre a bateria e o ESC e, pela Lei de Ohm, a queda de tensão sobre ele é:
 
 \begin{equation*}
 V_s = R_s\,I.
@@ -248,9 +248,9 @@ V_\mathrm{out} = G\,R_s\,I + V_\mathrm{bias},
 \end{equation*}
 em que $G$ é o ganho fixo do amplificador. 
 
-A dissipação de potência no resistor cresce com o quadrado da corrente, então, considerando as correntes do
+A dissipação de potência no resistor cresce com o quadrado da corrente; considerando as correntes do
 ESC, um shunt de $1$ m$\Omega$ dissipa cerca de $14$ W
-em regime e mais de $500$ W nos picos, de modo que o shunt aquece e consome parte da energia
+em regime e mais de $500$ W nos picos, de modo que o resistor aquece e consome parte da energia
 destinada ao motor. Observa-se, ainda, que instalado na alimentação do ESC mede a corrente
 média de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM. Na aproximação
 usual, a corrente de entrada se relaciona à de fase pela razão cíclica $D$ do chaveamento --- a
@@ -264,8 +264,9 @@ No motor, a corrente de fase se relaciona ao torque pela constante de torque $K_
 propulsor, $T_{\mathrm{motor}} = K_t\,I_{\mathrm{fase}}$, de modo que a corrente medida
 permite estimar o esforço mecânico produzido.
 
-O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do shunt, uma vez que a 
-saída é um sinal analógico na entrada do microcontrolador para tornar possível a leitura dos valores, conforme a Figura~\ref{fig:ina240}.
+O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do
+shunt, e sua saída, um sinal analógico, é ligada à entrada do microcontrolador, conforme a
+Figura~\ref{fig:ina240}.
 O componente possui largura de banda de 400 kHz e
 rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações rápidas e
 simultâneas da tensão nos dois terminais de entrada, produzidas pelo chaveamento do
@@ -315,9 +316,10 @@ instrumentação e o controle do automodelo:
 
 O sensor de efeito Hall ACS758 mede a corrente elétrica indiretamente, proporcionando isolamento 
 galvânico, ou seja, não há conexão elétrica direta entre o circuito de potência e o circuito de medição. 
-Seu funcionamento baseia-se no efeito Hall, no qual a corrente que percorre um condutor interno gera um 
-campo magnético com tensão de saída proporcional à corrente medida. A tensão 
-de saída varia em torno de um nível de referência, permitindo medir correntes nos dois sentidos.
+Seu funcionamento baseia-se no efeito Hall: a corrente que percorre um condutor interno gera um
+campo magnético perpendicular a uma lâmina semicondutora do sensor, e a tensão desenvolvida
+nessa lâmina, a tensão de Hall, é proporcional ao campo e, portanto, à corrente medida. A
+tensão de saída varia em torno de um nível de referência, permitindo medir correntes nos dois sentidos.
 
 \begin{equation*}
 V_\mathrm{out} = V_{\mathrm{offset}} + S\,I,
@@ -327,7 +329,7 @@ I = \frac{V_\mathrm{out} - V_{\mathrm{offset}}}{S},
 em que $S$ é a sensibilidade, em V/A, e $V_{\mathrm{offset}} = V_{CC}/2$ é o \emph{offset} do
 sensor, ou tensão de repouso, isto é, a tensão de saída quando a corrente é nula ($I = 0$).
 
-O sensor ACS758ECB-200B possui sensibilidade típica é de $10$ mV/A com alimentação de $5$ V, 
+O sensor ACS758ECB-200B possui sensibilidade típica de $10$ mV/A com alimentação de $5$ V, 
 reduzindo-se proporcionalmente em alimentações menores, uma vez que a saída é ratiométrica.
 O condutor interno de corrente apresenta resistência da ordem de $100$ µ$\Omega$, de modo
 que a queda de tensão e a dissipação introduzidas pelo sensor são pequenas. A resolução da
@@ -340,8 +342,9 @@ Equação \eqref{eq:acs_resolucao}:
 \end{equation}
 
 Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
-saída analógica é ligada diretamente ao conversor analógico--digital (ADC) do microcontrolador, que
-converte a tensão de saída em um número digital para a leitura, conforme a Figura~\ref{fig:acs758}.
+saída analógica é ligada ao conversor analógico--digital (ADC) do microcontrolador, que
+converte a tensão de saída no número digital lido pelo programa, conforme a
+Figura~\ref{fig:acs758}.
 
 \begin{figure}[htb]
 \centering
@@ -351,17 +354,15 @@ converte a tensão de saída em um número digital para a leitura, conforme a Fi
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor,
-pelo modelo do motor, como no arranjo com shunt. No sistema de controle, a variável de
-processo é o torque estimado a partir da corrente, e a variável manipulada é o comando de
-acionamento $u$. A referência de torque desejado é convertida na corrente correspondente e
-comparada à medida, e o controlador ajusta o comando até anular o erro, na estrutura de malha
-fechada simples com realimentação. As perturbações são as mesmas variações de carga mecânica
-já descritas, que exigem mais corrente para um mesmo torque na roda. Por medir a corrente
-diretamente, o sensor viabiliza, ainda, a proteção contra sobrecorrente por limiar, com o
-controlador reduzindo a excitação sempre que a leitura ultrapassa o valor máximo admitido.
+Em malha fechada, o ACS758 se comporta como o arranjo com shunt: a variável de processo é o
+torque estimado a partir da corrente, a variável manipulada é o comando de acionamento $u$, e
+a referência de torque desejado é convertida na corrente correspondente e comparada à
+medida, com o controlador ajustando o comando até anular o erro, na estrutura de malha
+fechada simples com realimentação. Por medir a corrente diretamente, o sensor viabiliza,
+ainda, a proteção contra sobrecorrente por limiar, com o controlador reduzindo a excitação
+sempre que a leitura ultrapassa o valor máximo admitido.
 
-Em síntese, a utilização apresenta vantagens e limitações para a instrumentação e o
+Em síntese, a utilização do ACS758 apresenta vantagens e limitações para a instrumentação e o
 controle do automodelo:
 
 \begin{itemize}
@@ -375,11 +376,11 @@ controle do automodelo:
 \subsection{Síntese Comparativa}
 \label{sec:sintese}
 
-A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque, uma vez que a IMU e o
-SS41F exigem a identificação prévia de parâmetros mecânicos ($m$, $F_{\text{resistivos}}$, $J$, $B$ e $T_L$),
-enquanto a corrente elétrica se relaciona diretamente. Dessa forma, esta oferece um caminho mais
-direto para a estimativa do esforço mecânico, uma vez que o sensor Hall linear apresenta um equilíbrio adequado
-entre isolamento, custo e simplicidade de montagem para as condições de operação do sistema.
+A diferença entre as abordagens está, sobretudo, na cadeia de dependências até o torque. A
+IMU e o SS41F exigem a identificação prévia de parâmetros mecânicos ($m$,
+$F_{\text{resistivos}}$, $J$, $B$ e $T_L$), que são propriedades do conjunto veículo--carga
+e mudam com a configuração, ao passo que a corrente elétrica se relaciona ao torque por
+constantes do próprio propulsor, identificáveis em bancada.
 
 Entre os sensores de corrente, a comparação envolve isolamento, dissipação, faixa e desempenho
 sob chaveamento. O shunt oferece a maior banda e a melhor resolução ao menor custo, mas dissipa
@@ -457,7 +458,7 @@ realimentação fecha o laço.}
 A referência de torque $T_{\mathrm{ref}}$ percorre, na entrada da malha, um limitador de
 aderência, que funciona como um seletor de mínimo: acima do torque máximo transferível
 ao solo não há esforço a comandar, apenas patinagem, de modo que referências maiores que
-esse limiar são cortadas nele. Essa é a primeira proteção da malha, e ela preserva também
+esse limiar são cortadas nele. Essa é a primeira proteção da malha e preserva também
 a validade do modelo, que só descreve o propulsor abaixo do limite de aderência.
 
 A referência limitada segue por dois caminhos. No caminho direto, a inversa da curva
@@ -479,10 +480,11 @@ seguimento da referência e da rejeição do restante, com erro nulo em regime e
 funções \cite{raffo_tcpi_psrprp}.
 
 Duas proteções fecham a estrutura. A primeira é o anti-windup por \emph{clamping}: o
-comando satura tanto na zona morta do ESC quanto na fronteira da região validada, e,
+comando satura tanto na zona morta do ESC quanto na fronteira da região validada e,
 nessas condições, o integrador é ajustado para que a saída fique exatamente no limite,
-em vez de simplesmente congelar, de modo que a saída responde imediatamente à reversão
-do erro, conforme as práticas clássicas de implementação \cite{raffo_tcpi_sintese}. A
+em vez de simplesmente congelar, de forma que qualquer reversão do erro tira a saída da
+saturação imediatamente, conforme as práticas clássicas de implementação
+\cite{raffo_tcpi_sintese}. A
 segunda é a proteção contra sobrecorrente por limiar, possível porque a corrente é
 medida: sempre que a leitura ultrapassa o valor máximo admitido, a excitação é reduzida,
 protegendo o conjunto elétrico. Somam-se a elas a limitação do próprio comando à região
@@ -501,8 +503,8 @@ identificados nos ensaios.
 \label{sec:resumocap2}
 
 Este capítulo apresentou o sistema de propulsão do automodelo e comparou as principais grandezas
-mensuráveis para sua caracterização: aceleração, velocidade angular e corrente elétrica e força de
-tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
+mensuráveis para sua caracterização: aceleração, velocidade angular, corrente elétrica e
+força de tração. Cada uma se associa ao torque por uma cadeia própria, descrita pelas Equações
 \eqref{eq:newton} e \eqref{eq:dinamica_rotacional}. A
 comparação evidenciou a corrente elétrica como a grandeza de cadeia mais curta até o torque e o
 sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores avaliados.

@@ -20,7 +20,7 @@ A curva que este trabalho busca estabelecer relaciona o torque na roda à corren
 alimentação, de modo que a caracterização exige a medição simultânea de duas grandezas, a
 força de tração desenvolvida pelas rodas e a corrente elétrica consumida pelo conjunto.
 
-A força de tração só se manifesta, em princípio, enquanto o veículo se move. O ensaio de
+A força de tração só se manifesta, em princípio, enquanto o veículo se move. O ensaio
 estático contorna essa condição impedindo o deslocamento: com o automodelo ancorado, o
 pneu não consegue rolar, e a tração que seria entregue ao solo transfere-se integralmente
 para a estrutura de retenção, onde pode ser medida como a tensão em um cabo. Como o veículo permanece
@@ -167,7 +167,7 @@ pulsos são gerados pelo circuito PCA9685, na faixa de $90^\circ$ a $180^\circ$.
 trabalho, o comando é usado na forma normalizada $u = (\alpha - 95)/85$, sendo $\alpha$ o
 ângulo do comando de aceleração.
 
-A automação do ensaio foi desenvolvida no âmbito deste trabalho. Um \emph{script} local
+A automação do ensaio foi desenvolvida para este trabalho. Um \emph{script} local
 percorre a escala de degraus em um laço, substituindo a cada iteração o ângulo e a duração e
 disparando o comando remoto correspondente, enquanto lê a serial do Arduino e grava cada
 amostra, com o tempo de ensaio, o tempo dentro do degrau, o ângulo e a corrente, em um
@@ -191,8 +191,8 @@ seus desvios sistemáticos sejam conhecidos e compensados ou declarados antes de
 curva característica. O motivo está na estrutura do controle: a corrente medida alimenta o
 estimador de torque e a malha escrava, e a força lida pela balança é o padrão contra o qual
 o coeficiente do estimador é validado, de modo que um desvio sistemático de qualquer um dos
-dois se propagaria diretamente para o modelo que o controlador passará a confiar. Verificam-se,
-por isso, a cadeia de corrente e a balança.
+dois se propagaria diretamente para o modelo que o controlador passará a confiar.
+Verificam-se, por isso, a cadeia de corrente e a balança.
 
 A verificação da cadeia de corrente monta um único laço elétrico em série, conforme a
 Figura \ref{fig:bancada}. O terminal positivo da fonte ajustável, capaz de fornecer de
@@ -210,7 +210,7 @@ desvio é quase constante em toda a faixa e sempre no mesmo sentido, ele é corr
 um único fator multiplicativo em software, sem distorcer a forma do sinal.
 
 A verificação da balança tem objetivo diferente, pois a balança é a própria referência da
-força e não dispõe de canal de correção, uma vez que seu display não tem saída elétrica.
+força e não dispõe de canal de correção, pois seu display não tem saída elétrica.
 Ela é confrontada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg aplicados
 sucessivamente ao gancho, conforme a Figura \ref{fig:pesos}, e o desvio verificado é
 declarado como componente sistemática do orçamento de incertezas, junto com sua resolução
@@ -254,7 +254,7 @@ forma linear; em vazio, a corrente de perdas é essencialmente a corrente de fas
 sua evolução com o comando testa essa hipótese. O ensaio em vazio mede, portanto, um
 parâmetro do modelo e, ao mesmo tempo, verifica a hipótese sobre a qual o modelo se apoia.
 
-O veículo é apoiado de modo que as rodas motrizes fiquem suspensas em uma caixa, sem contato
+O veículo é apoiado sobre uma caixa, de forma que as rodas motrizes fiquem suspensas, sem contato
 com a mesa, conforme a Figura \ref{fig:vazio}, e a cadeia de aquisição é empregada sem
 alterações. Antes da sessão, verificam-se as condições comuns a todo ensaio com o veículo: a
 bateria LiPo 2S carregada e em bom estado, uma vez que baterias degradadas comprimem os
@@ -290,7 +290,7 @@ consome: o coeficiente $G_F$, que, multiplicado pelo raio efetivo, define $K_T$ 
 estimador; a inversa da curva, que converte a referência de torque na corrente esperada do
 caminho direto; e o torque máximo medido, que calibra o limiar do seletor de aderência.
 Sem este ensaio, o estimador não teria coeficiente e o caminho direto não teria curva a
-inverter, de modo que a malha de torque não poderia ser projetada. A sessão é gravada em
+inverter, e a malha de torque não poderia ser projetada. A sessão é gravada em
 vídeo, com o display da balança e o
 terminal do notebook no mesmo plano, este exibindo o horário, o tempo dentro do degrau e a
 corrente média do segundo.
@@ -308,7 +308,7 @@ $97^\circ$.
 
 Cada ponto é lido no vídeo da sessão, pausado quadro a quadro após o experimento. A leitura
 em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe da leitura ao vivo e
-dá rastreabilidade a cada valor anotado, uma vez que o display da balança não possui saída
+dá rastreabilidade a cada valor anotado, pois o display da balança não possui saída
 elétrica.
 
 Em sessão complementar, o mesmo protocolo foi executado com aquisição contínua a $100$ Hz e
@@ -329,7 +329,7 @@ $G_1(s)$ sobre a qual a malha escrava de corrente é projetada.
 \section{Incertezas de Medição}
 \label{sec:incertezas}
 
-O orçamento de incertezas segue o método da Aula 04, com os componentes estatísticos (Tipo
+O orçamento de incertezas segue o método clássico de metrologia, com os componentes estatísticos (Tipo
 A) separados dos avaliados por propriedades do instrumento (Tipo B), combinados em incerteza
 combinada e expandida. Para não confundir com o comando normalizado $u$, adota-se $\sigma$
 para as incertezas-padrão.
