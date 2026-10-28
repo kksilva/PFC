@@ -280,18 +280,31 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
 - **Frase pontual de sinalização é proibida.** Construções como *"A primeira é direta."*,
   *"A segunda é estrutural."*, *"O primeiro é o estimador."* — frases-carteiro que só
   anunciam e não informam — destroem o ritmo. O conteúdo delas entra dentro de um período
-  corrido, amarrado pelo conectivo: *"O resultado entra na caracterização de duas maneiras:
-  diretamente, pois o estimador desconta..."* vira *"O resultado entra na caracterização de
-  duas maneiras, e a primeira é direta: o estimador desconta..."* — melhor ainda sem os
-  dois-pontos, com vírgula e subordinação. Frase curta é para fato e valor medido
+  corrido, amarrado pelo conectivo. Frase curta é para fato e valor medido
   (ver Seção 3), nunca para letreiro de parágrafo.
-- **Dois-pontos e ponto e vírgula são exceção, não pontuação de rotina.** Regra da autora
-  (revisão 28/10, após correção manual de todas as ocorrências): preferir sempre o período
-  ou a vírgula com conectivo. Dois-pontos no máximo uma vez por seção, e apenas para
-  anunciar equação ou enumeração que vem logo abaixo; nunca duas vezes no mesmo parágrafo.
-  Ponto e vírgula quase nunca — quando a oração seguinte é longa, vira ponto. Travessão
-  segue a regra antiga: só aposto explicativo pontual. Se um parágrafo precisa de dois
-  dois-pontos para funcionar, o parágrafo está mal construído, não a pontuação.
+- **Proibição total de ponto e vírgula e de dois-pontos no texto do assistente.** Regra
+  da autora (28/10, segunda reclamação): o assistente não usa ";" nem ":" em nenhuma
+  situação. Onde o raciocínio pediria ";", se parte a frase em duas. Onde pediria ":",
+  reestrutura-se com vírgula, "resulta em", "é" ou período novo. Equação anunciada com
+  verbo ("resulta em", "é dada por" seguido de vírgula e equação na linha própria), sem
+  dois-pontos. Quando a autora mesma mantiver ":" em texto dela, isso é escolha dela e
+  não licença para o assistente.
+- **Teto de comprimento de frase.** Períodos de raciocínio no máximo ~30 palavras. Acima
+  disso, dividir em duas, retomando o sujeito. O assistente tende a estender o período com
+  oração após oração; a autora prefere duas frases médias a uma frase longa. (O ritmo
+  fluido da Seção 3 se faz com períodos de 15–30 palavras alternados com fatos curtos,
+  nunca com períodos de 40+.)
+- **Cota de conectivos e advérbios.** Repetição de conectivo é vício detectado em revisão
+  (28/10): "assim" no máximo uma vez por seção; nunca o mesmo conectivo em parágrafos
+  adjacentes; nunca dois advérbios conectivos na mesma frase ("de modo que", "uma vez
+  que", "de forma que", "dessa forma", "assim" competem pela mesma vaga — usar um só, e
+  variar o próximo). Antes de entregar um texto, varrer as ocorrências de cada conectivo
+  por seção e reescrever as repetições com pontuação simples (vírgula, ponto) ou com
+  conector de outra família (adição, contraste, causa, tempo).
+- **Redundância entre frases vizinhas.** Se a frase seguinte repete a anterior com outras
+  palavras, fundir ou cortar. Cada informação entra uma vez no capítulo (ver "número
+  aparece uma só vez"); o mesmo vale para ideias — o parágrafo de resultado não repete o
+  de método com sinônimos, ele avança.
 - **Cada seção de sensor define a malha de controle completa, no padrão da IMU.** Variável de
   processo, variável manipulada e como a malha fecham, em parágrafo próprio antes do veredito.
   Comparação de sensores não antecipa decisão do trabalho: modo de medição, calibrações e
@@ -381,7 +394,8 @@ autora. Cada item traz o exemplo real (meu → dela).
 
 - [ ] Cada parágrafo segue contextualização → princípio → mecanismo → implicação → síntese?
 - [ ] Nenhuma frase pontual de sinalização ("A primeira é direta.")? Todas absorvidas em períodos corridos?
-- [ ] Dois-pontos no máximo um por seção (e nunca dois no mesmo parágrafo); nenhum ponto e vírgula desnecessário?
+- [ ] Nenhum ";" e nenhum ":" no texto gerado? Frases com teto de ~30 palavras?
+- [ ] Nenhum conectivo repetido em parágrafos adjacentes ("assim" no máx. 1 por seção)? Nenhuma ideia repetida entre frases vizinhas?
 - [ ] Os períodos longos carregam raciocínio encadeado e as frases curtas, fatos? (ritmo fluido)
 - [ ] Advérbios qualificam condições e conclusões (normalmente, tipicamente, portanto, diretamente) — sem "obviamente/evidentemente"?
 - [ ] Cada bloco fecha com frase-síntese e abre ponte para o próximo?
