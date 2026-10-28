@@ -532,17 +532,17 @@ controlador.}
 
 No projeto, o limiar é o torque máximo transferível ao solo $T_{\mathrm{ader}}$, e o
 ponto de inserção é a entrada da malha, antes dos dois caminhos da estrutura, de modo
-que a referência efetiva alimenta tanto o caminho direto quanto o de realimentação.
+que a referência efetiva alimenta tanto o \emph{feedforward} quanto o de realimentação.
 O benefício é duplo: a roda não patina, pois o torque comandado nunca excede o
 transferível, e o modelo do propulsor permanece válido, pois ele só descreve o
 processo abaixo do limite de aderência. O custo é que, enquanto o limite atua, o
 torque comandado deixa de ser o torque pedido. O seletor, portanto, protege a
 aderência e a validade do modelo logo na entrada da estrutura.
 
-\subsection{O caminho direto}
+\subsection{O \emph{feedforward}}
 \label{sec:caminhodireto}
 
-A pré-alimentação da referência, ou caminho direto, é o bloco que converte a
+A pré-alimentação da referência, ou \emph{feedforward}, é o bloco que converte a
 referência diretamente em uma parcela da ação de controle, sem esperar que o erro se
 manifeste \cite{raffo_tcpi_psrprp}. No esquema geral de pré-alimentação e
 realimentação das notas de aula, o controlador que garantiria o seguimento perfeito da
@@ -576,7 +576,7 @@ referência e rejeição de perturbações.}
 \footnotesize{Fonte: Raffo (2019).}
 \end{figure}
 
-No projeto, o caminho direto é a inversa da curva característica: aplica-se a
+No projeto, o \emph{feedforward} é a inversa da curva característica: aplica-se a
 Equação~\eqref{eq:estimador_proposta} no sentido da referência, o que fornece a
 corrente esperada
 
@@ -730,7 +730,7 @@ sensor de efeito Hall linear ACS758 como a melhor opção entre os sensores aval
 
 Sobre essa escolha, definiu-se a proposta do trabalho: um estimador de torque a partir da
 corrente medida, validado contra um padrão de tração obtido com uma balança de mala, e
-uma malha de controle em cascata, com caminho direto, anti-windup e as proteções de
+uma malha de controle em cascata, com \emph{feedforward}, anti-windup e as proteções de
 aderência e de sobrecorrente, estruturada para atender aos objetivos de controle em
 malha fechada do propulsor.
 
