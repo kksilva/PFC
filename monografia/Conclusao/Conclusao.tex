@@ -30,19 +30,19 @@ controle, a conclusão é direta: o torque é controlável apenas dentro da regi
 e o limitador de um controlador deve respeitar o limiar observado, sob pena de comandar
 patinagem em vez de tração.
 
-\textbf{A bateria como elo do experimento.} Duas interferências de bateria marcaram o
-trabalho e merecem registro como fontes de erro. A bateria dedicada do Raspberry Pi, quando
+\textbf{A bateria como elo do experimento.} Duas interferências de bateria constituem
+fontes de erro relevantes para o experimento. A bateria dedicada do Raspberry Pi, quando
 descarregada, derrubava a tensão do conversor \emph{step-down}, medida em $4{,}0$ V contra
 $5{,}3$ V esperados, abaixo do mínimo operacional, provocando quedas da rede em plena
-sessão, com o veículo rodando; o sintoma imita falha de comando e só foi diagnosticado pela
-medição da tensão de alimentação. As baterias antigas do laboratório, por sua vez, impuseram
+sessão, com o veículo rodando, sendo o sintoma semelhante a uma falha de comando, que só foi
+diagnosticado pela medição da tensão de alimentação. As baterias antigas do laboratório, por sua vez, impuseram
 o problema oposto: degradadas e uma delas estufada, apresentavam \emph{sag} severo sob carga,
 de modo que o corte de baixa tensão do ESC reduzia o \emph{duty} interno e executava degraus
 altos com corrente de degraus menores, o defeito que rotulou execuções inteiras da escada e
 exigiu a regra de validação do consolidado. Sessões inteiras foram descartadas por essa causa.
 A conclusão prática é que, em ensaios com ESC comerciais, o estado da bateria integra a
-condição de ensaio tanto quanto a massa e o piso, e deve constar do \emph{checklist} e das
-regras de validação, como ficou neste trabalho.
+condição de ensaio tanto quanto a massa e o piso, devendo constar do \emph{checklist} e das
+regras de validação, conforme adotado neste trabalho.
 
 \textbf{Consequência para o controle.} A resposta elétrica do propulsor é rápida, e o
 atraso aparente das janelas de ensaio pertence ao protocolo de disparo, não à planta, de
@@ -55,7 +55,7 @@ pendente.
 
 \section{Propostas de Continuidade}
 
-Quatro continuidades se descortinam diretamente dos resultados. A medição dinâmica da força,
+Quatro continuidades decorrem diretamente dos resultados. A medição dinâmica da força,
 com célula de carga e registrador de baixo custo (HX711), permitiria identificar a dinâmica
 comando--tração e fechar a malha de torque sobre a grandeza de interesse, em vez da corrente.
 A instrumentação do pneu e da bateria, a temperatura do primeiro e a tensão da segunda durante

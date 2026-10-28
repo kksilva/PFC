@@ -170,8 +170,7 @@ final. Adota-se aqui a palavra \emph{degrau} no sentido de controle, um comando 
 aplicado de uma vez. O comando constante é um ângulo $\alpha$, na convenção de rádio-controle,
 na faixa de $90^\circ$ a $180^\circ$. Nela, $90^\circ$ é o limite inferior de armamento do
 ESC, $180^\circ$ é a aceleração máxima e $95^\circ$ é o neutro, o comando para o qual o ESC
-mantém o motor parado, correspondente ao pulso de $1{,}5$ ms do sinal de servo, gerado pelo
-circuito PCA9685. Ao longo do trabalho, o comando é usado na forma normalizada
+mantém o motor parado. Ao longo do trabalho, o comando é usado na forma normalizada
 \[
 u = \frac{\alpha - 95}{85},
 \]
@@ -183,26 +182,12 @@ degraus em um laço, substituindo a cada iteração o ângulo e a duração e di
 SSH correspondente, enquanto lê a porta serial do Arduino e grava cada amostra, com o tempo
 de ensaio, o tempo dentro do degrau, o ângulo e a corrente, em um arquivo CSV, um bloco de
 dados por degrau. No terminal, imprime-se somente a média das amostras de cada segundo, o
-tempo $t = 1, 2, \ldots, 15$ e a corrente média associada, a linha que aparece no vídeo do
-ensaio ao lado do display da balança. Os dados consolidados dos ensaios encontram-se nos
+tempo $t = 1, 2, \ldots, 15$ e a corrente média associada. A linha  aparece no vídeo do
+ensaio ao lado do display da balança, consolidados nos
 arquivos \texttt{ensaio\_vazio\_corrente.csv},
 \texttt{ensaio\_tracao\_corrente\_versus\_forca.xlsx} e
 \texttt{ensaio\_tracao\_corrente.csv}, um para cada experimento descrito nas Seções
-\ref{sec:vazio} e \ref{sec:tracao}. O programa base e suas variantes, o modo cego
-\texttt{rodar\_ensaio\_cego.py} e o modo de séries \texttt{rodar\_ensaio\_series.py},
-encontram-se no Apêndice~\ref{apendice:codigos} (A.4) e são os mesmos que geraram os
-arquivos de dados. A implementação original iterava o disparo de cada comando, reenviando-o
-até detectar a resposta da corrente. No modo cego, o disparo é feito sem confirmação remota
-e o início da janela de cada degrau é detectado eletricamente, pela própria resposta da
-corrente na porta serial.
-
-Um efeito prático da transmissão serial condiciona a leitura dos arquivos. O envio
-bufferiza as amostras, que chegam ao computador em rajadas de cerca de
-dez, com o mesmo carimbo de tempo, em blocos de $100$ ms. Os carimbos, porém, não
-distinguem as amostras dentro da rajada. Para não perder a resolução temporal, o tempo é
-reconstruído por índice. A $k$-ésima amostra do arquivo corresponde a $t = k \times 10$ ms,
-com $k = 0, 1, 2, \ldots$, uma reconstrução válida porque a ordem de chegada preserva a
-ordem de aquisição. Cada degrau de $15$ s gera, assim, cerca de $1550$ amostras.
+\ref{sec:vazio} e \ref{sec:tracao}. 
 
 \section{Ensaio em Bancada}
 \label{sec:bancada}
@@ -304,8 +289,6 @@ O procedimento da sessão é o seguinte.
     \item Energizam-se o conjunto e a cadeia de aquisição, aguardando o armamento do ESC.
     \item Dispara-se a varredura automatizada, que aplica a escala de degraus de $97^\circ$
     a $117^\circ$ de grau em grau, com $15$ s por degrau e $3$ s de neutro entre degraus.
-    \item Acompanha-se o terminal, verificando, a cada degrau, a resposta da corrente e a
-    estabilidade da conexão remota.
     \item Ao final, encerra-se o registro e confere-se o arquivo \texttt{ensaio\_vazio\_corrente.csv}.
 \end{enumerate}
 
@@ -339,14 +322,12 @@ necessária porque o cabo se comporta como uma mola durante a tração. Sob a fo
 veículo, ele se estica e acumula energia elástica e, quando o motor para, a tração cessa,
 mas o atrito nos contatos impede que o cabo relaxe por completo, deixando no display uma
 tensão residual de $0{,}1$ a $0{,}3$ kg que não corresponde a esforço algum do propulsor.
-Zerar a balança a cada degrau elimina esse resíduo e com ele o erro acumulado ao longo da
-escada.
 
 O protocolo de cada degrau segue os passos abaixo e é o mesmo em toda a escala.
 
 \begin{enumerate}
     \item Tarar a balança durante o neutro entre degraus.
-    \item Disparar o comando remoto do degrau, de duração de $15$ s.
+    \item Executar o script remoto do degrau, de duração de $15$ s.
     \item Decorridos $7$ s, anotar a força exibida em cada um dos segundos $7$, $8$, $9$ e
     $10$, em regime estacionário.
     \item Adotar como ponto da curva a média das quatro leituras.
@@ -375,9 +356,6 @@ força, dispensada a anotação de força na balança, com a
 corrente amostrada a $100$ Hz e registrada por inteiro em cada degrau, amostra a amostra,
 no arquivo \texttt{ensaio\_tracao\_corrente.csv}. O registro completo de cada platô
 viabiliza o ajuste da resposta ao degrau apresentado no Capítulo \ref{chap:resultados}.
-A sessão foi conduzida na variante cega da automação, que dispara o comando sem confirmação
-remota e detecta o início da janela de cada degrau pela própria resposta da corrente na
-porta serial.
 
 \section{Incertezas de Medição}
 \label{sec:incertezas}

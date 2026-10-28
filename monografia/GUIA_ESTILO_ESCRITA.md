@@ -58,6 +58,16 @@ curtas**.
 - **Frases curtas para fatos e comandos.** Afirmações pontuais, valores e instruções ficam em
   frases de 8–15 palavras. Alternar período longo (raciocínio) e frase curta (fato) é o que dá
   dinamismo ao texto.
+- **Proibida a sequência de frases curtas que carrega raciocínio.** Quando duas ou três frases
+  seguidas de menos de 15 palavras estabelecem relação de causa, consequência ou qualificação,
+  elas devem ser fundidas em um único período conectado, com *"que"*, *"pois"*, *"sendo"*,
+  *"o que"*, *"de modo que"*, *"na qual"*. Frase curta isolada é recurso; sequência de frases
+  curtas é telegrafia. Ex. de transformação — antes: *"A força passa, então, a depender apenas
+  do torque do motor, e este, da corrente. É a única região em que o modelo é válido e a
+  dinâmica identificada representa a planta. Todo o projeto do controlador se apoia nela."* —
+  depois: *"A força passa, então, a depender apenas do torque do motor, que por sua vez decorre
+  da corrente, sendo essa a única região em que o modelo é válido, a dinâmica identificada
+  representa a planta e todo o projeto do controlador se apoia."*
 - **Advérbios são bem-vindos** quando qualificam o raciocínio, não quando embelezam: *"normalmente"*
   (condição típica), *"tipicamente"* (valor representativo), *"diretamente"* (relação sem
   intermediário), *"portanto"* (conclusão), *"assim"* (consequência), *"aproximadamente"*,
@@ -305,6 +315,23 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   palavras, fundir ou cortar. Cada informação entra uma vez no capítulo (ver "número
   aparece uma só vez"); o mesmo vale para ideias — o parágrafo de resultado não repete o
   de método com sinônimos, ele avança.
+- **Redundância entre capítulos é proibida — cada conteúdo tem um dono.** Fato, derivação,
+  justificativa e número vivem em exatamente UM capítulo; os demais referenciam
+  (Capítulo X, Seção Y) em vez de repetir. O mapa de propriedade é:
+  - **Cap 2** — teoria, fundamentos, definições, estrutura de controle, proposta (o quê e
+    para quê, sem valores identificados, sem ganhos);
+  - **Cap 3** — como os experimentos foram feitos (montagem, protocolo, instrumentos,
+    derivações das componentes de incerteza);
+  - **Cap 4** — o que foi medido e ajustado (números, regressões, ganhos, simulação),
+    sem reexplicar protocolo (referencia a Metodologia), sem interpretações que
+    pertencem à Conclusão; a teoria do controlador referencia o Cap 2, e o Cap 4 cuida
+    apenas das escolhas numéricas e do desempenho;
+  - **Cap 5** — interpretações, consequências, continuidade.
+  Sintoma típico a varrer: parágrafo de papel/motivação de ensaio idêntico em Metodologia
+  e Resultados (fica em Metodologia; Resultados abre com o que o ensaio entregou);
+  explicação de I₀, cascata, feedforward ou inferencial aparecendo nos dois capítulos
+  (fica no Cap 2; Cap 4 referencia); número canônico citado em mais de um lugar (fica no
+  resultado que o produz, ou na tabela).
 - **Cada seção de sensor define a malha de controle completa, no padrão da IMU.** Variável de
   processo, variável manipulada e como a malha fecham, em parágrafo próprio antes do veredito.
   Comparação de sensores não antecipa decisão do trabalho: modo de medição, calibrações e
