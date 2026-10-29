@@ -576,23 +576,7 @@ realimenta a malha. Com o
 ganho de malha grande na banda de frequência da perturbação, o denominador reduz o
 efeito de $L_2$ antes que ela se transforme em erro na malha externa. Para que as duas
 malhas não disputem o mesmo atuador, a regra de separação de velocidades exige que a
-interna seja de três a dez vezes mais rápida que a externa. A
-Figura~\ref{fig:cascata_generica} apresenta a estrutura com os sinais do projeto, na qual
-$T_{\mathrm{ref}}$ é a referência de torque, $I$ a variável secundária, a corrente,
-$\hat{T}$ a variável primária, o torque estimado, $K_{n1}$ a rampa da referência, e as
-perturbações $L_2$ e $L_1$ entram por cima, a primeira no caminho entre o comando e a
-corrente e a segunda no caminho do torque, sendo $G_{m2}$ o sensor de corrente e $G_{m1}$
-o estimador.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.95\textwidth]{Figuras/cascata_generica.png}
-\caption{Cascata com os sinais do projeto: malhas aninhadas de torque e corrente,
-perturbação interna $L_2$ rejeitada pela malha escrava e perturbação externa $L_1$ por
-ela não alcançada.}
-\label{fig:cascata_generica}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+interna seja de três a dez vezes mais rápida que a externa.
 
 No projeto, o mestre é o
 controlador de torque, e o escravo, o controlador de corrente, mais rápido e sensível às
@@ -621,19 +605,7 @@ Equação~\eqref{eq:estimador_proposta}. O estimador de torque fecha o laço ext
 limita a estimativa à faixa validada e
 filtra-a antes de alimentar o mestre, pois é quase-estático e não deve reagir a
 transientes em que corrente e comando se desbalanceiam. O estimador, portanto,
-concentra em si a precisão do controle de torque. A
-Figura~\ref{fig:estimador_salvaguardas} apresenta o estimador com as duas
-salvaguardas, o teto da faixa validada e o filtro de primeira ordem.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.85\textwidth]{Figuras/estimador_salvaguardas.png}
-\caption{Estimador inferencial: a corrente $I$ e o comando $u$ alimentam o modelo
-$\hat{G}$, e a estimativa passa pelo teto da faixa validada e pelo filtro antes de
-alimentar o mestre.}
-\label{fig:estimador_salvaguardas}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+concentra em si a precisão do controle de torque.
 
 \subsection{As proteções do comando}
 \label{sec:protecoes}
@@ -646,19 +618,7 @@ condicionamento da ação integral, também chamado de anti-\emph{windup}
 \cite{raffo_tcpi_pid2}. No condicionamento,
 a saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
 o comando efetivo $u$ retorna ao controlador, e o integrador não acumula o
-erro em excesso enquanto a saturação persiste. A Figura~\ref{fig:antiwindup_clamping}
-apresenta o condicionamento, no qual o comando efetivo, medido depois da saturação,
-retorna ao integrador e o mantém ajustado ao limite.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.8\textwidth]{Figuras/antiwindup_clamping.png}
-\caption{Anti-\emph{windup} por condicionamento da ação integral: a saída linear
-$u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e o comando efetivo $u$ retorna ao
-integrador.}
-\label{fig:antiwindup_clamping}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+erro em excesso enquanto a saturação persiste.
 
 No projeto emprega-se o \emph{clamping} no integrador do controlador escravo, ajustado
 para que a saída fique exatamente no limite, em vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da saturação imediatamente. Duas
@@ -679,80 +639,6 @@ sensor. A variável manipulada é o comando $u$, e as perturbações são o afun
 tensão da bateria sob carga e a variação da corrente de perdas com a temperatura, ambas
 sem sensor no veículo e ambas grandezas de influência clássicas, que alteram a medição e o
 processo sem serem o objeto do controle \cite{braga_instr_config}.
-
-\subsection{O projeto dos controladores}
-\label{sec:projeto_controladores}
-
-O projeto não se deu de uma vez, pois cada proteção responde a uma falha, e a ordem de
-apresentação é a ordem em que as decisões foram tomadas. O projeto dos controladores
-segue o método de modelo interno, uma síntese direta na qual a lei de controle deriva do
-modelo do processo, com o parâmetro de ajuste explicitando o compromisso entre desempenho
-e robustez \cite{garcia1982internal, raffo_tcpi_imc}. Especifica-se que a malha fechada se
-comporte como primeira ordem com constante de tempo $\lambda$, o mais lento que se deseja
-exigir dela, e a especificação é filtrada por $1/(\lambda s + 1)$, que torna o ajuste
-robusto. O cancelamento do polo da planta e a solução para o controlador resultam, para o
-PI, em
-\begin{equation}\label{eq:pi_imc}
-K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
-\qquad
-T_i = \tau,
-\end{equation}
-em que $\tau$ e $K$ são a constante de tempo e o ganho da planta e $\theta_a$ o atraso.
-No método \cite{raffo_tcpi_imc}, o controle
-clássico realimenta apenas a saída medida, enquanto o controle por modelo interno
-compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, e o controlador contém
-a inversa da parte invertível do modelo e um filtro $F$ que torna o ajuste robusto, neste
-trabalho de primeira ordem, com constante de tempo $\lambda$.
-
-A \textbf{malha escrava}, de corrente, atua sobre a dinâmica identificada no ensaio de
-tração de corrente, apresentada no Capítulo~\ref{chap:resultados}. Como a curva estática
-não é uma reta -- o ganho do platô cresce de $82$ a $126$ A/u --, emprega-se para o
-projeto o ganho local, a
-inclinação dessa curva no ponto de operação, e não a média. Ela é ajustada
-por uma quadrática sobre os dados da descida, $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 +
-175{,}6\,u - 5{,}76$ (o script da simulação, listado no Apêndice A.3, ajusta
-e imprime esses coeficientes), cuja derivada no ponto nominal, o comando de $105^\circ$
-($u = 0{,}118$), vale $153$ A/u. Com a escolha $\lambda_2 = \tau = 0{,}18$ s, que fecha a
-malha tão rápido quanto a dinâmica permite, a Equação \eqref{eq:pi_imc} fornece $T_{i2} =
-0{,}18$ s e $K_{p2} = 0{,}18/(153 \times 0{,}18) \approx 6{,}5\times10^{-3}$ u/A.
-A \textbf{malha
-mestra}, de torque, vê uma planta composta pela escrava fechada seguida da conversão do
-estimador, cujo ganho depende do ponto de operação. Dois cuidados são próprios da
-cascata, sendo o primeiro a separação de velocidades, pois a regra da estrutura manda que
-o mestre seja de três a dez vezes mais lento que a escrava \cite{raffo_tcpi_cascata},
-para que a escrava lhe pareça instantânea, e adota-se $\lambda_1 = 1{,}1$ s, seis vezes
-$\lambda_2$. O segundo cuidado é a variação do ganho com o comando, tratada por
-\textbf{ganho programado}, na qual o ganho proporcional do mestre é atualizado com o
-comando vigente,
-$K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$, o que lineariza o caminho da malha externa
-ao longo da faixa de operação. No ponto nominal, $K_{p1} = 0{,}18 \times 0{,}118 /
-(0{,}028 \times 1{,}1) \approx 0{,}70$ A/(N$\cdot$m), e
-$T_{i1} = 0{,}18$ s.
-
-As duas malhas, cada uma com sua planta, seu controlador e seus ganhos, consolidam-se na
-Tabela~\ref{tab:malhas}. Os demais elementos da estrutura -- o \emph{feedforward}, o seletor
-de aderência, os limites, o anti-windup, o estimador e as rampas -- não são
-controladores, mas as proteções e as conversões que cercam os dois.
-
-\begin{table}[htb]
-\centering
-\caption{As duas malhas da cascata e seus elementos de projeto.}
-\label{tab:malhas}
-\small
-\begin{tabular}{l c c}
-\hline
- & Malha interna (escrava) & Malha externa (mestra) \\
-\hline
-Variável controlada & Corrente $I$ & Torque estimado $\hat{T}$ \\
-Variável manipulada & Comando $u$ & Referência de corrente \\
-Planta & $G_2(s)$, identificada na Seção~\ref{sec:resdinamica} & Escrava fechada + estimador \\
-Controlador & PI & PI com ganho programado \\
-Ajuste (IMC) & $\lambda_2 = 0{,}18$ s & $\lambda_1 = 1{,}1$ s \\
-Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$ \\
- & $T_{i2} = 0{,}18$ s & $K_{p1} \approx 0{,}70$ A/(N$\cdot$m), $T_{i1} = 0{,}18$ s \\
-\hline
-\end{tabular}
-\end{table}
 
 \subsection{A implementação digital}
 \label{sec:implementacao}
@@ -794,11 +680,11 @@ antes de o comando seguir à planta.
 Elemento & Localização no script \\
 \hline
 Constantes do projeto ($\lambda$, $T_s$, limites, rampas, filtro) & linhas 49--62 \\
-Corrente de perdas $I_0(u)$ e comando equivalente & linhas 108 e 150--160 \\
+Corrente de perdas $I_0(u)$ e comando equivalente & linhas 108--113 e 150--157 \\
 Ganhos IMC ($K_{p2}$ e $K_{p1}$ programado) & linhas 175--177 \\
-Estimador de torque, com teto e filtro & linhas 212--217 \\
-Seletor de aderência e rampa da referência & linhas 219--223 \\
-\emph{Feedforward} de corrente e caminho direto & linhas 229--235 \\
+Estimador de torque, com teto e filtro & linhas 213--217 \\
+Seletor de aderência e rampa da referência & linhas 220--223 \\
+\emph{Feedforward} de corrente e caminho direto & linhas 230--236 \\
 PI escravo, com anti-windup por clamping & linhas 238--248 \\
 Limite do comando à região de aderência & linhas 241 e 56--57 \\
 \hline
@@ -820,7 +706,7 @@ Duas escolhas de implementação condicionam o desempenho, e a primeira delas é
 esperada, a inversa da curva fornece o comando equivalente $u_\mathrm{ff}$, e o PI escravo
 atua apenas sobre o desvio. Sem esse pré-posicionamento, o PI precisaria acumular
 integral para segurar qualquer comando diferente de zero, e o transiente destruiria o
-estimador, como revelou a simulação. A segunda é o anti-\emph{windup} por \emph{clamping} (linhas 244--246 do script A.3),
+estimador, como revelou a simulação. A segunda é o anti-\emph{windup} por \emph{clamping} (linhas 243--245 do script A.3),
 o condicionamento da ação integral descrito na Seção~\ref{sec:protecoes}, cuja alternativa
 mais simples, a integração condicional, travou o sistema em saturação nas simulações
 iniciais.

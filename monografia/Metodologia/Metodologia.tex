@@ -2,14 +2,9 @@
 \label{chap:metodologia}
 
 Este capítulo descreve os métodos experimentais empregados na caracterização do
-sistema de propulsão do automodelo. O ensaio em bancada valida os instrumentos, o
-sensor de corrente ACS758ECB-200B e a balança de gancho. O ensaio em vazio mede a corrente consumida
-pelo conjunto sem carga mecânica, enquanto o ensaio de tração
-de corrente versus força relaciona, degrau a degrau, a corrente à força de
-tração medida pela balança. Para cada escolha, indicam-se os critérios utilizados, as alternativas
-consideradas e as escolhas definidas. O capítulo abre com o método de ajuste das
+sistema de propulsão do automodelo. O capítulo incia com o método de ajuste das
 retas comum a todos os ensaios, segue pela cadeia de aquisição, pelo teste em
-bancada e pelos ensaios com o veículo, e fecha com o orçamento de incertezas.
+bancada e pelos ensaios com o veículo e finaliza com o orçamento de incertezas.
 
 \section{O Processamento dos Dados e Ajuste das Retas}
 \label{sec:processamento}
@@ -25,10 +20,12 @@ b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
 \qquad
 a = \bar{y} - b\,\bar{x},
 \end{equation}
-em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. A função
-\texttt{minimos\_quadrados} do script \texttt{analise\_estatica.py}, do repositório do
-trabalho (linhas 53--60), traduz a Equação~\eqref{eq:mq} literalmente e devolve os dois
-coeficientes junto com o coeficiente de determinação. Para a reta forçada pela origem,
+em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. 
+
+A função
+\texttt{minimos\_quadrados} do script \texttt{analise\_estatica.py} (linhas 53--60), 
+implementa a Equação~\eqref{eq:mq} retornando os dois
+coeficientes e o indice de determinação. Para a reta forçada pela origem,
 $y = g\,x$, minimiza-se a mesma soma apenas em $g$, o que resulta em
 \begin{equation}\label{eq:mq_origem}
 g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
@@ -60,6 +57,9 @@ controle e produz a
 figura de desempenho. A divisão segue os modelos que o controlador consome, o modelo
 estático construído pelo primeiro script a partir de dois ensaios e o modelo dinâmico
 identificado pelo segundo a partir do ensaio de tração de corrente.
+
+(ORDEM DA EXPLICAÇÃO NAO FAZ SENTIDO, TEXTO GRNADE E CONFUSO, EXPLIQUE MELHOR OS DOIS SCRIPTS, SEUS OBJETIVOS)
+
 
 \section{Aquisição e registro de dados}
 \label{sec:registro}
@@ -480,20 +480,18 @@ sobre as dez bordas.
 A malha projetada no Capítulo~\ref{chap:descricaoprocesso} é implementada como um
 programa que executa um passo por amostra de $10$ ms, e o fundamento da discretização está
 na Seção~\ref{sec:implementacao}. O script da simulação (Apêndice A.3) é a versão de
-referência dessa implementação, e cada elemento da malha é apresentado a seguir na ordem
-em que executa a cada amostra, com o fluxograma do seu código, as constantes do projeto e
-as equações que traduz.
+referência dessa implementação, e cada elemento é apresentado a seguir na ordem em que
+executa, com o fluxograma do seu código e as particularidades que só o código revela,
+remetendo ao Capítulo~\ref{chap:descricaoprocesso} para a teoria de cada bloco.
 
 \subsection{O Estimador de Torque}
 \label{sec:codeestimador}
 
-A cada amostra, a corrente lida alimenta o cálculo da corrente de perdas $I_0(u)$, com o
-deslocamento de perturbação descontado, e a estimativa bruta segue a
-Equação~\eqref{eq:estimador_proposta}, $\hat{T} = K_T\,(I - I_0(u))/u$. O valor é limitado
-à faixa validada, de $0$ a $3{,}35$ N$\cdot$m, e filtrado por uma recursão de primeira
-ordem com constante de tempo $0{,}6$ s, que rejeita os transientes em que corrente e
-comando se desbalanceiam sem atrasar a malha. A Figura~\ref{fig:fluxo_estimador}
-apresenta o fluxograma do bloco.
+O estimador implementa a Equação~\eqref{eq:estimador_proposta} com as salvaguardas
+projetadas na Seção~\ref{sec:inferencial}, e o código registra dois cuidados que a
+descrição contínua não carrega, o comando efetivo protegido da zona morta, que guarda a
+divisão, e o deslocamento de perturbação descontado junto às perdas. A
+Figura~\ref{fig:fluxo_estimador} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering
@@ -507,12 +505,11 @@ limite à faixa validada e filtro de primeira ordem.}
 \subsection{O Seletor e a Rampa da Referência}
 \label{sec:codeseletor}
 
-A referência pedida é cortada no limiar de aderência pela
-Equação~\eqref{eq:seletor}, e a referência efetiva assim obtida alimenta dois caminhos. O
-\emph{feedforward} toma a referência antes da rampa, pois deve antecipar o comando, e o
-mestre recebe a referência rampada a $0{,}6$ N$\cdot$m/s, o que evita que degraus grandes
-carreguem o seu integrador. A Figura~\ref{fig:fluxo_seletor} apresenta o fluxograma do
-bloco, com a bifurcação.
+O seletor implementa a Equação~\eqref{eq:seletor}, e o código faz a distinção que a
+descrição contínua não carrega, pois a referência efetiva alimenta o \emph{feedforward}
+antes da rampa e o mestre depois dela, avançando um passo de $0{,}6$ N$\cdot$m/s por
+amostra, conforme a Seção~\ref{sec:implementacao}. A Figura~\ref{fig:fluxo_seletor}
+apresenta o fluxograma do bloco, com a bifurcação.
 
 \begin{figure}[htb]
 \centering
@@ -526,11 +523,11 @@ bloco, com a bifurcação.
 \subsection{O Controlador Mestre}
 \label{sec:codemestre}
 
-O mestre compara a referência rampada ao torque estimado e emprega a lei PI com ganho
-programado, $K_{p1}(u) = \lambda_2\,u/(K_T\,\lambda_1)$, que atualiza o ganho com o comando
-vigente e lineariza o caminho da malha externa. O integrador acumula o erro apenas quando
-o escravo não satura, pois, do contrário, a saturação do comando carregaria integral
-espúria para a malha de torque. A Figura~\ref{fig:fluxo_mestre} apresenta o fluxograma do bloco.
+O mestre executa a lei PI com ganho programado da sintonia
+(Seção~\ref{sec:projeto_controladores} do Capítulo~\ref{chap:resultados}), e o código
+registra o cuidado de o integrador acumular apenas quando o escravo não satura, pois a
+saturação do comando carregaria integral espúria para a malha de torque. A
+Figura~\ref{fig:fluxo_mestre} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering
@@ -544,13 +541,11 @@ programado e integrador condicionado à não saturação do escravo.}
 \subsection{O Feedforward e o Caminho Direto}
 \label{sec:codefeedforward}
 
-O \emph{feedforward} converte a referência efetiva na corrente esperada pela
-Equação~\eqref{eq:iff}, $I_{\mathrm{ff}} = I_0(u) + u\,T_{\mathrm{ref,ef}}/K_T$, e o
-caminho direto obtém o comando equivalente $u_{\mathrm{ff}}$, que é rampado com constante
-própria de $0{,}05$ u/s. O somador forma a referência da malha interna, $I_{\mathrm{ref}} =
-I_{\mathrm{ff}} + \Delta I$, e o PI escravo atua apenas sobre o desvio, uma vez que o
-pré-posicionamento já entrega a maior parte do comando. A
-Figura~\ref{fig:fluxo_feedforward} apresenta o fluxograma do bloco.
+O \emph{feedforward} implementa a Equação~\eqref{eq:iff}, e o caminho direto obtém o
+comando equivalente com a rampa própria, um passo de $0{,}05$ u/s por amostra. O somador
+forma a referência da malha interna com a correção do mestre, e o comando equivalente
+segue ao escravo como pré-posicionamento, de modo que o PI escravo atua apenas sobre o
+desvio. A Figura~\ref{fig:fluxo_feedforward} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering
@@ -564,12 +559,11 @@ equivalente rampado e soma com a correção do mestre.}
 \subsection{O Controlador Escravo e o Clamping}
 \label{sec:codeescravo}
 
-O escravo compara a referência de corrente à medida e emprega a lei PI, com o comando
-linear passando pela saturação nos limites $u_{\min}$ e $u_{\max}$ da região validada. Quando
-a saída satura, o \emph{clamping} ajusta o integrador para que a saída fique exatamente no
-limite, e qualquer reversão do erro tira a saída da saturação imediatamente, tratamento
-descrito na Seção~\ref{sec:protecoes}. Sem saturação, o integrador acumula normalmente e o
-mestre acumula junto. A Figura~\ref{fig:fluxo_escravo} apresenta o fluxograma do bloco.
+O escravo executa o PI com o anti-\emph{windup} por \emph{clamping} da
+Seção~\ref{sec:protecoes}, saturando o comando linear nos limites da região validada, e o
+código fecha o tratamento na mesma amostra, ajustando o integrador para a saída ficar
+exatamente no limite quando satura e acumulando escravo e mestre juntos quando não. A
+Figura~\ref{fig:fluxo_escravo} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering

@@ -417,6 +417,55 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   Antes de cada rodada, comparar o arquivo com o espelho git (`diff`) para detectar
   overwrite; ao final, avisá-la para fechar e reabrir o arquivo antes de continuar.
 
+## 15e. Lições da rodada de diagramas, sintonia e auditoria (29/10, segunda revisão)
+
+- **Diagramas de blocos seguem o padrão dos slides de TCPI (Raffo).** Perturbações
+  entram DE CIMA, através do seu bloco ($L$ desce por $G_L$ e soma com + no caminho);
+  instrumentos de realimentação ($G_{m1}$, $G_{m2}$) ficam NA LINHA da realimentação, com o
+  sinal entrando por baixo no somador (−); sinais de +/− escritos FORA do círculo, junto
+  às setas; referência passa por pre-filtro ($K_{n1}$) antes do primeiro somador. Figuras
+  usam os SINAIS DO PROJETO ($T_{\mathrm{ref}}$, $I$, $\hat{T}$), nunca versões genéricas
+  ($R$, $Y_1$, $Y_2$) — se a teoria precisa de letras genéricas, o texto amarra uma a uma
+  às do projeto.
+- **Figuras criadas pelo assistente são descartáveis sem cerimônia.** A autora manda
+  tirar e se tira (seletor, cascata genérica, estimador, anti-windup saíram do Cap. 2),
+  junto com a frase-ponte que só existia para apresentá-las. Equação e texto ficam de pé
+  sozinhos.
+- **Sintonia com números mora no Capítulo 4, passo a passo.** Proposta (Cap. 2) diz o quê
+  e para quê, SEM valores identificados, ganhos ou parâmetros ajustados. A sintonia segue
+  o método das aulas (IMC), em passos numerados (1. modelo da planta → 2. especificação da
+  malha fechada → 3. filtro de robustez → 4. controlador equivalente → 5. e 6. ajuste de
+  cada malha), definindo TODA variável na primeira vez ($K$, $\tau$, $\theta_a$, $\lambda$,
+  $F$, $\tilde{G}$, $K_p$, $T_i$). A seção inteira migra com seu label, e referências
+  externas continuam resolvendo.
+- **Código e texto se auditam por diff, não por memória.** Números de linha citados no
+  texto são conferidos com `sed -n 'Np'` no script na véspera da entrega — um deslocamento
+  de uma linha (comentário acrescentado) já quebra a referência. Listings do apêndice
+  levam `numbers=left` para o leitor conferir.
+- **Fluxograma é fiel ao código linha a linha, ou não entra.** Contra o código real:
+  rampa é UM passo por amostra (sem laço "até atingir o alvo"); $u_{\mathrm{ff}}$ segue ao
+  escravo como base do PI, não entra no somador da referência; o comando efetivo
+  $\max(u, u_{\min})$ protege a divisão na zona morta; o losango do estimador tem o
+  sim/não no sentido certo (sim = dentro da faixa). Boas práticas ISO 5807: terminador
+  arredondado, paralelogramo de E/S, losango de decisão com pergunta e rótulos sim/não,
+  fluxo vertical.
+- **Números do código e do texto não se contradizem, nunca.** Achado grave da auditoria:
+  a Conclusão dizia que o limiar do seletor era 3,9 N·m; o código fixa 3,3 N·m (o 3,9 é o
+  torque máximo medido). Quando código e texto divergem, o código manda e o texto explica
+  a diferença (limiar com margem abaixo do máximo).
+- **Comentários de revisão entre parênteses não usam `_` solto nem acento solto em modo
+  matemático** — quebram a compilação silenciosamente (nonstopmode segue com "Missing $").
+  Escrever comentários em texto puro: "K_T e G_F" em vez de $K_T$.
+- **Auditoria de redundância é por agente único, com mapa de propriedade.** Um mesmo
+  agente lê todos os capítulos e aplica: cada fato tem um dono (teoria Cap 2, método Cap 3,
+  número Cap 4, interpretação Cap 5); frase quase idêntica em dois capítulos = o não-dono
+  vira remissão; o mesmo número fora de tabela/figura só aparece no dono e onde é
+  operando de outro cálculo.
+- **Edição concorrente da autora tem protocolo.** Antes de cada rodada, `diff` contra o
+  espelho git detecta overwrite; ao final, instruir: fechar o arquivo no editor sem salvar
+  e reabrir. As edições dela valem mais — comentários novos que chegam no meio da rodada
+  são respondidos sobre a versão dela, nunca revertidos.
+
 ## 15c. Vícios do assistente identificados nas correções da autora (28/10)
 
 Lições extraídas do diff entre o texto gerado pelo assistente e as correções manuais da

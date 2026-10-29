@@ -343,8 +343,8 @@ comando, e a subida é rápida uma vez iniciada.}
 
 A Figura \ref{fig:respostas} apresenta as dez
 respostas alinhadas e normalizadas, com a média e o ajuste sobre ela, sobre os comandos de
-$100^\circ$ a $109^\circ$, pois bordas acima de $110^\circ$ nascem contaminadas pela
-patinagem.
+$100^\circ$ a $109^\circ$, os únicos sem contaminação de patinagem, conforme o critério da
+Seção~\ref{sec:tracaocorrente}.
 
 \begin{figure}[htb]
 \centering
@@ -383,3 +383,97 @@ Capítulo~\ref{chap:descricaoprocesso}, pois a planta elétrica não limita a ve
 controlador. A consequência prática se manifesta também no protocolo da força, já que,
 decorridos $7$ s do comando, a corrente está em regime há pelo menos $5$ s, margem
 ampla sobre a constante de tempo de $0{,}18$ s da planta.
+
+\section{A Sintonia dos Controladores}
+\label{sec:projeto_controladores}
+
+A sintonia segue o método de modelo interno, uma síntese direta na qual a lei de controle
+deriva do modelo do processo, com o parâmetro de ajuste explicitando o compromisso entre
+desempenho e robustez \cite{garcia1982internal, raffo_tcpi_imc}. O método parte do modelo
+da planta, especifica o comportamento desejado da malha fechada e resolve o controlador
+que o entrega, e os passos abaixo definem cada variável empregada.
+
+\begin{enumerate}
+    \item \textbf{Modelo da planta.} Cada planta é representada por um modelo de primeira
+    ordem com atraso,
+    \[
+    \tilde{G}(s) = \frac{K}{\tau\,s + 1}\,e^{-\theta_a s},
+    \]
+    em que $K$ é o ganho estático da planta, a variação da saída por unidade de entrada em
+    regime, $\tau$ é a sua constante de tempo, o tempo para atingir $63{,}2\%$ do valor
+    final após um degrau, e $\theta_a$ é o atraso aparente. A malha escrava emprega a
+    dinâmica identificada no ensaio de tração de corrente
+    (Seção~\ref{sec:resdinamica}), $G_2(s) = 111/(0{,}18\,s + 1)$, com atraso
+    desprezível, $\theta_a \approx 0$, pois inferior a $0{,}1$ s. Como a curva estática
+    não é uma reta, sendo o ganho do platô crescente de $82$ a $126$ A/u ao longo da
+    região, emprega-se para o projeto o ganho local, a inclinação dessa curva no ponto de
+    operação, e não a média. Ele é ajustado por uma quadrática sobre os dados da descida,
+    $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 + 175{,}6\,u - 5{,}76$ (o script da simulação,
+    listado no Apêndice A.3, ajusta e imprime esses coeficientes), cuja derivada no ponto
+    nominal, o comando de $105^\circ$ ($u = 0{,}118$), vale $K = 153$ A/u.
+    \item \textbf{Especificação da malha fechada.} Especifica-se que a malha fechada se
+    comporte como sistema de primeira ordem,
+    \[
+    \frac{Y}{R} = \frac{1}{\lambda\,s + 1},
+    \]
+    em que $\lambda$ é a constante de tempo que se deseja exigir dela, o mais lento que se
+    aceita entre desempenho e robustez, e $R$ e $Y$ são a referência e a saída da malha
+    considerada.
+    \item \textbf{Filtro de robustez.} A especificação é filtrada por
+    \[
+    F(s) = \frac{1}{\lambda\,s + 1},
+    \]
+    que torna o ajuste robusto a incertezas do modelo. No método \cite{raffo_tcpi_imc}, o
+    controle clássico realimenta apenas a saída medida, ao passo que o controle por
+    modelo interno compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, e
+    o controlador contém a inversa da parte invertível do modelo e o filtro $F$.
+    \item \textbf{Controlador equivalente.} O cancelamento do polo da planta e a solução
+    para o controlador resultam, para o PI da Equação~\eqref{eq:pi},
+    \begin{equation}\label{eq:pi_imc}
+    K_p = \frac{\tau}{K\,(\lambda + \theta_a)},
+    \qquad
+    T_i = \tau,
+    \end{equation}
+    em que $K_p$ é o ganho proporcional do controlador e $T_i$ o seu tempo integral.
+    \item \textbf{Ajuste da malha escrava.} Com a escolha $\lambda_2 = \tau = 0{,}18$ s,
+    que fecha a malha tão rápido quanto a dinâmica permite, e $\theta_a \approx 0$, a
+    Equação~\eqref{eq:pi_imc} fornece $T_{i2} = 0{,}18$ s e $K_{p2} = 0{,}18/(153
+    \times 0{,}18) \approx 6{,}5\times10^{-3}$ u/A.
+    \item \textbf{Ajuste da malha mestra.} O mestre vê uma planta composta pela escrava
+    fechada seguida da conversão do estimador, cujo ganho depende do ponto de operação.
+    O primeiro cuidado é a separação de velocidades, pois a regra da cascata manda que o
+    mestre seja de três a dez vezes mais lento que a escrava
+    \cite{raffo_tcpi_cascata}, para que a escrava lhe pareça instantânea, e adota-se
+    $\lambda_1 = 1{,}1$ s, seis vezes $\lambda_2$. O segundo é a variação do ganho com o
+    comando, tratada por \textbf{ganho programado}, na qual o ganho proporcional do mestre
+    é atualizado com o comando vigente,
+    $K_{p1}(u) = \lambda_2\,u / (K_T\,\lambda_1)$, o que lineariza o caminho da malha
+    externa ao longo da faixa de operação. No ponto nominal, $K_{p1} = 0{,}18 \times
+    0{,}118 / (0{,}028 \times 1{,}1) \approx 0{,}70$ A/(N$\cdot$m), e
+    $T_{i1} = 0{,}18$ s.
+\end{enumerate}
+
+As duas malhas, cada uma com sua planta, seu controlador e seus ganhos, consolidam-se na
+Tabela~\ref{tab:malhas}. Os demais elementos da estrutura, o \emph{feedforward}, o seletor
+de aderência, os limites, o anti-windup, o estimador e as rampas, não são controladores,
+mas as proteções e as conversões que cercam os dois.
+
+\begin{table}[htb]
+\centering
+\caption{As duas malhas da cascata e seus elementos de sintonia.}
+\label{tab:malhas}
+\small
+\begin{tabular}{l c c}
+\hline
+ & Malha interna (escrava) & Malha externa (mestra) \\
+\hline
+Variável controlada & Corrente $I$ & Torque estimado $\hat{T}$ \\
+Variável manipulada & Comando $u$ & Referência de corrente \\
+Planta & $G_2(s)$, identificada na Seção~\ref{sec:resdinamica} & Escrava fechada + estimador \\
+Controlador & PI & PI com ganho programado \\
+Ajuste (IMC) & $\lambda_2 = 0{,}18$ s & $\lambda_1 = 1{,}1$ s \\
+Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K_T \lambda_1)$ \\
+ & $T_{i2} = 0{,}18$ s & $K_{p1} \approx 0{,}70$ A/(N$\cdot$m), $T_{i1} = 0{,}18$ s \\
+\hline
+\end{tabular}
+\end{table}
