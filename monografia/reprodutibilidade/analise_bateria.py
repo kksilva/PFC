@@ -147,71 +147,28 @@ def main():
 
     # --- 5) figura ----------------------------------------------------------
     plt.rcParams.update({
-        "font.size": 10, "axes.grid": True, "grid.alpha": 0.3,
-        "font.family": "serif",
+        "font.size": 11, "axes.grid": True, "grid.alpha": 0.3,
+        "font.family": "serif", "axes.titlesize": 12,
     })
 
-    fig, eixos = plt.subplots(
-        2, 2, figsize=(7.0, 5.6),
-        gridspec_kw={"height_ratios": [1.1, 1.0], "hspace": 0.5, "wspace": 0.32},
-    )
-
-    # (a) mediana de corrente por degrau
-    ax = eixos[0, 0]
+    fig, ax = plt.subplots(figsize=(7.4, 4.6))
+    fig.suptitle("Mediana da corrente por degrau: bateria em bom estado vs bateria degradada",
+                 fontsize=13)
     ax.plot([b["angulo"] for b in boa], [b["mediana"] for b in boa],
-            "o-", color="tab:blue", label="Bateria boa (subida)")
+            "-", color="tab:blue", lw=2, label="Bateria boa (subida)")
     ax.plot([b["angulo"] for b in ant_saudavel], [b["mediana"] for b in ant_saudavel],
-            "s-", color="tab:orange", label="Bateria antiga (descida, 1.a passagem)")
+            "-", color="tab:orange", lw=2, label="Bateria antiga (descida, 1.a passagem)")
     ax.plot(ant_colapso["angulo"], ant_colapso["mediana"], "v", color="tab:red",
-            markersize=9, label="Bateria antiga (retomadas, colapso)")
-    ax.annotate(f"{ant_colapso['mediana']:.0f} A ({100*ant_colapso['frac_zero']:.0f} % zero)",
+            markersize=10, label="Bateria antiga (retomadas, colapso)")
+    ax.annotate(f"{ant_colapso['mediana']:.0f} A ({100*ant_colapso['frac_zero']:.0f} % em zero)",
                 xy=(ant_colapso["angulo"], ant_colapso["mediana"]),
-                xytext=(ant_colapso["angulo"] + 2, ant_colapso["mediana"] - 4),
-                fontsize=8, arrowprops=dict(arrowstyle="->", lw=0.8))
+                xytext=(ant_colapso["angulo"] - 3, ant_colapso["mediana"] - 6),
+                fontsize=10, ha="right", arrowprops=dict(arrowstyle="->", lw=0.9))
     ax.set_xlabel("Degrau de comando (graus)")
     ax.set_ylabel("Mediana da corrente (A)")
-    ax.set_title("(a) Corrente por degrau", fontsize=10)
     ax.set_ylim(0, 33)
-    rotulos, ident = ax.get_legend_handles_labels()
-
-    # (b) forma de onda do degrau colapsado (100 Hz)
-    ax = eixos[0, 1]
-    t = ant_colapso["t_degrau"]
-    i = np.arange(len(t)) / TAXA_HZ          # tempo dentro do bloco (3 retomadas)
-    ax.plot(i, ant_colapso["corrente"], color="tab:red", lw=0.6)
-    for k in range(1, 3):                     # separacao visual das 3 tentativas
-        ax.axvline(15 * k, color="k", ls="--", lw=0.8)
-    for k, centro in enumerate((7.5, 22.5, 37.5)):
-        ax.text(centro, 35, f"retomada {k + 1}", fontsize=7.5, ha="center")
-    ax.set_xlabel("Tempo no bloco (s)")
-    ax.set_ylabel("Corrente (A)")
-    ax.set_title("(b) Bateria antiga, degrau de 114 gr: ciclos de corte", fontsize=9)
-    ax.set_ylim(-2, 38)
-
-    # (c) forma de onda saudavel de referencia (subida, 113 graus)
-    ax = eixos[1, 0]
-    ref_113 = boa_por_angulo[113.0]
-    ax.plot(ref_113["t_degrau"], ref_113["corrente"], color="tab:blue", lw=0.6)
-    ax.set_xlabel("Tempo no degrau (s)")
-    ax.set_ylabel("Corrente (A)")
-    ax.set_title(f"(c) Bateria boa, degrau de 113 gr\nplato estavel (~{ref_113['mediana']:.0f} A)",
-                 fontsize=9)
-    ax.set_ylim(-2, 38)
-
-    # (d) detalhe de um ciclo de corte (zoom na primeira retomada)
-    ax = eixos[1, 1]
-    mascara = i <= 16
-    ax.plot(i[mascara], ant_colapso["corrente"][mascara], color="tab:red", lw=0.8)
-    ax.axhline(LIMIAR_CORTE_A, color="k", ls=":", lw=0.8)
-    ax.text(10.2, 7.5, "corte do ESC (subtensao)", fontsize=7.5)
-    ax.set_xlabel("Tempo no bloco (s)")
-    ax.set_ylabel("Corrente (A)")
-    ax.set_title("(d) Bateria antiga: ligado ->\ncorte -> religamento", fontsize=9)
-    ax.set_ylim(-2, 38)
-
-    fig.align_ylabels(eixos)
-    fig.legend(rotulos, ident, loc="lower center", ncol=3, fontsize=7.5,
-               frameon=False, bbox_to_anchor=(0.5, -0.02))
+    ax.legend(fontsize=10.5, loc="upper left")
+    fig.tight_layout(rect=(0, 0, 1, 0.94))
     fig.savefig(PASTA_FIGURAS / "bateria_sag.png", dpi=300, bbox_inches="tight")
     plt.close(fig)
     print(f"\nFigura salva em {PASTA_FIGURAS / 'bateria_sag.png'}")

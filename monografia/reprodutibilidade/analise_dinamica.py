@@ -17,7 +17,7 @@ Uso:  python3 analise_dinamica.py
 # 3) Ancoragem eletrica de cada borda: repouso, plato e inicio eletrico, mais a resposta normalizada (linhas 72-90)
 # 4) Ajuste da constante de tempo tau (funcoes e bloco em main) (linhas 92-119)
 # 5) main: ganhos de plato de cada borda e ganho medio (linhas 121-127)
-# 6) Figuras: blocos_degrau.png (janelas brutas com media movel) e resposta_degrau.png (respostas alinhadas com ajuste de 1a ordem) (linhas 130-170)
+# 6) Figuras: blocos_degrau.png (janelas brutas), blocos_degrau_<angulo>.png (janelas diversificadas) e resposta_degrau.png (linhas 130-192)
 # ---------------------------------------------------------------------------
 
 import csv
@@ -128,42 +128,65 @@ def main():
     print(f"ganho medio das dez bordas = {statistics.mean(ganhos):.1f} A/u")
 
     # figura 1: janelas brutas de dois degraus, com media movel
-    plt.rcParams.update({"font.size": 10, "axes.grid": True, "grid.alpha": 0.3,
-                         "axes.axisbelow": True})
-    fig, eixos = plt.subplots(1, 2, figsize=(9.0, 3.4), sharey=True)
+    plt.rcParams.update({"font.size": 11, "axes.grid": True, "grid.alpha": 0.3,
+                         "axes.axisbelow": True, "axes.titlesize": 12})
+    fig, eixos = plt.subplots(1, 2, figsize=(9.4, 3.8), sharey=True)
     for eixo, bloco in zip(eixos, (usados[0], usados[6])):
         correntes, _, _, _ = iniciar_em(bloco)
         tempo = [i / AMOSTRAS_POR_SEGUNDO for i in range(len(correntes))]
-        eixo.plot(tempo, correntes, color="0.75", lw=0.8, label="Corrente bruta")
-        eixo.plot(tempo, media_movel(correntes, 50), color="#b2182b", lw=1.4,
+        eixo.plot(tempo, correntes, color="0.75", lw=0.8, label="Corrente bruta (100 Hz)")
+        eixo.plot(tempo, media_movel(correntes, 50), color="#b2182b", lw=1.6,
                   label="Media movel (0,5 s)")
         eixo.set_xlabel("Tempo desde o inicio da janela (s)")
-        eixo.set_title(f"Degrau {int(bloco[0][1])} gr", fontsize=10)
+        eixo.set_title(f"Degrau de comando {int(bloco[0][1])} gr", fontsize=12)
         eixo.set_xlim(0, 8)
     eixos[0].set_ylabel("Corrente (A)")
-    eixos[0].legend(fontsize=8)
-    fig.tight_layout()
-    fig.savefig(PASTA_FIGURAS / "blocos_degrau.png", dpi=200)
+    eixos[0].legend(fontsize=10)
+    fig.suptitle("Janelas brutas de corrente nos degraus de comando (ensaio a 100 Hz)",
+                 fontsize=13)
+    fig.tight_layout(rect=(0, 0, 1, 0.93))
+    fig.savefig(PASTA_FIGURAS / "blocos_degrau.png", dpi=300)
     plt.close(fig)
 
     # figura 2: respostas alinhadas, media e ajuste de primeira ordem
-    fig, eixo = plt.subplots(figsize=(6.2, 4.2))
+    fig, eixo = plt.subplots(figsize=(6.4, 4.4))
     tempo = [i / AMOSTRAS_POR_SEGUNDO for i in range(n)]
     for normalizada, _, _ in respostas:
         eixo.plot(tempo[:len(normalizada)], normalizada, color="0.8", lw=0.9)
     eixo.plot(tempo, media, color="#2166ac", lw=2.0, label="Media das dez bordas")
     ajuste = [1 - math.exp(-t / tau) for t in tempo]
-    eixo.plot(tempo, ajuste, "--", color="#b2182b", lw=1.6,
-              label=f"Ajuste $1-e^{{-t/{tau:.2f}}}$")
+    eixo.plot(tempo, ajuste, "--", color="#b2182b", lw=1.8,
+              label=f"Ajuste de 1.a ordem: $1-e^{{-t/{tau:.2f}}}$")
     eixo.plot(tau, 1 - math.exp(-1), "o", color="#b2182b")
     eixo.annotate("$\\tau$", (tau, 0.632), textcoords="offset points",
-                  xytext=(8, -4), fontsize=11)
+                  xytext=(8, -4), fontsize=12)
+    eixo.set_title("Resposta normalizada das dez bordas: media e ajuste de 1.a ordem")
     eixo.set_xlabel("Tempo desde o inicio eletrico (s)")
     eixo.set_ylabel("Resposta normalizada")
     eixo.set_xlim(0, 2.5)
-    eixo.legend(fontsize=9)
+    eixo.legend(fontsize=10.5)
     fig.tight_layout()
-    fig.savefig(PASTA_FIGURAS / "resposta_degrau.png", dpi=200)
+    # figuras 1b e 1c: janela bruta de um degrau no inicio e no fim da regiao
+    for indice in (3, 9):
+        bloco = usados[indice]
+        angulo = int(bloco[0][1])
+        correntes, _, _, _ = iniciar_em(bloco)
+        tempo = [i / AMOSTRAS_POR_SEGUNDO for i in range(len(correntes))]
+        fig, eixo = plt.subplots(figsize=(6.4, 3.6))
+        eixo.plot(tempo, correntes, color="0.75", lw=0.8, label="Corrente bruta (100 Hz)")
+        eixo.plot(tempo, media_movel(correntes, 50), color="#b2182b", lw=1.6,
+                  label="Media movel (0,5 s)")
+        eixo.set_xlabel("Tempo desde o inicio da janela (s)")
+        eixo.set_ylabel("Corrente (A)")
+        eixo.set_xlim(0, 8)
+        eixo.set_title(f"Janela bruta do degrau de comando {angulo} graus (ensaio a 100 Hz)",
+                       fontsize=12)
+        eixo.legend(fontsize=10)
+        fig.tight_layout()
+        fig.savefig(PASTA_FIGURAS / f"blocos_degrau_{angulo}.png", dpi=300)
+        plt.close(fig)
+
+    fig.savefig(PASTA_FIGURAS / "resposta_degrau.png", dpi=300)
     plt.close(fig)
     print(f"figuras salvas em {PASTA_FIGURAS}")
 

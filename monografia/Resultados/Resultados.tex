@@ -325,6 +325,31 @@ comando, e a subida é rápida uma vez iniciada.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
+As Figuras~\ref{fig:blocos_103} e~\ref{fig:blocos_109} repetem a leitura para os
+degraus de $103^\circ$ e $109^\circ$, no meio e no fim da região de aderência, e o mesmo
+padrão se confirma, repouso, subida rápida uma vez iniciada e platô estável.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/blocos_degrau_103.png}
+\caption{Janela bruta do degrau de comando $103^\circ$, com corrente bruta a $100$ Hz e
+média móvel: o repouso que precede o comando e o platô de regime.}
+\label{fig:blocos_103}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/blocos_degrau_109.png}
+\caption{Janela bruta do degrau de comando $109^\circ$, com corrente bruta a $100$ Hz e
+média móvel: o mesmo padrão no fim da região de aderência.}
+\label{fig:blocos_109}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Cada resposta é normalizada entre o seu nível de repouso e o seu platô,
+$(I - I_r)/(I_p - I_r)$, de modo que todas partem de zero e se acomodam em um, o que
+permite sobrepor degraus de correntes diferentes.
 A Figura \ref{fig:respostas} apresenta as dez
 respostas alinhadas e normalizadas, com a média e o ajuste sobre ela, sobre os comandos de
 $100^\circ$ a $109^\circ$, os únicos sem contaminação de patinagem, conforme o critério da
@@ -353,7 +378,8 @@ para todos os comandos da região de aderência. A planta é, portanto,
 G_2(s) = \frac{111}{0{,}18\,s + 1},
 \end{equation}
 sem atraso apreciável, em que o ganho $111$ A/u é a média dos quocientes platô por comando
-das dez bordas, conforme o tratamento da Seção~\ref{sec:tracaocorrente}, e a resposta se
+das dez bordas, cada um como $13{,}31$ A em $105^\circ$ sobre $u = 0{,}118$, ou $113$ A/u,
+na faixa de $82$ a $126$ A/u, conforme o tratamento da Seção~\ref{sec:tracaocorrente}, e a resposta se
 assenta em cerca de quatro vezes $0{,}18$ s, pela regra usual
 de que uma primeira ordem se acomoda em quatro constantes de tempo. O valor é coerente com o
 esperado para a constante elétrica do caminho comando--corrente, pois, com a roda travada, a
@@ -381,21 +407,21 @@ sessão antiga, os degraus ainda executam, com medianas de $19$ a $28$ A, porém
 a $22\%$ de amostras nulas, sinal precoce da fraqueza da bateria. Nas retomadas do
 $114^\circ$, a mediana do bloco cai para $15{,}2$ A, $48\%$ abaixo dos $29{,}4$ A do
 mesmo degrau na sessão de referência, e $45\%$ das amostras permanecem em zero, com o
-motor, quando ligado, drenando mediana de $20{,}5$ A.
+motor, quando ligado, drenando mediana de $20{,}5$ A, como se vê na comparação por degrau
+da Figura~\ref{fig:bateria}.
 
 \begin{figure}[htb]
 \centering
-\includegraphics[width=0.95\textwidth]{Figuras/bateria_sag.png}
-\caption{Efeito da bateria nos ensaios: mediana de corrente por degrau na sessão de
-referência e na sessão antiga, forma de onda das retomadas de $114^\circ$ com os ciclos
-de corte, platô estável de $113^\circ$ na sessão de referência e detalhe de um ciclo
-ligado--corte--religamento.}
+\includegraphics[width=0.8\textwidth]{Figuras/bateria_sag.png}
+\caption{Mediana da corrente por degrau de comando: sessão de referência, com a bateria
+em bom estado, e sessão antiga, com a bateria degradada, destacando o colapso das
+retomadas de $114^\circ$.}
 \label{fig:bateria}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-O padrão das retomadas, forma de onda na Figura~\ref{fig:bateria}, é o ciclo de corte por
-subtensão, detectados quatro religamentos, com o motor ligado por cerca de $8$ s, cortado
+Nas retomadas, o padrão é o ciclo de corte por
+subtensão, com quatro religamentos detectados, com o motor ligado por cerca de $8$ s, cortado
 por cerca de $7$ s, até que a terceira retomada, após $0{,}1$ s, não sustenta a partida e
 a corrente permanece nula até o fim do bloco, a bateria sem carga suficiente para
 religar o ESC. O colapso é específico das retomadas, e não da sessão, pois degraus
@@ -433,8 +459,11 @@ que o entrega, e os passos abaixo definem cada variável empregada.
     não é uma reta, sendo o ganho do platô crescente de $82$ a $126$ A/u ao longo da
     região, emprega-se para o projeto o ganho local, a inclinação dessa curva no ponto de
     operação, e não a média. Ele é ajustado por uma quadrática sobre os dados da descida,
-    $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 + 175{,}6\,u - 5{,}76$ (o script da simulação,
-    listado no Apêndice A.3, ajusta e imprime esses coeficientes), cuja derivada no ponto
+    $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 + 175{,}6\,u - 5{,}76$, ajustada por mínimos
+    quadrados de segunda ordem sobre os pontos individuais das repetições da descida,
+    pares de comando normalizado e corrente de regime, pelo mesmo princípio da
+    Seção~\ref{sec:processamento} (o script da simulação, listado no Apêndice A.3, ajusta
+    e imprime esses coeficientes), cuja derivada no ponto
     nominal, o comando de $105^\circ$ ($u = 0{,}118$), vale $K = 153$ A/u.
     \item \textbf{Especificação da malha fechada.} Especifica-se que a malha fechada se
     comporte como sistema de primeira ordem,
