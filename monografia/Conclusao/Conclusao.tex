@@ -5,28 +5,29 @@
 
 Este trabalho caracterizou experimentalmente o sistema de propulsão de um automodelo
 elétrico 1/8, obtendo sua curva característica torque versus corrente por meio de um ensaio
-de tração estática de baixo custo, com automodelo ancorado e balança de mala como padrão de
+de tração estática de baixo custo, com automodelo ancorado e balança de gancho como padrão de
 força e sensor de efeito Hall no ramo de alimentação. O modelo de torque foi validado com
-coeficiente de determinação de $0{,}984$ na descida, com o ajuste direto
+coeficiente de determinação de $0{,}79$ na descida, com o ajuste direto
 $F = G_F\,(I - I_0(u))/u$ que dispensa o conhecimento da redução da transmissão,
 delimitado à região de
 aderência. A dinâmica entre o comando e a corrente foi identificada com constante de tempo de
-$1{,}8$ a $2{,}0$ s e atraso desprezível, em confronto com o \emph{prior} clássico do caminho
-indicando que a dinâmica é do ESC, não do enrolamento. Dois resultados estruturam as considerações que
-seguem: a resposta elétrica é rápida, e a aderência é a fronteira de tudo o que se pode controlar.
+$0{,}18$ s e atraso desprezível, em confronto com o \emph{prior} clássico do caminho
+indicando que a dinâmica é do ESC, não do enrolamento. As considerações que seguem se
+estruturam em dois resultados, a resposta elétrica rápida e a aderência como fronteira de
+tudo o que se pode controlar.
 
 \textbf{Aderência e stick-slip.} O fator de aderência aparente entre pneu e piso foi de
 aproximadamente $0{,}80$, tomado sobre o peso total do conjunto, e só é compatível com atrito
 seco mediante transferência de carga do eixo dianteiro para o traseiro sob tração. A aderência
 mostrou-se, além disso, uma condição de estado: na subida, com o pneu frio, o limite se
 manifestou como \emph{stick-slip}, oscilação de relaxamento com a força presa em cerca de
-$32$ N e a corrente oscilando entre repetições, com o tremor do conjunto observado
+$31$ N e a corrente oscilando entre repetições, com o tremor do conjunto observado
 diretamente em bancada; na descida, com o pneu aquecido, a roda travou de forma sustentada e
 a força atingiu $52$ N. A diferença sistemática entre os sentidos ($+7\%$ a $+45\%$ da região de
 aderência à fronteira da saturação) é compatível com duas contribuições não separadas neste trabalho, o
 aquecimento do pneu e o da bateria, e indica que a caracterização de um propulsor de
 tração deve especificar o histórico térmico do conjunto, não apenas sua massa. Para o
-controle, a conclusão é direta: o torque é controlável apenas dentro da região de aderência,
+controle, a conclusão é direta, pois o torque é controlável apenas dentro da região de aderência,
 e o limitador de um controlador deve respeitar o limiar observado, sob pena de comandar
 patinagem em vez de tração.
 

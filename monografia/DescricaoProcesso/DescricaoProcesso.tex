@@ -758,7 +758,7 @@ não é uma reta -- o ganho do platô cresce de $82$ a $126$ A/u --, emprega-se 
 projeto o ganho local, a
 inclinação dessa curva no ponto de operação, e não a média. Ela é ajustada
 por uma quadrática sobre os dados da descida, $I_{\mathrm{ss}}(u) = -96{,}4\,u^2 +
-175{,}6\,u - 5{,}76$ (o script da simulação, apresentado no repositório do trabalho, ajusta
+175{,}6\,u - 5{,}76$ (o script da simulação, listado no Apêndice A.3, ajusta
 e imprime esses coeficientes), cuja derivada no ponto nominal, o comando de $105^\circ$
 ($u = 0{,}118$), vale $153$ A/u. Com a escolha $\lambda_2 = \tau = 0{,}18$ s, que fecha a
 malha tão rápido quanto a dinâmica permite, a Equação \eqref{eq:pi_imc} fornece $T_{i2} =
@@ -825,8 +825,8 @@ I_1[k] = K_{p1}(u[k])\left(e_1[k] + \frac{T_s}{T_{i1}}\sum_j e_1[j]\right),
 com as somas dos erros substituídas, na prática, por acumuladores atualizados a cada
 amostra. O filtro do estimador e as rampas da pré-alimentação e da referência são
 recursões de primeira ordem idênticas, todas no mesmo relógio de $10$ ms. Cada elemento da
-malha corresponde a um bloco do script da simulação (apresentado no repositório do trabalho,
-A.3), que é a versão de referência da implementação, e o mapa entre elementos e linhas de
+malha corresponde a um bloco do script da simulação (Apêndice A.3), que é a versão de
+referência da implementação, e o mapa entre elementos e linhas de
 código consolida-se na Tabela \ref{tab:implementacao}. A
 Figura~\ref{fig:fluxo_digital} resume a ordem de execução dentro de cada amostra, na
 qual o estimador, o seletor, o mestre, o \emph{feedforward} e o escravo se sucedem

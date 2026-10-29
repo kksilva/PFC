@@ -48,13 +48,14 @@ e é calculado nas duas funções de ajuste (linhas 59 e 67).
 
 Os tratamentos foram implementados em scripts dedicados, que leem os arquivos de dados
 brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}. O script
-\texttt{analise\_estatica.py} lê a planilha de anotações do ensaio de tração de corrente
+\texttt{analise\_estatica.py} (Apêndice A.1) lê a planilha de anotações do ensaio de tração de corrente
 versus
 força e o registro do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
 característica e produz as figuras correspondentes. O script \texttt{analise\_dinamica.py}
+(Apêndice A.2)
 lê o ensaio de
 tração de corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a
-constante de tempo da planta. O script \texttt{simulacao\_cascata.py} executa a malha de
+constante de tempo da planta. O script \texttt{simulacao\_cascata.py} (Apêndice A.3) executa a malha de
 controle e produz a
 figura de desempenho. A divisão segue os modelos que o controlador consome, o modelo
 estático construído pelo primeiro script a partir de dois ensaios e o modelo dinâmico
@@ -97,7 +98,7 @@ u = \frac{\alpha - 95}{85},
 de forma que o neutro corresponda a $u = 0$ e a aceleração
 máxima corresponda a $u = 1$.
 
-A automação do ensaio foi desenvolvida no âmbito deste trabalho e percorre a escala de
+A automação do ensaio foi desenvolvida no âmbito deste trabalho (Apêndice A.4) e percorre a escala de
 degraus em um laço, substituindo a cada iteração o ângulo e a duração e disparando o comando
 SSH correspondente, enquanto lê a porta serial do Arduino e grava cada amostra em um arquivo CSV o 
 tempo de ensaio, o tempo do degrau, o ângulo e a corrente. No terminal, 

@@ -75,15 +75,16 @@ não produzem resposta mecânica e o controlador precisa atravessá-la sem acumu
 erro.
 
 A \textbf{região de aderência}, de $100^\circ$ a $113^\circ$, é aquela em que a roda
-permanece grirando, sem patinagem, e toda a tração se transfere ao cabo. A força passa
+permanece girando, sem patinagem, e toda a tração se transfere ao cabo. A força passa
 a depender apenas do torque do motor, que por sua vez decorre da corrente, sendo essa a
 única região em que o modelo é válido, a dinâmica identificada representa a planta e todo o
 projeto do controlador se apoia.
 
 Acima de $113^\circ$--$114^\circ$ inicia-se a \textbf{região de saturação}, em que a
-aderência se esgota, ocorre patinagem ou o corte do ESC (QUE CORTE? VEM POR PADRAO?), e a 
-força deixa de ser determinada pela corrente, pois produz mais torque apenas deslizamento, delimitando
-a faixa útil do atuador.
+aderência se esgota, ocorre patinagem ou o corte por subtensão do ESC, proteção de fábrica
+que interrompe o motor quando a tensão da bateria cai abaixo do limiar sob carga, e a
+força deixa de ser determinada pela corrente, pois acima dele o comando produz apenas
+deslizamento, delimitando a faixa útil do atuador.
 
 Os limites exatos dessas regiões variam de ensaio para ensaio, e a Tabela \ref{tab:zonas}
 consolida as faixas observadas em cada um.
@@ -97,7 +98,7 @@ consolida as faixas observadas em cada um.
 \hline
 Ensaio & Zona morta & Região de aderência & Região de saturação \\
 \hline
-Ensaio em vazio & $97$--$99$ & --\textsuperscript{a} & Não observada nos degraus 97-117 (CORRIGIR LATEX) \\
+Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & Não observada nos degraus $97$--$117$ \\
 \hline
 Tração de corrente & $97$--$99$ & $100$--$109$ & A partir de $110$\textsuperscript{d} \\
 \hline
@@ -129,7 +130,7 @@ que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_ba
 modo que um ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
 pelo quociente $I/u$.
 
-O script da caracterização estática agrupa as leituras por comando, calcula a média de cada
+O script da caracterização estática (Apêndice A.1) agrupa as leituras por comando, calcula a média de cada
 grupo e ajusta a reta sobre essas médias pela Equação~\eqref{eq:mq}, imprimindo a Tabela
 \ref{tab:vazio}, com os valores que alimentam o ajuste.
 
@@ -163,13 +164,13 @@ a corrente atinge $2{,}35$ A no último comando. O ajuste linear sobre as média
 I_0(u) = 0{,}53 + 6{,}70\,u,
 \]
 apresenta coeficiente de determinação $r^2 = 0{,}85$ (Equação~\eqref{eq:r2}), representado na Figura \ref{fig:i0}. O
-crescimento concentrado nos comandos altos explica a inclinação da reta, que representa uma
+crescimento concentrado nos comandos altos explica a inclinação da reta (NAO ENTENDI, EXPLIQUE), que representa uma
 média do comportamento sobre toda a escala.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.6\textwidth]{Figuras/i0_vazio.png}
-\caption{Corrente de perdas $I_0$ em função do comando normalizado $u$, com a zona morta
+\caption{Corrente de perdas $I_0$ em função do comando norpode rmalizado $u$, com a zona morta
 destacada e o ajuste linear.}
 \label{fig:i0}
 \footnotesize{Fonte: elaborada pela autora (2026).}
@@ -180,7 +181,7 @@ corrente de carga da caracterização mostra a relevância relativa das perdas, 
 da região de aderência a corrente medida com carga é de $13$ A no comando de $105^\circ$
 (Tabela \ref{tab:mestra}), e as perdas descontadas, cerca de $1{,}3$ A, são uma fração
 pequena, mas não desprezível, do sinal. A linearidade confirmada sustenta a hipótese do
-modelo e fecha a primeira peça da caracterização.
+modelo e fecha a primeira peça da caracterização. (NAO ENTENDI NADA SOBRE A ANALISE. PENSE SOBRE COMO SE RELACIONA COM AS PERDAS E O TORQUE)
 
 \section{A Curva Característica Estática}
 \label{sec:restracao}
@@ -190,13 +191,13 @@ consumida e a força de tração lidas nos segundos $7$ a $10$, e o conjunto dos
 a curva característica, organizada pelas regiões de operação já definidas.
 
 A Tabela \ref{tab:mestra} consolida os dados. O comando normalizado $u$ segue a definição da
-metodologia, $u = (\alpha - 95)/85$, com $\alpha$ o ângulo do comando. Para cada comando, as
+metodologia, $u = (\alpha - 95)/85$, com $\alpha$ o ângulo do comando (ESPERO QUE TENHA SIDO CITADO ANTERIORMENTE, JÁ QUE É USAMOS EM OUTRAS ANALISES E NAO SOMENTE NESSA). Para cada comando, as
 células trazem as medianas da corrente e da força das quatro repetições, com o
 desvio-padrão amostral entre parênteses, calculados pelo script da caracterização estática,
 que converte as forças de kgf para N com $g = 9{,}81$ m/s$^2$ e imprime
 exatamente esta tabela. A corrente registrada
 eletronicamente durante o ensaio de tração de corrente concordou com a anotada dentro da
-dispersão entre repetições, o que cruza as duas fontes de dados. Os travessos marcam o
+dispersão entre repetições, o que cruza as duas fontes de dados (NAO ENTENDI,EXPLIQUE O QUE É VALIDADO, QUAIS SAO AS VARIAVEIS E COMO COMPROVA). Os travessos marcam o
 comando de $98^\circ$ da descida, não executado nessa sessão e excluído do consolidado.
 
 \begin{table}[htb]
@@ -336,7 +337,7 @@ controle.
 
 O segundo modelo vem do ensaio de tração de corrente, conduzido sem anotação de força, com
 a corrente amostrada a $100$ Hz e registrada por inteiro em cada comando, conforme o
-protocolo da metodologia. O script da dinâmica isola a sessão de aquisição rápida do
+protocolo da metodologia. O script da dinâmica (Apêndice A.2) isola a sessão de aquisição rápida do
 arquivo bruto, segmenta o registro em blocos, um por comando, e ancora cada borda de subida
 da região de aderência, os comandos de $100^\circ$ a $109^\circ$, no seu início elétrico.
 
@@ -412,7 +413,7 @@ ampla sobre a constante de tempo de $0{,}18$ s da planta.
 
 A malha projetada no Capítulo~\ref{chap:descricaoprocesso} tem seu desempenho avaliado por
 simulação não-linear sobre os modelos identificados neste capítulo. A simulação é conduzida
-em tempo discreto pelo script da simulação e reproduz todas as não-linearidades do sistema,
+em tempo discreto pelo script da simulação (Apêndice A.3) e reproduz todas as não-linearidades do sistema,
 a curva estática da corrente, a corrente de perdas, a divisão pelo comando, o seletor, os
 limites do comando e as perturbações de afundamento de tensão e de deslocamento da corrente
 de perdas. Os três cenários são especificados a seguir e empregam valores tomados da própria caracterização. O seguimento de
