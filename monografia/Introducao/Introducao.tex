@@ -5,24 +5,24 @@ Este trabalho apresenta a instrumentação eletrônica de um automodelo radiocon
 desenvolvida com o propósito de caracterizar a dinâmica do seu sistema de propulsão e, a
 partir dela, fornecer ferramentas experimentais para implementar o controle em malha fechada.
 
-Na configuração original do veículo, o automodelo opera em malha aberta: o comando de
+Na configuração original do veículo, o automodelo opera em malha aberta, pois o comando de
 aceleração é aplicado sem qualquer conhecimento sobre o resultado efetivamente alcançado pelo
 sistema. Um controlador em malha fechada, por sua vez, é capaz de ajustar continuamente esse
-comando a partir de medições obtidas do próprio sistema, de modo a aproximar o comportamento
+comando a partir de medições obtidas do próprio sistema para aproximar o comportamento
 real do veículo daquele desejado.
 
 Essa capacidade de ajuste contínuo está diretamente relacionada à solução de dois problemas
-centrais da teoria de controle: o Problema de Seguimento de Referência (PSR), que consiste em
+centrais da teoria de controle, o Problema de Seguimento de Referência (PSR), que consiste em
 fazer com que a velocidade do veículo acompanhe fielmente uma referência especificada ao
-longo do tempo, e o Problema de Rejeição de Perturbações (PRP), que consiste em manter esse
+longo do tempo. O Problema de Rejeição de Perturbações (PRP) consiste em manter esse
 comportamento mesmo diante de perturbações externas, como variações de carga, do terreno ou
 da alimentação elétrica do sistema.
 
 \section{Motivação e Justificativa}
 \label{sec:motivacao}
 
-A Universidade Federal de Minas Gerais (UFMG), por meio do Departamento de Engenharia
-Eletrônica (DELT), oferece a disciplina de Veículos Autônomos, que proporciona aos estudantes
+O Departamento de Engenharia Eletrônica (DELT) da Universidade Federal de Minas Gerais
+(UFMG) oferece a disciplina de Veículos Autônomos, que proporciona aos estudantes
 de engenharia a oportunidade de desenvolver e experimentar soluções de controle, percepção e
 robótica em veículos reais. Este trabalho utiliza como objeto experimental o
 automodelo elétrico radiocontrolado Kyosho Mad Force Kruiser 2.0 VE, empregado nas atividades da disciplina.
@@ -31,26 +31,26 @@ Por operar em malha aberta, o automodelo responde de forma imprevisível a fator
 comando aplicado, como a variação do coeficiente de atrito do solo em diferentes trechos da
 pista ou a queda de tensão da bateria ao longo do uso. Essas variações constituem
 perturbações que o PRP deveria rejeitar e que, quando não compensadas, comprometem também o
-PSR, impedindo que a velocidade real do veículo acompanhe a referência desejada.
+PSR.
 
 Além disso, variações abruptas de aceleração geram picos de esforço mecânico que aceleram o
 desgaste do sistema de propulsão, reduzindo sua vida útil e a disponibilidade do automodelo
 para as aulas práticas da disciplina. A instrumentação eletrônica proposta neste trabalho
 fornece os dados necessários para caracterizar a dinâmica do sistema de propulsão,
-fundamentando o desenvolvimento futuro de um controle em malha fechada capaz de monitorar o
-esforço exigido do automodelo e atenuar picos de aceleração, evitando comandos excessivos que
-desgastem precocemente o sistema.
+o que fundamenta o desenvolvimento futuro de um controle em malha fechada capaz de monitorar o
+esforço exigido do automodelo e atenuar picos de aceleração, pois comandos excessivos desgastam
+precocemente o sistema.
 
 \section{Objetivos do Projeto}
 \label{sec:objetivos}
 
-Tendo em vista o exposto, o objetivo geral é instrumentar o automodelo para
+O objetivo geral é instrumentar o automodelo para
 caracterizar a dinâmica do seu sistema de propulsão, de modo a viabilizar o desenvolvimento de
-um controle do torque do propulsor em malha fechada. Como objetivos específicos, busca-se: (i)
-selecionar e instalar a instrumentação eletrônica necessária à aquisição de dados do sistema;
-(ii) desenvolver um método experimental para caracterizar a dinâmica do sistema de propulsão;
-(iii) validar os dados obtidos por comparação com um modelo teórico do sistema; e (iv)
-quantificar os erros e as incertezas associados ao método de medição proposto.
+um controle do torque do propulsor em malha fechada. Como objetivos específicos, busca-se
+selecionar e instalar a instrumentação eletrônica necessária à aquisição de dados do sistema,
+desenvolver um método experimental para caracterizar a dinâmica do sistema de propulsão,
+validar os dados obtidos por comparação com um modelo teórico do sistema e
+quantificar os erros associados e as incertezas do método de medição proposto.
 
 \section{Local de Realização}
 \label{sec:local}
