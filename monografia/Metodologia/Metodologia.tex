@@ -44,28 +44,19 @@ fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a
 e é calculado nas duas funções de ajuste (linhas 59 e 67).
 
 Os tratamentos foram implementados em scripts dedicados, que leem os arquivos de dados
-brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}. O script
-\texttt{analise\_estatica.py} (Apêndice A.1) lê a planilha de anotações do ensaio de tração de corrente
-versus
-força e o registro do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
-característica e produz as figuras correspondentes. O script \texttt{analise\_dinamica.py}
-(Apêndice A.2) lê o ensaio de tração de corrente e conduz a identificação da planta, e sua
-lógica segue o tratamento da Seção~\ref{sec:tracaocorrente}, isolando a sessão de aquisição
-rápida, segmentando o registro em blocos, um por comando, e ancorando cada borda de subida
-no seu início elétrico, definido a partir dos níveis de repouso e de platô do próprio
-bloco. Sobre a média das dez bordas da região de aderência, ajusta a constante de tempo
-pelos dois métodos, o da $63{,}2\%$ e o de mínimos quadrados sobre a curva de primeira
-ordem, e computa o ganho de cada borda como o quociente do platô pelo comando, sendo a
-planta o par ganho e constante de tempo. As figuras da dinâmica saem desse processamento,
-as janelas brutas dos blocos com a média móvel e as respostas alinhadas e normalizadas com
-o ajuste sobre elas. O script \texttt{simulacao\_cascata.py} (Apêndice A.3) executa a malha de
-controle e produz a
-figura de desempenho. A divisão segue os modelos que o controlador consome, o modelo
-estático construído pelo primeiro script a partir de dois ensaios e o modelo dinâmico
-identificado pelo segundo a partir do ensaio de tração de corrente.
-
-(ORDEM DA EXPLICAÇÃO NAO FAZ SENTIDO, TEXTO GRNADE E CONFUSO, EXPLIQUE MELHOR OS DOIS SCRIPTS, SEUS OBJETIVOS)
-
+brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}, e a divisão entre
+eles segue os dois modelos que o controlador consome. O objetivo do primeiro é o modelo
+estático, e o \texttt{analise\_estatica.py} (Apêndice A.1) o constrói a partir da planilha
+de anotações do ensaio de tração de corrente versus força e do registro do ensaio em vazio,
+ajustando a corrente de perdas $I_0(u)$ e o coeficiente $G_F$ da curva característica, e
+produz as figuras correspondentes. O objetivo do segundo é o modelo dinâmico, a planta
+$G_2(s)$, e o \texttt{analise\_dinamica.py} (Apêndice A.2) o identifica a partir do ensaio
+de tração de corrente, seguindo o tratamento da Seção~\ref{sec:tracaocorrente}, com a
+constante de tempo ajustada pelos dois métodos e o ganho de cada borda computado como o
+quociente do platô pelo comando, e gera as duas figuras da dinâmica, as janelas brutas com
+a média móvel e as respostas alinhadas com o ajuste. O \texttt{simulacao\_cascata.py}
+(Apêndice A.3) executa a malha de controle sobre os dois modelos e produz a figura de
+desempenho.
 
 \section{Aquisição e registro de dados}
 \label{sec:registro}
