@@ -378,6 +378,45 @@ Lições extraídas das rodadas de revisão da autora sobre o Capítulo 2:
   Texto novo nasce sem `\cite`; frases que dependerão de fonte ficam impessoais e completas
   sem a atribuição formal.
 
+## 15d. Lições da rodada de dúvidas do Cap. 4 (29/10)
+
+- **Razão ou porcentagem citada carrega os operandos.** "(DE ONDE VEIO 7%? DE ONDE VEIO 45%?)"
+  toda razão citada volta com a operação que a gerou — "+45%, em 110°, onde o quociente
+  47,18/32,52 = 1,45" — e não solta. A regra do número único se estende: quando o número
+  retorna, retorna com a conta, apontando para a tabela que fornece os operandos.
+- **Conceito usado em mais de um capítulo é definido uma vez, com label, e citado depois.**
+  "(ESPERO QUE TENHA CITADO ANTERIORMENTE...)" — u = (α − 95)/85 nasce na metodologia com
+  `\label{eq:normalizacao}` e, no Cap. 4, aparece como "conforme a
+  Equação~\eqref{eq:normalizacao} da metodologia". Nunca redefinir, nem repetir a fórmula.
+- **Frase de validação nomea o que se valida, as variáveis e o como.**
+  "(EXPLIQUE O QUE É VALIDADO, QUAIS SAO AS VARIAVEIS E COMO COMPROVA)" — o template é
+  "valida-se X contra Y, medido por Z, e a evidência é W", com remissão à seção da
+  metodologia que define o ensaio. "Cruza as duas fontes de dados" sem esse esqueleto é
+  opaco para o leitor.
+- **ABNT não prescreve tempo verbal.** "(NO PASSADO MESMO? O QUE DIZ A ABNT?)" — a NBR
+  14724 não regra tempo; o presente do indicativo é o padrão do trabalho (Seção 7), e o
+  Cap. 4 o mantém ("observa-se", "a força cresce").
+- **Observação sem medição entra declarada como observação.** "(ADICIONAR QUE A BATERIA
+  DESCARREGOU MAIS RAPIDO — NAO FOI MEDIDO)" — a forma é "registra-se como observação, sem
+  medição dedicada, que...", o que registra o fato sem inventar dado (Seção 11).
+- **Comentário que pede resposta no chat é comentário que pede resposta no chat.**
+  "(ME RESPONDA NO CHAT SE TEMOS OUTROS DADOS...)" — distinguir dos pedidos de reescrita:
+  pergunta informacional/conceitual é respondida no chat, com nenhum ou mínimo ajuste no
+  texto; só dúvida de entendimento do texto reescreve a passagem.
+- **Causa atribuída a equipamento comercial pede verificação no documento do fabricante.**
+  "(NAO É SOBRE? PESQUISE ISSO NO MANUAL DESSE ESC)" — identificar o equipamento pelo
+  modelo (Team Orion Vortex R8, conforme a ficha do fabricante) e citar a função; quando o
+  manual é escaneado e a especificação não é extraível, declarar a evidência indireta (o
+  comportamento cíclico observado) em vez de afirmar limiar não verificado.
+- **Duas rodadas separadas: reescrita primeiro, auditoria depois.** A rodada que atende
+  comentários reescreve e completa mantendo a estrutura e o tom da autora; a auditoria de
+  ortografia e gramática é rodada posterior, com artifícios de fluidez, coesão e
+  coerência. Não misturar as duas numa única passada.
+- **Salvamento concorrente do editor sobrescreve o disco.** A autora edita no VS Code
+  enquanto o assistente edita os mesmos arquivos; um "salvar" dela reverte as correções.
+  Antes de cada rodada, comparar o arquivo com o espelho git (`diff`) para detectar
+  overwrite; ao final, avisá-la para fechar e reabrir o arquivo antes de continuar.
+
 ## 15c. Vícios do assistente identificados nas correções da autora (28/10)
 
 Lições extraídas do diff entre o texto gerado pelo assistente e as correções manuais da

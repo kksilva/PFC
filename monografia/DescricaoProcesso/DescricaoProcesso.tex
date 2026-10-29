@@ -38,7 +38,7 @@ posição a partir da força contraeletromotriz (\emph{back-EMF}) -- a tensão i
 permitindo ao controlador estimar os instantes adequados para a próxima etapa. Dessa forma, o ESC mantém o campo do estator
 sincronizado com o movimento do rotor, possibilitando a conversão contínua da energia elétrica em energia mecânica.
 
-Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A \cite{kyosho_madforce} (FAZER REFERENCIA DA PAGINA).
+Segundo o manual do fabricante, o ESC suporta corrente contínua de até 120 A e corrente de pico de até 760 A \cite{kyosho_madforce} (p. 28).
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
 preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. 
@@ -46,10 +46,12 @@ preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado.
 %VERIFICAR SE VAI SER ADICIONADO CAP SOBRE BATERIA%
 
 O comando de aceleração aplicado ao ESC
-pode ter duas origens, selecionadas por uma chave de comutação: 
-proveniente do controle remoto, por meio do receptor de rádio; ou o sinal
+pode ter duas origens, selecionadas por uma chave de comutação, sendo a primeira o sinal
+proveniente do controle remoto, por meio do receptor de rádio, e a segunda o sinal
 gerado por uma Raspberry Pi embarcada no veículo, com bateria própria e conversor
-\emph{step-down} para alimentação em 5 V. Ambos geram um pulso PWM (DEFINIR E CONCEITUAR) duração de cada pulso codifica o valor do comando
+\emph{step-down} para alimentação em 5 V. Ambos geram um pulso de modulação por largura de
+pulso (\emph{Pulse Width Modulation} — PWM), no qual a duração de cada pulso codifica o
+valor do comando.
 
 
 \section{Situação Atual e Estado da Arte}
@@ -101,7 +103,7 @@ representa a resultante das forças resistivas, como o atrito de rolamento e o a
 No sistema de controle, emprega-se a estrutura básica de malha fechada com realimentação da
 variável de processo, que é a velocidade longitudinal do automodelo, \(v(t)\), estimada como \(\hat{v}(t)\) pela
 integração numérica da aceleração longitudinal medida pela IMU. A variável
-manipulada é o comando de aceleração \(u\), enviado ao ESC, de modo que:
+manipulada é o comando de aceleração \(u\), enviado ao ESC,
 \begin{equation*}
 \hat{v}(t) = \hat{v}(0) + \int_0^t a_x(\xi)\,d\xi,
 \end{equation*}
@@ -109,9 +111,9 @@ em que \(\hat{v}(0)\) é a condição inicial da estimativa.
 
 A estimativa por integração introduz o erro de medição do acelerômetro, que continua
 sendo acumulado na integral, mesmo para aceleração igual à zero. Assim, um desvio constante
-produz na velocidade estimada um erro que cresce linearmente com o tempo, de modo que a
-estimativa é confiável em trajetos curtos e se degrada progressivamente em operação
-prolongada, exigindo filtragem e correção contínuas.
+produz na velocidade estimada um erro que cresce linearmente com o tempo, e a estimativa é
+confiável em trajetos curtos, degradando-se progressivamente em operação prolongada e
+exigindo filtragem e correção contínuas.
 
 A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle.
@@ -200,8 +202,8 @@ O torque depende, nesse caso, da derivada da velocidade medida e de três parâm
 que precisam ser identificados separadamente, pois são propriedades do conjunto
 veículo--carga. O $J$ depende da massa e da redução, $B$ do atrito interno da
 transmissão e $T_L$ da carga e da inclinação, e todos estão sujeitos a mudança com a
-configuração do veículo, de modo que a leitura do sensor, sozinha, não revela essas
-mudanças e compromete a confiabilidade da estimativa. Há, ainda, um limite de resolução
+configuração do veículo, de forma que a leitura do sensor, sozinha, não revela essas
+mudanças, o que compromete a confiabilidade da estimativa. Há, ainda, um limite de resolução
 inerente ao método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
 torna progressivamente mais grosseira. A derivada exigida pela Equação
 \eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
@@ -216,7 +218,7 @@ Os motores brushless com sensores Hall integrados já são
 controlados dessa maneira, com os mesmos sinais servindo à comutação e à realimentação,
 conforme documentado pela Honeywell para a própria família SS41x \cite{honeywell_bldc}.
 
-Quanto à proteção do sistema, o SS41F não fornece nenhuma grandeza elétrica, de modo que a
+Quanto à proteção do sistema, o SS41F não fornece nenhuma grandeza elétrica, e a
 proteção contra sobrecorrente por limiar não pode ser implementada com esse sensor. A única
 ação preventiva disponível é a limitação da taxa de variação do comando, que suaviza a
 excitação do motor, sem garantia efetiva contra sobrecorrente.
@@ -262,8 +264,8 @@ fração do período em que o PWM permanece ligado, o que resulta em:
 \end{equation}
 
 No motor, a corrente de fase se relaciona ao torque pela constante de torque $K_t$ do
-propulsor, $T_{\mathrm{motor}} = K_t\,I_{\mathrm{fase}}$, de modo que a corrente medida
-permite estimar o esforço mecânico produzido. Como a razão cíclica do chaveamento acompanha
+propulsor, $T_{\mathrm{motor}} = K_t\,I_{\mathrm{fase}}$, o que permite estimar o esforço
+mecânico produzido a partir da corrente medida. Como a razão cíclica do chaveamento acompanha
 o comando $u$ aplicado ao ESC, a cadeia fecha na variável manipulada da malha, pois $u$
 define a corrente de fase por meio da Equação~\eqref{eq:corrente_bateria}, e a corrente de
 fase define o torque pelo produto $K_t$.
@@ -276,14 +278,14 @@ rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar v
 rápidas e simultâneas da tensão nos dois terminais de entrada, produzidas pelo chaveamento
 do ESC ---, que, sem essa rejeição, se somariam ao sinal útil e corromperiam a leitura. Em
 altas frequências, a indutância parasita do próprio resistor, proveniente de seus terminais
-e de sua construção, soma-se à queda ômica uma parcela proporcional à variação da corrente,
-de modo que o resistor deixa de se comportar como uma resistência pura e a tensão deixa de
-ser proporcional à corrente instantânea, distorcendo a leitura durante as bordas de
+e de sua construção, soma-se à queda ômica uma parcela proporcional à variação da corrente, e o resistor deixa
+de se comportar como uma resistência pura, de forma que a tensão deixa de ser proporcional
+à corrente instantânea, distorcendo a leitura durante as bordas de
 chaveamento.
 
 A resolução da medida, por fim, é limitada pelo conversor analógico-digital de $n$ bits
 que recebe o sinal, pois a sua tensão de referência $V_\mathrm{ref}$ define o fundo de
-escala dividido em $2^n$ degraus, de modo que o menor degrau distinguível corresponde, na
+escala dividido em $2^n$ degraus, e o menor degrau distinguível corresponde, na
 corrente, a
 
 \begin{equation}\label{eq:acs_resolucao}
@@ -327,7 +329,7 @@ O sensor de efeito Hall ACS758 mede a corrente elétrica indiretamente, proporci
 galvânico, ou seja, não há conexão elétrica direta entre o circuito de potência e o circuito de medição. 
 O funcionamento baseia-se no efeito Hall, no qual a corrente que percorre um condutor
 interno gera um campo magnético perpendicular e esse campo, ao atravessar o elemento
-sensor, desenvolve uma tensão proporcional, de modo que a tensão de saída reproduz a
+sensor, desenvolve uma tensão proporcional, e a tensão de saída reproduz a
 corrente medida:
 
 \begin{equation*}
@@ -383,8 +385,8 @@ em que $I_0(u)$ é a corrente de perdas do conjunto, $G_F$ é a força por unida
 identificada no ensaio de tração, e $K_T = G_F\,r_{\mathrm{ef}}$ é o torque por unidade da
 mesma corrente, coeficiente que o controlador emprega. A malha externa compara o torque
 pedido ao estimado e gera a referência de corrente da malha interna, a mais rápida das duas,
-que ajusta o comando até anular o erro de corrente, de modo que a dinâmica
-comando--corrente fica confinada ao laço interno. O projeto dessa estrutura, dos
+que ajusta o comando até anular o erro de corrente, o que confina a dinâmica
+comando--corrente ao laço interno. O projeto dessa estrutura, dos
 controladores às proteções, é o objeto da Seção~\ref{sec:proposta}. Por medir a corrente
 diretamente, o sensor viabiliza, ainda, a proteção contra sobrecorrente por limiar, com o
 controlador reduzindo a excitação sempre que a leitura ultrapassa o valor máximo admitido.
@@ -428,7 +430,7 @@ inviabiliza sua instalação sem desmontagem do automodelo, e o segundo pressup�
 escala automotiva, além do alto custo e das modificações permanentes no automodelo. A célula de
 carga retorna uma saída da ordem de milivolts que exige circuito de amplificação dedicado
 e uma fixação mecânica própria entre o veículo e o ponto de ancoragem do ensaio, e mede
-apenas a componente da força ao longo do seu eixo, de modo que o alinhamento entre esse
+apenas a componente da força ao longo do seu eixo, e o alinhamento entre esse
 eixo e a linha de tração precisa ser garantido, sob pena de componentes não medidas
 corromperem a leitura. A balança de gancho foi a opção escolhida, pois mede
 diretamente a força, dispensa condicionamento de sinal e adaptação mecânica além do próprio
@@ -509,7 +511,7 @@ Na cadeia do modelo, cada elo é estático, exceto um, pois o comando $u$ gera a
 através da dinâmica comando--corrente $G_2(s)$ da malha interna. A corrente se converte
 em torque pela relação estática da Equação~\eqref{eq:estimador_proposta}, com $K_T$, e o
 torque se converte em força pela relação estática $F = T/r_{\mathrm{ef}}$, com o raio
-efetivo, de modo que a única dinâmica da cadeia é a da corrente, tratada na malha
+efetivo, e a única dinâmica da cadeia é a da corrente, tratada na malha
 interna.
 
 \subsection{O seletor de mínimo}
@@ -693,7 +695,7 @@ no limite mesmo após a reversão do erro. O tratamento clássico dessa condiç�
 condicionamento da ação integral, também chamado de anti-\emph{windup}
 \cite{raffo_tcpi_pid2}. No condicionamento,
 a saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
-o comando efetivo $u$ retorna ao controlador, de modo que o integrador não acumula o
+o comando efetivo $u$ retorna ao controlador, e o integrador não acumula o
 erro em excesso enquanto a saturação persiste. A Figura~\ref{fig:antiwindup_clamping}
 apresenta o condicionamento, no qual o comando efetivo, medido depois da saturação,
 retorna ao integrador e o mantém ajustado ao limite.

@@ -31,6 +31,28 @@ controle, a conclusão é direta, pois o torque é controlável apenas dentro da
 e o limitador de um controlador deve respeitar o limiar observado, sob pena de comandar
 patinagem em vez de tração.
 
+\textbf{O coeficiente de atrito e o piso do ensaio.} O limite de aderência que delimita a
+região validada do modelo é, por construção, um limite de atrito, pois a maior força
+transferível ao solo vale $F_{\mathrm{m\acute{a}x}} = \mu\,N = \mu\,m\,g$. Com a massa
+total de $6{,}640$ kg, a carga normal é $N = 6{,}640 \times 9{,}81 \approx 65{,}1$ N, e a
+maior força observada no ensaio, $52$ N na fronteira da saturação, fornece o coeficiente
+aparente $\mu = 52/65{,}1 \approx 0{,}80$. O valor fecha a cadeia pelo torque, pois
+$52\ \mathrm{N} \times 0{,}0751\ \mathrm{m} \approx 3{,}9$ N$\cdot$m é o próprio limiar
+adotado no seletor de aderência, o que confere consistência interna entre a mecânica do
+contato e a proteção da malha. Faz sentido, ainda, fisicamente, pois o valor se situa na
+faixa usual de atrito entre borracha seca e superfícies rígidas, e apenas se explica com a
+transferência de carga do eixo dianteiro para o traseiro sob tração, já discutida. Uma
+caracterização direta do coeficiente seria possível no próprio piso, pelo arrasto de um
+peso conhecido com a balança do ensaio ou pelo método do plano inclinado, no qual
+$\mu = \mathrm{tan}\,\theta$ no ângulo de início do deslizamento, mas nenhuma dessas
+alternativas em outro piso jamais foi considerada. O modelo é válido onde o veículo opera,
+e o piso faz parte da planta, de forma que uma caracterização conduzida sobre outra
+superfície entregaria um limiar com um $\mu$ diferente, que invalidaria o modelo
+exatamente no lugar onde ele deveria valer. Como o coeficiente ainda varia com
+temperatura, poeira e estado do pneu, a identificação no piso de uso, sem controle sobre
+essas variáveis, é a única que garante que o limiar protegido pelo seletor é o limiar
+real.
+
 \textbf{A bateria como elo do experimento.} Duas interferências de bateria constituem
 fontes de erro relevantes para o experimento. A bateria dedicada do Raspberry Pi, quando
 descarregada, derrubava a tensão do conversor \emph{step-down}, medida em $4{,}0$ V contra
