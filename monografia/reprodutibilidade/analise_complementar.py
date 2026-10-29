@@ -67,7 +67,7 @@ def carregar_vazio():
 def carregar_tracao():
     """Pares (corrente_A, forca_N) por sentido e por degrau, das 4 repeticoes."""
     planilha = openpyxl.load_workbook(PASTA_DADOS / "ensaio_tracao_corrente_versus_forca.xlsx", data_only=True)
-    pagina = planilha["Página1"]
+    pagina = planilha["P\xe1gina1"]  # escape ASCII: o listings do Apendice nao le UTF-8
     degraus = [int(pagina.cell(row=1, column=c).value) for c in range(2, 44, 2)]
     tracao = {"SUBIDA": {a: [] for a in degraus}, "DESCIDA": {a: [] for a in degraus}}
     for linha in pagina.iter_rows(min_row=3, values_only=True):

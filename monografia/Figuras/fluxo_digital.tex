@@ -4,51 +4,57 @@
 \usepackage{amsmath}
 \usepackage{graphicx}
 \usepackage{tikz}
-\usetikzlibrary{positioning,arrows.meta,calc}
+\usetikzlibrary{positioning,arrows.meta,calc,shapes.geometric}
+
 \begin{document}
 \resizebox{!}{95mm}{%
 \begin{tikzpicture}[
-  block/.style={draw=black, thick, minimum height=10mm, minimum width=13mm, inner sep=2pt},
-  sum/.style={circle, draw=black, thick, minimum size=7mm, inner sep=0pt},
-  sign/.style={font=\itshape\small},
+  font=\normalsize,
+  term/.style={draw=black, semithick, rounded corners=8pt, minimum height=9mm, inner sep=5pt, align=center},
+  block/.style={draw=black, semithick, minimum height=11mm, inner sep=4pt, align=center},
+  sum/.style={circle, draw=black, semithick, minimum size=8mm, inner sep=0pt},
+  sign/.style={font=\footnotesize\itshape},
+  lab/.style={font=\footnotesize\itshape},
   arr/.style={-{Stealth[length=2.5mm]}, thick},
-  node distance=5mm and 10mm,
-]
+  node distance=8mm]
 \def\bw{74mm}
 % fluxo principal em coluna unica central
-\node[block, minimum width=\bw] (ler) {Ler corrente $I$ (ADC)};
-\node[block, minimum width=\bw, below=of ler,
-      align=center] (est) {Estimar $\hat{T}$\\[1mm]
-      \scriptsize $I_0(u)$, $/u$, $\times K_T$, teto $3{,}35$ N·m, filtro $0{,}6$ s};
-\node[block, minimum width=\bw, below=of est,
-      align=center] (sel) {Selecionar referência:\\
-      $\min(T_{\mathrm{ref}},T_{\text{ader\^{e}ncia}})$ + rampa};
-\node[block, minimum width=\bw, below=of sel] (mestre) {Mestre PI: $\Delta I$};
+\node[term] (ini) {início da amostra};
+\node[block, minimum width=\bw, below=of ini] (ler) {Ler corrente $I$ (ADC)};
+\node[block, minimum width=\bw, below=of ler] (est) {Estimar $\hat{T}$\\
+      {\footnotesize $I_0(u_{\mathrm{ef}})$, $/u_{\mathrm{ef}}$, $\times K_T$, teto $3{,}35$ N·m, filtro $0{,}6$ s}};
+\node[block, minimum width=\bw, below=of est] (sel) {Selecionar referência:
+      $T_{\mathrm{ref,ef}} = \min(T_{\mathrm{ref}},\,T_{\text{ader\^{e}ncia}})$};
+\node[block, minimum width=40mm, below=of sel] (rampa) {rampa ($0{,}6$ N·m/s)};
+\node[block, minimum width=\bw, below=of rampa] (mestre) {Mestre PI: $\Delta I$};
 \node[sum, right=20mm of mestre] (somaI) {};
-\node[sign, anchor=west] at ($(somaI.center)+(5mm,-6mm)$) {$I_{\mathrm{ref}}$};
-\node[sign] at ($(somaI.center)+(-3.6mm,2.6mm)$) {$+$};
-\node[sign] at ($(somaI.center)+(2.6mm,-3.6mm)$) {$+$};
-\node[block, minimum width=36mm, above=8mm of somaI, align=center] (ff)
-      {Feedforward:\\ $I_{\mathrm{ff}}$, $u_{\mathrm{ff}}$};
+\node[sign] at ($(somaI.center)+(-3.2mm,3.2mm)$) {$+$};
+\node[sign] at ($(somaI.center)+(3.2mm,-3.2mm)$) {$+$};
+\node[sign, anchor=west] at ($(somaI.south east)+(1mm,-1mm)$) {$I_{\mathrm{ref}}$};
+\node[block, minimum width=36mm, above=8mm of somaI] (ff)
+      {Feedforward: $I_{\mathrm{ff}}$, $u_{\mathrm{ff}}$\\
+      {\footnotesize (rampado $0{,}05$ u/s)}};
 \node[block, minimum width=54mm, below=8mm of somaI] (escravo)
       {Escravo PI + clamping: $u$};
-\node[block, minimum width=36mm, below=8mm of escravo, align=center] (planta)
-      {Planta: ESC + motor\\ $G_2(s)$};
+\node[block, minimum width=36mm, below=8mm of escravo] (planta)
+      {Planta: ESC + motor $G_2(s)$};
 
 % setas do fluxo principal
+\draw[arr] (ini) -- (ler);
 \draw[arr] (ler) -- (est);
 \draw[arr] (est) -- (sel);
-\draw[arr] (sel) -- (mestre);
+\draw[arr] (sel) -- (rampa);
+\draw[arr] (rampa) -- (mestre);
 \draw[arr] (mestre) -- (somaI);
-\draw[arr] (ff) -- (somaI);
 \draw[arr] (somaI) -- (escravo);
 \draw[arr] (escravo) -- (planta);
-% alimentacao do feedforward a partir do seletor
-\draw[arr] (sel.east) -- ++(9mm,0) |- (ff.west);
-% retorno pela lateral direita
-\draw[arr] (planta.south) -- ++(0,-5mm)
-  -| ($(ler.north)+(96mm,0)$) -- ($(ler.north)+(0,0)$);
-\node[sign, rotate=90] at ($(ler.north)+(96mm,-48mm)$) {$T_s = 10$ ms};
+% alimentacao do feedforward a partir do min (antes da rampa),
+% cotovelo com x fixo a 12 mm da borda do bloco, sem cruzar o caminho do mestre
+\draw[arr] (sel.east) -- ($(ff.east |- sel.east)+(12mm,0)$)
+  -- ($(ff.east)+(12mm,0)$) -- (ff.east);
+% retorno pela lateral direita, fora de todos os blocos, ao inicio da proxima amostra
+\draw[arr, rounded corners] (planta.east) -- ++(28mm,0) |- (ini.east);
+\node[sign, rotate=90] at ($(ini.east)+(28mm,-80mm)$) {$T_s = 10$ ms};
 \end{tikzpicture}%
 }
 \end{document}
