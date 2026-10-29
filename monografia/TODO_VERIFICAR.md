@@ -20,7 +20,10 @@ a fonte/valor correto.
   contínua máxima ≈ 312 A (60 × 5,2 Ah), acima do limite de 120 A do ESC — portanto o ESC é
   o fator limitante, não a bateria. Já incluído em `DescricaoProcesso.tex`, Seção 2.1.
 
-- [ ] **3. Licença da Figura do motor (Cap. 2)** — Fonte identificada em
+- [x] **3. Licença da Figura do motor (Cap. 2)** — resolvido no texto: legenda com
+  `\cite{digi_stator_rotor}`, cuja entrada no `ListadeReferencias.bib` traz autor DIGI
+  Electronics e URL de acesso. Mantida com atribuição; decisão de substituição fica com a
+  autora. — Fonte identificada em
   24/10: DIGI Electronics, blog "Stator vs Rotor: Construction, Functions
   and Maintenance" (s.d.), ja na legenda com URL. **Pendência:** imagem de
   blog comercial de terceiro, sem licença explícita de uso — avaliar permissão
@@ -73,7 +76,9 @@ a fonte/valor correto.
 
 ## Registro do problema de rede caindo em degraus altos (ensaio 24/10)
 
-- [ ] **5. Causa das quedas do túnel ssh / Pi inalcançável em degraus 105–107** —
+- [x] **5. Causa das quedas do túnel ssh / Pi inalcançável em degraus 105–107** —
+  resolvido no texto: Seção "Interferência da Alimentação do Raspberry Pi"
+  (`Resultados.tex`, `sec:bateria_pi`) e menção na Conclusão.
   Sintomas: `Connection to 10.42.0.1 port 22 timed out`, soquete mestre quebrado,
   "sem confirmacao" em 3 tentativas, com o carro rodando. Hipótese inicial: EMI/queda
   de tensão no pico de corrente (bateria LiPo nova entregando mais corrente). **Causa
@@ -91,7 +96,10 @@ a fonte/valor correto.
   carregada e observar o link permanecer estável (latência reportada pelo script).
   Fonte: logs do ensaio de 24/10/2026 (conversa, seção "auditoria do túnel").
 
-- [ ] **6. Cadeia de aquisição: relatos vs. firmware real** — Os relatórios
+- [x] **6. Cadeia de aquisição: relatos vs. firmware real** — resolvido no texto:
+  Metodologia, Seção "Aquisição e registro de dados" (100 leituras consecutivas ~1 ms por
+  ponto, 1 ponto/s, filtro RC de 24 Hz) e Conclusão, parágrafo "Aderência e stick-slip"
+  (limitação de Nyquist, 0,5 Hz, com proposta de aquisição a taxa maior). Os relatórios
   descrevem três cadeias diferentes: Parcial 2 (média de 500 amostras com 2 ms
   de intervalo = integração de ~1 s); Relatório Experimental (filtro RC de
   ~24 Hz + média móvel digital de 200 amostras em 100 ms, Nyquist citado em
@@ -104,7 +112,9 @@ a fonte/valor correto.
 
 ## Decisao de taxa de amostragem (auditoria 24/10)
 
-- [ ] **7. Duas taxas, dois objetivos** — O dado a 1 Hz (ensaio de escada) serve
+- [x] **7. Duas taxas, dois objetivos** — resolvido no texto: Metodologia
+  (`sec:registro`) documenta a taxa da escada e a da identificação, e a Conclusão declara
+  a limitação do stick-slip no limiar de Nyquist. O dado a 1 Hz (ensaio de escada) serve
   para a curva estatica torque x corrente e para o envelope da patinagem, mas NAO
   para identificacao de função de transferencia: o stick-slip (~2 s de periodo)
   fica no limiar de Nyquist (0,5 Hz) e a resposta de corrente do ESC (~10-100 ms)
@@ -121,7 +131,8 @@ a fonte/valor correto.
   veiculo ancorado identifica-se o subsistema ESC+motor+tração, nao a dinamica
   longitudinal do veiculo (que exige velocidade — IMU/encoder das alternativas do
   Cap. 2). Citar \cite{ljung1999system, astrom1997computer, franklin1998digital}.
-- [ ] **8. Pipeline identificacao -> controlador (Cap. 4/5)** —
+- [x] **8. Pipeline identificacao -> controlador (Cap. 4/5)** — resolvido no texto:
+  Resultados, "A Sintonia dos Controladores" (`sec:projeto_controladores`) e simulação.
   (1) curva estatica T x I/u (escada 1 Hz — CONCLUIDA 24/10, ensaio_cego_subida.csv);
   (2) G1(s)=I/u em bancada ancorada a 100 Hz (firmware fast, pulsos 1-2 s,
   100-110°); (3) G2(s)=v/u com carro livre, pulsos 100-110°, velocidade por
@@ -180,7 +191,9 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   5 voltas -> r_ef = 75,1 mm** (deflexao de 6,1% sob carga, esperada para
   pneu macio; incerteza < 0,5%). USAR r_ef = 0,0751 m em T_roda = F*r_ef.
   Reportar os tres valores (nominal, efetivo, condicao de carga) no Cap. 3.
-- [ ] **10. Ensaio em vazio com SS41F** — Registrar no relatorio (Cap. 3
+- [x] **10. Ensaio em vazio com SS41F** — resolvido no texto: Conclusão, "Propostas de
+  Continuidade" (sensor SS41F viabiliza ensaio em vazio e validação isolada da constante
+  de torque). Registrar no relatorio (Cap. 3
   metodologia/limitacoes ou Cap. 5 propostas) que o sensor magnetico SS41F
   (alternativa ja discutida na sec. 2.2.2) viabilizaria o ENSAIO EM VAZIO:
   anel magnetizado no eixo/roda + SS41F mediriam a rotacao com o veiculo
@@ -204,7 +217,9 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   ou degrau>=99 com pico<1 A = SINAL_FRACO; dur<10 s = CURTO. **Cap 4 deve usar
   apenas o consolidado.** Lacunas declaradas: descida 98-112, dinamica (FOPDT
   por priors + robustez ate nova sessao).
-- [ ] **12. Analise F x I — constancia da forca por ampere (para o Cap. 4)** —
+- [x] **12. Analise F x I — constancia da forca por ampere (para o Cap. 4)** — resolvido
+  no texto: Resultados, validação do modelo ($G_F$ na descida e na subida, r2 = 0,79 /
+  0,11).
   Quando as forcas da balanca forem transcritas (planilha degrau x forca,
   subida/descida), parear cada forca com `aderencia_a` (corrente da FASE DE
   ADERENCIA do consolidado), **nunca** com `plato_a` (inclui patinagem). Verificar
@@ -231,7 +246,9 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   validacao limitada a <=113°. Laco subida x descida (+7 a +45% em 104-115°) =
   histerese aparente por memoria termica do pneu (NAO histerese do powertrain);
   pontos 116-117 da descida contaminados pelo corte do ESC (item 13).
-- [ ] **14. Interpretacao do ruido da subida (stick-slip)** — O r2 menor da
+- [x] **14. Interpretacao do ruido da subida (stick-slip)** — resolvido no texto:
+  Resultados (a descida valida o modelo e a subida delimita o stick-slip) e Conclusão,
+  parágrafo "Aderência e stick-slip". O r2 menor da
   subida (0,78 vs 0,96 da descida) NAO e falha do modelo: e a assinatura do
   stick-slip na fase de adesao com pneu frio. Mecanismo: o pneu sem aquecimento
   tem aderencia marginal no limite, entao a roda alterna travamento (corrente
@@ -273,7 +290,10 @@ Normalizacao do comando: u = (angulo - 95)/85, u em [0,1] (95 = neutro, 180 = ma
   (b) bordas de descida (120->113) ainda nao ajustadas — verificar simetria;
   (c) declinar a dinamica u->F e malha fechada real como trabalho futuro
   (célula de carga HX711) — isso sim precisa de sensor de carga.
-- [ ] **13. Comportamento "engasga e volta" nos degraus >118° (relato da autora, 25/10)** —
+- [x] **13. Comportamento "engasga e volta" nos degraus >118° (relato da autora, 25/10)** —
+  resolvido no texto: Resultados, região de saturação (comportamento cíclico de
+  aceleração e parada, hipótese do corte por subtensão do ESC com recuperação da tensão e
+  religamento) e Seção "O Efeito da Bateria nos Ensaios".
   Observado em bancada: acima de ~118° o carrinho acelera por um tempo, **corta
   (engasga), para e acelera de novo**, ciclicamente. Suspeita principal: **corte de
   subtensao (LVC) do ESC** — sob alta corrente a LiPo "saga" abaixo do limiar, o ESC

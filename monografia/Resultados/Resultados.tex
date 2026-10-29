@@ -44,9 +44,9 @@ $x$ (A) & $y$ (A) \\
 \end{table} 
 
 O resultado,
-\[
+\begin{equation}\label{eq:ajuste_bancada}
 y = 1{,}0742\,x,
-\]
+\end{equation}
 indica que o sistema lê $7{,}42\%$ acima do multímetro, desvio percentual quase constante em
 toda a faixa e sempre no mesmo sentido, que pode ser compensado via software sem distorcer a forma do sinal. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
 resposta ideal.
@@ -156,9 +156,9 @@ superior observado na subida da Tabela~\ref{tab:zonas}, a corrente situa-se em t
 $1{,}3$ A, com pouca variação em relação à faixa anterior; a partir de $111^\circ$, o 
 crescimento se torna sustentado, e
 a corrente atinge $2{,}35$ A no último comando. O ajuste linear sobre as médias da Tabela~\ref{tab:vazio},
-\[
+\begin{equation}\label{eq:i0_linear}
 I_0(u) = 0{,}53 + 6{,}70\,u,
-\]
+\end{equation}
 apresenta coeficiente de determinação $r^2 = 0{,}85$ (Equação~\eqref{eq:r2}), representado na Figura \ref{fig:i0}. A
 inclinação da reta vem do crescimento concentrado nos comandos altos, pois até $110^\circ$
 a corrente de perdas quase não varia e só os últimos valores se elevam de fato, e o
@@ -409,9 +409,9 @@ que o entrega, e os passos abaixo definem cada variável empregada.
 \begin{enumerate}
     \item \textbf{Modelo da planta.} Cada planta é representada por um modelo de primeira
     ordem com atraso,
-    \[
+    \begin{equation}\label{eq:modelo_fopdt}
     \tilde{G}(s) = \frac{K}{\tau\,s + 1}\,e^{-\theta_a s},
-    \]
+    \end{equation}
     em que $K$ é o ganho estático da planta, a variação da saída por unidade de entrada em
     regime, $\tau$ é a sua constante de tempo, o tempo para atingir $63{,}2\%$ do valor
     final após um degrau, e $\theta_a$ é o atraso aparente. A malha escrava emprega a
@@ -429,16 +429,16 @@ que o entrega, e os passos abaixo definem cada variável empregada.
     nominal, o comando de $105^\circ$ ($u = 0{,}118$), vale $K = 153$ A/u.
     \item \textbf{Especificação da malha fechada.} Especifica-se que a malha fechada se
     comporte como sistema de primeira ordem,
-    \[
+    \begin{equation}\label{eq:especificacao_malha}
     \frac{Y}{R} = \frac{1}{\lambda\,s + 1},
-    \]
+    \end{equation}
     em que $\lambda$ é a constante de tempo que se deseja exigir dela, o mais lento que se
     aceita entre desempenho e robustez, e $R$ e $Y$ são a referência e a saída da malha
     considerada.
     \item \textbf{Filtro de robustez.} A especificação é filtrada por
-    \[
+    \begin{equation}\label{eq:filtro_f}
     F(s) = \frac{1}{\lambda\,s + 1},
-    \]
+    \end{equation}
     que torna o ajuste robusto a incertezas do modelo. No método \cite{raffo_tcpi_imc}, o
     controle clássico realimenta apenas a saída medida, ao passo que o controle por
     modelo interno compara a saída com a prevista pelo modelo $\tilde{G}$ do processo, e

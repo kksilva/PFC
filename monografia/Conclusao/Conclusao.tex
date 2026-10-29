@@ -28,7 +28,11 @@ aquecimento do pneu e o da bateria, e indica que a caracterização de um propul
 tração deve especificar o histórico térmico do conjunto, não apenas sua massa. Para o
 controle, o torque é controlável apenas dentro da região de aderência, e o limitador de um
 controlador deve respeitar o limiar observado, sob pena de comandar
-patinagem em vez de tração.
+patinagem em vez de tração. O regime cíclico, com período de cerca de $2$ s, permanece no
+limiar de Nyquist da taxa de um ponto por segundo, que vale $0{,}5$ Hz, de modo que a
+oscilação foi inferida pelos seus efeitos sobre a força e sobre a corrente médias e não
+registrada em sua forma, o que aponta como continuação a aquisição a taxa maior, que
+caracterizaria o regime de \emph{stick-slip} de forma direta.
 
 \textbf{O coeficiente de atrito e o piso do ensaio.} O limite de aderência que delimita a
 região validada do modelo é, por construção, um limite de atrito, pois a maior força

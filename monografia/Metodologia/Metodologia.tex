@@ -74,6 +74,11 @@ $10$ ms amostra essa dinâmica quase vinte vezes mais rápido que ela, acompanha
 com folga e registrando sua forma completa, o que viabiliza a identificação da dinâmica
 entre comando e corrente.
 
+Na configuração efetivamente gravada para o ensaio de escada, o firmware executa $100$
+leituras consecutivas do conversor em cerca de $1$ ms para compor cada ponto, transmitindo
+um ponto por segundo, e o sinal analógico do sensor é condicionado por um filtro RC
+passa-baixas de aproximadamente $24$ Hz, que restringe a banda do ruído antes da amostragem.
+
 O acionamento dos degraus emprega o \emph{script} \texttt{teste\_throttle.py},
 disponibilizado pelo orientador, que executa no Raspberry Pi embarcado no veículo e é
 comandado remotamente via SSH pelo terminal do notebook, por \texttt{ssh
@@ -272,9 +277,9 @@ detecta a força aplicada e a apresenta como uma massa equivalente, corresponden
 força-peso que produziria a mesma indicação sob a aceleração da gravidade de referência.
 Essa equivalência permite converter a leitura em força, expressa em newtons, por meio de
 
-\[
+\begin{equation}\label{eq:conversao_forca}
 F\,[\mathrm{N}] = 9{,}81\,m_{\mathrm{lei}}\,[\mathrm{kg}],
-\]
+\end{equation}
 em que $m_{\mathrm{lei}}$ representa o valor indicado pela balança.
 
 A verificação da balança tem objetivo diferente, pois a balança é a própria referência da
@@ -612,34 +617,34 @@ são as seguintes.
     \item \textbf{Resolução da balança,} a quantização imposta pelo display, que só distingue
     variações de $10$ g, e o valor verdadeiro pode estar até $5$ g acima ou abaixo
     da indicação. A meia-largura é $a = 5$ g e
-    \[
+    \begin{equation}\label{eq:sigma_resolucao}
     \sigma_{\mathrm{res}} = \frac{5}{\sqrt{3}} = 2{,}9\ \mathrm{g} = 0{,}028\ \mathrm{N}.
-    \] 
+    \end{equation}
     \item \textbf{Calibração da balança,} o desvio sistemático revelado pela verificação com
     pesos padrão. O desvio relativo ao peso, a diferença entre a leitura e o peso padrão,
     resulta em
-    \[
+    \begin{equation}\label{eq:desvio_calibracao}
     \frac{0{,}010\ \mathrm{kg}}{0{,}500\ \mathrm{kg}} = 0{,}02 = 2\%
-    \]
+    \end{equation}
     da leitura na faixa do ensaio, sempre no mesmo sentido. Embora sistemático e
     unilateral, o desvio é coberto de forma conservadora pela meia-largura retangular de
     $2\%$, o que evita subestimar a incerteza. Como não há canal de correção,
     o desvio não corrigido é tratado como retangular de meia-largura $a = 2\%$ de $F$
-    \[
+    \begin{equation}\label{eq:sigma_calibracao}
     \sigma_{\mathrm{cal}} = \frac{2\%}{\sqrt{3}} = 1{,}15\% \ \text{de}\ F.
-    \]
+    \end{equation}
     \item \textbf{Leitura em vídeo,} a legibilidade quadro a quadro do display. Quadros
     sucessivos separam instantes discretos e o display pode mudar entre eles, e,
     quando há dúvida de leitura, o valor é estimado em $\pm 1$ dígito, $a = 10$ g,
-    \[
+    \begin{equation}\label{eq:sigma_video}
     \sigma_{\mathrm{vid}} = \frac{10}{\sqrt{3}} = 5{,}8\ \mathrm{g} = 0{,}057\ \mathrm{N}.
-    \]
+    \end{equation}
     \item \textbf{Ângulo do cabo,} a aproximação da leitura direta, que toma $\cos\theta$
     por $1$ e cujo erro é multiplicativo sobre a força, pois a componente longitudinal da
     tensão é $F\cos\theta$. Da geometria da Seção \ref{sec:ancoragem}, esse erro é
-    \[
+    \begin{equation}\label{eq:erro_cabo}
     1 - \cos\theta = 1 - \sqrt{1 - (13/126)^2} = 0{,}53\%.
-    \]
+    \end{equation}
     Como não é corrigido, é tratado como retangular de meia-largura $a = 0{,}53\%$,
     e $\sigma_{\theta} = 0{,}53\%/\sqrt{3} = 0{,}31\%$ da força.
     \item \textbf{Raio efetivo,} a incerteza de marcação relativa à distância percorrida.
