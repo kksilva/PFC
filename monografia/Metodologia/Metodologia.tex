@@ -2,7 +2,7 @@
 \label{chap:metodologia}
 
 Este capítulo descreve os métodos experimentais empregados na caracterização do
-sistema de propulsão do automodelo. O capítulo incia com o método de ajuste das
+sistema de propulsão do automodelo. O capítulo inicia com o método de ajuste das
 retas comum a todos os ensaios, segue pela cadeia de aquisição, pelo teste em
 bancada e pelos ensaios com o veículo e finaliza com o orçamento de incertezas.
 
@@ -25,7 +25,7 @@ em que $\bar{x}$ e $\bar{y}$ são as médias dos dados.
 A função
 \texttt{minimos\_quadrados} do script \texttt{analise\_estatica.py} (linhas 53--60), 
 implementa a Equação~\eqref{eq:mq} retornando os dois
-coeficientes e o indice de determinação. Para a reta forçada pela origem,
+coeficientes e o índice de determinação. Para a reta forçada pela origem,
 $y = g\,x$, minimiza-se a mesma soma apenas em $g$, o que resulta em
 \begin{equation}\label{eq:mq_origem}
 g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
@@ -97,8 +97,8 @@ máxima corresponda a $u = 1$.
 
 A automação do ensaio foi desenvolvida no âmbito deste trabalho (Apêndice A.4) e percorre a escala de
 degraus em um laço, substituindo a cada iteração o ângulo e a duração e disparando o comando
-SSH correspondente, enquanto lê a porta serial do Arduino e grava cada amostra em um arquivo CSV o 
-tempo de ensaio, o tempo do degrau, o ângulo e a corrente. No terminal, 
+SSH correspondente, enquanto lê a porta serial do Arduino e grava, em um arquivo CSV,
+o tempo de ensaio, o tempo do degrau, o ângulo e a corrente de cada amostra. No terminal, 
 imprime-se somente a média das amostras de cada segundo, o
 tempo $t = 1, 2, \ldots, 15$ e a corrente média associada, linha que aparece no vídeo do
 ensaio ao lado do display da balança. As amostras completas são gravadas por experimento,
@@ -125,8 +125,8 @@ $1{,}6$ kHz, até o pino A0. Nesse teste, o ESC e o motor não
 participam, já que o intuito é realizar os testes de funcionamento do sensor e caracterizar os
 seus desvios.
 
-Atravessa o laço apenas o condutor interno do sensor, e seu circuito de
-medição é alimentado a $3{,}3$ V pelo Arduino. Antes de energizar, verificam-se o aperto dos
+Atravessa o laço apenas o condutor interno do sensor. Antes de energizar, o checklist
+compreende o aperto dos
 bornes, a polaridade do multímetro, a faixa de corrente selecionada e a conexão da porta
 serial do Arduino ao notebook.
 
@@ -200,9 +200,7 @@ perdas da corrente medida, conforme a Equação~\eqref{eq:estimador_proposta}, e
 \emph{feedforward} converte o torque pedido na corrente esperada, conforme a
 Equação~\eqref{eq:iff}. Sem o ensaio em vazio, $I_0(u)$ seria desconhecido, o estimador
 absorveria as perdas como se fossem tração e o modelo ficaria enviesado principalmente nos
-degraus baixos, nos quais a fração de perdas é maior. Com as rodas livres no ar, a corrente
-registrada em cada comando é a própria corrente de perdas do conjunto, o valor que esses
-dois cálculos exigem.
+degraus baixos, nos quais a fração de perdas é maior.
 
 O estimador representa a corrente de fase pelo
 quociente $I/u$, o que só é legítimo se o \emph{duty cycle} do ESC acompanhar o comando de
@@ -465,7 +463,7 @@ $100^\circ$ a $109^\circ$, empregam-se dois métodos, o da $63{,}2\%$, em que o 
 resposta leva para atingir $63{,}2\%$ do valor final é, pela definição de constante de
 tempo, o próprio $\tau$, e o ajuste de mínimos quadrados ao modelo de primeira ordem,
 procurando o $\tau$ que minimiza a soma dos quadrados dos resíduos entre a média e a
-curva $1 - e^{-t/\tau}$, na linha da caracterização dinâmica clássica por resposta ao
+curva $1 - e^{-t/\tau}$, conforme a caracterização dinâmica clássica por resposta ao
 degrau \cite{braga_instr_dinamica}. Bordas acima de $110^\circ$ não são empregadas, pois a
 resposta já nasce contaminada pela patinagem. O ganho de cada borda é o quociente do platô
 pela corrente pelo comando respectivo, e o ganho da planta é a média desses quocientes
@@ -478,7 +476,7 @@ A malha projetada no Capítulo~\ref{chap:descricaoprocesso} é implementada como
 programa que executa um passo por amostra de $10$ ms, e o fundamento da discretização está
 na Seção~\ref{sec:implementacao}. O script da simulação (Apêndice A.3) é a versão de
 referência dessa implementação, e cada elemento é apresentado a seguir na ordem em que
-executa, com o fluxograma do seu código e as particularidades que só o código revela,
+executa, com o fluxograma do seu código e as particularidades da implementação digital,
 remetendo ao Capítulo~\ref{chap:descricaoprocesso} para a teoria de cada bloco.
 
 \subsection{O Estimador de Torque}

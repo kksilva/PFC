@@ -5,21 +5,20 @@ Este capítulo apresenta os resultados dos ensaios definidos na metodologia, na 
 foram conduzidos, e o desempenho da malha projetada sobre eles em simulação. As regiões de
 operação são definidas na Seção \ref{sec:regioes}, já que o comportamento do propulsor não
 é uniforme ao longo da escala de comando. Cada ensaio é apresentado com as figuras e
-tabelas geradas e a análise do que mostram, e o tratamento dos dados de cada um segue a
-metodologia.
+tabelas geradas, além da análise completa a partir do tratamento dos dados abordado no capituo anterior.
 
 \section{Testes em Bancada}
 \label{sec:resbancada}
 
-A verificação em bancada, cuja motivação e circuito estão na metodologia, fornece os
+A verificação em bancada fornece os
 desvios sistemáticos dos instrumentos que alimentam o orçamento de incertezas da Seção
-\ref{sec:incertezas}, e esta seção registra os valores obtidos. O teste foi conduzido em
-três configurações, o circuito aberto com a fonte ajustável, o sensor instalado no veículo
-e a cadeia com o fio do conector interrompido para a inserção do multímetro, e os três
-arranjos apresentaram resultados equivalentes, o que indica que a topologia da conexão não
+\ref{sec:incertezas}, e os valores obtidos são registrados a seguir. O teste foi conduzido em
+três configurações: o sensor em série com a fonte ajustável, a cadeia com o fio do conector 
+interrompido para a inserção do multímetro e a montagem do sensor instalado no veículo utilizada nos ensaios posteriores.
+Os arranjos apresentaram resultados equivalentes, o que indica que a topologia da conexão não
 influencia a resposta da cadeia. Os dados consolidados da cadeia de corrente estão na
 Tabela~\ref{tab:bancada} e a reta ajustada forçada pela origem segue a
-Equação~\eqref{eq:mq_origem}.
+Equação~\eqref{eq:mq_origem}. (MELHORE O TEXTO TIRANDO REPETIÇÕES)
 
 \begin{table}[htb]
 \centering
@@ -48,7 +47,7 @@ O resultado,
 y = 1{,}0742\,x,
 \]
 indica que o sistema lê $7{,}42\%$ acima do multímetro, desvio quase constante em toda a
-faixa e sempre no mesmo sentido. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
+faixa e sempre no mesmo sentido, podendo ser compensada via software sem distorcer a forma do sinal. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
 resposta ideal.
 
 \begin{figure}[htb]
@@ -60,13 +59,10 @@ ideal $y = x$.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-O desvio é o caso favorável em termos de correção, pois um único fator multiplicativo em
-\emph{software}, faz a compensação sem distorcer a forma do sinal.
-
 A balança foi verificada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg, e
 as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático e
 de resolução proporcional, $10$ g para cada $0{,}5$ kg, proporção constante nos três
-pontos, o que o caracteriza como um desvio multiplicativo da leitura, declarado como
+pontos, o que o caracteriza como um desvio multiplicativo da leitura declarado como
 componente de incerteza sem correção, conforme a Seção~\ref{sec:incertezas}.
 
 \section{Regiões de operação}
@@ -258,8 +254,8 @@ também se descarregava visivelmente mais rápido nesse sentido, consistente com
 corrente demandada. A diferença entre os
 sentidos é sistemática na região de aderência e se quantifica pelo quociente entre as
 medianas da descida e da subida da Tabela \ref{tab:mestra}, comando a comando, na faixa de
-$104^\circ$ a $115^\circ$, variando de $+7\%$, em $115^\circ$, onde a força da descida,
-$49{,}76$ N, supera a da subida, $46{,}65$ N, a $+45\%$, em $110^\circ$, onde o quociente
+$104^\circ$ a $115^\circ$, variando de $+7\%$, em $115^\circ$, onde o quociente
+$49{,}76/46{,}65 = 1{,}07$, a $+45\%$, em $110^\circ$, onde o quociente
 $47{,}18/32{,}52 = 1{,}45$, sempre com corrente e força maiores na descida.
 
 Na região de saturação, a mudança de comportamento ocorre nos dois últimos comandos da
@@ -307,17 +303,16 @@ subida é a evidência de onde ele deixa de valer.
 
 O estimador de torque usado no controlador converte o coeficiente de força em coeficiente
 de torque pelo raio efetivo, $\hat{T} = K_T\,(I_\mathrm{bat} - I_0(u))/u$, com $K_T = G_F\,
-r_\mathrm{ef} = 0{,}028$ N$\cdot$m/(A/u), que absorve apenas a constante de torque do motor,
-o rendimento e a redução, as constantes do caminho entre corrente de fase e torque no eixo,
-sem participação do raio, que apenas traduz a força da balança no esforço na roda. O
+r_\mathrm{ef} = 0{,}028$ N$\cdot$m/(A/u), no qual o raio efetivo medido entra como fator
+de conversão entre a força da balança e o esforço na roda, ao passo que a constante de
+torque do motor, o rendimento e a redução, as constantes do caminho entre corrente de fase
+e torque no eixo, ficam absorvidas no ajuste e não precisam ser conhecidas isoladamente. O
 modelo, em ambos os usos, estende-se apenas pela região de aderência, pois acima dela o
 quociente $I/u$ deixa de representar a corrente de fase e a força deixa de ser determinada
 pela corrente, o que a própria regressão confirma ao produzir valores incompatíveis com a
 física fora da faixa. A malha externa herda essa limitação, que é a origem do seletor de
 aderência e da limitação do comando à faixa validada, projetados no
-Capítulo~\ref{chap:descricaoprocesso}. Os limites de força e torque decorrentes, com o
-coeficiente de atrito aparente do conjunto, seguem para a conclusão, onde fecham o limiar
-do seletor.
+Capítulo~\ref{chap:descricaoprocesso}.
 
 \section{A Dinâmica entre Comando e Corrente}
 \label{sec:resdinamica}
