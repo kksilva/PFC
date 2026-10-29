@@ -535,7 +535,19 @@ limite atua, o torque entregue difere do torque pedido, e essa divergência é d
 malha passa a regular o processo contra o limiar transferível, não contra a referência, e o
 erro persistente entre ambos não é falha de controle, mas a proteção em exercício. Para que
 o controlador não persiga a referência inalcançável, é a referência efetiva, já cortada, a
-que alimenta os dois caminhos da estrutura.
+que alimenta os dois caminhos da estrutura. A Figura~\ref{fig:seletor_minimo} apresenta
+o seletor e a bifurcação da referência efetiva, que segue para o
+\emph{feedforward} e, após a rampa, para a malha mestre.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/seletor_minimo.png}
+\caption{Seletor de mínimo: o torque pedido $T_{\mathrm{ref}}$ é cortado no limiar
+$T_{\text{ader\^{e}ncia}}$, e a referência efetiva alimenta o \emph{feedforward} e,
+após a rampa, a malha mestre.}
+\label{fig:seletor_minimo}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 No projeto, o limiar é o torque máximo transferível ao solo $T_{\text{ader\^{e}ncia}}$, e o
 ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação, de
@@ -616,7 +628,19 @@ escravo, $G_2$ a planta interna e $G_{m2}$ o instrumento que realimenta a malha.
 ganho de malha grande na banda de frequência da perturbação, o denominador reduz o
 efeito de $L_2$ antes que ela se transforme em erro na malha externa. Para que as duas
 malhas não disputem o mesmo atuador, a regra de separação de velocidades exige que a
-interna seja de três a dez vezes mais rápida que a externa.
+interna seja de três a dez vezes mais rápida que a externa. A
+Figura~\ref{fig:cascata_generica} apresenta a estrutura na notação genérica, com a
+referência $R$, as variáveis controladas primária $Y_1$ e secundária $Y_2$, as
+perturbações $L_1$ e $L_2$ e os instrumentos de realimentação $G_{m1}$ e $G_{m2}$.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Figuras/cascata_generica.png}
+\caption{Cascata genérica: malhas aninhadas, perturbação interna $L_2$ rejeitada pela
+malha escrava e perturbação externa $L_1$ por ela não alcançada.}
+\label{fig:cascata_generica}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 No projeto, o mestre é o
 controlador de torque, e o escravo, o controlador de corrente, mais rápido e sensível às
@@ -645,7 +669,19 @@ Equação~\eqref{eq:estimador_proposta}. O estimador de torque fecha o laço ext
 limita a estimativa à faixa validada e
 filtra-a antes de alimentar o mestre, pois é quase-estático e não deve reagir a
 transientes em que corrente e comando se desbalanceiam. O estimador, portanto,
-concentra em si a precisão do controle de torque.
+concentra em si a precisão do controle de torque. A
+Figura~\ref{fig:estimador_salvaguardas} apresenta o estimador com as duas
+salvaguardas, o teto da faixa validada e o filtro de primeira ordem.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.85\textwidth]{Figuras/estimador_salvaguardas.png}
+\caption{Estimador inferencial: a corrente $I$ e o comando $u$ alimentam o modelo
+$\hat{G}$, e a estimativa passa pelo teto da faixa validada e pelo filtro antes de
+alimentar o mestre.}
+\label{fig:estimador_salvaguardas}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \subsection{As proteções do comando}
 \label{sec:protecoes}
@@ -658,7 +694,19 @@ condicionamento da ação integral, também chamado de anti-\emph{windup}
 \cite{raffo_tcpi_pid2}. No condicionamento,
 a saída linear $u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e
 o comando efetivo $u$ retorna ao controlador, de modo que o integrador não acumula o
-erro em excesso enquanto a saturação persiste.
+erro em excesso enquanto a saturação persiste. A Figura~\ref{fig:antiwindup_clamping}
+apresenta o condicionamento, no qual o comando efetivo, medido depois da saturação,
+retorna ao integrador e o mantém ajustado ao limite.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{Figuras/antiwindup_clamping.png}
+\caption{Anti-\emph{windup} por condicionamento da ação integral: a saída linear
+$u_{\mathrm{lin}}$ passa pela saturação $\sigma$, e o comando efetivo $u$ retorna ao
+integrador.}
+\label{fig:antiwindup_clamping}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 No projeto emprega-se o \emph{clamping} no integrador do controlador escravo, ajustado
 para que a saída fique exatamente no limite, em vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da saturação imediatamente. Duas
@@ -779,7 +827,10 @@ amostra. O filtro do estimador e as rampas da pré-alimentação e da referênci
 recursões de primeira ordem idênticas, todas no mesmo relógio de $10$ ms. Cada elemento da
 malha corresponde a um bloco do script da simulação (apresentado no repositório do trabalho,
 A.3), que é a versão de referência da implementação, e o mapa entre elementos e linhas de
-código consolida-se na Tabela \ref{tab:implementacao}.
+código consolida-se na Tabela \ref{tab:implementacao}. A
+Figura~\ref{fig:fluxo_digital} resume a ordem de execução dentro de cada amostra, na
+qual o estimador, o seletor, o mestre, o \emph{feedforward} e o escravo se sucedem
+antes de o comando seguir à planta.
 
 \begin{table}[htb]
 \centering
@@ -801,6 +852,16 @@ Limite do comando à região de aderência & linhas 241 e 56--57 \\
 \hline
 \end{tabular}
 \end{table}
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.55\textwidth]{Figuras/fluxo_digital.png}
+\caption{Ordem de execução dentro de cada amostra de $10$ ms: a corrente lida alimenta o
+estimador, a referência passa pelo seletor e pela rampa, e mestre, \emph{feedforward} e
+escravo se sucedem antes de o comando seguir à planta.}
+\label{fig:fluxo_digital}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 Duas escolhas de implementação condicionam o desempenho, e a primeira delas é o
 \emph{feedforward} duplo, no qual, além da corrente
