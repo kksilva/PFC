@@ -12,13 +12,14 @@ versus força alimentam o primeiro script (A.1), que produz o modelo estático -
 corrente de perdas $I_0(u)$ e o coeficiente $G_F$ da curva característica; o ensaio de
 tração de corrente alimenta o segundo script (A.2), que produz o modelo dinâmico, a
 planta $G_2(s)$; o terceiro (A.3) simula a malha de controle sobre esses dois modelos e
-produz a figura do desempenho; e o quarto (A.4) é a automação do ensaio, que percorre a
+produz a figura do desempenho. A automação do ensaio, mantida na pasta
+\texttt{reprodutibilidade} do projeto (\texttt{rodar\_ensaio\_cego.py}), percorre a
 escala de degraus, dispara os comandos no Raspberry Pi e registra a corrente em CSV. Os
 três arquivos de dados são a planilha de anotações do ensaio de tração de corrente versus
 força (\texttt{ensaio\_tracao\_corrente\_versus\_forca.xlsx}), o registro do ensaio em vazio (\texttt{ensaio\_vazio\_corrente.csv}) e o registro do ensaio de tração de corrente
 (\texttt{ensaio\_tracao\_corrente.csv}). As dependências estão listadas em
 \texttt{requirements.txt} (\texttt{numpy}, \texttt{openpyxl}, \texttt{matplotlib} e
-\texttt{pyserial}), e o script A.4 reutiliza o módulo de automação do ensaio,
+\texttt{pyserial}), e a automação reutiliza o módulo de ensaio
 \texttt{rodar\_ensaio.py}, mantido na pasta dos ensaios do projeto.
 
 A análise se divide em dois scripts, A.1 e A.2, não porque haja uma separação natural
@@ -37,13 +38,5 @@ entrega um deles, com as figuras respectivas.
 \section*{\normalsize A.3 Simulação da malha de controle}
 \addcontentsline{toc}{section}{A.3 Simulação da malha de controle}
 \lstinputlisting[language=Python, numbers=left, numberstyle=\tiny, stepnumber=1]{reprodutibilidade/simulacao_cascata.py}
-
-\section*{\normalsize A.4 Automação do ensaio}
-\addcontentsline{toc}{section}{A.4 Automação do ensaio}
-\lstinputlisting[language=Python, numbers=left, numberstyle=\tiny, stepnumber=1]{reprodutibilidade/rodar_ensaio_cego.py}
-
-\section*{\normalsize A.5 Efeito da bateria nos ensaios}
-\addcontentsline{toc}{section}{A.5 Efeito da bateria nos ensaios}
-\lstinputlisting[language=Python, numbers=left, numberstyle=\tiny, stepnumber=1]{reprodutibilidade/analise_bateria.py}
 
 \clearpage

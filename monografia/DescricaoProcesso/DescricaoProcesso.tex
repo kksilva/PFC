@@ -53,7 +53,7 @@ pulso (\emph{Pulse Width Modulation} — PWM), no qual a duração do nível ló
 \label{sec:estadoarte}
 
 Para atender os objetivos, podem ser consideradas
-diferentes alternativas de medição, sendo que a escolha da mais adequada entre elas depende de fatores
+diferentes alternativas de medição, cuja escolha depende de fatores
 como precisão, complexidade de implementação, custo e adequação às condições experimentais.
 Nesse contexto, as subseções a seguir apresentam o princípio de funcionamento de cada técnica,
 discutem sua aplicabilidade na caracterização do sistema e fundamentam a opção adotada.
@@ -170,7 +170,7 @@ sensor, indicada pelo LED, assume nível alto na presença do polo norte.}
 
 A Figura~\ref{fig:ss41f_led} ilustra esse comportamento, em que o LED indica o nível lógico
 da saída diante do polo norte do ímã. Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
-anel é $\omega = 2\pi c/(N T_j)$, sendo que a contagem fornece diretamente a velocidade $\omega_motor$
+anel é $\omega = 2\pi c/(N T_j)$, e a contagem fornece diretamente a velocidade $\omega_motor$
 quando o anel está no eixo do motor e fornece $\omega_\mathrm{roda}$, que se relaciona com
 $\omega_motor$ pela redução $i$ da transmissão, quando está na roda.
 
@@ -239,7 +239,7 @@ usual, $\bar{I}_\mathrm{bat}$ se relaciona à $I_\mathrm{fase}$ pela razão cíc
 A atuação do ESC sobre o motor influencia a corrente de fase $I_{\mathrm{fase}}$, responsável pela geração do 
 torque eletromagnético, relacionado pela expressão $T_{\mathrm{motor}}=K_t I_{\mathrm{fase}}$, em que $K_t$ é 
 a constante de torque do motor. Como a corrente é medida por meio do circuito baseado no resistor shunt e no 
-amplificador, torna-se possível estimar o esforço mecanico produzido em resposta ao comando aplicado. 
+amplificador, torna-se possível estimar o esforço mecânico produzido em resposta ao comando aplicado. 
 
 \begin{figure}[htb]
 \centering
@@ -247,7 +247,7 @@ amplificador, torna-se possível estimar o esforço mecanico produzido em respos
 \caption{Amplificador de instrumentação INA240 para leitura de corrente por shunt
 resistivo.}
 \label{fig:ina240}
-\footnotesize{Fonte: elaborada pela autora (2026).}
+\footnotesize{Fonte: \cite{ti_ina240_2}.}
 \end{figure}
 
 O sensor proporciona uma medida direta da corrente, com boa linearidade e
@@ -277,15 +277,15 @@ $5$ V, reduzindo-se proporcionalmente em alimentações menores -- $6{,}6$ mV/A 
 $3{,}3$ V --, uma vez que a saída é ratiométrica.
 O condutor interno de corrente apresenta resistência da ordem de $100$ µ$\Omega$, com 
 queda de tensão e a dissipação insignificantes. Na fixação, o sensor é instalado em série no ramo de alimentação, entre a bateria e o ESC, e a
-saída analógica é ligada ao conversor analógico--digital (Analogic-Digital Conversor -- ADC) do microcontrolador, que
+saída analógica é ligada ao Conversor Analógico-Digital (ADC) do microcontrolador, que
 converte a tensão de saída no número digital lido pelo programa:
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.65\textwidth]{Figuras/acs758_cap2.png}
-\caption{Exmplo de aplicação do sensor de corrente de efeito Hall linear ACS758.}
+\caption{Exemplo de aplicação do sensor de corrente de efeito Hall linear ACS758.}
 \label{fig:acs758}
-\footnotesize{Fonte: elaborada pela autora (2026).}
+\footnotesize{Fonte: adaptada de \cite{acs758_datasheet}.}
 \end{figure}
 
 Em malha fechada, o sensor se comporta como o arranjo com shunt. A variável de processo é o
@@ -309,7 +309,7 @@ IMU e o SS41F exigem a identificação prévia de parâmetros mecânicos ($m$,
 $F_{\text{resistivos}}$, $J$, $B$ e $T_L$), que são propriedades do conjunto veículo--carga
 e mudam com a configuração, enquanto o conjunto shunt + INA240 e o ACS758 se relacionam ao torque por
 constantes do próprio propulsor, identificáveis em bancada. Com isso, a corrente elétrica é a grandeza mais direta
-até o torque, sendo que o sensor Hall
+até o torque, e o sensor Hall
 linear representa o melhor equilíbrio entre as possibilidades, já que possui isolamento
 galvânico para proteger o circuito das altas correntes e não dissipa potência. 
 
@@ -330,7 +330,7 @@ proposta, na qual o seletor de aderência limita a referência na entrada, a pr�
 $C_{\mathrm{ff}}$ converte a referência efetiva em corrente esperada para antecipar a correção do controlador, 
 as malhas em cascata
 $C_1$--$C_2$ organizam o controle de torque sobre o de corrente e o estimador $\hat{G}$
-reconstrói o esforço mecanico a partir da corrente medida.
+reconstrói o esforço mecânico a partir da corrente medida.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.95\textwidth]{Figuras/diagrama_cascata_tikz-1.png}
@@ -422,7 +422,8 @@ Sem a pré-alimentação, o controlador dependeria apenas da realimentação, e 
 integrador carregaria sozinho todo o esforço de regime, deteriorando o transiente. A
 limitação da estrutura é a dependência do modelo, assim, quanto mais o processo real se afasta
 de $H_1(s)$, maior o resíduo que recai sobre a realimentação. A pré-alimentação da
-perturbação, é possível apenas quando a perturbação é medida ou estimada, pois nem o 
+perturbação só é possível quando a perturbação é medida ou estimada, condição não
+satisfeita neste projeto, pois nem o
 afundamento da tensão da bateria sob carga nem a variação
 térmica de $I_0$ são mensuráveis no veículo.
 
@@ -586,6 +587,7 @@ PI escravo, com anti-windup por clamping & linhas 238--248 \\
 Limite do comando à região de aderência & linhas 241 e 56--57 \\
 \hline
 \end{tabular}
+\noindent{\footnotesize Fonte: elaborada pela autora (2026).}
 \end{table}
 
 \begin{figure}[htb]

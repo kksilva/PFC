@@ -100,7 +100,8 @@ u = \frac{\alpha - 95}{85},
 e o neutro corresponde a $u = 0$, enquanto a aceleração
 máxima corresponde a $u = 1$.
 
-A automação do ensaio foi desenvolvida no âmbito deste trabalho (Apêndice A.4) e percorre a escala de
+A automação do ensaio foi desenvolvida no âmbito deste trabalho (script
+\texttt{rodar\_ensaio\_cego.py}, na pasta \texttt{reprodutibilidade} do projeto) e percorre a escala de
 degraus em um laço, substituindo a cada iteração o ângulo e a duração e disparando o comando
 SSH correspondente, enquanto lê a porta serial do Arduino e grava, em um arquivo CSV,
 o tempo de ensaio, o tempo do degrau, o ângulo e a corrente de cada amostra. No terminal, 
