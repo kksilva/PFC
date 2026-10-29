@@ -25,25 +25,37 @@ b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
 \qquad
 a = \bar{y} - b\,\bar{x},
 \end{equation}
-em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. Para a reta forçada pela origem,
+em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. A função
+\texttt{minimos\_quadrados} do script \texttt{analise\_estatica.py}, do repositório do
+trabalho (linhas 53--60), traduz a Equação~\eqref{eq:mq} literalmente e devolve os dois
+coeficientes junto com o coeficiente de determinação. Para a reta forçada pela origem,
 $y = g\,x$, minimiza-se a mesma soma apenas em $g$, o que resulta em
 \begin{equation}\label{eq:mq_origem}
 g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
 \end{equation}
+A Equação~\eqref{eq:mq_origem} é implementada pela função
+\texttt{minimos\_quadrados\_origem} (linhas 63--68 do mesmo script), e a curva
+característica a emprega por meio da função \texttt{ajuste\_gf} (linhas 104--114), que
+subtrai a corrente de perdas e divide pelo comando antes do ajuste, linearizando a
+característica de modo que a reta forçada pela origem tenha sentido físico.
 
 A qualidade de cada ajuste é quantificada pelo coeficiente de determinação,
 \begin{equation}\label{eq:r2}
 r^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
 \end{equation}
-fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica.
+fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica,
+e é calculado nas duas funções de ajuste (linhas 59 e 67).
 
 Os tratamentos foram implementados em scripts dedicados, que leem os arquivos de dados
-brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}. O script da
-caracterização estática lê a planilha de anotações do ensaio de tração de corrente versus
+brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}. O script
+\texttt{analise\_estatica.py} lê a planilha de anotações do ensaio de tração de corrente
+versus
 força e o registro do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
-característica e produz as figuras correspondentes. O script da dinâmica lê o ensaio de
+característica e produz as figuras correspondentes. O script \texttt{analise\_dinamica.py}
+lê o ensaio de
 tração de corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a
-constante de tempo da planta. O script da simulação executa a malha de controle e produz a
+constante de tempo da planta. O script \texttt{simulacao\_cascata.py} executa a malha de
+controle e produz a
 figura de desempenho. A divisão segue os modelos que o controlador consome, o modelo
 estático construído pelo primeiro script a partir de dois ensaios e o modelo dinâmico
 identificado pelo segundo a partir do ensaio de tração de corrente.
