@@ -19,7 +19,7 @@ carcaça, como ilustrado na Figura~\ref{fig:motorbrushless}.
 
 \begin{figure}[H]
 \centering
-\includegraphics[width=0.42\textwidth]{Figuras/motor_explode.jpeg}
+\includegraphics[width=0.8\textwidth]{Figuras/motor_explode.jpeg}
 \caption{Vista explodida de um motor \emph{brushless}, evidenciando a construção do
 estator e do rotor.}
 \label{fig:motorbrushless}
@@ -40,19 +40,14 @@ permanece temporariamente sem acionamento direto, permitindo monitorar a tensão
 Dessa forma, o controlador sincroniza a sequência de acionamento das fases com o movimento do rotor, 
 mantendo a produção de torque. 
 
-O ESC empregado é especificado para 120 A contínuos e picos de 760 A \cite{orion_vortex_r8}.
+O ESC empregado é especificado para 120 A contínuos e picos de até 760 A \cite{orion_vortex_r8}.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
-capacidade de 5200 mAh e taxa de descarga de 60C. Embora essa taxa admita correntes de
-até cerca de $312$ A, a corrente efetivamente drenada é ditada pelo ESC, cuja
-especificação de $120$ A contínuos é o limite do sistema, e não pela bateria.
-
-O comando de aceleração aplicado ao ESC
+capacidade de 5200 mAh e taxa de descarga de 60C. O comando de aceleração 
 pode ter duas origens, selecionadas por uma chave de comutação: o sinal
 proveniente do controle remoto, por meio do receptor de rádio; ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, com bateria própria e conversor
 \emph{step-down} para alimentação em 5 V. Ambos geram um pulso de modulação por largura de
-pulso (\emph{Pulse Width Modulation} — PWM), no qual a duração do nível lógico alto,
-entre $1$ e $2$ ms em período de cerca de $20$ ms, codifica o valor do comando.
+pulso (\emph{Pulse Width Modulation} — PWM), no qual a duração do nível lógico alto codifica o valor do comando.
 
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
