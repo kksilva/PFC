@@ -104,7 +104,9 @@ em que \(\hat{v}(0)\) é a condição inicial da estimativa.
 A variável
 manipulada é o comando de aceleração \(u\), enviado ao ESC, e \(\alpha\) é o ângulo de servo do
 pulso PWM correspondente, com a normalização de ambos apresentada na Metodologia,
-Capítulo~\ref{chap:metodologia}. (EXPLICAR COMO ISSO SE RELACIONA COM A EQUAÇÃO. NAO MUDAR A EQUAÇÃO DA INTEGRAL, APENAS RELACIONAR MAIS EXPLICITAMENTE)
+Capítulo~\ref{chap:metodologia}. Na malha de controle associada, a estimativa $\hat{v}$, obtida pela
+integração da aceleração, é a variável controlada, e o comando $u$ é a variável manipulada
+que o controlador ajusta para aproximá-la da referência.
 
 A estimativa por integração introduz um erro de medição que continua
 sendo acumulado, mesmo para aceleração igual à zero. Assim, um desvio constante cresce 
@@ -142,10 +144,10 @@ pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincro
 \footnotesize{Fonte: \cite{instructables_mpu6050}.}
 \end{figure}
 
-Em síntese, a IMU oferece uma cadeia de medição simples, de baixo custo e de facil implementação  
-digital, permitindo medir a aceleração do chassi sem depender de um modelo mecânico. Entretanto, a limitação
-decisiva é a necessidade de identificar os parâmetros dinâmicos do veículo antes da estimativa de torque, além do erro 
-integral acumulado (MELHORAR PARAGRAFO, MANTENDO ESSA ESTRUTURA DE UMA FRASE COMPLETA DE VANTAGENS E UMA FRASE COMPLETA DE LIMITAÇÃO)
+Em síntese, a IMU oferece uma cadeia de medição simples, de baixo custo e de fácil implementação
+digital, e mede a aceleração do chassi diretamente, sem depender de um modelo mecânico. A
+limitação decisiva é a necessidade de identificar os parâmetros dinâmicos do veículo antes da
+estimativa de torque, acrescida do erro integral que se acumula ao longo da integração.
 
 \subsection{Sensor Magnético de Efeito Hall SS41F}
 \label{sec:ss41f}
@@ -175,9 +177,9 @@ $\omega_motor$ pela redução $i$ da transmissão, quando está na roda.
 Na fixação no veículo, o anel é acoplado rigidamente à roda ou ao eixo cuja
 rotação se deseja medir, e o sensor é fixado no chassi próximo ao anel. Entre o elemento
 Hall e os polos mantém-se uma distância pequena
-e constante para não enfraquecer o sinal. A conexão com o microcontrolador é direta, apresentando uma saída digital que pode ser lida 
-por interrupção, dispensando circuitos de condicionamento adicionais, uma vez que a
-saída do sensor já é um nível lógico compatível com a entrada do microcontrolador. (MELHORE O PARAGRAFO, CONFUSO)
+e constante para não enfraquecer o sinal. A conexão com o microcontrolador é direta, pois a
+saída do sensor já é um nível lógico compatível com a sua entrada, e a contagem dos pulsos
+dispensa circuitos de condicionamento adicionais.
 
 Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
 de velocidade, sem modelo de torque associado, da mesma forma que a velocidade estimada
@@ -190,13 +192,12 @@ conforme documentado pela Honeywell para a própria família SS41x \cite{honeywe
 
 Quanto à proteção do sistema, o SS41F não fornece nenhuma grandeza elétrica, assim, a única
 ação preventiva disponível é a limitação da taxa de variação do comando, que suaviza a
-excitação do motor, sem garantia efetiva contra sobrecorrente. (COERENTE?)
+excitação do motor, sem garantia efetiva contra sobrecorrente.
 
 No conjunto, o SS41F mede a velocidade com robustez e simplicidade de interface, com
-comutação superior a $100$ kHz, porém somente é possível estimar o torque depois de identificadas as componentes da equação de
-segunda lei de Newton aplicada a motores elétricos, que relaciona o
-momento de inércia $J$ refletido no eixo do motor, o coeficiente de atrito viscoso $B$ e o torque de
-carga $T_L$ pela equação:  (MELHORE A FRASE)
+comutação superior a $100$ kHz, porém a estimativa de torque só é possível depois de identificados os parâmetros da
+dinâmica rotacional do conjunto, ou seja, o momento de inércia $J$ refletido no eixo do motor,
+o coeficiente de atrito viscoso $B$ e o torque de carga $T_L$, relacionados pela equação:
 
 \begin{equation}\label{eq:dinamica_rotacional}
 T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
@@ -209,13 +210,13 @@ distorcem a medida.
 \subsection{Shunt Resistivo + Amplificador de Instrumentação (INA240)}
 \label{sec:ina240}
 
-No arranjo com shunt resistivo, um resistor de baixa resistência $R_s$ é inserido em
-série no ramo de alimentação, entre a bateria e o ESC, e pela Lei de Ohm a queda de tensão
-sobre ele é (RESISTIVO, UM RESISTOR DE BAIXA RESISTENCIA... REESCREVER, POIS FICOU ESTRANHO.)
+No arranjo com shunt resistivo, um resistor de valor muito baixo $R_s$ é inserido em
+série no ramo de alimentação, entre a bateria e o ESC, e a corrente do ramo é obtida pela Lei
+de Ohm a partir da queda de tensão que o resistor introduz,
 
-\begin{equation*}
+\begin{equation}
 V_s = R_s\,I.
-\end{equation*}
+\end{equation}
 
 Essa tensão, tipicamente da ordem de milivolts, é amplificada pelo circuito integrado INA240, cuja
 saída, referenciada a uma tensão de polarização $V_\mathrm{bias}$, é
@@ -348,7 +349,7 @@ isso, o estimador remove a parcela de perdas da corrente e a divide pelo comando
 \begin{equation}\label{eq:corrente_fase}
 I_{\mathrm{fase,eq}} = (I_{\mathrm{bat}} - I_0(u))/u,
 \end{equation}
-aplicando a curva característica (CITAR), com o $G_F$ identificado no ensaio de tração,
+aplicando a curva característica (Equação~\eqref{eq:curva_caracteristica}), com o $G_F$ identificado no ensaio de tração,
 
 \begin{equation}\label{eq:curva_caracteristica}
 F_{\text{tra\c{c}\~{a}o}} = G_F\,I_{\mathrm{fase,eq}},
@@ -363,8 +364,10 @@ resultando na estimativa de torque, com o $K_T$ definido por,
 em que $K_T = G_F\,r_{\mathrm{ef}}$ relaciona o coeficiente da curva característica ao
 raio efetivo medido, convertendo a força do ensaio no torque que a malha controla e que
 alimenta a malha externa. O estimador, portanto, traduz a corrente medida no esforço
-mecânico do propulsor por dois elos estáticos, e a dinâmica do caminho pertence apenas à
-malha interna. (DEFINA QUAIS EQUAÇÕES SÃO MALHA INTERNA E EXTERNA)
+mecânico do propulsor por dois elos estáticos, as Equações~\eqref{eq:corrente_fase}
+e~\eqref{eq:curva_caracteristica}, que formam o caminho da malha externa, entre a corrente
+entregue pela malha interna e o torque estimado, e a dinâmica do caminho pertence apenas à
+malha interna.
 
 \subsection{O seletor de aderência}
 \label{sec:seletor}
@@ -383,9 +386,8 @@ aderência e $T_{\mathrm{ref,ef}}$ a referência efetiva, que segue adiante na m
 
 Quando a referência pedida excede o que o processo admite, segui-la pode causar danos ao
 equipamento ou tornar o modelo de controle inválido, assim, o seletor limita a referência para que 
-o controlador nunca receba um pedido inexecutável. Para que
-o controlador não persiga a referência inalcançável, é a referência efetiva, já cortada, a
-que alimenta os dois caminhos da estrutura. (REESCREVA A FRASE PARA MELHOR CLAREZA, SEM REPETIÇÕES)
+o controlador nunca receba um pedido inexecutável. É a referência efetiva, já cortada, a que
+alimenta os dois caminhos da estrutura.
 
 No projeto, o limiar é o torque máximo transferível ao solo $T_{\text{ader\^{e}ncia}}$, e o
 ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação, pois a
