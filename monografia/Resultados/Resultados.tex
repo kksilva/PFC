@@ -27,18 +27,18 @@ seguindo a Equação~\eqref{eq:mq_origem}.
 \label{tab:bancada}
 \footnotesize
 \renewcommand{\arraystretch}{1.2}
-\begin{tabular}{c c}
+\begin{tabular}{c c c c}
 \hline
-$x$ (A) & $y$ (A) \\
+$x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) \\
 \hline
-0,81 & 1,11 \\
-1,03 & 1,27 \\
-1,19 & 1,35 \\
-1,29 & 1,51 \\
-1,47 & 1,67 \\
-1,60 & 1,80 \\
-1,72 & 1,92 \\
-1,92 & 2,15 \\
+0,818 & 1,118 & 2,177 & 2,418 \\
+1,033 & 1,272 & 2,437 & 2,610 \\
+1,196 & 1,355 & 2,924 & 3,162 \\
+1,299 & 1,510 & 3,236 & 3,455 \\
+1,475 & 1,677 & 3,554 & 3,708 \\
+1,605 & 1,803 & 4,470 & 4,575 \\
+1,722 & 1,929 & 4,867 & 5,220 \\
+1,924 & 2,153 & 5,268 & 5,652 \\
 \hline
 \end{tabular}
 \noindent{\footnotesize Fonte: elaborada pela autora (2026).}
@@ -48,8 +48,9 @@ O resultado,
 \begin{equation}\label{eq:ajuste_bancada}
 y = 1{,}0742\,x,
 \end{equation}
-indica que o sistema lê $7{,}42\%$ acima do multímetro, desvio percentual quase constante em
-toda a faixa e sempre no mesmo sentido, que pode ser compensado via software sem distorcer a forma do sinal. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
+indica que o sistema lê $7{,}42\%$ acima do multímetro, em desvio sempre no mesmo sentido e
+percentualmente maior nas correntes baixas, onde um \emph{offset} fixo pesa mais, e que pode ser
+compensado via \emph{software} sem distorcer a forma do sinal. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
 resposta ideal.
 
 \begin{figure}[htb]
