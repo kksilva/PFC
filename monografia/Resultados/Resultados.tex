@@ -511,7 +511,9 @@ A malha sintonizada na Seção~\ref{sec:projeto_controladores} tem seu desempenh
 por simulação não-linear sobre os modelos identificados neste capítulo, executada em tempo
 discreto de $10$ ms pelo script da simulação (Ap\^endice A.3), que reproduz a curva
 estática da corrente, a corrente de perdas, a divisão pelo comando, o seletor e as
-saturações. Quatro cenários cobrem a operação, um degrau de referência de $1{,}6$ para
+saturações. O horizonte é de $64$ s, e cada degrau só é aplicado após o regime
+permanente do cenário anterior, com margem de várias constantes de tempo. Quatro cenários
+cobrem a operação, um degrau de referência de $1{,}6$ para
 $3{,}0$ N$\cdot$m (PSR), uma perturbação de afundamento de tensão de $20\%$ somada a um
 deslocamento de $0{,}3$ A na corrente de perdas (PRP), um retorno de referência a $1{,}6$
 N$\cdot$m e um degrau para além do limiar do seletor.
@@ -528,12 +530,12 @@ de referência e atuação do seletor de aderência.}
 
 No PSR, o torque acompanha o degrau com pico de $3{,}35$ N$\cdot$m, sobressinal de
 $25\%$, e assenta no valor pedido. Na PRP, a perturbação produz desvio máximo de
-$1{,}04$ N$\cdot$m, com retorno ao regime de $3{,}347$ N$\cdot$m sobre a referência de
+$1{,}13$ N$\cdot$m, com retorno ao regime de $3{,}318$ N$\cdot$m sobre a referência de
 $3{,}0$ N$\cdot$m, residual compatível com o deslocamento imposto às perdas. No retorno,
 o torque acompanha a referência de $1{,}6$ N$\cdot$m com valor de $1{,}541$ N$\cdot$m
 na amostra avalizada. No último cenário, o degrau para além do limiar é cortado pelo
-seletor, e o torque estabiliza em $3{,}35$ N$\cdot$m, o teto do estimador, sem patinagem
-comandada. A malha, assim, segue a referência dentro da região validada, rejeita a
+seletor, e o torque estabiliza em torno de $3{,}3$ N$\cdot$m, o limiar do seletor, sem
+patinagem comandada. A malha, assim, segue a referência dentro da região validada, rejeita a
 perturbação elétrica e respeita o limiar de aderência.
 
 \section{Resumo do Capítulo}
