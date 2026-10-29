@@ -13,7 +13,7 @@ Gera os dados do ensaio de tracao de corrente (sem anotacao de forca).
 
 # ---------------------------------------------------------------------------
 # MAPA
-# 1) Configuracao do ensaio: faixa de degraus, direcao, limiares eletricos, CSV de saida (linhas 34-45)
+# 1) Configuracao do ensaio: faixa de degraus, direcao, limiares eletricos, CSV de saida (linhas 35-45)
 # 2) le_corrente e aguardar_repouso: leitura da serial e sincronizacao eletrica entre degraus (linhas 48-64)
 # 3) disparar_e_medir: disparo fogo-e-esqueca, deteccao da resposta na corrente e gravacao da janela (linhas 66-153)
 # 4) main: escada de degraus, lock de instancia unica, abertura da serial e loop do ensaio (linhas 156-190)

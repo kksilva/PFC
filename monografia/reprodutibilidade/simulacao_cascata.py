@@ -1,6 +1,6 @@
 """Simulacao da cascata de controle de torque do automodelo (PSR / PRP / seletor).
 
-Le a caracterizacao estatica (ensaios/ensaio_tracao_corrente_versus_forca.xlsx), ajusta a planta nao-linear
+Le a caracterizacao estatica (ensaio_tracao_corrente_versus_forca.xlsx (pasta reprodutibilidade)), ajusta a planta nao-linear
 da corrente e o ganho de torque diretamente dos dados (sem reducao i, sem K_t),
 executa a simulacao da cascata mestre (torque estimado) / escrava (corrente) com
 todas as nao-linearidades e salvaguardas do projeto, e gera a figura
@@ -13,7 +13,7 @@ Saida: figura PNG + metricas PSR/PRP impressas no terminal.
 # ---------------------------------------------------------------------------
 # MAPA
 # 1) Constantes do projeto: ajuste da planta, sintese IMC, salvaguardas e cenario de simulacao (linhas 30-74)
-# 2) Leitura e ajuste dos dados de ensaio: repeticoes da descida, I0(u), planta I_ss(u), ganho de torque, comando equivalente (linhas 76-170)
+# 2) Leitura e ajuste dos dados de ensaio: repeticoes da descida, I0(u), planta I_ss(u), ganho de torque, comando equivalente (linhas 76-160)
 # 3) Simulacao da cascata: ganhos IMC, cenario PSR/PRP/seletor, estimador, seletor, mestre, caminho direto com feedforward, PI escravo com clamping, planta (linhas 163-261)
 # 4) Metricas PSR/PRP/retorno/seletor e figura simulacao_cascata.png (linhas 264-345)
 # ---------------------------------------------------------------------------
@@ -35,7 +35,7 @@ PASTA_FIGURAS = Path(__file__).resolve().parent
 # (na pasta reprodutibilidade, as figuras saem junto aos scripts)
 
 PLANILHA_DADOS = PASTA_ENSAIOS / "ensaio_tracao_corrente_versus_forca.xlsx"
-ABA_PLANILHA = "Pagina1"
+ABA_PLANILHA = "Página1"
 
 DEGRAU_MINIMO = 100          # faixa de ajuste: regiao de aderencia (descida)
 DEGRAU_MAXIMO = 113
@@ -81,7 +81,7 @@ def carregar_repeticoes_descida(caminho_planilha):
     # So a descida e usada: e o sentido em que a caracteristica foi validada
     # ate a saturacao, sem os pontos de corte do ESC que contaminam a subida.
     planilha = openpyxl.load_workbook(caminho_planilha, data_only=True)
-    pagina = planilha.worksheets[0]
+    pagina = planilha[ABA_PLANILHA]
     linhas = list(pagina.iter_rows(values_only=True))
     cabecalho = linhas[0]
     degraus = [int(cabecalho[i]) for i in range(1, 44, 2) if cabecalho[i] is not None]
