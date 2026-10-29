@@ -381,11 +381,7 @@ F_{\text{tra\c{c}\~{a}o}} = G_F\,\frac{I_{\mathrm{bat}} - I_0(u)}{u}
 
 em que $I_0(u)$ é a corrente de perdas do conjunto, $G_F$ é a força por unidade de corrente,
 identificada no ensaio de tração, e $K_T = G_F\,r_{\mathrm{ef}}$ é o torque por unidade da
-mesma corrente, coeficiente que o controlador emprega. A malha externa compara o torque
-pedido ao estimado e gera a referência de corrente da malha interna, a mais rápida das duas,
-que ajusta o comando até anular o erro de corrente, o que confina a dinâmica
-comando--corrente ao laço interno. O projeto dessa estrutura, dos
-controladores às proteções, é o objeto da Seção~\ref{sec:proposta}. Por medir a corrente
+mesma corrente, coeficiente que o controlador emprega. Por medir a corrente
 diretamente, o sensor viabiliza, ainda, a proteção contra sobrecorrente por limiar, com o
 controlador reduzindo a excitação sempre que a leitura ultrapassa o valor máximo admitido.
 
@@ -427,6 +423,8 @@ servindo como padrão de bancada para o ajuste e a validação do coeficiente \(
 O protocolo do experimento é apresentado na Metodologia,
 Capítulo~\ref{chap:metodologia}.
 
+A Figura~\ref{fig:malha_cascata} apresenta o diagrama de blocos da estrutura de controle
+proposta.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.95\textwidth]{Figuras/diagrama_cascata_tikz-1.png}
@@ -436,16 +434,10 @@ $C_{\mathrm{ff}}$, cascata mestre--escravo $C_1$--$C_2$ e estimador $\hat{G}$.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-\subsection{O Estimador de Torque}
-\label{sec:estimador}
-
 A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758 e
 convertida em torque por um estimador que não exige o conhecimento das variáveis do
 sistema, como a redução da transmissão e a eficiência do caminho até a roda, pois todos
-esses fatores são absorvidos em único coeficiente identificado experimentalmente. Com
-$G_F$ e $K_T$ já definidos na cadeia de conversão do sensor, o desenvolvimento parte da
-corrente de fase equivalente, que desconta as perdas e recupera, pelo comando, a corrente
-que o chaveamento esconde da medida,
+esses fatores são absorvidos em único coeficiente identificado experimentalmente. 
 
 \begin{equation}\label{eq:corrente_fase}
 I_{\mathrm{fase,eq}} = (I_{\mathrm{bat}} - I_0(u))/u,
@@ -463,10 +455,11 @@ e fecha na estimativa de torque, com o $K_T$ da mesma cadeia,
 \hat{T} = K_T\,I_{\mathrm{fase,eq}},
 \end{equation}
 
-que alimenta a malha externa. O estimador, portanto, traduz a corrente medida no esforço
+em que $K_T = G_F\,r_{\mathrm{ef}}$ relaciona o coeficiente da curva característica ao
+raio efetivo medido, convertendo a força do ensaio no torque que a malha controla, e
+alimenta a malha externa. O estimador, portanto, traduz a corrente medida no esforço
 mecânico do propulsor por dois elos estáticos, e a dinâmica do caminho pertence apenas à
-malha interna, pois o comando gera a corrente pela $G_2(s)$, e todas as conversões
- seguintes são instantâneas.
+malha interna
 
 \subsection{O seletor de mínimo}
 \label{sec:seletor}
