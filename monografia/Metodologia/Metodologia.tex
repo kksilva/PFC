@@ -509,7 +509,7 @@ apresenta o fluxograma do bloco, com a bifurcação.
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.6\textwidth]{Figuras/fluxo_seletor.png}
-\caption{Fluxograma do seletor de mínimo e da rampa da referência, com a bifurcação para o
+\caption{Fluxograma do seletor de aderência e da rampa da referência, com a bifurcação para o
 \emph{feedforward} (antes da rampa) e para o mestre (depois).}
 \label{fig:fluxo_seletor}
 \footnotesize{Fonte: elaborada pela autora (2026).}
@@ -665,6 +665,41 @@ portanto,
 \end{equation}
 em que $\sigma_A(F)$ é o valor típico da repetibilidade da faixa e $T = F\,r_\mathrm{ef}$.
 
+O orçamento acima caracteriza o torque medido no ensaio, cuja força é a leitura da
+balança. O torque que interessa ao controle, porém, é o estimado a partir da corrente, e
+esse caminho traz a incerteza da cadeia de corrente, composta pela quantização do conversor
+e pelo erro total do sensor. Como o estimador subtrai da leitura a corrente de perdas e
+aplica a curva característica identificada com a mesma cadeia, o torque estimado é função
+da diferença $(I - I_0)$, e é sobre ela que as componentes se avaliam.
+
+A quantização do conversor do Arduino Due impõe o degrau de $0{,}122$ A já quantificado na
+Seção~\ref{sec:acshall}, que, tratado como retangular, contribui com
+$\sigma_{\mathrm{ADC}} = 0{,}061/\sqrt{3} \approx 0{,}035$ A. Relativo a $(I - I_0)$, essa
+parcela vale cerca de $1\%$ no início da região de aderência, onde a diferença é menor, e
+decresce com a corrente.
+
+O erro total de saída do sensor é de $\pm 1{,}2\%$ típicos sobre a escala, especificado com
+alimentação de $5$ V, e o próprio \emph{datasheet} adverte que a operação a $3{,}3$ V
+acrescenta erro de ratiometria. A especificação em $5$ V é aqui tomada como limite
+conservador \cite{acs758_datasheet}, e, como distribuição retangular, resulta
+$\sigma_{\mathrm{sensor}} = 1{,}2\%/\sqrt{3} = 0{,}69\%$ de $(I - I_0)$.
+
+Quanto ao desvio sistemático de $7{,}42\%$ revelado pela verificação em bancada
+(Seção~\ref{sec:resbancada}), ele poderia ser compensado via \emph{software}, mas, como a
+curva característica é identificada com a mesma cadeia que mede a corrente no controle, o
+desvio já é absorvido pelo coeficiente identificado e não se traduz em viés do torque
+estimado. A verificação em bancada valida, nesse sentido, a linearidade que a curva exige,
+e o que permanece como incerteza é a instabilidade desse desvio entre o ensaio e a
+operação, coberta pelo erro total do sensor. O torque estimado herda, portanto, a
+combinação
+\begin{equation}\label{eq:propagacao_estimador}
+\frac{\sigma_c(\hat{T})}{\hat{T}} = \sqrt{\left(\frac{\sigma_c(T)}{T}\right)^2
+                        + \left(\frac{\sigma_{\mathrm{ADC}}}{I - I_0}\right)^2
+                        + \sigma_{\mathrm{sensor}}^2},
+\end{equation}
+que eleva a incerteza combinada em cerca de $1{,}2\%$ no início da região de aderência e em
+menos de $0{,}8\%$ no restante da faixa.
+
 O mesmo raciocínio envolve as variâncias dos ajustes, cujo coeficiente de determinação da
 Equação~\eqref{eq:r2} mede a fração da variância dos dados explicada pela reta, enquanto a
 variância residual que ele deixa visível é o retrato agregado da repetibilidade, pois os
@@ -693,7 +728,7 @@ com o tratamento de cada conjunto de dados especificado junto ao seu ensaio. A m
 controle é então dissecada bloco a bloco no código da simulação, com o fluxograma de cada
 elemento, e as incertezas são caracterizadas componente a componente, no método do Tipo
 A e do Tipo
-B, e combinam em quadratura. O Capítulo \ref{chap:resultados}
+B, combinam em quadratura e alcançam também a cadeia de corrente do estimador de torque. O Capítulo \ref{chap:resultados}
 apresenta os resultados obtidos com este procedimento.
 
 \clearpage
