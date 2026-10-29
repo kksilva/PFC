@@ -445,48 +445,31 @@ $C_{\mathrm{ff}}$, cascata mestre--escravo $C_1$--$C_2$ e estimador $\hat{G}$.}
 A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758 e
 convertida em torque por um estimador que não exige o conhecimento das variáveis do
 sistema, como a redução da transmissão e a eficiência do caminho até a roda, pois todos
-esses fatores são absorvidos em único coeficiente identificado experimentalmente. O ponto de partida
-é a curva característica estática do propulsor, obtida no ensaio de tração de corrente versus força, 
-no qual o veículo é mantido parado e a força de tração na roda e a corrente demandada são medidos 
-para cada comando aplicado. Para empregar a corrente medida no ramo de alimentação, define-se a corrente 
-de fase equivalente como o quociente da corrente de bateria, com as perdas descontadas, pelo comando
+esses fatores são absorvidos em único coeficiente identificado experimentalmente. Com
+$G_F$ e $K_T$ já definidos na cadeia de conversão do sensor, o desenvolvimento parte da
+corrente de fase equivalente, que desconta as perdas e recupera, pelo comando, a corrente
+que o chaveamento esconde da medida,
 
 \begin{equation}\label{eq:corrente_fase}
 I_{\mathrm{fase,eq}} = (I_{\mathrm{bat}} - I_0(u))/u,
 \end{equation}
-na qual \(I_0(u)\) é a corrente de perdas do conjunto, medida em ensaio em vazio. A
-divisão pelo comando recupera a corrente de fase que o chaveamento esconde da medida,
-conforme a Equação~\eqref{eq:corrente_bateria}, relacionando-se pela curva característica 
-estática do propulsor
+
+aplica a curva característica, com o $G_F$ identificado no ensaio de tração,
 
 \begin{equation}\label{eq:curva_caracteristica}
 F_{\text{tra\c{c}\~{a}o}} = G_F\,I_{\mathrm{fase,eq}},
-\end{equation} 
+\end{equation}
 
-em que \(G_F\), em N/(A/u), é a força de tração produzida
-por unidade de corrente de fase equivalente.
-(ESSA PARTE ESTÁ REDUNDANTE COM O ACS758. APAGUE DAQUI, POIS JÁ TEM LÁ. A MESMA COISA PARA OS PAGARAFOS ABAIXO)
-O torque na roda fecha a cadeia corrente--força--torque. A força de tração atua no raio
-efetivo da roda, \(T = F_{\text{tra\c{c}\~{a}o}}\,r_{\mathrm{ef}}\), e a substituição
-da Equação~\eqref{eq:curva_caracteristica} nessa relação resulta na estimativa
+e fecha na estimativa de torque, com o $K_T$ da mesma cadeia,
 
 \begin{equation}\label{eq:estimador_proposta}
 \hat{T} = K_T\,I_{\mathrm{fase,eq}},
 \end{equation}
 
-em que $K_T = G_F\,r_{\mathrm{ef}}$, em N$\cdot$m/(A/u), é o torque na roda por unidade de
-corrente de fase equivalente, o mesmo coeficiente $G_F$ da curva característica,
-multiplicado pelo raio efetivo. Fisicamente, $K_T$ é o produto da constante de torque do
-motor pela redução e pelo rendimento do caminho até a roda, o torque entregue por
-ampère de fase, e o conhecimento de cada um desses fatores isolados não é necessário,
-pois o produto é identificado em bancada de uma só vez.
-
-Na cadeia do modelo, cada elo é estático, exceto um, pois o comando $u$ gera a corrente $I$
-através da dinâmica comando--corrente $G_2(s)$ da malha interna. A corrente se converte
-em torque pela relação estática da Equação~\eqref{eq:estimador_proposta}, com $K_T$, e o
-torque se converte em força pela relação estática $F = T/r_{\mathrm{ef}}$, com o raio
-efetivo, e a única dinâmica da cadeia é a da corrente, tratada na malha
-interna.
+que alimenta a malha externa. O estimador, portanto, traduz a corrente medida no esforço
+mecânico do propulsor por dois elos estáticos, e a dinâmica do caminho pertence apenas à
+malha interna, pois o comando gera a corrente pela $G_2(s)$, e todas as conversões
+ seguintes são instantâneas.
 
 \subsection{O seletor de mínimo}
 \label{sec:seletor}
@@ -511,19 +494,7 @@ limite atua, o torque entregue difere do torque pedido, e essa divergência é d
 malha passa a regular o processo contra o limiar transferível, não contra a referência, e o
 erro persistente entre ambos não é falha de controle, mas a proteção em exercício. Para que
 o controlador não persiga a referência inalcançável, é a referência efetiva, já cortada, a
-que alimenta os dois caminhos da estrutura. A Figura~\ref{fig:seletor_minimo} apresenta
-o seletor e a bifurcação da referência efetiva, que segue para o
-\emph{feedforward} e, após a rampa, para a malha mestre.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.7\textwidth]{Figuras/seletor_minimo.png}
-\caption{Seletor de mínimo: o torque pedido $T_{\mathrm{ref}}$ é cortado no limiar
-$T_{\text{ader\^{e}ncia}}$, e a referência efetiva alimenta o \emph{feedforward} e,
-após a rampa, a malha mestre.}
-\label{fig:seletor_minimo}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
+que alimenta os dois caminhos da estrutura.
 
 No projeto, o limiar é o torque máximo transferível ao solo $T_{\text{ader\^{e}ncia}}$, e o
 ponto de inserção é a entrada da malha, antes do \emph{feedforward} e da realimentação, de
@@ -540,8 +511,8 @@ estrutura, tanto a aderência quanto a validade do modelo.
 A pré-alimentação da referência, ou \emph{feedforward}, é o bloco que converte a
 referência diretamente em uma parcela da ação de controle, sem esperar que o erro se
 manifeste \cite{raffo_tcpi_psrprp}. O fundamento é a divisão de esforço entre os dois
-caminhos da estrutura. O bloco de pré-alimentação antecipa a
-resposta à referência, e o bloco de realimentação corrige o que a pré-alimentação não
+caminhos da estrutura, assim, o bloco de pré-alimentação antecipa a
+resposta à referência e o bloco de realimentação corrige o que a pré-alimentação não
 previu. Para que a referência se converta em ação de controle sem passar pelo erro, o
 caminho que ela atravessa precisa ser o inverso do modelo da malha
 
@@ -596,24 +567,29 @@ interna. Na estrutura, a perturbação $L_2$ atua dentro da malha
 escrava, e a função de transferência entre ela e a variável secundária é
 
 \begin{equation}\label{eq:rejeicao_l2}
-\frac{Y_2}{L_2} = \frac{G_{L2}}{1 + C_2\,G_2\,G_{m2}},
+\frac{I}{L_2} = \frac{G_{L2}}{1 + C_2\,G_2\,G_{m2}},
 \end{equation}
 
-em que $G_{L2}$ é o caminho da perturbação até a saída secundária, $C_2$ o controlador
-escravo, $G_2$ a planta interna e $G_{m2}$ o instrumento que realimenta a malha. Com o
+em que $G_{L2}$ é o caminho da perturbação até a corrente, $C_2$ o controlador
+escravo, $G_2$ a planta interna comando--corrente e $G_{m2}$ o sensor de corrente que
+realimenta a malha. Com o
 ganho de malha grande na banda de frequência da perturbação, o denominador reduz o
 efeito de $L_2$ antes que ela se transforme em erro na malha externa. Para que as duas
 malhas não disputem o mesmo atuador, a regra de separação de velocidades exige que a
 interna seja de três a dez vezes mais rápida que a externa. A
-Figura~\ref{fig:cascata_generica} apresenta a estrutura na notação genérica, com a
-referência $R$, as variáveis controladas primária $Y_1$ e secundária $Y_2$, as
-perturbações $L_1$ e $L_2$ e os instrumentos de realimentação $G_{m1}$ e $G_{m2}$.
+Figura~\ref{fig:cascata_generica} apresenta a estrutura com os sinais do projeto, na qual
+$T_{\mathrm{ref}}$ é a referência de torque, $I$ a variável secundária, a corrente,
+$\hat{T}$ a variável primária, o torque estimado, $K_{n1}$ a rampa da referência, e as
+perturbações $L_2$ e $L_1$ entram por cima, a primeira no caminho entre o comando e a
+corrente e a segunda no caminho do torque, sendo $G_{m2}$ o sensor de corrente e $G_{m1}$
+o estimador.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.95\textwidth]{Figuras/cascata_generica.png}
-\caption{Cascata genérica: malhas aninhadas, perturbação interna $L_2$ rejeitada pela
-malha escrava e perturbação externa $L_1$ por ela não alcançada.}
+\caption{Cascata com os sinais do projeto: malhas aninhadas de torque e corrente,
+perturbação interna $L_2$ rejeitada pela malha escrava e perturbação externa $L_1$ por
+ela não alcançada.}
 \label{fig:cascata_generica}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
