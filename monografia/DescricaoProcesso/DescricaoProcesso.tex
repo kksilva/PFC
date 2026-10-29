@@ -9,7 +9,8 @@ malha fechada, as vantagens e as limitações, de modo a fundamentar as decisõe
 \section{O Sistema de Propulsão}
 \label{sec:automodelo}
 
-O automodelo Kyosho Mad Force Kruiser 2.0 VE, de escala 1/8 (O QUE ESSE 1/8 SIGNIFUCA?), é equipado com um motor 
+O automodelo Kyosho Mad Force Kruiser 2.0 VE, de escala 1/8, isto é, com dimensões
+lineares oito vezes menores que as do veículo real que reproduz, é equipado com um motor
 brushless Orion NEON 8BL (Ori28188), cuja
 constante de velocidade é de \(2100\,\mathrm{rpm/V}\) -- rotações por minuto por volt aplicado,
 em condições próximas à operação sem carga mecânica significativa.
@@ -423,37 +424,11 @@ galvânico para proteger o circuito das altas correntes e não dissipa potência
 Conforme visto anteriormente, é necessário um instrumento capaz de medir a força de
 tração na escala do veículo para relacionar a corrente medida ao torque. A escolha desse
 instrumento foi precedida de um estudo prévio que comparou as principais soluções
-encontradas na literatura. O torquímetro e o dinamômetro, apesar de representarem opções mais diretas para obter
-o torque, possuem como principal desvantagem a incompatibilidade com a dimensão do
-projeto, pois o primeiro demanda acoplamento mecânico no eixo da transmissão, o que
-inviabiliza sua instalação sem desmontagem do automodelo, e o segundo pressupõe bancada de
-escala automotiva, além do alto custo e das modificações permanentes no automodelo. A célula de
-carga retorna uma saída da ordem de milivolts que exige circuito de amplificação dedicado
-e uma fixação mecânica própria entre o veículo e o ponto de ancoragem do ensaio, e mede
-apenas a componente da força ao longo do seu eixo, e o alinhamento entre esse
-eixo e a linha de tração precisa ser garantido, sob pena de componentes não medidas
-corromperem a leitura. A balança de gancho foi a opção escolhida, pois mede
-diretamente a força, dispensa condicionamento de sinal e adaptação mecânica além do próprio
-gancho, e serve como padrão de bancada para o ajuste e a validação do coeficiente \(K_T\). O protocolo do experimento é apresentado na Metodologia,
+encontradas na literatura. A balança de gancho mede
+diretamente a força, dispensa o condicionamento de sinal e a adaptação mecânica,
+servindo como padrão de bancada para o ajuste e a validação do coeficiente \(K_T\). 
+O protocolo do experimento é apresentado na Metodologia,
 Capítulo~\ref{chap:metodologia}.
-
-A tradução da corrente em torque se dá em dois elos estáticos, corrente--força e
-força--torque, equacionados na Seção~\ref{sec:acshall}, e cada elo tem o seu coeficiente.
-O primeiro, $G_F$, é a força de tração por unidade de corrente, identificado diretamente no
-ensaio, pois a balança mede força. O segundo, $K_T = G_F\,r_{\mathrm{ef}}$, é o torque por
-unidade da mesma corrente, obtido da multiplicação pelo raio efetivo da roda, e é o
-coeficiente que o controlador emprega, pois a variável de interesse é o torque. Os dois
-nomes designam uma mesma relação física entre a corrente e o esforço mecânico do
-propulsor, vista ora na grandeza que o ensaio mede, ora na grandeza que o controle
-comanda, e a distinção de nomes evita confundir as unidades ao longo do texto. A
-Subseção~\ref{sec:estimador} deriva os dois coeficientes da curva característica, e as
-subseções seguintes detalham a malha de controle construída sobre eles. A Figura~\ref{fig:malha_cascata}
-apresenta a malha completa, com o torque pedido $T_{\mathrm{ref}}$ limitado pelo seletor de
-mínimo ao limiar de aderência $T_{\text{ader\^{e}ncia}}$, o caminho de pré-alimentação
-$C_{\mathrm{ff}}$ convertendo a referência efetiva na corrente esperada $I_{\mathrm{ff}}$ e no
-comando equivalente $u_{\mathrm{ff}}$, e a cascata mestre $C_1$--escravo $C_2$ perseguindo o
-torque estimado $\hat{T}$ reconstruído por $\hat{G}$, e as subseções seguintes detalham cada
-bloco.
 
 \begin{figure}[htb]
 \centering
@@ -470,12 +445,11 @@ $C_{\mathrm{ff}}$, cascata mestre--escravo $C_1$--$C_2$ e estimador $\hat{G}$.}
 A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758 e
 convertida em torque por um estimador que não exige o conhecimento das variáveis do
 sistema, como a redução da transmissão e a eficiência do caminho até a roda, pois todos
-esses fatores são absorvidos num único coeficiente identificado em bancada. O ponto de partida
-é a curva característica estática do propulsor,
-obtida no ensaio de tração de corrente versus força, no qual o veículo é mantido parado e a força de
-tração na roda e a corrente demandada são medidos para cada comando aplicado. Para empregar a corrente medida no
-ramo de alimentação, define-se a corrente de fase equivalente como o quociente da
-corrente de bateria, com as perdas descontadas, pelo comando
+esses fatores são absorvidos em único coeficiente identificado experimentalmente. O ponto de partida
+é a curva característica estática do propulsor, obtida no ensaio de tração de corrente versus força, 
+no qual o veículo é mantido parado e a força de tração na roda e a corrente demandada são medidos 
+para cada comando aplicado. Para empregar a corrente medida no ramo de alimentação, define-se a corrente 
+de fase equivalente como o quociente da corrente de bateria, com as perdas descontadas, pelo comando
 
 \begin{equation}\label{eq:corrente_fase}
 I_{\mathrm{fase,eq}} = (I_{\mathrm{bat}} - I_0(u))/u,
@@ -489,9 +463,9 @@ estática do propulsor
 F_{\text{tra\c{c}\~{a}o}} = G_F\,I_{\mathrm{fase,eq}},
 \end{equation} 
 
-em que \(G_F\), em N/(A/u), é o coeficiente angular do ajuste, a força de tração produzida
+em que \(G_F\), em N/(A/u), é a força de tração produzida
 por unidade de corrente de fase equivalente.
-
+(ESSA PARTE ESTÁ REDUNDANTE COM O ACS758. APAGUE DAQUI, POIS JÁ TEM LÁ. A MESMA COISA PARA OS PAGARAFOS ABAIXO)
 O torque na roda fecha a cadeia corrente--força--torque. A força de tração atua no raio
 efetivo da roda, \(T = F_{\text{tra\c{c}\~{a}o}}\,r_{\mathrm{ef}}\), e a substituição
 da Equação~\eqref{eq:curva_caracteristica} nessa relação resulta na estimativa

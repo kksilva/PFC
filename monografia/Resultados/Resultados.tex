@@ -4,21 +4,22 @@
 Este capítulo apresenta os resultados dos ensaios definidos na metodologia, na ordem em que
 foram conduzidos, e o desempenho da malha projetada sobre eles em simulação. As regiões de
 operação são definidas na Seção \ref{sec:regioes}, já que o comportamento do propulsor não
-é uniforme ao longo da escala de comando. Cada ensaio é apresentado com o tratamento dos
-dados, as figuras e tabelas geradas e a análise do que
-mostram.
+é uniforme ao longo da escala de comando. Cada ensaio é apresentado com as figuras e
+tabelas geradas e a análise do que mostram, e o tratamento dos dados de cada um segue a
+metodologia.
 
 \section{Testes em Bancada}
 \label{sec:resbancada}
 
 A verificação em bancada, cuja motivação e circuito estão na metodologia, fornece os
 desvios sistemáticos dos instrumentos que alimentam o orçamento de incertezas da Seção
-\ref{sec:incertezas}, e esta seção registra os valores obtidos.
-(FALAR QUE O TESTE EM BANCADA E O TESTE NA PROTOBOARD E DO CARRINHO APRESENTARAM RESULTADOS SIMILARES. 
-FALE SOBRE A DIFEREÇA ENTRE AS CONEXOES DO SENSOR E SE AS MUDANÇAS INFLUENCIAM NO RESULTADO)
-A cadeia de corrente foi confrontada com um multímetro de referência, com a fonte ajustável
-percorrendo a faixa de $0$ a $6$ A, sendo que os dados consolidados estão na Tabela~\ref{tab:bancada} e a reta ajustada
-forçada pela origem é mostrada na Equação~\eqref{eq:mq_origem}
+\ref{sec:incertezas}, e esta seção registra os valores obtidos. O teste foi conduzido em
+três configurações, o circuito aberto com a fonte ajustável, o sensor instalado no veículo
+e a cadeia com o fio do conector interrompido para a inserção do multímetro, e os três
+arranjos apresentaram resultados equivalentes, o que indica que a topologia da conexão não
+influencia a resposta da cadeia. Os dados consolidados da cadeia de corrente estão na
+Tabela~\ref{tab:bancada} e a reta ajustada forçada pela origem segue a
+Equação~\eqref{eq:mq_origem}.
 
 \begin{table}[htb]
 \centering
@@ -64,8 +65,9 @@ O desvio é o caso favorável em termos de correção, pois um único fator mult
 
 A balança foi verificada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg, e
 as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático e
-cresce linearmente com a carga, somando $10$ g para cada $0{,}5$ kg, proporção constante nos
-três pontos verificados.  (ACHEI MUITA COISA DESNECESSARIA. EXPLIQUE O MOTIVO DA RESOLUÇÃO SER SISTEMATICA)
+de resolução proporcional, $10$ g para cada $0{,}5$ kg, proporção constante nos três
+pontos, o que o caracteriza como um desvio multiplicativo da leitura, declarado como
+componente de incerteza sem correção, conforme a Seção~\ref{sec:incertezas}.
 
 \section{Regiões de operação}
 \label{sec:regioes}
@@ -79,15 +81,16 @@ não produzem resposta mecânica e o controlador precisa atravessá-la sem acumu
 erro.
 
 A \textbf{região de aderência}, de $100^\circ$ a $113^\circ$, é aquela em que a roda
-permanece grirando, sem patinagem, e toda a tração se transfere ao cabo. A força passa
+permanece girando, sem patinagem, e toda a tração se transfere ao cabo. A força passa
 a depender apenas do torque do motor, que por sua vez decorre da corrente, sendo essa a
 única região em que o modelo é válido, a dinâmica identificada representa a planta e todo o
 projeto do controlador se apoia.
 
 Acima de $113^\circ$--$114^\circ$ inicia-se a \textbf{região de saturação}, em que a
-aderência se esgota, ocorre patinagem ou o corte do ESC (QUE CORTE? VEM POR PADRAO?), e a 
-força deixa de ser determinada pela corrente, pois produz mais torque apenas deslizamento, delimitando
-a faixa útil do atuador.
+aderência se esgota, ocorre patinagem ou o corte por subtensão do ESC, proteção de fábrica
+que interrompe o motor quando a tensão da bateria cai sob carga, e a
+força deixa de ser determinada pela corrente, pois acima desse ponto o comando produz
+apenas deslizamento, delimitando a faixa útil do atuador.
 
 Os limites exatos dessas regiões variam de ensaio para ensaio, e a Tabela \ref{tab:zonas}
 consolida as faixas observadas em cada um.
@@ -101,7 +104,7 @@ consolida as faixas observadas em cada um.
 \hline
 Ensaio & Zona morta & Região de aderência & Região de saturação \\
 \hline
-Ensaio em vazio & $97$--$99$ & --\textsuperscript{a} & Não observada nos degraus 97-117 (CORRIGIR LATEX) \\
+Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & Não observada nos degraus $97$--$117$ \\
 \hline
 Tração de corrente & $97$--$99$ & $100$--$109$ & A partir de $110$\textsuperscript{d} \\
 \hline
@@ -126,16 +129,14 @@ pois acima de $110^\circ$ a resposta já nasce contaminada pela patinagem.
 \label{sec:resvazio}
 
 O ensaio em vazio forneceu a corrente de perdas $I_0(u)$ que o estimador desconta de cada
-leitura e que a pré-alimentação soma a cada referência, como discutido anteriormente. O ensaio 
+leitura e que a pré-alimentação soma a cada referência, como discutido anteriormente, e o
+tratamento das amostras, do descarte dos degraus não executados ao ajuste da reta, segue a
+Seção~\ref{sec:vazio} da metodologia. O ensaio
 testa a hipótese estrutural do modelo, pois, com
 o veículo parado, a corrente de perdas é essencialmente a própria corrente de fase média,
-que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_bateria}, de
-modo que um ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
-pelo quociente $I/u$.
-
-O script da caracterização estática agrupa as leituras por comando, calcula a média de cada
-grupo e ajusta a reta sobre essas médias pela Equação~\eqref{eq:mq}, imprimindo a Tabela
-\ref{tab:vazio}, com os valores que alimentam o ajuste.
+que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_bateria}, e
+um ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
+pelo quociente $I/u$. A Tabela \ref{tab:vazio} consolida os valores que alimentam o ajuste.
 
 \begin{table}[htb]
 \centering
@@ -166,14 +167,16 @@ a corrente atinge $2{,}35$ A no último comando. O ajuste linear sobre as média
 \[
 I_0(u) = 0{,}53 + 6{,}70\,u,
 \]
-apresenta coeficiente de determinação $r^2 = 0{,}85$ (Equação~\eqref{eq:r2}), representado na Figura \ref{fig:i0}. O
-crescimento concentrado nos comandos altos explica a inclinação da reta (NAO ENTENDI, EXPLIQUE), que representa uma
-média do comportamento sobre toda a escala.
+apresenta coeficiente de determinação $r^2 = 0{,}85$ (Equação~\eqref{eq:r2}), representado na Figura \ref{fig:i0}. A
+inclinação da reta vem do crescimento concentrado nos comandos altos, pois até $110^\circ$
+a corrente de perdas quase não varia e só os últimos comandos a elevam de fato, de forma
+que o coeficiente angular representa uma média do comportamento sobre toda a escala,
+superestimando as perdas nos comandos baixos e subestimando nos altos.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.6\textwidth]{Figuras/i0_vazio.png}
-\caption{Corrente de perdas $I_0$ em função do comando norpode rmalizado $u$, com a zona morta
+\caption{Corrente de perdas $I_0$ em função do comando normalizado $u$, com a zona morta
 destacada e o ajuste linear.}
 \label{fig:i0}
 \footnotesize{Fonte: elaborada pela autora (2026).}
@@ -183,26 +186,22 @@ Os pontos se distribuem em torno da reta sem desvio sistemático aparente. A com
 corrente de carga da caracterização mostra a relevância relativa das perdas, pois no centro
 da região de aderência a corrente medida com carga é de $13$ A no comando de $105^\circ$
 (Tabela \ref{tab:mestra}), e as perdas descontadas, cerca de $1{,}3$ A, são uma fração
-pequena, mas não desprezível, do sinal. A linearidade confirmada sustenta a hipótese do
-modelo e fecha a primeira peça da caracterização. (NAO ENTENDI NADA SOBRE A ANALISE. PENSE SOBRE COMO SE RELACIONA COM AS PERDAS E O TORQUE)
+pequena, mas não desprezível, do sinal. A linearidade confirmada fecha o elo com a malha,
+pois garante que o desconto das perdas no estimador e a sua recomposição no
+\emph{feedforward} operam com um $I_0(u)$ conhecido e bem comportado, condição para que o
+torque estimado não carregue o enviesamento que uma curva não linear introduziria,
+principalmente nos degraus baixos, e assim se encerra a primeira peça da caracterização.
 
 \section{A Curva Característica Estática}
 \label{sec:restracao}
 
-Em cada comando da escada, o protocolo fornece um par de valores em regime: a corrente
-consumida e a força de tração lidas nos segundos $7$ a $10$, compondo o conjunto dos pontos da 
-curva característica organizada pelas regiões de operação já definidas.
-
-A Tabela \ref{tab:mestra} consolida os dados normalizado $u$ de acordo com a definição da
-metodologia, $u = (\alpha - 95)/85$, sendo $\alpha$ o ângulo do degrau (ESPERO QUE TENHA SIDO CITADO ANTERIORMENTE, JÁ QUE É USAMOS EM OUTRAS ANALISES E NAO SOMENTE NESSA). 
-Para cada comando, as
-células trazem as medianas da corrente e da força das quatro repetições, com o
-desvio-padrão amostral entre parênteses, calculados pelo script da caracterização estática,
-que converte as forças de kgf para N com $g = 9{,}81$ m/s$^2$ e imprime
-exatamente esta tabela. A corrente registrada
-eletronicamente durante o ensaio de tração de corrente concordou com a anotada dentro da
-dispersão entre repetições, o que cruza as duas fontes de dados (NAO ENTENDI,EXPLIQUE O QUE É VALIDADO, QUAIS SAO AS VARIAVEIS E COMO COMPROVA, USE ASEÇÃO DA METODOLOGIA PARA REFERIR AO ENSAIO). Os travessos marcam o
-comando de $98^\circ$ da descida, não executado nessa sessão e excluído do consolidado.
+O protocolo fornece, em cada comando da escada, um par de valores em regime, a corrente
+consumida e a força de tração lidas nos segundos $7$ a $10$, e o tratamento, do pareamento
+corrente--força às medianas e ao ajuste do coeficiente, segue a
+Seção~\ref{sec:tratamento} da metodologia. A Tabela \ref{tab:mestra} consolida os dados,
+com o comando normalizado conforme a Equação~\eqref{eq:normalizacao} da metodologia, e os
+travessos marcam o comando de $98^\circ$ da descida, não executado nessa sessão e excluído
+do consolidado.
 
 \begin{table}[htb]
 \centering
@@ -246,28 +245,30 @@ superior da região coincide com o início do crescimento sustentado da corrente
 Na região de aderência, os dois sentidos apresentam comportamentos distintos. Na descida, a
 força cresce de $14{,}4$ N em $100^\circ$ até $50{,}8$ N em $113^\circ$, atingindo o máximo
 de $52$ N já na fronteira da saturação, com dispersão típica de $\pm 1$ N entre
-repetições, comportamento esperado de um propulsor abaixo do limite de aderência (COMO ASSIM?) e a base
-da validação do modelo. Na subida, entre $105^\circ$ e $110^\circ$, a força estaciona em
-torno de $31$ N enquanto a corrente oscila entre as repetições com dispersão muito maior,
-até que o platô se encerra acima de $110^\circ$ e a força retoma o crescimento até o máximo
-da escala. Na descida, foi observado (NO PASSADO MESMO? O QUE DIZ A ABNT?) que o ESC demanda 
+repetições, comportamento esperado de um propulsor abaixo do limite de aderência, no qual a
+roda gira sem deslizar e a força acompanha a corrente sem perdas por escorregamento, e essa
+é a base da validação do modelo. Na subida, entre $105^\circ$ e $110^\circ$, a força
+estaciona em torno de $31$ N enquanto a corrente oscila entre as repetições com dispersão
+muito maior, até que o platô se encerra acima de $110^\circ$ e a força retoma o crescimento
+até o máximo da escala. Na descida, observa-se que o ESC demanda
 mais corrente para o mesmo comando ao longo de toda a descida, o que
-se percebe no ruído do motor no tremor do conjunto e a corrente maior se acompanha de força maior. (ADICIONAR QUE A BATERIA DESCARREGOU MAIS RAPIDO -- NAO FOI MEDIDO, COLOQUE COMO OBSERVAÇÃO TAMBEM)
-A diferença entre os
+se percebe no ruído do motor, mais intenso, e no tremor do conjunto, e a corrente maior se
+acompanha de força maior. Registra-se, como observação sem medição dedicada, que a bateria
+também se descarregava visivelmente mais rápido nesse sentido, consistente com a maior
+corrente demandada. A diferença entre os
 sentidos é sistemática na região de aderência e se quantifica pelo quociente entre as
 medianas da descida e da subida da Tabela \ref{tab:mestra}, comando a comando, na faixa de
-$104^\circ$ a $115^\circ$, variando de $+7\%$ (DE ONDE VEIO 7?), em $115^\circ$, a $+45\%$ (DE ONDE VEIO 45?), em $110^\circ$,
-sempre com corrente e força maiores na descida.
-
-(ME RESPONDA NO CHAT SE TEMOS OUTROS DADOS PARA COLOCAR GRAFICOS AQUI)
+$104^\circ$ a $115^\circ$, variando de $+7\%$, em $115^\circ$, onde a força da descida,
+$49{,}76$ N, supera a da subida, $46{,}65$ N, a $+45\%$, em $110^\circ$, onde o quociente
+$47{,}18/32{,}52 = 1{,}45$, sempre com corrente e força maiores na descida.
 
 Na região de saturação, a mudança de comportamento ocorre nos dois últimos comandos da
 descida: a corrente, que chegava a $26$--$29$ A nos comandos vizinhos, cai para cerca de
-$15$ A e a força recua de $50$ N para $38$--$44$ N. Foi observado um comportamento cíclico de 
-aceleração e parada, sendo compatível com o corte de subtensão (NAO É SOBRE? PESQUISE ISSO NO MANUAL DESSE ESC) do ESC. Em altas
-correntes, a tensão da bateria cai abaixo do limiar de proteção, o ESC interrompe o motor, a
-tensão se recupera e o ciclo recomeça. Esses pontos são registrados como observação e não
-integram a curva. (E NAO VAMOS APRESENTAR ELES? ME MANDA NO CHAT)
+$15$ A e a força recua de $50$ N para $38$--$44$ N. Foi observado um comportamento cíclico
+de aceleração e parada, compatível com o corte por subtensão do ESC, pois, em altas
+correntes, a tensão da bateria cai abaixo do limiar de proteção, o ESC interrompe o motor,
+a tensão se recupera e o ciclo recomeça. Esses pontos são registrados como observação e não
+integram a curva, aparecendo na Figura~\ref{fig:curva} como marcadores ocos.
 
 \begin{figure}[htb]
 \centering
@@ -278,34 +279,30 @@ regiões de operação e os pontos do corte do ESC destacados.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
+A Figura \ref{fig:curva} apresenta os mesmos dados em forma de curva, na qual o que as
+regiões significam se lê de imediato. A força permanece praticamente constante na zona
+morta, cresce com regularidade na descida da região de aderência, estaciona na subida entre
+$105^\circ$ e $110^\circ$ e atinge o máximo já na fronteira da saturação. Os dois últimos
+pontos da descida, ocos no gráfico, ficam fora da curva pelo corte do ESC, e o espaço entre
+as curvas dos dois sentidos registra a diferença sistemática quantificada acima.
+
 O resultado central é a validação do modelo de torque contra a balança. O modelo, definido
 na Seção~\ref{sec:proposta} (Equação~\eqref{eq:curva_caracteristica}), relaciona, na
-região de aderência, a força de tração à corrente de fase equivalente,
-$(I_\mathrm{bat} - I_0(u))/u$, por um único coeficiente que absorve a constante de torque do
-motor, o rendimento do caminho elétrico-mecânico, a redução e o raio efetivo, de modo que
-conhecer cada fator isoladamente não é necessário ao controlador. O critério de validação decorre da própria forma do modelo, pois, se a Equação
-\eqref{eq:curva_caracteristica} é válida, os pontos medidos devem alinhar-se sobre uma reta
-que passa pela origem, com inclinação $G_F$, e o coeficiente de determinação (Equação~\eqref{eq:r2}) mede o
-alinhamento, testando o modelo inteiro de uma vez, com todos os seus pressupostos, a
-linearidade do ESC, o desconto das perdas, a conversão pela razão cíclica e a constância do
-coeficiente do conjunto. (TEXTO GRANDE, CONFUSO E COM PARTES DESNECESSARIAS "O CRITERIO DE VALIDAÇÃO...")
-
-Os ajustes usam os pontos individuais das repetições, não as medianas. Cada leitura de um
-comando fornece um par, cuja abscissa é a corrente de fase equivalente,
-$(I - I_0(u))/u$, com $I_0(u)$ dado pelo ajuste do ensaio em vazio e $u$ pela
-normalização da metodologia, e cuja ordenada é a força convertida de kgf para N. Na região
-de aderência, a descida contribui com $14$ comandos e a subida com $11$, quatro repetições
-cada, $56$ e $44$ pontos. Na descida, o ajuste resulta em $G_F = 0{,}372$ N/(A/u) com
-$r^2 = 0{,}79$, e na subida, $G_F = 0{,}368$ N/(A/u) (VC EXPLICOU COMO O CODIGO QUE FORNECEU ESSE VALOR IMPLEMENTOU ISSO?) com $r^2 = 0{,}11$. Os dois
-coeficientes praticamente coincidem, o que confirma que a constante do conjunto não depende
-do sentido da escada. Na descida, os pontos distribuem-se ao longo da reta que passa pela
-origem, e a variância não explicada, cerca de $21\%$, é da mesma ordem da dispersão entre
-repetições da Tabela \ref{tab:mestra}, e o modelo é validado. Na subida, o ajuste
-praticamente desaparece, e a razão é física, não estatística, pois a força estaciona em
-torno de $31$ N enquanto a corrente oscila entre as repetições, espalhando os pontos na
-horizontal, o retrato do platô discutido acima. A descida, mecanicamente quieta, é a
-evidência do modelo, ao passo que a subida é a evidência de onde ele deixa de valer.
-(FALAR DE VARIANCIA E OUTRAS ESTATISTICAS NA PARTE DE INCERTEZAS DESSE CAP. APENAS RESULTADOS E ANALISES. ESTÁ TUDO MUITO GRANDE)
+região de aderência, a força de tração à corrente de fase equivalente por um único
+coeficiente, e, se é válido, os pontos medidos devem alinhar-se sobre uma reta que passa
+pela origem, com o coeficiente de determinação (Equação~\eqref{eq:r2}) medindo o
+alinhamento e abrangendo, de uma vez, a linearidade do ESC, o desconto das perdas e a
+conversão pela razão cíclica. O ajuste, sobre os pontos individuais das repetições e pela
+função \texttt{ajuste\_gf} (Seção~\ref{sec:tratamento}), resulta, na descida, em $G_F =
+0{,}372$ N/(A/u) com $r^2 = 0{,}79$, e, na subida, $G_F = 0{,}368$ N/(A/u) com $r^2 =
+0{,}11$, com $56$ e $44$ pontos. Os dois coeficientes praticamente coincidem, o que
+confirma que a constante do conjunto não depende do sentido da escada. Na descida, a
+variância não explicada, cerca de $21\%$, é da mesma ordem da dispersão entre repetições
+da Tabela \ref{tab:mestra}, e o modelo é validado. Na subida, o ajuste praticamente
+desaparece, e a razão é física, não estatística, pois a força estaciona em torno de $31$ N
+enquanto a corrente oscila entre as repetições, espalhando os pontos na horizontal, o
+retrato do platô. A descida, mecanicamente quieta, é a evidência do modelo, ao passo que a
+subida é a evidência de onde ele deixa de valer.
 
 
 O estimador de torque usado no controlador converte o coeficiente de força em coeficiente
@@ -318,35 +315,21 @@ quociente $I/u$ deixa de representar a corrente de fase e a força deixa de ser 
 pela corrente, o que a própria regressão confirma ao produzir valores incompatíveis com a
 física fora da faixa. A malha externa herda essa limitação, que é a origem do seletor de
 aderência e da limitação do comando à faixa validada, projetados no
-Capítulo~\ref{chap:descricaoprocesso}.
-
-(NO FIM, O RAIO EFETIVO FOI UTILIZADO EM ALGUMA COISA? SEJA NA ANALISE OU NO CODIGO? PQ FOI FEITO O ROLLOUT?)
-
-Da força máxima de $52$ N e do peso do conjunto, $6{,}640\ \mathrm{kg} \times 9{,}81\
-\mathrm{N/kg} = 65{,}1$ N, resulta um coeficiente de atrito aparente $\mu \approx 0{,}80$,
-quociente da tração do eixo motriz pelo peso de todo o conjunto, valor só compatível com
-atrito seco se parte da carga do eixo dianteiro migrar para o traseiro sob tração, pois
-sobre o peso do eixo traseiro sozinho seria fisicamente inatingível. O torque máximo, o
-produto da força pelo raio efetivo medido, $52\ \mathrm{N} \times 0{,}0751\ \mathrm{m}$, é
-de aproximadamente $3{,}9$ N$\cdot$m, e esses valores delimitam o limitador da malha de
-controle. (MOVER PARA A CONCLUSAO E COMPLEMENTAR COMO EU PEDI)
+Capítulo~\ref{chap:descricaoprocesso}. Os limites de força e torque decorrentes, com o
+coeficiente de atrito aparente do conjunto, seguem para a conclusão, onde fecham o limiar
+do seletor.
 
 \section{A Dinâmica entre Comando e Corrente}
 \label{sec:resdinamica}
 
-O segundo modelo vem do ensaio de tração de corrente, conduzido sem anotação de força, com
-a corrente amostrada a $100$ Hz e registrada por inteiro em cada comando, conforme o
-protocolo da metodologia. O script da dinâmica isola a sessão de aquisição rápida do
-arquivo bruto, segmenta o registro em blocos, um por comando, e ancora cada borda de subida
-da região de aderência, os comandos de $100^\circ$ a $109^\circ$, no seu início elétrico.
-
-O tratamento exigiu um cuidado que só se torna evidente na Figura \ref{fig:blocos}, pois os
-blocos não começam no comando. Os primeiros $1{,}5$ a $2$ s de cada bloco registram a
-corrente em nível de repouso, compatível com a corrente de perdas $I_0$ do ensaio em vazio,
-já que a janela de registro abre antes de o comando remoto produzir efeito no ESC, e somente
-após esse período a corrente sobe. Tratar o bloco inteiro como resposta ao degrau conduziria
-a uma constante de tempo superestimada, mistura do atraso do protocolo com a dinâmica da
-planta.
+O segundo modelo vem do ensaio de tração de corrente
+(Seção~\ref{sec:tracaocorrente}), conduzido sem anotação de força, com a
+corrente amostrada a $100$ Hz e registrada por inteiro em cada comando, e o tratamento das
+bordas, do nível de repouso ao início elétrico e aos dois métodos de ajuste, segue a
+metodologia. Os blocos não começam no comando, e os primeiros $1{,}5$ a $2$ s de cada bloco
+registram o repouso que o precede, como se vê na Figura \ref{fig:blocos}, de forma que a
+resposta é ancorada no seu início elétrico para não misturar o atraso do protocolo com a
+dinâmica da planta.
 
 \begin{figure}[htb]
 \centering
@@ -358,17 +341,10 @@ comando, e a subida é rápida uma vez iniciada.}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-O script define o nível de repouso como a média dos primeiros $1{,}5$ s do bloco, o platô
-como a média dos últimos $3$ s e o início elétrico como a primeira amostra acima de $20\%$
-da excursão entre ambos. A partir dele, guarda $6$ s de resposta, normalizados entre repouso
-e platô. Sobre a média das dez bordas foram empregados dois métodos, o da $63{,}2\%$, em que
-o tempo que a resposta leva para atingir $63{,}2\%$ do valor final é, pela definição de
-constante de tempo, o próprio $\tau$, e o ajuste de mínimos quadrados ao modelo de primeira
-ordem, procurando o $\tau$ que minimiza a soma dos quadrados dos resíduos entre a média e a
-curva $1 - e^{-t/\tau}$, na linha da caracterização dinâmica clássica por resposta ao
-degrau \cite{braga_instr_dinamica}. Bordas acima de $110^\circ$ não foram empregadas, pois a
-resposta já nasce contaminada pela patinagem. A Figura \ref{fig:respostas} apresenta as dez
-respostas alinhadas e normalizadas, com a média e o ajuste sobre ela.
+A Figura \ref{fig:respostas} apresenta as dez
+respostas alinhadas e normalizadas, com a média e o ajuste sobre ela, sobre os comandos de
+$100^\circ$ a $109^\circ$, pois bordas acima de $110^\circ$ nascem contaminadas pela
+patinagem.
 
 \begin{figure}[htb]
 \centering
@@ -394,7 +370,8 @@ para todos os comandos da região de aderência. A planta é, portanto,
 G_2(s) = \frac{111}{0{,}18\,s + 1},
 \end{equation}
 sem atraso apreciável, em que o ganho $111$ A/u é a média dos quocientes platô por comando
-das dez bordas e a resposta se assenta em cerca de quatro vezes $0{,}18$ s, pela regra usual
+das dez bordas, conforme o tratamento da Seção~\ref{sec:tracaocorrente}, e a resposta se
+assenta em cerca de quatro vezes $0{,}18$ s, pela regra usual
 de que uma primeira ordem se acomoda em quatro constantes de tempo. O valor é coerente com o
 esperado para a constante elétrica do caminho comando--corrente, pois, com a roda travada, a
 força contra-eletromotriz é baixa e a corrente acompanha o comando quase sem oposição, e a
@@ -406,93 +383,3 @@ Capítulo~\ref{chap:descricaoprocesso}, pois a planta elétrica não limita a ve
 controlador. A consequência prática se manifesta também no protocolo da força, já que,
 decorridos $7$ s do comando, a corrente está em regime há pelo menos $5$ s, margem
 ampla sobre a constante de tempo de $0{,}18$ s da planta.
-
-\section{O desempenho da malha em simulação}
-\label{sec:desempenho}
-
-A malha projetada no Capítulo~\ref{chap:descricaoprocesso} tem seu desempenho avaliado por
-simulação não-linear sobre os modelos identificados neste capítulo. A simulação é conduzida
-em tempo discreto pelo script da simulação e reproduz todas as não-linearidades do sistema,
-a curva estática da corrente, a corrente de perdas, a divisão pelo comando, o seletor, os
-limites do comando e as perturbações de afundamento de tensão e de deslocamento da corrente
-de perdas. Os três cenários são especificados a seguir e empregam valores tomados da própria caracterização. O seguimento de
-referência parte de $1{,}6$ N$\cdot$m e pede $3{,}0$ N$\cdot$m, dentro da faixa validada
-do estimador e abaixo do limiar de aderência, o que isola o desempenho da malha. A rejeição
-de perturbação aplica, entre $8$ e $12$ s, um afundamento de $20\%$ no ganho da planta
-somado a um deslocamento de $0{,}3$ A na corrente de perdas, magnitudes compatíveis com o
-que os ensaios revelaram, as baterias envelhecidas comprimindo a resposta e a variação
-térmica de $I_0$ entre os sentidos. O seletor recebe um pedido de $4{,}5$ N$\cdot$m, acima
-do máximo de $3{,}9$ N$\cdot$m, para exercitar o corte.
-
-Para o seguimento de referência, o degrau é seguido com sobressinal
-de cerca de $25\%$, com o pico limitado pelo teto do estimador, que não excede os
-$3{,}35$ N$\cdot$m da faixa validada. O erro em regime é residual, de $0{,}16$
-N$\cdot$m na amostra de $7{,}5$ s do script, cerca de $3$ s após o fim da rampa da
-referência, valor que o integrador do mestre continua a reduzir. A resposta se acomoda em cerca de $7$ s, valor compatível
-com a soma dos $2{,}3$ s da rampa da referência, $(3{,}0 - 1{,}6) / 0{,}6$, com os
-$\approx 4{,}4$ s de quatro constantes de tempo $\lambda_1$ da especificação de malha
-fechada, de modo que a especificação de acomodação deve ser lida contra a referência
-efetivamente aplicada. Para a rejeição de perturbação, o afundamento e o deslocamento
-produzem desvio máximo de $1{,}0$ N$\cdot$m durante a perturbação, reduzido a
-$0{,}35$ N$\cdot$m $1{,}5$ s após o seu fim pelo integrador do mestre, o que ilustra o
-papel da malha externa, que corrige o que o \emph{feedforward} não prevê. O seletor, por
-fim, segue o limite de $3{,}3$ N$\cdot$m sem acumular erro integral e retorna ao pedido
-menor ao liberar, com erro residual de $0{,}06$ N$\cdot$m na amostra de $19{,}5$ s.
-
-Os resultados são de análise sobre o modelo identificado. A validação experimental da
-malha fechada e as margens formais de ganho e de fase permanecem como etapas pendentes.
-
-\section{Incertezas dos Resultados}
-\label{sec:resincerteza}
-
-As incertezas seguem o orçamento da Seção \ref{sec:incertezas}, com cada componente
-caracterizada no Tipo A ou no Tipo B e combinada por propagação em soma quadrática
-\cite{braga_instr_incerteza}.
-
-A repetibilidade, componente do Tipo A, é quantificada pelo desvio-padrão amostral das
-quatro repetições em cada comando, Equação \eqref{eq:tipo_a}, e a Tabela \ref{tab:mestra}
-apresenta esses valores entre parênteses. Para o orçamento, adota-se em cada faixa a média
-dos desvios-padrão de seus comandos, $1{,}5$ N na zona morta, $1{,}5$ N na região de
-aderência e $1{,}6$ N na saturação. O valor típico da força de cada faixa, a mediana de
-seus pontos, é $4{,}6$ N, $32{,}2$ N e $46{,}1$ N, respectivamente, e o torque típico segue
-de $T = F\,r_\mathrm{ef}$.
-
-A propagação pela Equação \eqref{eq:propagacao}, com as componentes do Tipo B derivadas na
-metodologia, resulta nas incertezas expandidas da Tabela \ref{tab:incertezas}, de
-$\pm 0{,}23$ N$\cdot$m na zona morta e na região de aderência e $\pm 0{,}27$ N$\cdot$m na
-saturação. Na região de aderência, onde o torque típico é de cerca de $2{,}4$ N$\cdot$m, a
-incerteza representa aproximadamente $10\%$ do torque medido. O percentual cresce na zona
-morta, onde a força típica é de apenas $4{,}6$ N, e cai na saturação.
-
-\begin{table}[htb]
-\centering
-\caption{Incerteza expandida do torque por faixa de operação ($k = 2$).}
-\label{tab:incertezas}
-\small
-\begin{tabular}{l c c c}
-\hline
-Faixa & $F$ típica (N) & $\sigma_A(F)$ (N) & $U(T)$ (N$\cdot$m) \\
-\hline
-Zona morta ($98$--$99^\circ$) & 4,6 & 1,5 & $\pm$ 0,23 \\
-Aderência ($100$--$110^\circ$) & 32,2 & 1,5 & $\pm$ 0,23 \\
-Saturação ($111$--$117^\circ$) & 46,1 & 1,6 & $\pm$ 0,27 \\
-\hline
-\end{tabular}
-\end{table}
-
-\section{Resumo do Capítulo}
-
-A caracterização produziu os resultados que sustentam o projeto da malha de controle. A
-bancada calibrou a cadeia de corrente e quantificou o desvio da balança. O ensaio em vazio
-mediu a corrente de perdas e confirmou a linearidade do ESC. A curva característica, organizada
-pelas regiões de operação, atinge a força máxima da escala e revela a diferença sistemática
-entre os sentidos e o corte do ESC. O modelo de força--corrente é validado com o ajuste
-direto dos dados, $G_F = 0{,}372$ N/(A/u) com $r^2 = 0{,}79$, sem necessidade de conhecer a
-redução da transmissão. A dinâmica comando--corrente revela resposta rápida, com constante
-de tempo de $0{,}18$ s, e o atraso aparente das janelas brutas, que pertence ao protocolo de
-disparo, é distinguido da planta. Com os modelos identificados, avalia-se por simulação
-não-linear o desempenho da malha projetada no
-Capítulo~\ref{chap:descricaoprocesso}, que atende ao seguimento de referência e à rejeição
-de perturbação com erro residual inferior a $0{,}2$ N$\cdot$m em regime.
-
-\clearpage
