@@ -49,10 +49,16 @@ brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}. O script
 versus
 força e o registro do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
 característica e produz as figuras correspondentes. O script \texttt{analise\_dinamica.py}
-(Apêndice A.2)
-lê o ensaio de
-tração de corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a
-constante de tempo da planta. O script \texttt{simulacao\_cascata.py} (Apêndice A.3) executa a malha de
+(Apêndice A.2) lê o ensaio de tração de corrente e conduz a identificação da planta, e sua
+lógica segue o tratamento da Seção~\ref{sec:tracaocorrente}, isolando a sessão de aquisição
+rápida, segmentando o registro em blocos, um por comando, e ancorando cada borda de subida
+no seu início elétrico, definido a partir dos níveis de repouso e de platô do próprio
+bloco. Sobre a média das dez bordas da região de aderência, ajusta a constante de tempo
+pelos dois métodos, o da $63{,}2\%$ e o de mínimos quadrados sobre a curva de primeira
+ordem, e computa o ganho de cada borda como o quociente do platô pelo comando, sendo a
+planta o par ganho e constante de tempo. As figuras da dinâmica saem desse processamento,
+as janelas brutas dos blocos com a média móvel e as respostas alinhadas e normalizadas com
+o ajuste sobre elas. O script \texttt{simulacao\_cascata.py} (Apêndice A.3) executa a malha de
 controle e produz a
 figura de desempenho. A divisão segue os modelos que o controlador consome, o modelo
 estático construído pelo primeiro script a partir de dois ensaios e o modelo dinâmico
@@ -523,11 +529,11 @@ apresenta o fluxograma do bloco, com a bifurcação.
 \subsection{O Controlador Mestre}
 \label{sec:codemestre}
 
-O mestre executa a lei PI com ganho programado da sintonia
-(Seção~\ref{sec:projeto_controladores} do Capítulo~\ref{chap:resultados}), e o código
-registra o cuidado de o integrador acumular apenas quando o escravo não satura, pois a
-saturação do comando carregaria integral espúria para a malha de torque. A
-Figura~\ref{fig:fluxo_mestre} apresenta o fluxograma do bloco.
+O mestre compara a referência rampada ao torque estimado e emprega a lei PI com ganho
+programado, $K_{p1}(u) = \lambda_2\,u/(K_T\,\lambda_1)$, que atualiza o ganho com o comando
+vigente e lineariza o caminho da malha externa. O integrador acumula o erro apenas quando
+o escravo não satura, pois, do contrário, a saturação do comando carregaria integral
+espúria para a malha de torque. A Figura~\ref{fig:fluxo_mestre} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering
@@ -541,11 +547,13 @@ programado e integrador condicionado à não saturação do escravo.}
 \subsection{O Feedforward e o Caminho Direto}
 \label{sec:codefeedforward}
 
-O \emph{feedforward} implementa a Equação~\eqref{eq:iff}, e o caminho direto obtém o
-comando equivalente com a rampa própria, um passo de $0{,}05$ u/s por amostra. O somador
-forma a referência da malha interna com a correção do mestre, e o comando equivalente
-segue ao escravo como pré-posicionamento, de modo que o PI escravo atua apenas sobre o
-desvio. A Figura~\ref{fig:fluxo_feedforward} apresenta o fluxograma do bloco.
+O \emph{feedforward} converte a referência efetiva na corrente esperada pela
+Equação~\eqref{eq:iff}, $I_{\mathrm{ff}} = I_0(u) + u\,T_{\mathrm{ref,ef}}/K_T$, e o
+caminho direto obtém o comando equivalente $u_{\mathrm{ff}}$, que é rampado com constante
+própria de $0{,}05$ u/s. O somador forma a referência da malha interna, $I_{\mathrm{ref}} =
+I_{\mathrm{ff}} + \Delta I$, e o PI escravo atua apenas sobre o desvio, uma vez que o
+pré-posicionamento já entrega a maior parte do comando. A
+Figura~\ref{fig:fluxo_feedforward} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering
@@ -559,11 +567,12 @@ equivalente rampado e soma com a correção do mestre.}
 \subsection{O Controlador Escravo e o Clamping}
 \label{sec:codeescravo}
 
-O escravo executa o PI com o anti-\emph{windup} por \emph{clamping} da
-Seção~\ref{sec:protecoes}, saturando o comando linear nos limites da região validada, e o
-código fecha o tratamento na mesma amostra, ajustando o integrador para a saída ficar
-exatamente no limite quando satura e acumulando escravo e mestre juntos quando não. A
-Figura~\ref{fig:fluxo_escravo} apresenta o fluxograma do bloco.
+O escravo compara a referência de corrente à medida e emprega a lei PI, com o comando
+linear passando pela saturação nos limites $u_{\min}$ e $u_{\max}$ da região validada. Quando
+a saída satura, o \emph{clamping} ajusta o integrador para que a saída fique exatamente no
+limite, e qualquer reversão do erro tira a saída da saturação imediatamente, tratamento
+descrito na Seção~\ref{sec:protecoes}. Sem saturação, o integrador acumula normalmente e o
+mestre acumula junto. A Figura~\ref{fig:fluxo_escravo} apresenta o fluxograma do bloco.
 
 \begin{figure}[htb]
 \centering
