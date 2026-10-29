@@ -306,13 +306,13 @@ def gerar_figura(tempos, historico, caminho_saida):
     fig, eixos = plt.subplots(3, 1, figsize=(10.2, 7.6), sharex=True)
 
     janelas = [
-        (INSTANTE_PSR_S, INSTANTE_PRP_S, "#d1e5f0", "PSR: $1{,}6 \\rightarrow 3{,}0$ N.m"),
+        (INSTANTE_PSR_S, INSTANTE_PRP_S, "#d1e5f0", "PSR $1{,}6 \\rightarrow 3{,}0$"),
         (INSTANTE_PRP_S, INSTANTE_PRP_S + DURACAO_PRP_S, "#f4a582",
-         "PRP: sag $-20\\%$ + $I_0$ $+0{,}3$ A"),
+         "PRP: sag $-20\\%$"),
         (INSTANTE_RETORNO_S, INSTANTE_SELETOR_S, "#d9f0d3",
-         "retorno: $3{,}0 \\rightarrow 1{,}6$ N.m"),
+         "retorno $3{,}0 \\rightarrow 1{,}6$"),
         (INSTANTE_SELETOR_S, TEMPO_FINAL_S, "#e0d4e8",
-         "seletor: pedido $4{,}5$ N.m"),
+         "seletor: pedido $4{,}5$"),
     ]
     for eixo in eixos:
         for inicio_j, fim_j, cor, _ in janelas:
