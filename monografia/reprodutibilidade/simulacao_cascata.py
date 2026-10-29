@@ -330,22 +330,6 @@ def gerar_figura(tempos, historico, caminho_saida):
     eixos[0].set_ylim(0.8, 5.2)
     eixos[0].legend(fontsize=10.5, loc="center right")
 
-    i_pico = int(np.argmax(historico["torque"][:int(INSTANTE_PRP_S / TEMPO_AMOSTRAGEM_S)]))
-    eixos[0].annotate(f"pico {historico['torque'][i_pico]:.2f} N.m\n(Mp = 25%)",
-                      xy=(tempos[i_pico], historico["torque"][i_pico]),
-                      xytext=(tempos[i_pico] + 3.0, 4.05),
-                      fontsize=9.5, ha="left",
-                      arrowprops=dict(arrowstyle="->", lw=0.9, color="0.25"))
-    i_prp = int((INSTANTE_PRP_S + 1.0) / TEMPO_AMOSTRAGEM_S)
-    desvio = abs(historico["torque"][int(INSTANTE_PRP_S / TEMPO_AMOSTRAGEM_S)
-                                   :int((INSTANTE_PRP_S + DURACAO_PRP_S)
-                                        / TEMPO_AMOSTRAGEM_S)].min() - TORQUE_PSR_NM)
-    eixos[0].annotate(f"desvio max.\n{desvio:.2f} N.m",
-                      xy=(tempos[i_prp], historico["torque"][i_prp]),
-                      xytext=(INSTANTE_PRP_S + 0.4, 2.1),
-                      fontsize=9.5, ha="left",
-                      arrowprops=dict(arrowstyle="->", lw=0.9, color="0.25"))
-
     eixos[1].plot(tempos, historico["corrente"], color="#b2182b", lw=1.4,
                   label="Corrente $I$")
     eixos[1].set_ylabel("Corrente (A)")

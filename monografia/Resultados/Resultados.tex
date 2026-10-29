@@ -390,51 +390,6 @@ planta, desaparecendo quando a resposta é ancorada no seu início elétrico.
 Essa distinção tem consequência direta para a sintonia da próxima seção, pois a planta
 elétrica não limita a velocidade do controlador.
 
-\section{O Efeito da Bateria nos Ensaios}
-\label{sec:bateria}
-
-O estado da bateria mostrou-se uma condição de ensaio tão decisiva quanto a massa e o
-piso, e os registros das sessões com as baterias antigas do laboratório, uma delas
-estufada, permitem quantificar o efeito. O estudo compara a sessão de referência, conduzida
-com a bateria em bom estado, a uma sessão antiga cuja primeira passagem ainda executava os
-degraus e às retomadas do comando de $114^\circ$, onde o colapso se manifestou. O
-processamento segue o mesmo protocolo do ensaio de tração de corrente e é reproduzido pelo
-script \texttt{analise\_bateria.py} (Ap\^endice A.5).
-
-Na sessão de referência, a mediana da corrente cresce de $4{,}3$ A em $100^\circ$ a
-$29{,}4$ A em $114^\circ$, sem amostras nulas em nenhum degrau. Na primeira passagem da
-sessão antiga, os degraus ainda executam, com medianas de $19$ a $28$ A, porém com $10\%$
-a $22\%$ de amostras nulas, sinal precoce da fraqueza da bateria. Nas retomadas do
-$114^\circ$, a mediana do bloco cai para $15{,}2$ A, $48\%$ abaixo dos $29{,}4$ A do
-mesmo degrau na sessão de referência, e $45\%$ das amostras permanecem em zero, com o
-motor, quando ligado, drenando mediana de $20{,}5$ A, como se vê na comparação por degrau
-da Figura~\ref{fig:bateria}.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.8\textwidth]{Figuras/bateria_sag.png}
-\caption{Mediana da corrente por degrau de comando: sessão de referência, com a bateria
-em bom estado, e sessão antiga, com a bateria degradada, destacando o colapso das
-retomadas de $114^\circ$.}
-\label{fig:bateria}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
-
-Nas retomadas, o padrão é o ciclo de corte por
-subtensão, com quatro religamentos detectados, com o motor ligado por cerca de $8$ s, cortado
-por cerca de $7$ s, até que a terceira retomada, após $0{,}1$ s, não sustenta a partida e
-a corrente permanece nula até o fim do bloco, a bateria sem carga suficiente para
-religar o ESC. O colapso é específico das retomadas, e não da sessão, pois degraus
-vizinhos da mesma corrida executam normalmente, $117^\circ$ com $28{,}2$ A e $118^\circ$
-com $25{,}9$ A, de forma que o efeito se concentra onde a exigência de corrente se
-acumula em blocos repetidos. A interpretação é direta, pois, sob alta corrente, a tensão da
-bateria degradada cai abaixo do limiar de proteção do ESC, o corte interrompe o motor, a
-tensão se recupera e o ciclo recomeça, o mesmo mecanismo registrado na região de
-saturação da caracterização. O ensino prático, que motivou a regra de validação dos
-consolidados, é que sessões com baterias degradadas executam degraus altos com corrente de
-degraus menores, e que o estado da bateria deve constar do \emph{checklist} do ensaio e
-das regras de validação, conforme adotado neste trabalho.
-
 \section{A Sintonia dos Controladores}
 \label{sec:projeto_controladores}
 
@@ -566,6 +521,51 @@ na amostra avalizada. No último cenário, o degrau para além do limiar é cort
 seletor, e o torque estabiliza em torno de $3{,}3$ N$\cdot$m, o limiar do seletor, sem
 patinagem comandada. A malha, assim, segue a referência dentro da região validada, rejeita a
 perturbação elétrica e respeita o limiar de aderência.
+
+\section{O Efeito da Bateria nos Ensaios}
+\label{sec:bateria}
+
+O estado da bateria mostrou-se uma condição de ensaio tão decisiva quanto a massa e o
+piso, e os registros das sessões com as baterias antigas do laboratório, uma delas
+estufada, permitem quantificar o efeito. O estudo compara a sessão de referência, conduzida
+com a bateria em bom estado, a uma sessão antiga cuja primeira passagem ainda executava os
+degraus e às retomadas do comando de $114^\circ$, onde o colapso se manifestou. O
+processamento segue o mesmo protocolo do ensaio de tração de corrente e é reproduzido pelo
+script \texttt{analise\_bateria.py} (Ap\^endice A.5).
+
+Na sessão de referência, a mediana da corrente cresce de $4{,}3$ A em $100^\circ$ a
+$29{,}4$ A em $114^\circ$, sem amostras nulas em nenhum degrau. Na primeira passagem da
+sessão antiga, os degraus ainda executam, com medianas de $19$ a $28$ A, porém com $10\%$
+a $22\%$ de amostras nulas, sinal precoce da fraqueza da bateria. Nas retomadas do
+$114^\circ$, a mediana do bloco cai para $15{,}2$ A, $48\%$ abaixo dos $29{,}4$ A do
+mesmo degrau na sessão de referência, e $45\%$ das amostras permanecem em zero, com o
+motor, quando ligado, drenando mediana de $20{,}5$ A, como se vê na comparação por degrau
+da Figura~\ref{fig:bateria}.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.8\textwidth]{Figuras/bateria_sag.png}
+\caption{Mediana da corrente por degrau de comando: sessão de referência, com a bateria
+em bom estado, e sessão antiga, com a bateria degradada, destacando o colapso das
+retomadas de $114^\circ$.}
+\label{fig:bateria}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Nas retomadas, o padrão é o ciclo de corte por
+subtensão, com quatro religamentos detectados, com o motor ligado por cerca de $8$ s, cortado
+por cerca de $7$ s, até que a terceira retomada, após $0{,}1$ s, não sustenta a partida e
+a corrente permanece nula até o fim do bloco, a bateria sem carga suficiente para
+religar o ESC. O colapso é específico das retomadas, e não da sessão, pois degraus
+vizinhos da mesma corrida executam normalmente, $117^\circ$ com $28{,}2$ A e $118^\circ$
+com $25{,}9$ A, de forma que o efeito se concentra onde a exigência de corrente se
+acumula em blocos repetidos. A interpretação é direta, pois, sob alta corrente, a tensão da
+bateria degradada cai abaixo do limiar de proteção do ESC, o corte interrompe o motor, a
+tensão se recupera e o ciclo recomeça, o mesmo mecanismo registrado na região de
+saturação da caracterização. O ensino prático, que motivou a regra de validação dos
+consolidados, é que sessões com baterias degradadas executam degraus altos com corrente de
+degraus menores, e que o estado da bateria deve constar do \emph{checklist} do ensaio e
+das regras de validação, conforme adotado neste trabalho.
 
 \section{Resumo do Capítulo}
 \label{sec:resumo}
