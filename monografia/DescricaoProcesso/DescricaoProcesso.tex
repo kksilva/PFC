@@ -165,8 +165,15 @@ acoplado à roda ou ao eixo, o sensor produz $N$ transições digitais por revol
 alternâncias de polos. Esse é o princípio dos encoders de roda usualmente empregados em robótica,
 nos quais o microcontrolador conta as transições em uma janela de tempo para estimar a rotação.
 
-% (ADICIONAR IMAGEM SS41F: LED aceso com o polo norte do ima, apagado no polo sul.
-%  Referencia: https://www.youtube.com/shorts/QHHwqy\_EkNU)
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.52\textwidth]{Figuras/ss41f.png}
+\caption{Comportamento do SS41F diante do polo norte de um ímã: a saída digital do
+sensor, indicada pelo LED, assume nível alto na presença do polo norte e nível baixo na
+do polo sul.}
+\label{fig:ss41f_led}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 Com $c$ pulsos contados em uma janela de duração $T_j$, a velocidade angular do eixo que carrega o
 anel é $\omega = 2\pi c/(N T_j)$, sendo que a contagem fornece diretamente a velocidade $\omega_m$
@@ -205,7 +212,8 @@ Em malha fechada, a velocidade medida pode realimentar diretamente um controlado
 velocidade, na mesma estrutura descrita para a IMU, com a diferença de que a variável de
 processo é obtida por contagem direta dos pulsos, sem integração nem modelo de torque
 associado. Os motores brushless com sensores Hall integrados já são
-controlados dessa maneira, com os mesmos sinais servindo à comutação e à realimentação.
+controlados dessa maneira, com os mesmos sinais servindo à comutação e à realimentação,
+conforme documentado pela Honeywell para a própria família SS41x \cite{honeywell_bldc}.
 
 Quanto à proteção do sistema, o SS41F não fornece nenhuma grandeza elétrica, de modo que a
 proteção contra sobrecorrente por limiar não pode ser implementada com esse sensor. A única
