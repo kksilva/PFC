@@ -128,11 +128,11 @@ def main():
     # --- 4) numeros-chave --------------------------------------------------
     boa_por_angulo = {b["angulo"]: b for b in boa}
     ref_114 = boa_por_angulo[114.0]
-    print("=== Sessao de referencia (bateria boa, subida) — mediana por degrau ===")
+    print("=== Sessao de referencia (bateria boa, subida) - mediana por degrau ===")
     for b in boa:
         print(f"  {b['angulo']:5.0f} graus: mediana = {b['mediana']:5.1f} A "
               f"(p95 = {b['p95']:5.1f} A, zeros = {100*b['frac_zero']:.0f} %)")
-    print("\n=== Sessao com bateria antiga (descida) — primeira passagem ===")
+    print("\n=== Sessao com bateria antiga (descida) - primeira passagem ===")
     for b in sorted(ant_saudavel, key=lambda b: -b["angulo"]):
         print(f"  {b['angulo']:5.0f} graus: mediana = {b['mediana']:5.1f} A "
               f"(p95 = {b['p95']:5.1f} A, zeros = {100*b['frac_zero']:.0f} %)")
@@ -161,7 +161,7 @@ def main():
     ax.plot([b["angulo"] for b in boa], [b["mediana"] for b in boa],
             "o-", color="tab:blue", label="Bateria boa (subida)")
     ax.plot([b["angulo"] for b in ant_saudavel], [b["mediana"] for b in ant_saudavel],
-            "s-", color="tab:orange", label="Bateria antiga (descida, 1.ª passagem)")
+            "s-", color="tab:orange", label="Bateria antiga (descida, 1.a passagem)")
     ax.plot(ant_colapso["angulo"], ant_colapso["mediana"], "v", color="tab:red",
             markersize=9, label="Bateria antiga (retomadas, colapso)")
     ax.annotate(f"{ant_colapso['mediana']:.0f} A ({100*ant_colapso['frac_zero']:.0f} % zero)",
@@ -185,7 +185,7 @@ def main():
         ax.text(centro, 35, f"retomada {k + 1}", fontsize=7.5, ha="center")
     ax.set_xlabel("Tempo no bloco (s)")
     ax.set_ylabel("Corrente (A)")
-    ax.set_title("(b) Bateria antiga, degrau de 114°: ciclos de corte", fontsize=9)
+    ax.set_title("(b) Bateria antiga, degrau de 114 gr: ciclos de corte", fontsize=9)
     ax.set_ylim(-2, 38)
 
     # (c) forma de onda saudavel de referencia (subida, 113 graus)
@@ -194,7 +194,7 @@ def main():
     ax.plot(ref_113["t_degrau"], ref_113["corrente"], color="tab:blue", lw=0.6)
     ax.set_xlabel("Tempo no degrau (s)")
     ax.set_ylabel("Corrente (A)")
-    ax.set_title(f"(c) Bateria boa, degrau de 113°\nplato estável (~{ref_113['mediana']:.0f} A)",
+    ax.set_title(f"(c) Bateria boa, degrau de 113 gr\nplato estavel (~{ref_113['mediana']:.0f} A)",
                  fontsize=9)
     ax.set_ylim(-2, 38)
 
@@ -203,10 +203,10 @@ def main():
     mascara = i <= 16
     ax.plot(i[mascara], ant_colapso["corrente"][mascara], color="tab:red", lw=0.8)
     ax.axhline(LIMIAR_CORTE_A, color="k", ls=":", lw=0.8)
-    ax.text(10.2, 7.5, "corte do ESC (subtensão)", fontsize=7.5)
+    ax.text(10.2, 7.5, "corte do ESC (subtensao)", fontsize=7.5)
     ax.set_xlabel("Tempo no bloco (s)")
     ax.set_ylabel("Corrente (A)")
-    ax.set_title("(d) Bateria antiga: ligado →\ncorte → religamento", fontsize=9)
+    ax.set_title("(d) Bateria antiga: ligado ->\ncorte -> religamento", fontsize=9)
     ax.set_ylim(-2, 38)
 
     fig.align_ylabels(eixos)
