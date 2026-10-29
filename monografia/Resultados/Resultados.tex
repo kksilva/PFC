@@ -504,7 +504,9 @@ A malha sintonizada na Seção~\ref{sec:projeto_controladores} tem seu desempenh
 por simulação não-linear sobre os modelos identificados neste capítulo, executada em tempo
 discreto de $10$ ms pelo script da simulação (Apêndice A.3), que reproduz a curva
 estática da corrente, a corrente de perdas, a divisão pelo comando, o seletor e as
-saturações. O horizonte é de $64$ s, e cada degrau só é aplicado após o regime
+saturações, com anti-\emph{windup} por \emph{clamping} no integrador do escravo, estrutura
+cuja alternativa mais simples, a integração condicional, manteve o sistema preso em
+saturação nas simulações iniciais e foi descartada. O horizonte é de $64$ s, e cada degrau só é aplicado após o regime
 permanente do cenário anterior, com margem de várias constantes de tempo. Quatro cenários
 cobrem a operação, um degrau de referência de $1{,}6$ para
 $3{,}0$ N$\cdot$m (PSR), uma perturbação de afundamento de tensão de $20\%$ somada a um
