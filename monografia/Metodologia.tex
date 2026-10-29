@@ -1,0 +1,734 @@
+\chapter{Metodologia}
+\label{chap:metodologia}
+
+Este capítulo descreve os métodos experimentais empregados na caracterização do
+sistema de propulsão do automodelo, desde o método de ajuste das retas comum a todos os
+ensaios e a cadeia de aquisição, passando pelo teste em bancada e pelos ensaios com o
+veículo, até o orçamento de incertezas.
+
+\section{O Processamento dos Dados e Ajuste das Retas}
+\label{sec:processamento}
+
+Todos os ajustes dos ensaios são retas obtidas pelo método dos mínimos quadrados, o mesmo
+procedimento empregado na calibração de instrumentos \cite{braga_instr_calibracao}. O método
+escolhe os coeficientes que minimizam a soma dos quadrados dos resíduos, isto é, das
+diferenças entre cada valor medido e o valor que a reta prevê para ele. Para a reta
+$y = a + b\,x$, a soma $S = \sum_i (y_i - a - b\,x_i)^2$ é mínima quando suas derivadas em
+relação a $a$ e a $b$ se anulam, condição que fornece a solução fechada
+\begin{equation}\label{eq:mq}
+b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
+\qquad
+a = \bar{y} - b\,\bar{x},
+\end{equation}
+em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. 
+
+A função
+\texttt{minimos\_quadrados} do script \texttt{analise\_estatica.py} (linhas 53--60)
+implementa a Equação~\eqref{eq:mq} retornando os dois
+coeficientes e o índice de determinação. Para a reta forçada pela origem,
+$y = g\,x$, minimiza-se a mesma soma apenas em $g$, o que resulta em
+\begin{equation}\label{eq:mq_origem}
+g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
+\end{equation}
+A Equação~\eqref{eq:mq_origem} é implementada pela função
+\texttt{minimos\_quadrados\_origem} (linhas 63--68 do mesmo script), e a curva
+característica a emprega por meio da função \texttt{ajuste\_gf} (linhas 104--114), que
+subtrai a corrente de perdas e divide pelo comando antes do ajuste, linearizando a
+característica, e a reta forçada pela origem tem sentido físico.
+
+A qualidade de cada ajuste é quantificada pelo coeficiente de determinação,
+\begin{equation}\label{eq:r2}
+r^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
+\end{equation}
+fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica,
+e é calculado nas duas funções de ajuste (linhas 59 e 67).
+
+Os tratamentos foram implementados em scripts dedicados, que leem os arquivos de dados
+brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}, e a divisão entre
+eles segue os dois modelos que o controlador consome. O objetivo do primeiro é o modelo
+estático, e o \texttt{analise\_estatica.py} (Apêndice A.1) o constrói a partir da planilha
+de anotações do ensaio de tração de corrente versus força e do registro do ensaio em vazio,
+ajustando a corrente de perdas $I_0(u)$ e o coeficiente $G_F$ da curva característica, e
+produz as figuras correspondentes. O objetivo do segundo é o modelo dinâmico, a planta
+$G_2(s)$, e o \texttt{analise\_dinamica.py} (Apêndice A.2) o identifica a partir do ensaio
+de tração de corrente, seguindo o tratamento da Seção~\ref{sec:tracaocorrente}, com a
+constante de tempo ajustada pelos dois métodos e o ganho de cada borda computado como o
+quociente do platô pelo comando, e gera as duas figuras da dinâmica, as janelas brutas com
+a média móvel e as respostas alinhadas com o ajuste. O \texttt{simulacao\_cascata.py}
+(Apêndice A.3) executa a malha de controle sobre os dois modelos e produz a figura de
+desempenho.
+
+\section{Aquisição e registro de dados}
+\label{sec:registro}
+
+Descrita uma única vez, a cadeia de aquisição serve a todos os ensaios de degraus. A
+corrente é amostrada por um programa dedicado gravado no Arduino, o \emph{firmware} do
+ensaio. A cada $10$ ms, ele lê o conversor e transmite a amostra pela porta serial, o que
+resulta em uma taxa de aproximadamente $100$ Hz. A escolha do período segue a regra usual
+de discretização, de amostrar dez a trinta vezes mais rápido que a dinâmica de interesse
+\cite{raffo_tcpi_sintese}. A resposta da corrente ao comando é governada pela constante
+de tempo do caminho entre comando e corrente, cuja expectativa a priori era a faixa de décimos de
+segundo. A identificação conduzida no ensaio de tração de corrente confirmou $\tau = 0{,}18$ s
+(Seção~\ref{sec:resdinamica} do Capítulo~\ref{chap:resultados}), e o período de
+$10$ ms amostra essa dinâmica quase vinte vezes mais rápido que ela, acompanhando a subida
+com folga e registrando sua forma completa, o que viabiliza a identificação da dinâmica
+entre comando e corrente.
+
+O acionamento dos degraus emprega o \emph{script} \texttt{teste\_throttle.py},
+disponibilizado pelo orientador, que executa no Raspberry Pi embarcado no veículo e é
+comandado remotamente via SSH pelo terminal do notebook, por \texttt{ssh
+alunos@raspberrypi.local "python3 teste\_throttle.py <ângulo> <duração>"}. O \emph{script}
+coloca o ESC em neutro, aplica o degrau pela duração programada e retorna ao neutro ao
+final. Adota-se aqui a palavra \emph{degrau} no vocabulário de controle, no qual ela
+designa a função de entrada que salta de imediato para um valor constante, mantido por
+toda a duração programada, sendo a mesma entrada empregada na identificação clássica de
+modelos dinâmicos. O comando constante é um ângulo $\alpha$, na convenção de rádio-controle,
+na faixa de $90^\circ$ a $180^\circ$. Nela, $90^\circ$ é o limite inferior de armamento do
+ESC, $180^\circ$ é a aceleração máxima e $95^\circ$ é o neutro, o comando para o qual o ESC
+mantém o motor parado. Embora a convenção do sinal varra $0^\circ$ a $180^\circ$, os valores
+abaixo de $90^\circ$ correspondem à região de ré do ESC e não são empregados no ensaio, que
+percorre somente a escala de tração adiante. Ao longo do trabalho, o comando é usado na
+forma normalizada,
+\begin{equation}\label{eq:normalizacao}
+u = \frac{\alpha - 95}{85},
+\end{equation}
+e o neutro corresponde a $u = 0$, enquanto a aceleração
+máxima corresponde a $u = 1$.
+
+A automação do ensaio foi desenvolvida no âmbito deste trabalho (Apêndice A.4) e percorre a escala de
+degraus em um laço, substituindo a cada iteração o ângulo e a duração e disparando o comando
+SSH correspondente, enquanto lê a porta serial do Arduino e grava, em um arquivo CSV,
+o tempo de ensaio, o tempo do degrau, o ângulo e a corrente de cada amostra. No terminal, 
+imprime-se somente a média das amostras de cada segundo, o
+tempo $t = 1, 2, \ldots, 15$ e a corrente média associada, linha que aparece no vídeo do
+ensaio ao lado do display da balança. As amostras completas são gravadas por experimento,
+em \texttt{ensaio\_vazio\_corrente.csv} para o ensaio em vazio e em
+\texttt{ensaio\_tracao\_corrente\_versus\_forca.xlsx} e
+\texttt{ensaio\_tracao\_corrente.csv} para os ensaios das Seções
+\ref{sec:vazio} e \ref{sec:tracao}, respectivamente.
+
+\section{Teste em Bancada}
+\label{sec:bancada}
+
+Antes de qualquer ensaio com o veículo, os instrumentos são validados em bancada, para que
+suas incertezas sejam conhecidas antes de entrarem na curva característica, já
+que um desvio sistemático de qualquer uma das grandezas se propagaria diretamente para o
+modelo do sistema usado na sintonia dos controladores.
+
+O circuito de medição é isolado galvanicamente do circuito de potência. O polo positivo da
+fonte ajustável, capaz de fornecer de $0$ a $6$ A, alimenta o pino IP+ do ACS758, e o pino
+IP$-$ retorna ao polo negativo da fonte, fechando o laço, com o multímetro de referência,
+configurado como amperímetro, em série entre a fonte e o sensor. A alimentação do sensor
+provém dos pinos de $3{,}3$ V e GND do Arduino, e sua saída analógica passa por um filtro
+RC, com $R = 1$ k$\Omega$ e $C = 100$ nF, cuja frequência de corte é de aproximadamente
+$1{,}6$ kHz, até o pino A0. Nesse teste, o ESC e o motor não
+participam, já que o intuito é realizar os testes de funcionamento do sensor e caracterizar os
+seus desvios.
+
+Atravessa o laço apenas o condutor interno do sensor. Antes de energizar, o checklist
+compreende o aperto dos
+bornes, a polaridade do multímetro, a faixa de corrente selecionada e a conexão da porta
+serial do Arduino ao notebook.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/teste_bancada_fonte.png}
+\caption{Teste em bancada da cadeia de corrente, com a fonte ajustável, o multímetro de
+referência e o sensor ACS758.}
+\label{fig:bancada_fonte}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O procedimento de verificação segue os passos abaixo.
+
+\begin{enumerate}
+    \item Ajustar um valor de corrente na fonte, distribuído pela faixa de $0$ a $6$ A.
+    \item Aguardar a estabilização da leitura do multímetro, tomada como referência.
+    \item Registrar o par de leituras, a do multímetro e a do sistema formado pelo sensor
+    e pelo conversor, exibida no terminal do notebook.
+    \item Repetir os passos anteriores ao longo de toda a faixa, sem desmontar o laço.
+\end{enumerate}
+
+Concluída a verificação em bancada, a mesma cadeia foi conferida na própria montagem do
+veículo, validando a adaptação do conector instalado. Com o veículo em bancada, o fio
+vermelho do ramo de potência foi interrompido e um multímetro configurado como amperímetro
+foi inserido em série, e a linearidade do sensor pôde ser verificada na
+configuração definitiva. Encerrada a conferência, o fio foi soldado novamente. Como o
+automodelo já abriga diversos circuitos embarcados e o espaço de trabalho é limitado,
+empregam-se apenas o Arduino e o sensor, alimentados pelos $3{,}3$ V e pelo terra do
+próprio Arduino.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/teste_bancada.jpeg}
+\caption{Sensor de corrente instalado no automodelo durante a conferência da cadeia, com o
+fio vermelho do ramo de potência interrompido para a inserção do multímetro em série.}
+\label{fig:bancada}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O confronto entre as medidas de corrente segue o procedimento clássico de calibração
+estática, no qual a reta de ajuste entre os valores de referência e os indicados é obtida
+pelo método dos mínimos quadrados da Seção~\ref{sec:processamento}
+\cite{braga_instr_calibracao}. Os resultados da verificação, a
+regressão da cadeia de corrente e o tratamento do desvio são apresentados na Seção
+\ref{sec:resbancada}.
+
+\section{Ensaio em Vazio}
+\label{sec:vazio}
+
+Para os ensaios com o veículo, a instalação em série entre
+a bateria e o ESC resolve-se com um conector Deans-T em Y, usualmente empregado para
+conectar duas baterias. O lado vermelho do conector foi interrompido, e cada uma de suas
+extremidades foi soldada a um terminal de corrente do sensor, com termoretrátil envolto,
+conforme a Figura \ref{fig:sensor}. A adaptação dispensa qualquer corte nos cabos
+originais do automodelo.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.7\textwidth]{Figuras/sensor_chassi.png}
+\caption{Sensor de corrente ACS758 instalado no ramo de alimentação, entre a bateria e o
+ESC, por adaptação com conector Deans-T.}
+\label{fig:sensor}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O primeiro ensaio com o veículo é o ensaio em vazio, que mede a corrente consumida pelo
+conjunto propulsor quando ele não entrega tração alguma, com as rodas suspensas. Sua função
+decorre da forma como a corrente entra na malha de controle, pois o estimador desconta as
+perdas da corrente medida, conforme a Equação~\eqref{eq:estimador_proposta}, e o
+\emph{feedforward} converte o torque pedido na corrente esperada, conforme a
+Equação~\eqref{eq:iff}. Sem o ensaio em vazio, $I_0(u)$ seria desconhecido, o estimador
+absorveria as perdas como se fossem tração e o modelo ficaria enviesado principalmente nos
+degraus baixos, nos quais a fração de perdas é maior.
+
+O estimador representa a corrente de fase pelo
+quociente $I/u$, o que só é legítimo se o \emph{duty cycle} do ESC acompanhar o comando de
+forma linear. O ensaio em vazio valida essa hipótese, que está por trás da divisão por $u$
+da Equação~\eqref{eq:corrente_fase}. Com as rodas suspensas, a corrente medida em cada
+degrau é a própria corrente de perdas $I_0(u)$, ou seja, a
+Equação~\eqref{eq:corrente_fase} com $I_\mathrm{bat} = I_0$. Se o \emph{duty cycle} for de
+fato proporcional ao comando, essa corrente deve crescer linearmente com $u$, e a
+linearidade de $I_0(u)$ observada nos resultados é a evidência da hipótese. O ajuste linear
+e o coeficiente de determinação que quantificam essa evidência são apresentados no
+Capítulo \ref{chap:resultados}.
+
+O veículo é apoiado sobre uma caixa, com as rodas motrizes suspensas, conforme a
+Figura \ref{fig:vazio}, e a cadeia de aquisição é empregada sem alterações. Antes da sessão, verificam-se as condições comuns a todo ensaio com o veículo,
+isto é, bateria LiPo 2S carregada e em bom estado e bateria do Raspberry Pi carregada, com
+a tensão de saída do \emph{step-down} conferida. O cabo do Arduino conecta-se ao notebook
+para alimentação e registro, e o notebook conecta-se à rede do Raspberry, com o acesso
+remoto por \texttt{ssh} funcionando.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/ensaio_vazio.jpeg}
+\caption{Ensaio em vazio, rodas motrizes suspensas em caixa, sem contato com a mesa.}
+\label{fig:vazio}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O procedimento da sessão é padronizado em quatro passos, do posicionamento do veículo à
+conferência do arquivo registrado.
+
+\begin{enumerate}
+    \item Posicionar o veículo sobre a caixa e conferir o afastamento das rodas em
+    relação à mesa.
+    \item Energizar o conjunto e a cadeia de aquisição, aguardando o armamento do ESC.
+    \item Disparar a varredura automatizada, que aplica a escala de degraus de $97^\circ$
+    a $117^\circ$ de grau em grau, com $15$ s por degrau e $3$ s de neutro entre degraus.
+    \item Ao final, encerrar o registro e conferir o arquivo \texttt{ensaio\_vazio\_corrente.csv}.
+\end{enumerate}
+
+Para o tratamento dos dados de cada degrau, tomam-se as amostras em regime, isto é, após a subida
+transiente, e descartam-se as execuções com pico inferior a $1$ A, nas quais o comando não
+foi efetivamente executado pelo ESC e que distorceriam a média para baixo. O script da
+caracterização estática (Apêndice A.1) agrupa então as amostras por comando, calcula a
+média de cada grupo e ajusta a reta $I_0(u)$ sobre essas médias por mínimos quadrados
+(Equação~\eqref{eq:mq}). O resultado é a curva $I_0(u)$, parâmetro do estimador e do
+\emph{feedforward} da malha, cujos valores são apresentados no Capítulo
+\ref{chap:resultados}.
+
+\section{Ensaio de Tração de Corrente versus Força}
+\label{sec:tracao}
+Na estrutura de controle proposta, a corrente medida alimenta a malha interna e o torque
+estimado alimenta a malha externa, sendo o elo entre as duas a curva característica, que
+relaciona a corrente ao esforço mecânico do propulsor. O ensaio mede, portanto, em cada
+degrau, o par corrente--força com que essa curva é construída ponto a ponto.
+
+\subsection{A Montagem do Ensaio}
+\label{sec:montagem}
+
+Com o automodelo ancorado, o pneu é impedido de rolar, e a força que o propulsor
+trocaria com o solo na direção do movimento desvia-se integralmente para a estrutura de
+retenção. O cabo que une essa estrutura à balança converte o esforço em tensão mensurável.
+
+Com a roda travada, o motor opera na condição de rotor
+bloqueado, na qual a exigência de torque é máxima, pois é a sua condição de partida. 
+
+O instrumento utilizado para medir a força de tração é uma balança de gancho, cuja indicação é 
+expressa em quilogramas. Quando submetido à tração, o instrumento
+detecta a força aplicada e a apresenta como uma massa equivalente, correspondente à
+força-peso que produziria a mesma indicação sob a aceleração da gravidade de referência.
+Essa equivalência permite converter a leitura em força, expressa em newtons, por meio de
+
+\[
+F\,[\mathrm{N}] = 9{,}81\,m_{\mathrm{lei}}\,[\mathrm{kg}],
+\]
+em que $m_{\mathrm{lei}}$ representa o valor indicado pela balança.
+
+A verificação da balança tem objetivo diferente, pois a balança é a própria referência da
+força e seu display, sem saída elétrica, não permite canal de correção.
+Ela é confrontada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg aplicados
+sucessivamente ao gancho, e o desvio verificado é declarado como componente de incerteza,
+conforme a Seção \ref{sec:incertezas}.
+
+\subsection{Ancoragem e Geometria do Cabo}
+\label{sec:ancoragem}
+
+A montagem experimental utiliza um cabo de $126$ cm, passado ao redor de uma gaveta pesada
+e fixa, que atua como estrutura de ancoragem, atando cada extremidade da alça da balança,
+conforme a Figura~\ref{fig:montagem}. O gancho é acoplado a uma estrutura na parte
+traseira do automodelo, posicionada acima do eixo de transmissão das rodas, buscando
+manter a linha de tração alinhada à direção longitudinal do veículo para minimizar as
+componentes transversais da força. Durante o ensaio, a balança permanece suspensa a $15$
+cm do solo e o ponto de ancoragem na gaveta está a $28$ cm. Todas as dimensões foram
+medidas três vezes, adotando-se a média aritmética como valor representativo.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/montagem_tracao.png}
+\caption{Montagem do ensaio de tração, automodelo ancorado pela balança de gancho suspensa
+entre o engate traseiro e a estrutura fixa.}
+\label{fig:montagem}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+Como os engates se encontram a alturas diferentes, o cabo, a linha horizontal 
+e a diferença de altura formam um triângulo
+retângulo cuja hipotenusa é o próprio cabo. O cateto vertical, oposto ao ângulo $\theta$
+entre o cabo e a horizontal, vale $28 - 15 = 13$ cm, o que permite escrever
+
+\begin{equation*}
+\mathrm{sen}\,\theta = \frac{13}{126}
+\qquad\Rightarrow\qquad
+\theta = 5{,}9^\circ,
+\end{equation*}
+o que resulta em $\cos\theta = 0{,}995$. Tomar a leitura da balança diretamente como força de
+tração equivale a aproximar $\cos\theta$ por $1$. O erro dessa aproximação é quantificado
+como componente de incerteza na Seção \ref{sec:incertezas}.
+
+\subsection{Massa Adicional}
+\label{sec:massaaderencia}
+
+Nos ensaios de tração, fixam-se halteres na dianteira do veículo, conforme ilustrado na 
+Figura~\ref{fig:pesos}, de modo a aumentar a carga normal sobre os pneus e, com ela, o
+limite de aderência antes da patinagem. O peso atua na vertical, ao passo que a balança
+mede na horizontal, e, em regime estático, a leitura corresponde à tração desenvolvida
+pelo propulsor na região de aderência. A massa total do conjunto, veículo, baterias e
+halteres, foi de $6{,}640$ kg, média de três pesagens, adotada como ponto de operação do
+projeto, pois variações de massa alteram o limite de aderência e comprometem a
+comparabilidade entre sessões.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.72\textwidth]{Figuras/visao_pesos.jpeg}
+\caption{Halteres fixados na dianteira do veículo para aumentar a carga normal sobre os
+pneus.}
+\label{fig:pesos}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\subsection{Raio Efetivo da Roda}
+\label{sec:raioefetivo}
+
+O torque da roda depende do produto da força pelo raio efetivo de rolamento sob carga, pois o
+pneu se deforma sob o peso do conjunto, apresentando um raio menor que o nominal. A medida
+segue a definição normativa do perímetro efetivo dos pneumáticos das rodas, a média das
+distâncias percorridas pelas rodas motrizes em uma rotação completa
+\cite{cee3821_85}, obtida aqui pelo método de \emph{roll-out}, com marcação de
+referenciais no pneu e no solo e contagem de voltas completas. Com o veículo encostado em uma parede, para garantir o
+deslocamento em linha reta, marca-se o pneu e o solo em um mesmo alinhamento e
+movimenta-se o automodelo até completar cinco voltas da roda. A distância percorrida entre
+as marcas, anotada em três medições independentes, é de $236$ cm em média, e o raio
+efetivo segue da Equação \eqref{eq:raio_efetivo}:
+\begin{equation}\label{eq:raio_efetivo}
+r_\mathrm{ef} = \frac{L}{2\pi n_v}
+              = \frac{236}{2\pi \times 5}
+              = 7{,}51\ \mathrm{cm}
+              = 0{,}0751\ \mathrm{m},
+\end{equation}
+em que $n_v = 5$ é o número de voltas completas.
+
+A cadeia mecânica da medida fecha com a Equação \eqref{eq:torque_f_r}:
+\begin{equation}\label{eq:torque_f_r}
+T_\mathrm{roda} = F\,r_\mathrm{ef}.
+\end{equation}
+
+A medida do raio é necessária porque o controlador trabalha com torque, e não com força, e a
+conversão da Equação~\eqref{eq:torque_f_r} é o elo que leva o coeficiente da
+curva característica, medido em newtons, ao coeficiente de torque que a malha emprega,
+$K_T = G_F\,r_\mathrm{ef}$, aplicado no estimador e no \emph{feedforward}.
+
+\subsection{O Procedimento do Ensaio}
+\label{sec:procedimentotracao}
+
+O experimento central do trabalho é o ensaio de tração de corrente versus força, no qual o
+veículo ancorado recebe degraus de comando que fornecem um par de valores, a corrente
+consumida e a força de tração, que compõem a curva característica ponto a ponto.
+
+A configuração segue a montagem da Seção \ref{sec:ancoragem}, com o veículo ancorado pela
+balança, os halteres fixados e a massa total conferida por pesagem (Seção~\ref{sec:massaaderencia}). Uma
+câmera registra a sessão, com o display da balança e o terminal do notebook no mesmo
+plano, este exibindo o horário, o tempo dentro do degrau e a corrente média do segundo.
+Antes da sessão, repetem-se as verificações comuns do ensaio em vazio e acrescentam-se a
+taragem da balança em vazio, a conferência do cabo e dos engates e o posicionamento da
+câmera. A balança é tarada nos $3$ s de neutro entre um degrau e o seguinte, pois, durante
+a aceleração, parte do esforço do propulsor não aparece como força instantânea no cabo e
+se acumula como energia de deformação elástica no conjunto cabo-engates-estrutura.
+Ao cessar o comando, essa tensão elástica se relaxa e deixa no display um
+valor residual de $0{,}1$ a $0{,}3$ kg que não corresponde a esforço algum do propulsor, o
+que torna necessária a taragem a cada neutro.
+
+O protocolo de cada degrau segue os passos abaixo e é o mesmo em toda a escala.
+
+\begin{enumerate}
+    \item Tarar a balança durante o neutro entre degraus.
+    \item Executar o script remoto do degrau, de duração de $15$ s.
+    \item Decorridos $7$ s, anotar a força exibida em cada um dos segundos $7$, $8$, $9$ e
+    $10$, em regime estacionário.
+    \item Adotar como ponto da curva a média das quatro leituras.
+\end{enumerate}
+
+A corrente, por sua vez, é registrada durante todo o ensaio, e empregam-se os pontos por
+segundo impressos no terminal, as médias de cada segundo, que representam o regime das
+medições, relacionados em vídeo, quadro a quadro, à força do mesmo degrau e do mesmo
+segundo. A leitura em vídeo padroniza o processo, elimina os erros de pressa e de paralaxe
+da leitura ao vivo e dá rastreabilidade a cada valor anotado. Como o display da balança não
+possui saída elétrica, conforme discutido na Seção~\ref{sec:montagem}, o vídeo é o canal de
+registro da força. O ensaio fornece a curva característica e todos os
+parâmetros que dela derivam, apresentados no Capítulo \ref{chap:resultados}.
+
+\subsection{O Tratamento dos Dados}
+\label{sec:tratamento}
+
+O tratamento consolida, para cada comando, as quatro leituras dos segundos $7$ a $10$ em
+duas estatísticas, a mediana e o desvio-padrão amostral
+(Equação~\eqref{eq:tipo_a}), e converte as forças de kgf para N com $g = 9{,}81$
+m/s$^2$, consolidando a tabela mestra dos resultados. Comandos não executados em uma
+sessão, como o de $98^\circ$ da descida, são excluídos do consolidado e assinalados na
+tabela.
+
+Cada força anotada precisa ser pareada à corrente do mesmo degrau e do mesmo segundo, e o
+pareamento se valida contra o ensaio de tração de corrente
+(Seção~\ref{sec:tracaocorrente}), conduzido no mesmo protocolo e na mesma escala. A
+corrente anotada por vídeo no ensaio com balança e a corrente registrada eletronicamente
+nesse segundo ensaio são a mesma variável medida por dois canais independentes, e a
+coincidência entre as medianas comando a comando, dentro da dispersão entre repetições,
+comprova que a leitura pareada a cada força é representativa da condição de regime.
+
+O coeficiente $G_F$ da curva característica ajusta-se sobre os pontos individuais das
+repetições, não sobre as medianas, pois cada leitura fornece um par cuja abscissa é a
+corrente de fase equivalente, $(I - I_0(u))/u$, com $I_0(u)$ dado pelo ajuste do ensaio em
+vazio e $u$ pela normalização da Equação~\eqref{eq:normalizacao}, e cuja ordenada é a
+força convertida. A reta é forçada pela origem e ajustada pela função
+\texttt{ajuste\_gf} (Apêndice A.1), que primeiro subtrai a corrente de perdas e divide
+pelo comando, linearizando a característica antes de aplicar a
+Equação~\eqref{eq:mq_origem}, conforme descrito na Seção~\ref{sec:processamento}.
+
+\subsubsection{Ensaio de Tração de Corrente}
+\label{sec:tracaocorrente}
+
+A identificação da dinâmica entre o comando e a corrente, que define a planta $G_2(s)$ sobre
+a qual a malha escrava é projetada, é conduzida no ensaio de tração de corrente. Emprega-se
+o mesmo protocolo de degraus e a mesma montagem do ensaio de tração de corrente versus
+força, dispensada a anotação de força na balança, com a
+corrente amostrada a $100$ Hz e registrada por inteiro em cada degrau, amostra a amostra,
+no arquivo \texttt{ensaio\_tracao\_corrente.csv}. O registro completo de cada platô
+viabiliza o ajuste da resposta ao degrau apresentado no Capítulo \ref{chap:resultados}.
+
+O script da dinâmica (Apêndice A.2) isola a sessão de aquisição rápida do arquivo bruto e
+segmenta o registro em blocos, um por comando, e os blocos não começam no instante do
+comando, pois a janela de registro abre antes de o comando remoto produzir efeito no ESC.
+Os primeiros $1{,}5$ a $2$ s de cada bloco registram a corrente em nível de repouso,
+compatível com a corrente de perdas $I_0$ do ensaio em vazio, e somente após esse período a
+corrente sobe, e tratar o bloco inteiro como resposta ao degrau conduziria a
+uma constante de tempo superestimada, mistura do atraso do protocolo com a dinâmica da
+planta. O script define o nível de repouso como a média dos primeiros $1{,}5$ s do bloco, o
+platô como a média dos últimos $3$ s e o início elétrico como a primeira amostra acima de
+$20\%$ da excursão entre ambos, e a partir dele guarda $6$ s de resposta, normalizados
+entre repouso e platô. Para os comandos de $100^\circ$ a $109^\circ$, na região de
+aderência, empregam-se dois métodos sobre a média das dez bordas. O primeiro é o da
+$63{,}2\%$, em que o tempo que a resposta leva para atingir $63{,}2\%$ do valor final é,
+pela definição de constante de tempo, o próprio $\tau$. O segundo é o ajuste de mínimos
+quadrados ao modelo de primeira ordem, que procura o $\tau$ minimizando a soma dos
+quadrados dos resíduos entre a média e a curva $1 - e^{-t/\tau}$, conforme a
+caracterização dinâmica clássica por resposta ao degrau \cite{braga_instr_dinamica}.
+Bordas acima de $110^\circ$ não são empregadas, pois a resposta já nasce contaminada
+pela patinagem. O ganho de cada borda é o quociente do platô pelo comando respectivo, e o
+ganho da planta é a média desses quocientes
+sobre as dez bordas.
+
+\section{A Malha de Controle no Código da Simulação}
+\label{sec:codigomalha}
+
+A malha projetada no Capítulo~\ref{chap:descricaoprocesso} é implementada como um
+programa que executa um passo por amostra de $10$ ms, e o fundamento da discretização está
+na Seção~\ref{sec:implementacao}. O script da simulação (Apêndice A.3) é a versão de
+referência dessa implementação, e cada elemento é apresentado a seguir na ordem em que
+executa, com o fluxograma do seu código e as particularidades da implementação digital,
+remetendo ao Capítulo~\ref{chap:descricaoprocesso} para a teoria de cada bloco.
+
+\subsection{O Estimador de Torque}
+\label{sec:codeestimador}
+
+O estimador implementa a Equação~\eqref{eq:estimador_proposta} com as salvaguardas
+projetadas na Seção~\ref{sec:inferencial}, e o código registra dois cuidados que a
+descrição contínua não carrega, o comando efetivo protegido da zona morta, que guarda a
+divisão, e o deslocamento de perturbação descontado junto às perdas. A
+Figura~\ref{fig:fluxo_estimador} apresenta o fluxograma do bloco.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.42\textwidth]{Figuras/fluxo_estimador.png}
+\caption{Fluxograma do estimador de torque a cada amostra: cálculo da estimativa bruta,
+limite à faixa validada e filtro de primeira ordem.}
+\label{fig:fluxo_estimador}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\subsection{O Seletor e a Rampa da Referência}
+\label{sec:codeseletor}
+
+O seletor implementa a Equação~\eqref{eq:seletor}, e o código faz a distinção que a
+descrição contínua não contempla, pois a referência efetiva alimenta o \emph{feedforward}
+antes da rampa e o mestre depois dela, avançando a cada amostra o passo correspondente à
+taxa de $0{,}6$ N$\cdot$m/s, conforme a Seção~\ref{sec:implementacao}. A Figura~\ref{fig:fluxo_seletor}
+apresenta o fluxograma do bloco, com a bifurcação.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{Figuras/fluxo_seletor.png}
+\caption{Fluxograma do seletor de mínimo e da rampa da referência, com a bifurcação para o
+\emph{feedforward} (antes da rampa) e para o mestre (depois).}
+\label{fig:fluxo_seletor}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\subsection{O Controlador Mestre}
+\label{sec:codemestre}
+
+O mestre compara a referência rampada ao torque estimado e emprega a lei PI com ganho
+programado, $K_{p1}(u) = \lambda_2\,u/(K_T\,\lambda_1)$, que atualiza o ganho com o comando
+vigente e lineariza o caminho da malha externa. O integrador acumula o erro apenas quando
+o escravo não satura, pois, do contrário, a saturação do comando carregaria integral
+espúria para a malha de torque. A Figura~\ref{fig:fluxo_mestre} apresenta o fluxograma do bloco.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.85\textwidth]{Figuras/fluxo_mestre.png}
+\caption{Fluxograma do controlador mestre: erro contra o torque estimado, lei PI com ganho
+programado e integrador condicionado à não saturação do escravo.}
+\label{fig:fluxo_mestre}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\subsection{O Feedforward e o Caminho Direto}
+\label{sec:codefeedforward}
+
+O \emph{feedforward} converte a referência efetiva na corrente esperada pela
+Equação~\eqref{eq:iff}, $I_{\mathrm{ff}} = I_0(u) + u\,T_{\mathrm{ref,ef}}/K_T$, e o
+caminho direto obtém o comando equivalente $u_{\mathrm{ff}}$, que é rampado com taxa
+própria de $0{,}05$ u/s. O somador forma a referência da malha interna, $I_{\mathrm{ref}} =
+I_{\mathrm{ff}} + \Delta I$, e o PI escravo atua apenas sobre o desvio, uma vez que o
+pré-posicionamento já entrega a maior parte do comando. A
+Figura~\ref{fig:fluxo_feedforward} apresenta o fluxograma do bloco.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.6\textwidth]{Figuras/fluxo_feedforward.png}
+\caption{Fluxograma do \emph{feedforward} e do caminho direto: corrente esperada, comando
+equivalente rampado e soma com a correção do mestre.}
+\label{fig:fluxo_feedforward}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\subsection{O Controlador Escravo e o Clamping}
+\label{sec:codeescravo}
+
+O escravo compara a referência de corrente à medida e emprega a lei PI, com o comando
+linear passando pela saturação nos limites $u_{\min}$ e $u_{\max}$ da região validada. Quando
+a saída satura, o \emph{clamping} ajusta o integrador para que a saída fique exatamente no
+limite, e qualquer reversão do erro tira a saída da saturação imediatamente, tratamento
+descrito na Seção~\ref{sec:protecoes}. Sem saturação, o integrador do escravo e o do
+mestre acumulam normalmente. A Figura~\ref{fig:fluxo_escravo} apresenta o fluxograma do
+bloco.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.85\textwidth]{Figuras/fluxo_escravo.png}
+\caption{Fluxograma do controlador escravo com anti-\emph{windup} por \emph{clamping}:
+saturação nos limites da região validada e condicionamento do integrador.}
+\label{fig:fluxo_escravo}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+\section{Incertezas de Medição}
+\label{sec:incertezas}
+
+O orçamento de incertezas segue o método das notas de aula de instrumentação
+\cite{braga_instr_incerteza}. Cada componente de incerteza é caracterizada como de Tipo A,
+quando avaliada estatisticamente a partir das repetições, ou de Tipo B, quando avaliada por
+propriedades do instrumento e do procedimento. As componentes, sendo independentes, se
+combinam em quadratura, isto é, pela raiz da soma dos quadrados de suas incertezas-padrão,
+resultando na incerteza combinada. A incerteza expandida é $U = k\,\sigma_c$, com $k = 2$,
+que corresponde a aproximadamente $95\%$ de confiança e delimita o intervalo dentro do
+qual o valor verdadeiro deve se situar. Para não confundir com o comando normalizado $u$,
+adota-se $\sigma$ para as incertezas-padrão.
+
+\textbf{Tipo A.} A repetibilidade do ensaio é quantificada pelo desvio-padrão amostral das
+quatro leituras de regime de cada degrau, anotadas nos segundos $7$ a $10$,
+\begin{equation}\label{eq:tipo_a}
+s = \sqrt{\frac{\sum_{i=1}^{n}(x_i - \bar{x})^2}{n - 1}},
+\qquad n = 4.
+\end{equation}
+Emprega-se o denominador $n - 1$ porque a média $\bar{x}$ é estimada das próprias leituras,
+e essa correção torna o desvio-padrão amostral uma estimativa não enviesada da dispersão
+das medidas repetidas. São quatro leituras porque o protocolo adota os quatro segundos de
+regime como amostras da condição estacionária de cada degrau, e o desvio é calculado sobre
+as forças de cada degrau, nas duas escalas. Para caracterizar uma faixa de operação,
+adota-se a média dos desvios-padrão dos degraus da faixa, o valor típico da repetibilidade
+na faixa. Os valores resultantes, por faixa, são apresentados com os resultados do orçamento
+no Capítulo \ref{chap:resultados}.
+
+\textbf{Tipo B.} Cada componente é modelado por uma distribuição retangular de meia-largura
+$a$, uma vez que o valor verdadeiro é conhecido apenas como pertencente a um intervalo, sem
+que posição alguma dentro dele seja mais provável que outra. O desvio-padrão dessa
+distribuição uniforme vale $\sigma = a/\sqrt{3}$, conforme as notas de aula, e é esse o
+valor empregado como incerteza-padrão. As componentes da força
+são as seguintes.
+
+\begin{itemize}
+    \item \textbf{Resolução da balança,} a quantização imposta pelo display, que só distingue
+    variações de $10$ g, e o valor verdadeiro pode estar até $5$ g acima ou abaixo
+    da indicação. A meia-largura é $a = 5$ g e
+    \[
+    \sigma_{\mathrm{res}} = \frac{5}{\sqrt{3}} = 2{,}9\ \mathrm{g} = 0{,}028\ \mathrm{N}.
+    \] 
+    \item \textbf{Calibração da balança,} o desvio sistemático revelado pela verificação com
+    pesos padrão. O desvio relativo ao peso, a diferença entre a leitura e o peso padrão,
+    resulta em
+    \[
+    \frac{0{,}010\ \mathrm{kg}}{0{,}500\ \mathrm{kg}} = 0{,}02 = 2\%
+    \]
+    da leitura na faixa do ensaio, sempre no mesmo sentido. Embora sistemático e
+    unilateral, o desvio é coberto de forma conservadora pela meia-largura retangular de
+    $2\%$, o que evita subestimar a incerteza. Como não há canal de correção,
+    o desvio não corrigido é tratado como retangular de meia-largura $a = 2\%$ de $F$
+    \[
+    \sigma_{\mathrm{cal}} = \frac{2\%}{\sqrt{3}} = 1{,}15\% \ \text{de}\ F.
+    \]
+    \item \textbf{Leitura em vídeo,} a legibilidade quadro a quadro do display. Quadros
+    sucessivos separam instantes discretos e o display pode mudar entre eles, e,
+    quando há dúvida de leitura, o valor é estimado em $\pm 1$ dígito, $a = 10$ g,
+    \[
+    \sigma_{\mathrm{vid}} = \frac{10}{\sqrt{3}} = 5{,}8\ \mathrm{g} = 0{,}057\ \mathrm{N}.
+    \]
+    \item \textbf{Ângulo do cabo,} a aproximação da leitura direta, que toma $\cos\theta$
+    por $1$ e cujo erro é multiplicativo sobre a força, pois a componente longitudinal da
+    tensão é $F\cos\theta$. Da geometria da Seção \ref{sec:ancoragem}, esse erro é
+    \[
+    1 - \cos\theta = 1 - \sqrt{1 - (13/126)^2} = 0{,}53\%.
+    \]
+    Como não é corrigido, é tratado como retangular de meia-largura $a = 0{,}53\%$,
+    e $\sigma_{\theta} = 0{,}53\%/\sqrt{3} = 0{,}31\%$ da força.
+    \item \textbf{Raio efetivo,} a incerteza de marcação relativa à distância percorrida.
+    Os $236$ cm resultam de duas marcações posicionadas com fita, cuja resolução prática é
+    de $1$ cm, ou meia-largura relativa de $1/236 = 0{,}42\%$, tratada como retangular,
+    $\sigma_r/r_\mathrm{ef} = 0{,}42\%/\sqrt{3} = 0{,}24\%$.
+\end{itemize}
+
+As componentes se somam em quadratura porque são independentes e atuam de forma
+multiplicativa sobre o torque, e seus efeitos não se acumulam linearmente. A
+Equação \eqref{eq:propagacao} segue diretamente de $T = F\,r_\mathrm{ef}$ pela regra de
+propagação para produtos, pela qual as incertezas relativas das grandezas multiplicadas se
+combinam pela raiz da soma dos quadrados. A incerteza-padrão combinada do torque é,
+portanto,
+\begin{equation}\label{eq:propagacao}
+\frac{\sigma_c(T)}{T} = \sqrt{\left(\frac{\sigma_A(F)}{F}\right)^2
+                        + \left(\frac{\sigma_B(F)}{F}\right)^2
+                        + \left(\frac{\sigma(r_\mathrm{ef})}{r_\mathrm{ef}}\right)^2
+                        + \sigma_{\theta}^2},
+\qquad
+\sigma_B(F) = \sqrt{\sigma_{\mathrm{res}}^2 + \sigma_{\mathrm{cal}}^2 +
+\sigma_{\mathrm{vid}}^2},
+\end{equation}
+em que $\sigma_A(F)$ é o valor típico da repetibilidade da faixa e $T = F\,r_\mathrm{ef}$.
+
+O orçamento acima caracteriza o torque medido no ensaio, cuja força é a leitura da
+balança. O torque que interessa ao controle, porém, é o estimado a partir da corrente, e
+esse caminho traz a incerteza da cadeia de corrente, composta pela quantização do conversor
+e pelo erro total do sensor. Como o estimador subtrai da leitura a corrente de perdas e
+aplica a curva característica identificada com a mesma cadeia, o torque estimado é função
+da diferença $(I - I_0)$, e é sobre ela que as componentes se avaliam.
+
+A quantização do conversor do Arduino Due impõe o degrau de $0{,}122$ A já quantificado na
+Seção~\ref{sec:acshall}, que, tratado como retangular, contribui com
+$\sigma_{\mathrm{ADC}} = 0{,}061/\sqrt{3} \approx 0{,}035$ A. Relativo a $(I - I_0)$, essa
+parcela vale cerca de $1\%$ no início da região de aderência, onde a diferença é menor, e
+decresce com a corrente.
+
+O erro total de saída do sensor é de $\pm 1{,}2\%$ típicos sobre a escala, especificado com
+alimentação de $5$ V, e o próprio \emph{datasheet} adverte que a operação a $3{,}3$ V
+acrescenta erro de ratiometria. A especificação em $5$ V é aqui tomada como limite
+conservador \cite{acs758_datasheet}, e, como distribuição retangular, resulta
+$\sigma_{\mathrm{sensor}} = 1{,}2\%/\sqrt{3} = 0{,}69\%$ de $(I - I_0)$.
+
+Quanto ao desvio sistemático de $7{,}42\%$ revelado pela verificação em bancada
+(Seção~\ref{sec:resbancada}), ele poderia ser compensado via \emph{software}, mas, como a
+curva característica é identificada com a mesma cadeia que mede a corrente no controle, o
+desvio já é absorvido pelo coeficiente identificado e não se traduz em viés do torque
+estimado. A verificação em bancada valida, nesse sentido, a linearidade que a curva exige,
+e o que permanece como incerteza é a instabilidade desse desvio entre o ensaio e a
+operação, coberta pelo erro total do sensor. O torque estimado herda, portanto, a
+combinação
+\begin{equation}\label{eq:propagacao_estimador}
+\frac{\sigma_c(\hat{T})}{\hat{T}} = \sqrt{\left(\frac{\sigma_c(T)}{T}\right)^2
+                        + \left(\frac{\sigma_{\mathrm{ADC}}}{I - I_0}\right)^2
+                        + \sigma_{\mathrm{sensor}}^2},
+\end{equation}
+que eleva a incerteza combinada em cerca de $1{,}2\%$ no início da região de aderência e em
+menos de $0{,}8\%$ no restante da faixa.
+
+O mesmo raciocínio envolve as variâncias dos ajustes, cujo coeficiente de determinação da
+Equação~\eqref{eq:r2} mede a fração da variância dos dados explicada pela reta, enquanto a
+variância residual que ele deixa visível é o retrato agregado da repetibilidade, pois os
+pontos de um comando carregam exatamente as flutuações que o Tipo A quantifica pela
+Equação~\eqref{eq:tipo_a}. Quando a variância residual de um ajuste é da mesma ordem da
+dispersão entre repetições, o modelo explica o que era explicável, e o que resta é o
+acaso de medição, não falha de forma.
+
+\section{Resumo do Capítulo}
+
+Este capítulo constrói o percurso da montagem ao orçamento de incertezas. A abertura fixa
+o método dos mínimos quadrados, comum a todos os ajustes do trabalho, e os scripts que
+o implementam. A balança de gancho
+é adotada como padrão de força, e a montagem ancora o automodelo, convertendo a tração em
+tensão mensurável, com a geometria do cabo quantificada e o raio efetivo medido em
+$0{,}0751$ m. A corrente é adquirida por um sensor de efeito Hall instalado por adaptação
+com conector Deans-T e registrada sob degraus gerados por
+\emph{script} e automatizados por programa próprio. A verificação em bancada valida os
+instrumentos e quantifica seus desvios, distinguindo o que é corrigido em software do que
+é declarado como incerteza. O ensaio em vazio fornece a corrente de perdas, parâmetro do
+estimador e do \emph{feedforward}, e o ensaio de tração de corrente versus força, com a
+força lida em vídeo nos segundos de regime, constrói a curva característica da qual saem
+o coeficiente do estimador, a inversa do \emph{feedforward} e o limiar do seletor de
+aderência, enquanto o ensaio de tração de corrente identifica a dinâmica da malha escrava,
+com o tratamento de cada conjunto de dados especificado junto ao seu ensaio. A malha de
+controle é então dissecada bloco a bloco no código da simulação, com o fluxograma de cada
+elemento, e as incertezas são caracterizadas componente a componente, no método do Tipo
+A e do Tipo
+B, combinam em quadratura e alcançam também a cadeia de corrente do estimador de torque. O Capítulo \ref{chap:resultados}
+apresenta os resultados obtidos com este procedimento.
+
+\clearpage
