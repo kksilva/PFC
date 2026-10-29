@@ -207,15 +207,21 @@ def main():
         fs = [mediana([p[1] for p in tracao[sentido][a]]) for a in degs]
         eixo.plot(us, fs, "-", color=cores[sentido], lw=2,
                   label=sentido.capitalize())
-    eixo.axvspan(0.0235, 0.0529, color="0.9")
-    eixo.axvspan(0.0529, 0.2176, color="0.96")
-    eixo.text(0.038, 55, "zona morta", ha="center", fontsize=10)
-    eixo.text(0.135, 55, "aderencia", ha="center", fontsize=10)
-    eixo.text(0.244, 55, "saturacao", ha="center", fontsize=10)
+    eixo.axvspan(0.0235, 0.0529, color="0.93", zorder=0)
+    eixo.axvspan(0.0529, 0.2176, color="0.975", zorder=0)
+    for limite in (0.0529, 0.2176):
+        eixo.axvline(limite, color="0.45", lw=1.1, ls=(0, (4, 3)), zorder=1)
+    for centro, nome in ((0.038, "zona morta"), (0.135, "aderencia"),
+                         (0.244, "saturacao")):
+        eixo.text(centro, 56.5, nome, ha="center", va="center", fontsize=10.5,
+                  style="italic",
+                  bbox=dict(boxstyle="round,pad=0.28", fc="white", ec="0.6", lw=0.8))
     eixo.set_title("Forca de tracao mediana por comando normalizado")
     eixo.set_xlabel("Comando normalizado $u$")
     eixo.set_ylabel("Forca de tracao (N)")
     eixo.set_ylim(0, 60)
+    eixo.set_yticks([0, 10, 20, 30, 40, 50])
+    eixo.margins(x=0.01)
     eixo.legend(fontsize=10.5)
     fig.tight_layout()
     fig.savefig(PASTA_FIGURAS / "curva_forca_comando.png", dpi=300)

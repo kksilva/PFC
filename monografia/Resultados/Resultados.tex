@@ -273,10 +273,15 @@ região de aderência, a força de tração à corrente de fase equivalente por 
 coeficiente, e, se é válido, os pontos medidos devem alinhar-se sobre uma reta que passa
 pela origem, com o coeficiente de determinação (Equação~\eqref{eq:r2}) medindo o
 alinhamento e abrangendo, de uma vez, a linearidade do ESC, o desconto das perdas e a
-conversão pela razão cíclica. O ajuste, sobre os pontos individuais das repetições e pela
-função \texttt{ajuste\_gf} (Seção~\ref{sec:tratamento}), resulta, na descida, em $G_F =
-0{,}372$ N/(A/u) com $r^2 = 0{,}79$, e, na subida, $G_F = 0{,}368$ N/(A/u) com $r^2 =
-0{,}11$, com $56$ e $44$ pontos. Os dois coeficientes praticamente coincidem, o que
+conversão pela razão cíclica. O valor de $G_F$ é o coeficiente angular da reta da
+Equação~\eqref{eq:curva_caracteristica}, obtido por mínimos quadrados forçados pela
+origem sobre os pontos individuais das quatro repetições de cada comando da região de
+aderência, sendo cada ponto o par cuja abscissa é a corrente de fase equivalente
+$(I - I_0(u))/u$, com $I_0(u)$ vindo do ajuste do ensaio em vazio, e cuja ordenada é a
+força convertida de kgf para N, conforme a Seção~\ref{sec:tratamento}. O cálculo é feito
+e impresso pelo script \texttt{analise\_estatica.py} (Apêndice A.1), e o ajuste resulta,
+na descida, em $G_F = 0{,}372$ N/(A/u) com $r^2 = 0{,}79$ ($56$ pontos), e, na subida,
+$G_F = 0{,}368$ N/(A/u) com $r^2 = 0{,}11$ ($44$ pontos). Os dois coeficientes praticamente coincidem, o que
 confirma que a constante do conjunto não depende do sentido da escada. Na descida, a
 variância não explicada, cerca de $21\%$, é da mesma ordem da dispersão entre repetições
 da Tabela \ref{tab:mestra}, e o modelo é validado. Na subida, o ajuste praticamente
