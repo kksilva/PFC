@@ -445,7 +445,22 @@ nomes designam uma mesma relação física entre a corrente e o esforço mecâni
 propulsor, vista ora na grandeza que o ensaio mede, ora na grandeza que o controle
 comanda, e a distinção de nomes evita confundir as unidades ao longo do texto. A
 Subseção~\ref{sec:estimador} deriva os dois coeficientes da curva característica, e as
-subseções seguintes detalham a malha de controle construída sobre eles.
+subseções seguintes detalham a malha de controle construída sobre eles. A Figura~\ref{fig:malha_cascata}
+apresenta a malha completa, com o torque pedido $T_{\mathrm{ref}}$ limitado pelo seletor de
+mínimo ao limiar de aderência $T_{\text{ader\^{e}ncia}}$, o caminho de pré-alimentação
+$C_{\mathrm{ff}}$ convertendo a referência efetiva na corrente esperada $I_{\mathrm{ff}}$ e no
+comando equivalente $u_{\mathrm{ff}}$, e a cascata mestre $C_1$--escravo $C_2$ perseguindo o
+torque estimado $\hat{T}$ reconstruído por $\hat{G}$, e as subseções seguintes detalham cada
+bloco.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Figuras/diagrama_cascata_tikz-1.png}
+\caption{Malha de controle proposta: seletor de mínimo, pré-alimentação
+$C_{\mathrm{ff}}$, cascata mestre--escravo $C_1$--$C_2$ e estimador $\hat{G}$.}
+\label{fig:malha_cascata}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
 
 \subsection{O Estimador de Torque}
 \label{sec:estimador}
