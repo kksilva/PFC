@@ -20,27 +20,32 @@
 \def\bw{74mm}
 % fluxo principal em coluna unica central
 \node[term] (ini) {início da amostra};
-\node[block, minimum width=\bw, below=of ini] (ler) {Ler corrente $I$ (ADC)};
+\node[block, minimum width=52mm, below=of ini] (uef)
+      {comando protegido: $u_{\mathrm{ef}} = \max(u,\,u_{\min})$};
+\node[block, minimum width=\bw, below=of uef] (ler) {Ler corrente $I$ (ADC)};
 \node[block, minimum width=\bw, below=of ler] (est) {Estimar $\hat{T}$\\
       {\footnotesize $I_0(u_{\mathrm{ef}})$, $/u_{\mathrm{ef}}$, $\times K_T$, teto $3{,}35$ N·m, filtro $0{,}6$ s}};
 \node[block, minimum width=\bw, below=of est] (sel) {Selecionar referência:
       $T_{\mathrm{ref,ef}} = \min(T_{\mathrm{ref}},\,T_{\text{ader\^{e}ncia}})$};
 \node[block, minimum width=40mm, below=of sel] (rampa) {rampa ($0{,}6$ N·m/s)};
-\node[block, minimum width=\bw, below=of rampa] (mestre) {Mestre PI: $\Delta I$};
+\node[block, minimum width=\bw, below=of rampa] (mestre) {Mestre PI: $\Delta I$,
+      com $K_{p1}(u_{\mathrm{ef}})$};
 \node[sum, right=20mm of mestre] (somaI) {};
 \node[sign] at ($(somaI.center)+(-3.2mm,3.2mm)$) {$+$};
 \node[sign] at ($(somaI.center)+(3.2mm,-3.2mm)$) {$+$};
 \node[sign, anchor=west] at ($(somaI.south east)+(1mm,-1mm)$) {$I_{\mathrm{ref}}$};
 \node[block, minimum width=36mm, above=8mm of somaI] (ff)
       {Feedforward: $I_{\mathrm{ff}}$, $u_{\mathrm{ff}}$\\
-      {\footnotesize (rampado $0{,}05$ u/s)}};
-\node[block, minimum width=54mm, below=8mm of somaI] (escravo)
-      {Escravo PI + clamping: $u$};
+      {\footnotesize (rampado $0{,}05$ u/s, com $u_{\mathrm{ef}}$)}};
+\node[block, minimum width=58mm, below=8mm of somaI] (escravo)
+      {Escravo PI + \emph{clamping}\\
+      {\footnotesize $u_{\mathrm{lin}} = u_{\mathrm{ff}} + K_{p2}(e_2 + I_{\mathrm{int,2}})$}};
 \node[block, minimum width=36mm, below=8mm of escravo] (planta)
       {Planta: ESC + motor $G_2(s)$};
 
 % setas do fluxo principal
-\draw[arr] (ini) -- (ler);
+\draw[arr] (ini) -- (uef);
+\draw[arr] (uef) -- (ler);
 \draw[arr] (ler) -- (est);
 \draw[arr] (est) -- (sel);
 \draw[arr] (sel) -- (rampa);
@@ -52,9 +57,19 @@
 % cotovelo com x fixo a 12 mm da borda do bloco, sem cruzar o caminho do mestre
 \draw[arr] (sel.east) -- ($(ff.east |- sel.east)+(12mm,0)$)
   -- ($(ff.east)+(12mm,0)$) -- (ff.east);
-% retorno pela lateral direita, fora de todos os blocos, ao inicio da proxima amostra
+% corrente esperada para o somador
+\draw[arr] (ff.south) -- (somaI.north);
+% comando equivalente (pre-posicionamento) para o escravo, pela direita
+\draw[arr] (ff.east) -- ($(ff.east)+(12mm,0)$)
+  -- ($(ff.east |- escravo.east)+(12mm,0)$) -- (escravo.east);
+% realimentacao do comando: u da amostra anterior retorna como u_ef,
+% pela esquerda, fora de todos os blocos
+\draw[arr, rounded corners] (escravo.west) -- ($(escravo.west)+(-84mm,0)$)
+  |- (uef.west);
+\node[sign, rotate=90] at ($(escravo.west)+(-84mm,45mm)$) {$u$ realimentado};
+% realimentacao da corrente pela lateral direita, ao inicio da proxima amostra
 \draw[arr, rounded corners] (planta.east) -- ++(28mm,0) |- (ini.east);
-\node[sign, rotate=90] at ($(ini.east)+(28mm,-80mm)$) {$T_s = 10$ ms};
+\node[sign, rotate=90] at ($(planta.east)+(28mm,26mm)$) {$T_s = 10$ ms};
 \end{tikzpicture}%
 }
 \end{document}
