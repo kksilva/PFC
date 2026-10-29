@@ -95,15 +95,17 @@ consolida as faixas observadas em cada um.
 \caption{Faixas de comando das regiões de operação, por ensaio (graus).}
 \label{tab:zonas}
 \small
+\renewcommand{\arraystretch}{1.2}
 \begin{tabular}{l c c c}
 \hline
 Ensaio & Zona morta & Região de aderência & Região de saturação \\
-Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & Não observada na escala \\
-Tração de corrente & $97$--$99$ & $100$--$109$ & A partir de $110$\textsuperscript{d} \\
-Tração corrente versus força (subida) & $97$--$99$ & $100$--$110$\textsuperscript{b} & Não observada na escala \\
-Tração corrente versus força (descida) & $99$ & $100$--$113$ & $114$--$117$\textsuperscript{c} \\
 \hline
-\multicolumn{4}{l}{\textsuperscript{a}\footnotesize{Rodas suspensas, sem tração.}}\\
+Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & não observada \\
+Tração de corrente & $97$--$99$ & $100$--$109$ & a partir de $110$\textsuperscript{d} \\
+Tração versus força (subida) & $97$--$99$ & $100$--$110$\textsuperscript{b} & não observada \\
+Tração versus força (descida) & $99$ & $100$--$113$ & $114$--$117$\textsuperscript{c} \\
+\hline
+\multicolumn{4}{l}{\rule{0pt}{2.5ex}\textsuperscript{a}\footnotesize{Rodas suspensas, sem tração.}}\\
 \multicolumn{4}{l}{\textsuperscript{b}\footnotesize{Força estaciona entre $105^\circ$ e $110^\circ$.}}\\
 \multicolumn{4}{l}{\textsuperscript{c}\footnotesize{Força máxima em $114^\circ$; corte do ESC em $116$--$117^\circ$.}}\\
 \multicolumn{4}{l}{\textsuperscript{d}\footnotesize{Resposta contaminada pela patinagem.}}\\
@@ -120,13 +122,11 @@ pois acima de $110^\circ$ a resposta é contaminada pela patinagem.
 \label{sec:resvazio}
 
 O ensaio em vazio forneceu a corrente de perdas $I_0(u)$ que o estimador desconta de cada
-leitura e que a pré-alimentação soma a cada referência, como discutido anteriormente, e o
-tratamento das amostras, do descarte dos degraus não executados ao ajuste da reta, segue a
-Seção~\ref{sec:vazio} da metodologia. O ensaio
+leitura e que a pré-alimentação soma a cada referência. O ensaio
 testa a hipótese estrutural do modelo, pois, com
 o veículo parado, a corrente de perdas é essencialmente a própria corrente de fase média,
-que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_bateria}, e
-um ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
+que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_bateria}.
+O ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
 pelo quociente $I/u$. A Tabela \ref{tab:vazio} consolida os valores que alimentam o ajuste.
 
 \begin{table}[htb]
@@ -151,16 +151,15 @@ $\alpha$ (graus) & $u$ & $I_0$ (A) & $\alpha$ (graus) & $u$ & $I_0$ (A) & $\alph
 
 Na zona morta, de $97^\circ$ a $99^\circ$, a corrente de perdas permanece abaixo de
 $1{,}2$ A; na zona de aderência, de $100^\circ$ a $110^\circ$, situa-se em torno de
-$1{,}3$ A, com pouca variação; a partir de $111^\circ$, o crescimento se torna sustentado, e
-a corrente atinge $2{,}35$ A no último comando. O ajuste linear sobre as médias da Tabela
-
-\ref{tab:vazio},
+$1{,}3$ A, com pouca variação em relação a faixa anterior; a partir de $111^\circ$, o 
+crescimento se torna sustentado, e
+a corrente atinge $2{,}35$ A no último comando. O ajuste linear sobre as médias da Tabela\ref{tab:vazio},
 \[
 I_0(u) = 0{,}53 + 6{,}70\,u,
 \]
 apresenta coeficiente de determinação $r^2 = 0{,}85$ (Equação~\eqref{eq:r2}), representado na Figura \ref{fig:i0}. A
 inclinação da reta vem do crescimento concentrado nos comandos altos, pois até $110^\circ$
-a corrente de perdas quase não varia e só os últimos comandos a elevam de fato, de forma
+a corrente de perdas quase não varia e só os últimos valores seelevam de fato, de forma
 que o coeficiente angular representa uma média do comportamento sobre toda a escala,
 superestimando as perdas nos comandos baixos e subestimando nos altos.
 
@@ -467,53 +466,3 @@ Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K
 \hline
 \end{tabular}
 \end{table}
-
-\section{O Desempenho da Malha em Simulação}
-\label{sec:ressimulacao}
-
-A malha sintonizada na Seção~\ref{sec:projeto_controladores} tem seu desempenho avaliado
-por simulação não-linear sobre os modelos identificados neste capítulo, executada em tempo
-discreto de $10$ ms pelo script da simulação (Apêndice A.3), que reproduz a curva estática
-da corrente, a corrente de perdas, a divisão pelo comando, o seletor e as saturações. Quatro
-cenários cobrem a operação, um degrau de referência de $1{,}6$ para $3{,}0$ N$\cdot$m
-(PSR), uma perturbação de afundamento de tensão de $20\%$ somada a um deslocamento de
-$0{,}3$ A na corrente de perdas (PRP), um retorno de referência a $1{,}6$ N$\cdot$m e um
-degrau para além do limiar do seletor.
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.9\textwidth]{Figuras/simulacao_cascata.png}
-\caption{Desempenho da malha em simulação: resposta ao degrau de referência (PSR),
-rejeição da perturbação de afundamento de tensão e deslocamento das perdas (PRP), retorno
-de referência e atuação do seletor de aderência.}
-\label{fig:simulacao}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
-
-No PSR, o torque acompanha o degrau com pico de $3{,}35$ N$\cdot$m, sobressinal de $25\%$,
-e assenta no valor pedido. Na PRP, a perturbação produz desvio máximo de $1{,}04$
-N$\cdot$m, com retorno ao regime de $3{,}347$ N$\cdot$m sobre a referência de $3{,}0$
-N$\cdot$m, residual compatível com o deslocamento imposto às perdas. No retorno, o torque
-acompanha a referência de $1{,}6$ N$\cdot$m com valor de $1{,}541$ N$\cdot$m na amostra
-avaliada. No último cenário, o degrau para além do limiar é cortado pelo seletor, e o
-torque estabiliza em $3{,}35$ N$\cdot$m, o teto do estimador, sem patinagem comandada. A
-malha, assim, segue a referência dentro da região validada, rejeita a perturbação elétrica
-e respeita o limiar de aderência, comportamento que fecha a caracterização e projeta a
-implementação embarcada como continuação.
-
-\section{Resumo do Capítulo}
-\label{sec:resumo}
-
-Este capítulo apresentou os resultados dos ensaios, na ordem em que foram conduzidos. A
-verificação em bancada quantificou os desvios dos instrumentos, a cadeia de corrente com
-$7{,}42\%$ de leitura alta, corrigível em \emph{software}, e a balança com desvio
-sistemático de $2\%$, declarado como incerteza. O ensaio em vazio forneceu a corrente de
-perdas $I_0(u)$, linear sobre o comando e parâmetro do estimador e do \emph{feedforward}. O
-ensaio de tração de corrente versus força construiu a curva característica, validada na
-descida com $G_F = 0{,}372$ N/(A/u) e coeficiente de determinação $0{,}79$, delimitou a
-região de aderência e o coeficiente de atrito aparente de $0{,}80$, e registrou o corte por
-subtensão do ESC nos degraus mais altos. O ensaio de tração de corrente identificou a
-planta $G_2(s) = 111/(0{,}18\,s + 1)$, sem atraso apreciável. Sobre esses modelos, a
-sintonia pelo método de modelo interno fixou os ganhos das duas malhas, e a simulação
-confirmou o seguimento de referência, a rejeição da perturbação elétrica e o respeito ao
-limiar do seletor de aderência.
