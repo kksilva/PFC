@@ -556,26 +556,34 @@ perturbação elétrica e respeita o limiar de aderência.
 O estado da bateria mostrou-se uma condição de ensaio tão decisiva quanto a massa e o
 piso, e os registros das sessões com as baterias antigas do laboratório, uma delas
 estufada, permitem quantificar o efeito. O estudo compara a sessão de referência, conduzida
-com a bateria em bom estado, a uma sessão antiga cuja primeira passagem ainda executava os
+com a bateria em bom estado, à subida $1$ de uma sessão anterior, registrada com a bateria
+degradada, e a uma sessão antiga cuja primeira passagem ainda executava os
 degraus e às retomadas do comando de $114^\circ$, onde o colapso se manifestou. O
 processamento segue o mesmo protocolo do ensaio de tração de corrente e é reproduzido pelo
 script \texttt{analise\_bateria.py} (Apêndice A.5).
 
 Na sessão de referência, a mediana da corrente cresce de $4{,}3$ A em $100^\circ$ a
-$29{,}4$ A em $114^\circ$, sem amostras nulas em nenhum degrau. Na primeira passagem da
+$29{,}4$ A em $114^\circ$, sem amostras nulas em nenhum degrau. A comparação par a par
+usa os mesmos degraus das duas sessões, e a subida $1$ da sessão antiga, registrada a
+$1$ Hz com a mesma bateria degradada, aplica degraus de $100^\circ$ a $115^\circ$ que
+incluem oito valores comuns à referência. Sobre esses oito, a mediana da corrente
+fica entre $44\%$ e $80\%$ da referência, com relação mediana de $54\%$ e sem
+amostras nulas, depressão monotônica ao longo da escala que antecede o colapso e
+caracteriza o \emph{sag} da bateria degradada em sua forma silenciosa, sem os cortes
+que marcam a descida, como se vê na comparação por degrau da
+Figura~\ref{fig:bateria}. Na primeira passagem da
 sessão antiga, os degraus ainda executam, com medianas de $19$ a $28$ A, porém com $10\%$
 a $22\%$ de amostras nulas, sinal precoce da fraqueza da bateria. Nas retomadas do
 $114^\circ$, a mediana do bloco cai para $15{,}2$ A, $48\%$ abaixo dos $29{,}4$ A do
 mesmo degrau na sessão de referência, e $45\%$ das amostras permanecem em zero, com o
-motor, quando ligado, drenando mediana de $20{,}5$ A, como se vê na comparação por degrau
-da Figura~\ref{fig:bateria}.
+motor, quando ligado, drenando mediana de $20{,}5$ A.
 
 \begin{figure}[htb]
 \centering
 \includegraphics[width=0.8\textwidth]{Figuras/bateria_sag.png}
 \caption{Mediana da corrente por degrau de comando: sessão de referência, com a bateria
-em bom estado, e sessão antiga, com a bateria degradada, destacando o colapso das
-retomadas de $114^\circ$.}
+em bom estado, e sessão antiga, com a bateria degradada, incluída a subida $1$ sobre os
+mesmos degraus da referência, destacando o colapso das retomadas de $114^\circ$.}
 \label{fig:bateria}
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}

@@ -12,10 +12,14 @@ LE:
   t_ensaio_s, t_degrau_s, angulo, corrente_a, amostragem ~100 Hz)
 - reprodutibilidade/ensaio_tracao_corrente.csv (sessao de referencia com
   bateria boa, mesmo formato; usa a corrida principal de 100 a 114 graus)
+- reprodutibilidade/dados_ensaio_bateria_antiga.xlsx, aba "subida 1"
+  (sessao anterior com a bateria degradada, amostragem de 1 Hz; permite
+  comparar os mesmos degraus com a bateria boa, sem os cortes da descida)
 
 GERA:
-- Figuras/bateria_sag.png (300 dpi): mediana de corrente por degrau das duas
-  sessoes, com o ponto colapsado das retomadas do degrau de 114 graus da
+- Figuras/bateria_sag.png (300 dpi): mediana de corrente por degrau das
+  sessoes, com a subida 1 da bateria degradada sobre os mesmos degraus da
+  referencia e o ponto colapsado das retomadas do degrau de 114 graus da
   sessao degradada destacado e anotado.
 
 Uso:  python3 analise_bateria.py
@@ -23,11 +27,12 @@ Uso:  python3 analise_bateria.py
 
 # ---------------------------------------------------------------------------
 # MAPA
-# 1) Constantes e leitura dos CSVs (linhas 46-66)
-# 2) Separacao dos blocos de degrau e estatisticas por bloco (linhas 69-96)
-# 3) Selecao das corridas: boa (subida principal) e antiga (descida) (linhas 99-124)
-# 4) Deteccao dos ciclos de corte do ESC no bloco colapsado (linhas 127-144)
-# 5) Figura bateria_sag.png e numeros-chave impressos (linhas 147-178)
+# 1) Constantes e leitura dos CSVs e da planilha antiga
+# 2) Separacao dos blocos de degrau e estatisticas por bloco
+# 3) Selecao das corridas: boa (subida principal), antiga (descida e
+#    subida 1 nos mesmos degraus da referencia)
+# 4) Deteccao dos ciclos de corte do ESC no bloco colapsado
+# 5) Figura bateria_sag.png e numeros-chave impressos
 # ---------------------------------------------------------------------------
 
 import csv
@@ -48,6 +53,8 @@ TAXA_HZ = 100.0          # amostragem da corrente nos ensaios (~1500 amostras/15
 LIMIAR_CORTE_A = 5.0     # abaixo disso o motor esta cortado (corrente de repouso ~0 A)
 TAXA_REF = PASTA_REPRO / "ensaio_tracao_corrente.csv"
 TAXA_ANTIGA = PASTA_DADOS / "ensaio_cego_descida.csv"
+PLANILHA_ANTIGA_SUBIDA = PASTA_REPRO / "dados_ensaio_bateria_antiga.xlsx"
+ABA_SUBIDA_ANTIGA = "subida 1"
 
 
 def ler_csv(caminho):
@@ -55,6 +62,24 @@ def ler_csv(caminho):
     with open(caminho) as arquivo:
         linhas = list(csv.reader(arquivo, delimiter=";"))
     return np.array([[float(v) for v in linha] for linha in linhas[1:] if len(linha) == 4])
+
+
+def ler_planilha_subida(caminho, aba):
+    """Le a aba da planilha antiga (1 Hz) e retorna a mesma matriz do CSV.
+
+    As celulas valem texto na planilha original, e o separador decimal e o
+    ponto; os dois ultimos campos da aba sao descartados.
+    """
+    import openpyxl
+
+    pagina = openpyxl.load_workbook(caminho, data_only=True)[aba]
+    linhas = []
+    for linha in list(pagina.iter_rows(values_only=True))[1:]:
+        if linha[2] is None or linha[3] is None:
+            continue
+        linhas.append([float(linha[1]), float(linha[1]),
+                       float(linha[2]), float(str(linha[3]).replace(",", "."))])
+    return np.array(linhas)
 
 
 def separar_blocos(dados):
@@ -90,6 +115,10 @@ def main():
 
     blocos_ref = [estatistica_bloco(b) for b in separar_blocos(referencia)]
     blocos_ant = [estatistica_bloco(b) for b in separar_blocos(antiga)]
+    blocos_ant_sub = [
+        estatistica_bloco(b) for b in separar_blocos(ler_planilha_subida(
+            PLANILHA_ANTIGA_SUBIDA, ABA_SUBIDA_ANTIGA))
+    ]
 
     # --- 2) selecao das corridas ------------------------------------------
     # Referencia (bateria boa): corrida principal da subida, blocos de ~15 s
@@ -105,6 +134,13 @@ def main():
     # posteriores do mesmo degrau (ultima corrida do arquivo) sao descartadas
     vistos = set()
     boa = [b for b in boa if not (b["angulo"] in vistos or vistos.add(b["angulo"]))]
+
+    # Subida 1 da sessao com bateria antiga (1 Hz): somente os degraus que
+    # tambem existem na referencia, para a comparacao par a par.
+    ant_sub = [b for b in blocos_ant_sub if b["n"] >= 5 and 100 <= b["angulo"] <= 115]
+    ant_sub.sort(key=lambda b: b["angulo"])
+    degraus_ref = {b["angulo"] for b in boa}
+    ant_sub = [b for b in ant_sub if b["angulo"] in degraus_ref]
 
     # Sessao com bateria antiga (descida): primeira passagem 120 -> 113,
     # blocos saudaveis de ~15 s; as retomadas do degrau de 114 graus sao o
@@ -130,6 +166,14 @@ def main():
     for b in boa:
         print(f"  {b['angulo']:5.0f} graus: mediana = {b['mediana']:5.1f} A "
               f"(p95 = {b['p95']:5.1f} A, zeros = {100*b['frac_zero']:.0f} %)")
+    print("\n=== Sessao com bateria antiga (subida 1, 1 Hz) - mesmos degraus da referencia ===")
+    for b in ant_sub:
+        ref = boa_por_angulo[b["angulo"]]
+        print(f"  {b['angulo']:5.0f} graus: mediana = {b['mediana']:5.1f} A "
+              f"(referencia {ref['mediana']:5.1f} A, {100*b['mediana']/ref['mediana']:.0f} %)")
+    mediana_subida = float(np.median([100 * b["mediana"] / boa_por_angulo[b["angulo"]]["mediana"]
+                                      for b in ant_sub]))
+    print(f"  relacao mediana da subida antiga / referencia: {mediana_subida:.0f} %")
     print("\n=== Sessao com bateria antiga (descida) - primeira passagem ===")
     for b in sorted(ant_saudavel, key=lambda b: -b["angulo"]):
         print(f"  {b['angulo']:5.0f} graus: mediana = {b['mediana']:5.1f} A "
@@ -154,6 +198,9 @@ def main():
                  fontsize=13)
     ax.plot([b["angulo"] for b in boa], [b["mediana"] for b in boa],
             "-", color="tab:blue", lw=2, label="Bateria boa (subida)")
+    ax.plot([b["angulo"] for b in ant_sub], [b["mediana"] for b in ant_sub],
+            "--o", color="tab:red", lw=1.8, markersize=5,
+            label="Bateria antiga (subida 1, mesmos degraus)")
     ax.plot([b["angulo"] for b in ant_saudavel], [b["mediana"] for b in ant_saudavel],
             "-", color="tab:orange", lw=2, label="Bateria antiga (descida, 1.a passagem)")
     ax.plot(ant_colapso["angulo"], ant_colapso["mediana"], "v", color="tab:red",
