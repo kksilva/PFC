@@ -1,0 +1,95 @@
+% Diagrama de blocos da malha de controle em cascata com feedforward.
+% Layout modelo: Figuras/cascata_feedforward.png (linha principal unica,
+% realimentacoes em ruas inferiores horizontais, dobras ortogonais a 90°).
+\documentclass[border=5pt]{standalone}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{graphicx}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta,calc}
+
+\begin{document}
+\resizebox{175mm}{!}{%
+\begin{tikzpicture}[
+    font=\small,
+    block/.style={draw=black, thick, minimum height=10mm, minimum width=13mm, inner sep=2pt},
+    sum/.style={circle, draw=black, thick, minimum size=7mm, inner sep=0pt},
+    sign/.style={font=\scriptsize, inner sep=1pt},
+    sig/.style={font=\itshape\small, inner sep=1.5pt},
+    arrow/.style={-{Stealth[length=2.5mm]}, thick}
+  ]
+
+  % ================= Linha principal (y = 0) =================
+  \node[block] (min) {min};
+  \node[sig, above=9mm of min] (tadh) {$T_{\text{ader\^encia}}$};
+  \draw[arrow] (tadh.south) -- (min.north);
+  \draw[arrow] ($(min.west)+(-12mm,0)$) -- node[sig, above] {$T_{\mathrm{ref}}$} (min.west);
+
+  \coordinate[right=12mm of min] (split);
+  \draw[arrow] (min.east) -- node[sig, above] {$T_{\mathrm{ref,ef}}$} (split);
+
+  % Somador 1: malha mestra (+/-)
+  \node[sum, right=18mm of min] (s1) {};
+  \node[sign] at ($(s1.north west)+(1mm,-1mm)$) {$+$};
+  \draw[arrow] (split) -- (s1.west);
+
+  \node[block, right=10mm of s1] (c1) {$C_1$};
+  \draw[arrow] (s1.east) -- node[sig, above] {$e_1$} (c1.west);
+
+  % Somador 2 (+/+): Delta I + I_ff
+  \node[sum, right=14mm of c1] (s2) {};
+  \node[sign] at ($(s2.north west)+(1mm,-1mm)$) {$+$};
+  \node[sign] at ($(s2.south west)+(1mm,1mm)$) {$+$};
+  \draw[arrow] (c1.east) -- node[sig, above] {$\Delta I$} (s2.west);
+
+  % Somador 3: malha escrava (+/-)
+  \node[sum, right=12mm of s2] (s3) {};
+  \node[sign] at ($(s3.north west)+(1mm,-1mm)$) {$+$};
+  \draw[arrow] (s2.east) -- node[sig, above] {$I_{\mathrm{ref}}$} (s3.west);
+
+  \node[block, right=10mm of s3] (c2) {$C_2$};
+  \draw[arrow] (s3.east) -- node[sig, above] {$e_2$} (c2.west);
+
+  % Somador 4 (+/+): u + u_ff
+  \node[sum, right=14mm of c2] (s4) {};
+  \node[sign] at ($(s4.north west)+(1mm,-1mm)$) {$+$};
+  \node[sign] at ($(s4.south west)+(1mm,1mm)$) {$+$};
+  \draw[arrow] (c2.east) -- node[sig, above] {$u$} (s4.west);
+
+  \node[block, right=10mm of s4] (g2) {$G_2(s)$};
+  \draw[arrow] (s4.east) -- (g2.west);
+  \node[sig, above=9mm of g2] (l) {$L$};
+  \draw[arrow] (l.south) -- (g2.north);
+
+  \coordinate[right=12mm of g2] (outI);
+  \draw[arrow] (g2.east) -- node[sig, above] {$I$} (outI);
+
+  % Sinais de subtracao junto as entradas inferiores dos somadores 1 e 3
+  \node[sign] at ($(s1.south)+(-3.5mm,-0.5mm)$) {$-$};
+  \node[sign] at ($(s3.south)+(-3.5mm,-0.5mm)$) {$-$};
+
+  % ================= Feedforward (rua abaixo da linha principal) =====
+  \node[block, below=16mm of s2, xshift=-12mm] (cff) {$C_{\mathrm{ff}}$};
+  \draw[arrow] (split) |- (cff.west);
+
+  % I_ff sobe ao somador 2
+  \draw[arrow] (cff.east) -- ++(6mm,0) node[sig, below=1mm] {$I_{\mathrm{ff}}$} |- (s2.south);
+
+  % u_ff desce a rua inferior e sobe ao somador 4
+  \draw[arrow] (cff.south) -- node[sig, right] {$u_{\mathrm{ff}}$} ++(0,-8mm) -| (s4.south);
+
+  % ================= Realimentacao interna (malha escrava) ===========
+  % I medido apos G_2, rua intermediaria (y = -9mm), sobe ao somador 3
+  \draw[arrow] ($(g2.east)+(6mm,0)$) -- ++(0,-9mm) -| (s3.south);
+
+  % ================= Estimador (rua mais baixa) ======================
+  \node[block, below=22mm of g2] (ghat) {$\hat{G}$};
+  \draw[arrow] ($(g2.east)+(11mm,0)$) |- (ghat.west);
+  \draw[arrow] (ghat.east) -- ++(8mm,0) node[sig, above] {$\hat{T}$} coordinate (that);
+
+  % \hat{T} retorna pela rua inferior ate o somador 1
+  \draw[arrow] (that) -- ++(0,-10mm) -| (s1.south);
+
+\end{tikzpicture}}
+\end{document}
