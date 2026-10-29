@@ -2,77 +2,33 @@
 \label{chap:resultados}
 
 Este capítulo apresenta os resultados dos ensaios definidos na metodologia, na ordem em que
-foram conduzidos, e o desempenho da malha projetada sobre eles em simulação. A caracterização
-produziu dois modelos complementares do propulsor. O modelo estático, construído ponto a
-ponto, traduz a corrente em esforço mecânico a partir da corrente de perdas do ensaio em
-vazio e dos pares corrente-força do ensaio de tração de corrente versus força. O modelo
-dinâmico, identificado no ensaio de tração de corrente, descreve a evolução temporal da
-corrente após cada comando e define a planta sobre a qual a malha escrava atua.
-
-Os resultados se organizam pelas regiões de operação definidas na Seção \ref{sec:regioes},
-pois o comportamento do propulsor não é uniforme ao longo da escala de comando. Cada ensaio
-é apresentado com o tratamento dos dados, as figuras e tabelas geradas e a análise do que
+foram conduzidos, e o desempenho da malha projetada sobre eles em simulação. As regiões de
+operação são definidas na Seção \ref{sec:regioes}, já que o comportamento do propulsor não
+é uniforme ao longo da escala de comando. Cada ensaio é apresentado com o tratamento dos
+dados, as figuras e tabelas geradas e a análise do que
 mostram.
-
-\section{O processamento dos dados e o ajuste das retas}
-\label{sec:processamento}
-
-Todos os ajustes deste capítulo são retas obtidas pelo método dos mínimos quadrados, o mesmo
-procedimento empregado na calibração de instrumentos \cite{braga_instr_calibracao}. O método
-escolhe os coeficientes que minimizam a soma dos quadrados dos resíduos, isto é, das
-diferenças entre cada valor medido e o valor que a reta prevê para ele. Para a reta
-$y = a + b\,x$, a soma $S = \sum_i (y_i - a - b\,x_i)^2$ é mínima quando suas derivadas em
-relação a $a$ e a $b$ se anulam, condição que fornece a solução fechada
-\begin{equation}\label{eq:mq}
-b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
-\qquad
-a = \bar{y} - b\,\bar{x},
-\end{equation}
-em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. Para a reta forçada pela origem,
-$y = g\,x$, minimiza-se a mesma soma apenas em $g$, o que resulta em
-\begin{equation}\label{eq:mq_origem}
-g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
-\end{equation}
-
-A qualidade de cada ajuste é quantificada pelo coeficiente de determinação,
-\begin{equation}\label{eq:r2}
-r^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
-\end{equation}
-fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica.
-
-Os tratamentos foram implementados em scripts dedicados, que leem os arquivos de dados
-brutos e geram as figuras e tabelas deste capítulo. O script da caracterização estática lê a
-planilha de anotações do ensaio de tração de corrente versus força e o registro do ensaio em
-vazio, ajusta a corrente de perdas e o coeficiente da curva característica e produz as
-figuras correspondentes. O script da dinâmica lê o ensaio de tração de corrente, ancora as
-respostas ao degrau no seu início elétrico e ajusta a constante de tempo da planta. O script
-da simulação executa a malha de controle e produz a figura de desempenho. A divisão segue os
-modelos que o controlador consome, o modelo estático construído pelo primeiro script a
-partir de dois ensaios e o modelo dinâmico identificado pelo segundo a partir do ensaio de
-tração de corrente.
 
 \section{Regiões de operação}
 \label{sec:regioes}
 
 O ensaio de tração de corrente versus força revelou que
-o propulsor opera de três maneiras distintas ao longo da escala de comando, nomeadas uma
-única vez aqui e usadas pelo restante do capítulo.
+o propulsor opera de três maneiras distintas ao longo da escala de comando.
 
 A \textbf{zona morta}, de $97^\circ$ a $99^\circ$, é o intervalo em que o ESC está armado e
-consome corrente, mas a tração útil é residual, de modo que referências dentro dessa faixa
-não produzem resposta mecânica alguma e o controlador precisa atravessá-la sem acumular
+consome corrente, mas a tração útil é residual, de modo que as referências dentro dessa faixa
+não produzem resposta mecânica e o controlador precisa atravessá-la sem acumular
 erro.
 
 A \textbf{região de aderência}, de $100^\circ$ a $113^\circ$, é aquela em que a roda
-permanece travada, sem patinagem, e toda a tração se transfere ao cabo. A força passa, então,
+permanece grirando, sem patinagem, e toda a tração se transfere ao cabo. A força passa
 a depender apenas do torque do motor, que por sua vez decorre da corrente, sendo essa a
 única região em que o modelo é válido, a dinâmica identificada representa a planta e todo o
 projeto do controlador se apoia.
 
 Acima de $113^\circ$--$114^\circ$ inicia-se a \textbf{região de saturação}, em que a
-aderência se esgota, ocorre patinagem ou o corte do ESC, e a força deixa de ser determinada
-pela corrente. Comandar dentro dela não produz mais torque, apenas deslizamento, o que
-delimita a faixa útil do atuador pelo lado mecânico.
+aderência se esgota, ocorre patinagem ou o corte do ESC (QUE CORTE? VEM POR PADRAO?), e a 
+força deixa de ser determinada pela corrente, pois produz mais torque apenas deslizamento, delimitando
+a faixa útil do atuador.
 
 Os limites exatos dessas regiões variam de ensaio para ensaio, e a Tabela \ref{tab:zonas}
 consolida as faixas observadas em cada um.
@@ -86,10 +42,10 @@ consolida as faixas observadas em cada um.
 \hline
 Ensaio & Zona morta & Região de aderência & Região de saturação \\
 \hline
-Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & não observada na escala \\
+Ensaio em vazio & $97$--$99$ & --\textsuperscript{a} & Não observada nos degraus 97-117 (CORRIGIR LATEX) \\
+Tração de corrente & $97$--$99$ & $100$--$109$ & A partir de $110$\textsuperscript{d} \\
 Tração corrente versus força (subida) & $97$--$99$ & $100$--$110$\textsuperscript{b} & não observada na escala \\
 Tração corrente versus força (descida) & $99$ & $100$--$113$ & $114$--$117$\textsuperscript{c} \\
-Tração de corrente & $97$--$99$ & $100$--$109$ & a partir de $110$\textsuperscript{d} \\
 \hline
 \multicolumn{4}{l}{\textsuperscript{a}\footnotesize{Rodas suspensas, sem tração.}}\\
 \multicolumn{4}{l}{\textsuperscript{b}\footnotesize{Força estaciona entre $105^\circ$ e $110^\circ$.}}\\
@@ -113,7 +69,8 @@ desvios sistemáticos dos instrumentos que alimentam o orçamento de incertezas 
 
 A cadeia de corrente foi confrontada com um multímetro de referência, com a fonte ajustável
 percorrendo a faixa de $0$ a $6$ A. Cada par de leituras, a do multímetro ($x$) e a do
-sistema ($y$), foi ajustado pela reta forçada pela origem da Equação \eqref{eq:mq_origem},
+sistema ($y$), está consolidado na Tabela~\ref{tab:bancada} e foi ajustado por uma reta
+forçada pela origem, obtida por mínimos quadrados,
 pois corrente nula deve corresponder a leitura nula. O resultado,
 \[
 y = 1{,}0742\,x,
@@ -121,6 +78,24 @@ y = 1{,}0742\,x,
 indica que o sistema lê $7{,}42\%$ acima do multímetro, desvio quase constante em toda a
 faixa e sempre no mesmo sentido. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
 resposta ideal.
+
+\begin{table}[htb]
+\centering
+\caption{Verificação da cadeia de corrente: pares de leituras do multímetro de referência
+($x$) e do sistema ($y$), em amperes.}
+\label{tab:bancada}
+\footnotesize
+\begin{tabular}{c c | c c | c c | c c}
+\hline
+$x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) \\
+\hline
+0,818 & 1,118 & 1,475 & 1,677 & 2,177 & 2,418 & 3,554 & 3,708 \\
+1,033 & 1,272 & 1,605 & 1,803 & 2,437 & 2,616 & 4,470 & 4,575 \\
+1,196 & 1,355 & 1,722 & 1,929 & 2,924 & 3,162 & 4,867 & 5,220 \\
+1,299 & 1,510 & 1,924 & 2,153 & 3,236 & 3,455 & 5,268 & 5,652 \\
+\hline
+\end{tabular}
+\end{table}
 
 \begin{figure}[htb]
 \centering
@@ -156,7 +131,7 @@ modo que um ajuste não linear de $I_0(u)$ invalidaria a representação da corr
 pelo quociente $I/u$.
 
 O script da caracterização estática agrupa as leituras por comando, calcula a média de cada
-grupo e ajusta a reta sobre essas médias pela Equação \eqref{eq:mq}, imprimindo a Tabela
+grupo e ajusta a reta sobre essas médias por mínimos quadrados, imprimindo a Tabela
 \ref{tab:vazio}, com os valores que alimentam o ajuste.
 
 \begin{table}[htb]
