@@ -15,26 +15,28 @@ constante de velocidade é de \(2100\,\mathrm{rpm/V}\) -- rotações por minuto 
 em condições próximas à operação sem carga mecânica significativa.
 É constituído por um estator, componente fixo com núcleo ferromagnético envolvido por
 enrolamentos de fio de cobre, e por um rotor, componente móvel com ímãs permanentes fixados na
-carcaça. No rotor, os ímãs permanentes produzem campo magnético próprio em razão das
-propriedades do material, enquanto no estator, a corrente elétrica que percorre os
-enrolamentos gera um campo eletromagnético. A interação entre esses dois campos produz
-o torque responsável pela rotação do eixo, como ilustrado na Figura~\ref{fig:motorbrushless}.
+carcaça, como ilustrado na Figura~\ref{fig:motorbrushless}.
 
-\begin{figure}[htb]
+\begin{figure}[H]
 \centering
-\includegraphics[width=0.8\textwidth]{Figuras/motor_explode.jpeg}
-\caption{Visão explodida de um motor brushless -- o campo magnético produzido pelo estator interage com os ímãs permanentes do rotor, gerando torque.}
+\includegraphics[width=0.42\textwidth]{Figuras/motor_explode.jpeg}
+\caption{Vista explodida de um motor \emph{brushless}, evidenciando a construção do
+estator e do rotor.}
 \label{fig:motorbrushless}
 \footnotesize{Fonte: \cite{digi_stator_rotor}.}
 \end{figure}
+
+No rotor, os ímãs permanentes produzem campo magnético próprio em razão das
+propriedades do material, enquanto no estator, a corrente elétrica que percorre os
+enrolamentos gera um campo eletromagnético. A interação entre os campos produz
+o torque responsável pela rotação do eixo.
 
 A continuidade desse movimento depende da comutação eletrônica, processo pelo qual a alimentação das três fases
 do motor é alternada em uma sequência que modifica continuamente a orientação do campo magnético resultante do estator,
 produzindo um campo girante. Essa função é realizada pelo Controlador Eletrônico de Velocidade (\emph{Electronic
 Speed Controller} -- ESC) Orion Vortex R8, que recebe o comando de aceleração e controla a energia
 elétrica transferida da bateria para os enrolamentos. Durante a comutação eletrônica, uma das fases 
-permanece temporariamente sem acionamento direto, permitindo ao controlador monitorar a tensão induzida para estimar a p
-osição elétrica do rotor e determinar os instantes adequados para a próxima comutação. 
+permanece temporariamente sem acionamento direto, permitindo monitorar a tensão induzida para estimar a posição elétrica do rotor e determinar os instantes adequados para a próxima comutação. 
 Dessa forma, o controlador sincroniza a sequência de acionamento das fases com o movimento do rotor, 
 mantendo a produção de torque. 
 
