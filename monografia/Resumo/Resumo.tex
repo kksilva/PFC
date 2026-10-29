@@ -3,10 +3,13 @@
 
 Este trabalho tem como objetivo caracterizar experimentalmente o sistema de propulsão do
 automodelo radiocontrolado Kyosho Mad Force Kruiser 2.0 VE, equipado com motor brushless e
-Controlador Eletrônico de Velocidade (\emph{Electronic Speed Controller} -- ESC). Busca-se
-desenvolver e validar um método de baixo custo para a estimação indireta do torque produzido
-pelo conjunto motor--ESC--transmissão, para fornecer subsídios para o desenvolvimento de
-estratégias de controle do propulsor em malha fechada.
+Controlador Eletrônico de Velocidade (\emph{Electronic Speed Controller} -- ESC).
+Desenvolvido no Laboratório de Sistemas Inteligentes do Departamento de Engenharia
+Eletrônica da Universidade Federal de Minas Gerais, no contexto das atividades da
+disciplina de Veículos Autônomos, o trabalho busca desenvolver e validar um método de
+baixo custo para a estimação indireta do torque produzido pelo conjunto
+motor--ESC--transmissão, fornecendo subsídios para o desenvolvimento de estratégias de
+controle do propulsor em malha fechada.
 
 A metodologia emprega um sensor de
 corrente ACS758, conectado a um microcontrolador Arduino Due para a aquisição dos sinais
@@ -16,9 +19,13 @@ efetivo da roda motriz, calcula-se o torque desenvolvido pelo sistema de propuls
 estabelecer sua relação com a corrente elétrica consumida. Os dados obtidos são analisados
 quanto à concordância com o modelo teórico do \emph{powertrain} e submetidos a um tratamento
 das incertezas de medição, de forma a determinar a faixa de validade e a confiabilidade do
-método de estimação proposto. Os resultados indicam uma relação aproximadamente linear entre
-torque e corrente na faixa de operação avaliada, além de evidenciarem limitações associadas à
-região próxima ao neutro do ESC e às condições de alimentação da bateria.
+método de estimação proposto. Os resultados confirmam a relação entre torque e corrente na
+região de aderência, com coeficiente angular de $0{,}372$ N/(A/u) e coeficiente de
+determinação de $0{,}79$, identificam a dinâmica comando--corrente de primeira ordem, com
+constante de tempo de $0{,}18$ s, e sustentam o projeto e a avaliação, em simulação, de uma
+malha de controle de torque em cascata com limitação de aderência. As limitações do método
+concentraram-se na região próxima ao neutro do ESC e nas condições de alimentação da
+bateria.
 
 \vspace{0.5cm}
 \noindent\textbf{Palavras-chave}: Automodelo radiocontrolado. Sensor de corrente. Estimação de

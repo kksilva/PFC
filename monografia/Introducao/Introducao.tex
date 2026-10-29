@@ -4,6 +4,10 @@
 Este trabalho apresenta a instrumentação eletrônica de um automodelo radiocontrolado,
 desenvolvida com o propósito de caracterizar a dinâmica do seu sistema de propulsão e, a
 partir dela, fornecer ferramentas experimentais para implementar o controle em malha fechada.
+Ensaios de tração estática com o veículo imobilizado validaram a relação entre corrente e
+torque na região de aderência, e os modelos identificados sustentaram o projeto e a
+avaliação, em simulação, de uma malha de controle de torque em cascata com limitação de
+aderência.
 
 Na configuração original do veículo, o automodelo opera em malha aberta, pois o comando de
 aceleração é aplicado sem qualquer conhecimento sobre o resultado efetivamente alcançado pelo
@@ -12,11 +16,11 @@ comando a partir de medições obtidas do próprio sistema para aproximar o comp
 real do veículo daquele desejado.
 
 Essa capacidade de ajuste contínuo está diretamente relacionada à solução de dois problemas
-centrais da teoria de controle, o Problema de Seguimento de Referência (PSR), que consiste em
+centrais da teoria de controle: o Problema de Seguimento de Referência (PSR), que consiste em
 fazer com que a velocidade do veículo acompanhe fielmente uma referência especificada ao
-longo do tempo. O Problema de Rejeição de Perturbações (PRP) consiste em manter esse
-comportamento mesmo diante de perturbações externas, como variações de carga, do terreno ou
-da alimentação elétrica do sistema.
+longo do tempo; e o Problema de Rejeição de Perturbações (PRP), que consiste em manter esse
+comportamento mesmo diante de perturbações externas, como variações de carga, mudanças de terreno ou
+alimentação elétrica do sistema.
 
 \section{Motivação e Justificativa}
 \label{sec:motivacao}
@@ -41,6 +45,14 @@ o que fundamenta o desenvolvimento futuro de um controle em malha fechada capaz 
 esforço exigido do automodelo e atenuar picos de aceleração, pois comandos excessivos desgastam
 precocemente o sistema.
 
+A contribuição do trabalho está no método, e não em um componente. A medição direta do
+torque exigiria um torquímetro embarcado de custo elevado, e a instrumentação permanente do
+veículo para as aulas práticas precisa ser simples e acessível. O caminho adotado estima o
+torque indiretamente, a partir da corrente elétrica do ramo de alimentação, e o calibra com a
+força de tração medida em ensaio estático por uma balança de baixo custo. Ao final, a
+disciplina dispõe de um método reproduzível com os recursos do próprio laboratório, do
+sensor instalado ao programa de análise.
+
 \section{Objetivos do Projeto}
 \label{sec:objetivos}
 
@@ -50,7 +62,9 @@ um controle do torque do propulsor em malha fechada. Como objetivos específicos
 selecionar e instalar a instrumentação eletrônica necessária à aquisição de dados do sistema,
 desenvolver um método experimental para caracterizar a dinâmica do sistema de propulsão,
 validar os dados obtidos por comparação com um modelo teórico do sistema e
-quantificar os erros associados e as incertezas do método de medição proposto.
+quantificar os erros associados e as incertezas do método de medição proposto. Todos os
+objetivos foram alcançados, e a malha de controle projetada sobre os modelos identificados
+teve seu desempenho avaliado por simulação, conforme o Capítulo 4.
 
 \section{Local de Realização}
 \label{sec:local}
