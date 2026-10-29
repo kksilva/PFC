@@ -107,11 +107,11 @@ manipulada é o comando de aceleração \(u\), enviado ao ESC, de modo que:
 \end{equation*}
 em que \(\hat{v}(0)\) é a condição inicial da estimativa.
 
-A integração, contudo, acumula o erro de medição do acelerômetro, pois o desvio residual
-que o sensor apresenta mesmo em repouso é integrado junto com o sinal. Um desvio constante
-desse tipo produz na velocidade estimada um erro que cresce linearmente com o tempo, de
-modo que a estimativa é confiável em trajetos curtos e se degrada progressivamente em
-operação prolongada, exigindo filtragem e correção contínuas.
+A estimativa por integração introduz o erro de medição do acelerômetro, que continua
+sendo acumulado na integral, mesmo para aceleração igual à zero. Assim, um desvio constante
+produz na velocidade estimada um erro que cresce linearmente com o tempo, de modo que a
+estimativa é confiável em trajetos curtos e se degrada progressivamente em operação
+prolongada, exigindo filtragem e correção contínuas.
 
 A velocidade desejada é representada pela referência \(v_{\mathrm{ref}}(t)\), que define o
 erro de controle.
@@ -119,13 +119,13 @@ erro de controle.
 \[ e_v(t)=v_{\mathrm{ref}}(t)-\hat{v}(t). \]
 
 A partir do erro de velocidade \(e_v(t)\), o controlador calcula o comando \(u(t)\),
-transmitido ao ESC para controlar a energia fornecida pela bateria aos enrolamentos do motor
-, produzindo o torque transmitido às rodas. As perturbações do processo são as variações 
-das forças que agem sobre o veículo
-sem depender do comando, como o atrito de rolamento, a inclinação do solo e a perda de
-aderência, que alteram a aceleração resultante para um mesmo valor de \(u\). A IMU mede a
-nova aceleração do chassi, a estimativa \(\hat{v}(t)\) é atualizada por integração e
-realimentada ao controlador, que fecha o ciclo a cada período de amostragem.
+transmitido ao ESC para controlar a energia fornecida pela bateria aos enrolamentos do
+motor, produzindo o torque transmitido às rodas. As perturbações do processo são as
+variações das forças que agem sobre o veículo sem depender do comando, como o atrito de
+rolamento, a inclinação do solo e a perda de aderência, que alteram a aceleração resultante
+para um mesmo valor de \(u\). A IMU mede a nova aceleração do chassi, a estimativa
+\(\hat{v}(t)\) é atualizada por integração e realimentada ao controlador, que fecha o
+ciclo a cada período de amostragem.
 
 Quanto à proteção do sistema, o microcontrolador pode detectar picos de aceleração e limitar
 a taxa de variação do comando \(u\), suavizando a aceleração e reduzindo os picos de torque
@@ -148,12 +148,12 @@ pela transmissão dos dados, e SCL (Serial Clock), que fornece o sinal de sincro
 Em síntese, a IMU oferece uma cadeia de medição simples e de baixo custo, cuja limitação
 decisiva é a necessidade de identificar os parâmetros dinâmicos do veículo antes de qualquer
 estimativa de torque. Ela permite medir a aceleração do chassi sem depender de um modelo
-mecânico, apresenta dimensões reduzidas e interface digital simples, e fornece ainda
-medições de velocidade angular úteis em análises posteriores da dinâmica do veículo. Em
-contrapartida, a estimativa por integração acumula erros e pode exigir filtragem e correção
-de deriva, as medições são sensíveis às vibrações e à projeção da gravidade nos eixos do
-sensor, e a aceleração não permite determinar diretamente a corrente elétrica, de modo que
-a proteção dos componentes contra sobrecorrente não pode ser garantida com esse sensor.
+mecânico, apresenta dimensões reduzidas, baixo custo e interface digital simples, e fornece
+medições de velocidade angular que podem ser úteis em análises posteriores da dinâmica do
+veículo. Em contrapartida, a estimativa por integração acumula erros e pode exigir
+filtragem e correção de deriva, as medições são sensíveis às vibrações e à projeção da
+gravidade nos eixos do sensor, e a aceleração não permite determinar diretamente a corrente
+elétrica para garantir a proteção dos componentes contra sobrecorrente.
 
 \subsection{Sensor Magnético de Efeito Hall SS41F}
 \label{sec:ss41f}
@@ -199,19 +199,20 @@ T_{\text{motor}} = J\,\frac{d\omega_m}{dt} + B\,\omega_m + T_L.
 O torque depende, nesse caso, da derivada da velocidade medida e de três parâmetros, $J$, $B$ e $T_L$,
 que precisam ser identificados separadamente, pois são propriedades do conjunto
 veículo--carga. O $J$ depende da massa e da redução, $B$ do atrito interno da
-transmissão e $T_L$ da carga e da inclinação, e todos variam com a configuração do
-veículo, de modo que a leitura do sensor, sozinha, não revela essas variações e a
-estimativa de torque fica sujeita a erros que não são observáveis na medição. Há, ainda,
-um limite de resolução inerente ao
-método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
+transmissão e $T_L$ da carga e da inclinação, e todos estão sujeitos a mudança com a
+configuração do veículo, de modo que a leitura do sensor, sozinha, não revela essas
+mudanças e compromete a confiabilidade da estimativa. Há, ainda, um limite de resolução
+inerente ao método, pois, em baixas rotações, poucos pulsos são contados e a estimativa se
 torna progressivamente mais grosseira. A derivada exigida pela Equação
 \eqref{eq:dinamica_rotacional} amplifica esse ruído de quantização, tornando a estimativa de
 torque sensível à resolução do sensor.
 
-Em malha fechada, a velocidade medida pode realimentar diretamente um controlador de
-velocidade, na mesma estrutura descrita para a IMU, com a diferença de que a variável de
-processo é obtida por contagem direta dos pulsos, sem integração nem modelo de torque
-associado. Os motores brushless com sensores Hall integrados já são
+Em malha fechada, a velocidade medida pode realimentar diretamente um controlador
+de velocidade, sem modelo de torque associado, da mesma forma que a velocidade estimada
+pela IMU, com a variável de processo trocada pela velocidade angular obtida da contagem dos
+pulsos e a variável manipulada pelo comando de aceleração $u$. A referência de velocidade é
+comparada à medida, ajustando a resposta de comando até eliminar o erro.
+Os motores brushless com sensores Hall integrados já são
 controlados dessa maneira, com os mesmos sinais servindo à comutação e à realimentação,
 conforme documentado pela Honeywell para a própria família SS41x \cite{honeywell_bldc}.
 
@@ -269,14 +270,15 @@ fase define o torque pelo produto $K_t$.
 O INA240 é montado no circuito de medição, lendo a queda de tensão entre os terminais do
 shunt, e sua saída, um sinal analógico, é ligada à entrada do microcontrolador, conforme a
 Figura~\ref{fig:ina240}.
-O componente possui largura de banda de 400 kHz e possui
-rejeição reforçada a transientes de modo comum, isto é, a capacidade de rejeitar variações
+O componente possui largura de banda de $400$ kHz e possui
+rejeição reforçada a transientes de modo comum --- a capacidade de rejeitar variações
 rápidas e simultâneas da tensão nos dois terminais de entrada, produzidas pelo chaveamento
-do ESC e que, sem essa rejeição, se somariam ao sinal útil e corromperiam a leitura. Em
-altas frequências, o resistor deixa de se comportar como uma resistência pura, pois a
-indutância parasita de seus terminais e de sua construção acrescenta à queda ômica uma
-queda proporcional à variação da corrente, e a tensão total deixa de ser proporcional à
-corrente instantânea, distorcendo a leitura nas bordas de chaveamento.
+do ESC ---, que, sem essa rejeição, se somariam ao sinal útil e corromperiam a leitura. Em
+altas frequências, a indutância parasita do próprio resistor, proveniente de seus terminais
+e de sua construção, soma-se à queda ômica uma parcela proporcional à variação da corrente,
+de modo que o resistor deixa de se comportar como uma resistência pura e a tensão deixa de
+ser proporcional à corrente instantânea, distorcendo a leitura durante as bordas de
+chaveamento.
 
 A resolução da medida, por fim, é limitada pelo conversor analógico-digital de $n$ bits
 que recebe o sinal, pois a sua tensão de referência $V_\mathrm{ref}$ define o fundo de
@@ -322,9 +324,9 @@ resistor.
 
 O sensor de efeito Hall ACS758 mede a corrente elétrica indiretamente, proporcionando isolamento 
 galvânico, ou seja, não há conexão elétrica direta entre o circuito de potência e o circuito de medição. 
-O funcionamento baseia-se no efeito Hall: a corrente que percorre o condutor interno
-gera um campo magnético proporcional a ela, e esse campo, ao atravessar o elemento sensor,
-desenvolve uma tensão perpendicular proporcional, de modo que a tensão de saída reproduz a
+O funcionamento baseia-se no efeito Hall, no qual a corrente que percorre um condutor
+interno gera um campo magnético perpendicular e esse campo, ao atravessar o elemento
+sensor, desenvolve uma tensão proporcional, de modo que a tensão de saída reproduz a
 corrente medida:
 
 \begin{equation*}
@@ -358,13 +360,16 @@ Figura~\ref{fig:acs758}.
 \footnotesize{Fonte: elaborada pela autora (2026).}
 \end{figure}
 
-Em malha fechada, o sensor viabiliza a estratégia de controle proposta neste trabalho, a
-cascata com malha interna de corrente e malha externa de torque. A cadeia que relaciona as
-grandezas parte do comando e termina no esforço mecânico: o valor $u$ aplicado ao ESC
-produz a corrente de bateria pela dinâmica comando--corrente, e, com as perdas descontadas e
-o resultado dividido pelo próprio comando, essa corrente recupera a corrente de fase
-equivalente, que a curva característica relaciona à força e o raio efetivo ao torque na
-roda,
+Em malha fechada, o sensor se comporta como o arranjo com shunt. A variável de processo é o
+torque estimado a partir da corrente, a variável manipulada é o comando de acionamento $u$, e
+a referência de torque desejado é convertida na corrente correspondente e comparada à
+medida, com o controlador ajustando o comando até anular o erro, na estrutura de malha
+fechada com realimentação, aqui organizada em cascata, com malha interna de corrente e
+malha externa de torque. A cadeia que relaciona as grandezas parte do comando e termina no
+esforço mecânico: o valor $u$ aplicado ao ESC produz a corrente de bateria pela dinâmica
+comando--corrente, e, com as perdas descontadas e o resultado dividido pelo próprio comando,
+essa corrente recupera a corrente de fase equivalente, que a curva característica relaciona
+à força e o raio efetivo ao torque na roda,
 
 \begin{equation*}
 F_{\text{tra\c{c}\~{a}o}} = G_F\,\frac{I_{\mathrm{bat}} - I_0(u)}{u}
@@ -382,6 +387,12 @@ comando--corrente fica confinada ao laço interno. O projeto dessa estrutura, do
 controladores às proteções, é o objeto da Seção~\ref{sec:proposta}. Por medir a corrente
 diretamente, o sensor viabiliza, ainda, a proteção contra sobrecorrente por limiar, com o
 controlador reduzindo a excitação sempre que a leitura ultrapassa o valor máximo admitido.
+
+Como no arranjo com shunt, o sensor instalado no ramo de alimentação mede a corrente média
+de entrada, e não a corrente de fase do motor, que é chaveada pelo PWM, mas a conversão
+entre as duas, dada pela razão cíclica do comando e apresentada com a
+Equação~\eqref{eq:corrente_bateria}, preserva a informação de esforço mecânico do
+propulsor.
 
 Em síntese, o ACS758 isola eletricamente a medição e não dissipa potência no circuito de
 potência. O isolamento galvânico protege o circuito de medição das altas correntes, e a
@@ -409,33 +420,39 @@ galvânico para proteger o circuito das altas correntes e não dissipa potência
 Conforme visto anteriormente, é necessário um instrumento capaz de medir a força de
 tração na escala do veículo para relacionar a corrente medida ao torque. A escolha desse
 instrumento foi precedida de um estudo prévio que comparou as principais soluções
-encontradas na literatura. O torquímetro, apesar de medir o torque diretamente, demanda
-acoplamento mecânico no eixo da transmissão, o que inviabiliza sua instalação sem
-desmontagem do automodelo, e o dinamômetro pressupõe bancada de escala automotiva,
-incompatível com um veículo de dezenas de newtons e com o orçamento do projeto. A célula de
-carga retorna uma saída da ordem de milivolts, que demanda circuito de amplificação
-dedicado, e mede apenas a componente da força ao longo do seu eixo, de modo que o
-alinhamento entre esse eixo e a linha de tração do ensaio precisa ser garantido, sob pena
-de componentes não medidas corromperem a leitura, além de uma fixação mecânica própria
-entre o veículo e o ponto de ancoragem. A balança de gancho foi a opção escolhida, pois mede
+encontradas na literatura. O torquímetro e o dinamômetro, apesar de representarem opções mais diretas para obter
+o torque, possuem como principal desvantagem a incompatibilidade com a dimensão do
+projeto, pois o primeiro demanda acoplamento mecânico no eixo da transmissão, o que
+inviabiliza sua instalação sem desmontagem do automodelo, e o segundo pressupõe bancada de
+escala automotiva, além do alto custo e das modificações permanentes no automodelo. A célula de
+carga retorna uma saída da ordem de milivolts que exige circuito de amplificação dedicado
+e uma fixação mecânica própria entre o veículo e o ponto de ancoragem do ensaio, e mede
+apenas a componente da força ao longo do seu eixo, de modo que o alinhamento entre esse
+eixo e a linha de tração precisa ser garantido, sob pena de componentes não medidas
+corromperem a leitura. A balança de gancho foi a opção escolhida, pois mede
 diretamente a força, dispensa condicionamento de sinal e adaptação mecânica além do próprio
-gancho, e serve como padrão de bancada para o ajuste e a validação dos coeficientes $G_F$ e
-$K_T$. O protocolo do experimento é apresentado na Metodologia,
+gancho, e serve como padrão de bancada para o ajuste e a validação do coeficiente \(K_T\). O protocolo do experimento é apresentado na Metodologia,
 Capítulo~\ref{chap:metodologia}.
 
-As relações de conversão entre corrente, força e torque, esboçadas com as equações da
-cadeia na Seção~\ref{sec:acshall}, são derivadas formalmente na
-Subseção~\ref{sec:estimador}, da curva característica experimental aos coeficientes $G_F$
-e $K_T$, e as subseções seguintes especificam a malha de controle em cascata construída
-sobre elas, do projeto dos controladores à implementação digital.
+A tradução da corrente em torque se dá em dois elos estáticos, corrente--força e
+força--torque, equacionados na Seção~\ref{sec:acshall}, e cada elo tem o seu coeficiente.
+O primeiro, $G_F$, é a força de tração por unidade de corrente, identificado diretamente no
+ensaio, pois a balança mede força. O segundo, $K_T = G_F\,r_{\mathrm{ef}}$, é o torque por
+unidade da mesma corrente, obtido da multiplicação pelo raio efetivo da roda, e é o
+coeficiente que o controlador emprega, pois a variável de interesse é o torque. Os dois
+nomes designam uma mesma relação física entre a corrente e o esforço mecânico do
+propulsor, vista ora na grandeza que o ensaio mede, ora na grandeza que o controle
+comanda, e a distinção de nomes evita confundir as unidades ao longo do texto. A
+Subseção~\ref{sec:estimador} deriva os dois coeficientes da curva característica, e as
+subseções seguintes detalham a malha de controle construída sobre eles.
 
 \subsection{O Estimador de Torque}
 \label{sec:estimador}
 
 A corrente é medida no ramo de alimentação pelo sensor de efeito Hall linear ACS758 e
-convertida em torque por um estimador que não exige o conhecimento dos parâmetros internos
-do propulsor, como a redução da transmissão, o rendimento e a constante de torque do motor,
-pois todos são absorvidos num único coeficiente identificado em bancada. O ponto de partida
+convertida em torque por um estimador que não exige o conhecimento das variáveis do
+sistema, como a redução da transmissão e a eficiência do caminho até a roda, pois todos
+esses fatores são absorvidos num único coeficiente identificado em bancada. O ponto de partida
 é a curva característica estática do propulsor,
 obtida no ensaio de tração de corrente versus força, no qual o veículo é mantido parado e a força de
 tração na roda e a corrente demandada são medidos para cada comando aplicado. Para empregar a corrente medida no
@@ -478,52 +495,6 @@ em torque pela relação estática da Equação~\eqref{eq:estimador_proposta}, c
 torque se converte em força pela relação estática $F = T/r_{\mathrm{ef}}$, com o raio
 efetivo, de modo que a única dinâmica da cadeia é a da corrente, tratada na malha
 interna.
-
-\subsection{A estrutura de controle}
-
-A estrutura de controle proposta organiza-se em torno de dois caminhos que partem do
-torque pedido $T_{\mathrm{ref}}$. Esse valor passa pelo seletor de mínimo, que o limita ao
-transferível, e a referência efetiva $T_{\mathrm{ref,ef}}$ alimenta ambos. No caminho de
-pré-alimentação, o controlador \emph{feedforward} $C_{\mathrm{ff}}$ converte esse pedido
-na corrente esperada $I_{\mathrm{ff}}$ e no comando equivalente $u_{\mathrm{ff}}$. No de
-realimentação, o mestre $C_1$ compara o efetivo ao torque estimado $\hat{T}$ e produz a
-correção $\Delta I$. As duas parcelas somam-se na referência da malha interna
-$I_{\mathrm{ref}}$, que o escravo $C_2$ persegue ajustando o comando $u$ sobre o
-pré-posicionamento $u_{\mathrm{ff}}$. O comando aciona a planta $G_2(s)$, cuja saída é a
-corrente $I$, e o estimador $\hat{G}$ reconstrói o torque a partir dela e do comando, e as
-subseções a seguir detalham cada bloco.
-
-A descrição da estrutura proposta emprega a notação usual das notas de aula de controle, na qual o
-índice $1$ designa a malha mestra e o índice $2$ a malha escrava
-\cite{raffo_tcpi_cascata}, em que $R$ é a referência, $Y$ a variável controlada, $C$ o
-controlador, $U$ a saída do controlador e $L$ a perturbação. A
-Tabela~\ref{tab:nomenclatura} fixa a correspondência entre esses símbolos e as variáveis
-do projeto, e a leitura do diagrama e do texto se apoia nos mesmos nomes.
-
-\begin{table}[htb]
-\centering
-\caption{Correspondência entre a notação das notas de aula e as variáveis do projeto.}
-\label{tab:nomenclatura}
-\small
-\begin{tabular}{l l l}
-\hline
-Símbolo & Nome & Variável do projeto \\
-\hline
-$R_1$ & referência da malha mestra & torque pedido $T_{\mathrm{ref}}$, após o seletor $T_{\mathrm{ref,ef}}$ \\
-$Y_1$ & variável controlada primária & torque estimado $\hat{T}$ \\
-$C_1$ & controlador mestre & Controlador de Torque, $K_{p1}(u)$, $T_{i1}$ \\
-$U_1$ & saída do mestre & correção de corrente $\Delta I$ \\
-$R_2$ & referência da malha escrava & $I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$ \\
-$Y_2$ & variável controlada secundária & corrente medida $I$ \\
-$C_2$ & controlador escravo & PI com anti-windup, $K_{p2}$, $T_{i2}$ \\
-$C_{\mathrm{ff}}$ & controlador \emph{feedforward} & curva característica aplicada à referência \\
-$U_2$ & variável manipulada & comando $u$, limitado à região de aderência \\
-$G_2(s)$ & planta da malha interna & dinâmica comando--corrente identificada \\
-$G_1(s)$ & planta da malha externa & escrava fechada seguida do estimador \\
-$L$ & perturbações & afundamento de tensão; variação térmica de $I_0$ \\
-\hline
-\end{tabular}
-\end{table}
 
 \subsection{O seletor de mínimo}
 \label{sec:seletor}
