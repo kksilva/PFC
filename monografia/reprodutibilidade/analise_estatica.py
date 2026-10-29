@@ -18,7 +18,7 @@ Uso:  python3 analise_estatica.py
 # 5) main: medianas de corrente e forca por degrau, para conferencia com a tabela da monografia (linhas 136-151)
 # 6) main: repetibilidade Tipo A (sigma_A) por faixa de operacao, para o orcamento de incertezas (linhas 152-171)
 # 7) main: tabela do ensaio em vazio (medias por degrau) (linhas 172-176)
-# 8) main: figuras i0_vazio.png e curva_forca_comando.png (linhas 177-227)
+# 8) main: figuras i0_vazio.png e curva_forca_comando.png (linhas 177-224)
 # ---------------------------------------------------------------------------
 
 import csv
@@ -179,50 +179,46 @@ def main():
     # zona morta destacada. curva_forca_comando.png: mediana da tracao por
     # degrau nos dois sentidos, com as tres faixas de operacao e os pontos de
     # corte do ESC (116-117) ocos, fora da curva.
-    plt.rcParams.update({"font.size": 10, "axes.grid": True, "grid.alpha": 0.3,
-                         "axes.axisbelow": True})
+    plt.rcParams.update({"font.size": 11.5, "axes.grid": True, "grid.alpha": 0.3,
+                         "axes.axisbelow": True, "axes.titlesize": 13})
 
-    fig, eixo = plt.subplots(figsize=(6.4, 4.2))
+    fig, eixo = plt.subplots(figsize=(6.4, 4.4))
     eixo.axvspan(0.0, u_de(99.5), color="0.9")
-    eixo.text(u_de(98), 2.45, "zona morta", ha="center", fontsize=8)
-    eixo.plot(x, y, "o", color="#2166ac", ms=4.5,
+    eixo.text(u_de(98), 2.5, "zona morta", ha="center", fontsize=10)
+    eixo.plot(x, y, "o", color="#2166ac", ms=5.5,
               label="Media por degrau (ensaio em vazio)")
     u_lin = [0.0, max(x)]
-    eixo.plot(u_lin, [a0 + b0 * u for u in u_lin], "-", color="#b2182b",
+    eixo.plot(u_lin, [a0 + b0 * u for u in u_lin], "-", color="#b2182b", lw=1.6,
               label=f"$I_0 = {a0:.2f} + {b0:.2f}\\,u$  ($r^2 = {r2_0:.2f}$)")
+    eixo.set_title("Corrente de perdas $I_0(u)$ no ensaio em vazio")
     eixo.set_xlabel("Comando normalizado $u$  ($u = (\\alpha - 95)/85$)")
     eixo.set_ylabel("Corrente de perdas $I_0$ (A)")
     eixo.set_ylim(0, 2.7)
-    eixo.legend(fontsize=9, loc="upper left")
+    eixo.legend(fontsize=10.5, loc="upper left")
     fig.tight_layout()
-    fig.savefig(PASTA_FIGURAS / "i0_vazio.png", dpi=200)
+    fig.savefig(PASTA_FIGURAS / "i0_vazio.png", dpi=300)
     plt.close(fig)
 
-    fig, eixo = plt.subplots(figsize=(6.8, 4.4))
+    fig, eixo = plt.subplots(figsize=(6.8, 4.6))
     cores = {"SUBIDA": "#d6604d", "DESCIDA": "#2166ac"}
-    marcadores = {"SUBIDA": "s", "DESCIDA": "o"}
     for sentido in ("SUBIDA", "DESCIDA"):
         degs = [a for a in sorted(tracao[sentido]) if tracao[sentido][a]]
+        us = [u_de(a) for a in degs]
         fs = [mediana([p[1] for p in tracao[sentido][a]]) for a in degs]
-        eixo.plot(degs, fs, marcadores[sentido], ms=5, color=cores[sentido],
-                  mec=cores[sentido], lw=1, label=sentido.capitalize())
-        if sentido == "DESCIDA":
-            # pontos do corte do ESC ficam ocos, fora da curva
-            degs_corte = [a for a in degs if a >= 116]
-            fs_corte = [mediana([p[1] for p in tracao[sentido][a]]) for a in degs_corte]
-            eixo.plot(degs_corte, fs_corte, "o", ms=7, mfc="none",
-                      mec=cores[sentido], lw=1.2)
-    eixo.axvspan(96.5, 99.5, color="0.9")
-    eixo.axvspan(99.5, 113.5, color="0.96")
-    eixo.text(98, 55, "zona morta", ha="center", fontsize=8)
-    eixo.text(106, 55, "aderencia", ha="center", fontsize=8)
-    eixo.text(115.5, 55, "saturacao", ha="center", fontsize=8)
-    eixo.set_xlabel("Degrau de comando (graus)")
+        eixo.plot(us, fs, "-", color=cores[sentido], lw=2,
+                  label=sentido.capitalize())
+    eixo.axvspan(0.0235, 0.0529, color="0.9")
+    eixo.axvspan(0.0529, 0.2176, color="0.96")
+    eixo.text(0.038, 55, "zona morta", ha="center", fontsize=10)
+    eixo.text(0.135, 55, "aderencia", ha="center", fontsize=10)
+    eixo.text(0.244, 55, "saturacao", ha="center", fontsize=10)
+    eixo.set_title("Forca de tracao mediana por comando normalizado")
+    eixo.set_xlabel("Comando normalizado $u$")
     eixo.set_ylabel("Forca de tracao (N)")
     eixo.set_ylim(0, 60)
-    eixo.legend(fontsize=9)
+    eixo.legend(fontsize=10.5)
     fig.tight_layout()
-    fig.savefig(PASTA_FIGURAS / "curva_forca_comando.png", dpi=200)
+    fig.savefig(PASTA_FIGURAS / "curva_forca_comando.png", dpi=300)
     plt.close(fig)
     print(f"figuras salvas em {PASTA_FIGURAS}")
 
