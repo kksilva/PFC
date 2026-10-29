@@ -58,6 +58,19 @@ curtas**.
 - **Frases curtas para fatos e comandos.** Afirmações pontuais, valores e instruções ficam em
   frases de 8–15 palavras. Alternar período longo (raciocínio) e frase curta (fato) é o que dá
   dinamismo ao texto.
+- **Proibida a acumulação de ideias por vírgulas sem conectivo.** Quando uma frase junta
+  três ou mais ideias apenas com vírgulas ("a corrente gera um campo perpendicular proporcional
+  tensão desenvolvida e, portanto, à corrente medida"), cada vírgula esconde uma relação lógica
+  que a língua portuguesa explicita com conectivo: *"que"*, *"e esse"*, *"de modo que"*,
+  *"pois"*, *"sendo"*, *"o que"*, *"de forma que"*, *"porque"*. Uma frase sua carrega 2–4
+  ideias, mas cada elo diz de que tipo é a ligação — causal, consecutiva, explicativa ou
+  simples adição. Este é o padrão dos trechos que a autora marca como confusos: não é a
+  ideia, é a vírgula fazendo o papel de conectivo. Ex. de transformação — antes:
+  *"a corrente percorre um condutor interno gera um campo magnético perpendicular proporcional
+  tensão desenvolvida e, portanto, à corrente medida"* — depois: *"a corrente que percorre o
+  condutor interno gera um campo magnético perpendicular, e esse campo desenvolve uma tensão
+  proporcional, de modo que a tensão de saída reproduz a corrente medida"*. Se a frase
+  estoura quatro ideias mesmo com conectivos, parte-se em duas.
 - **Proibida a frase-solta que só anuncia.** Uma frase curta cujo único papel é
   anunciar o que vem a seguir ("O benefício é duplo.", "O procedimento é o seguinte.",
   "A Tabela X consolida os dados.") quebra o encadeamento. A informação do anúncio entra
