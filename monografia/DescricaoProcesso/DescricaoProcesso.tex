@@ -38,17 +38,19 @@ osição elétrica do rotor e determinar os instantes adequados para a próxima 
 Dessa forma, o controlador sincroniza a sequência de acionamento das fases com o movimento do rotor, 
 mantendo a produção de torque. 
 
-O ESC empregado é especificado para 120 A contínuos e picos de 760 A \cite{orion_vortex_r8} (CORRIGIR PARA CITAÇÃO GENERICA DO MANUAL). 
+O ESC empregado é especificado para 120 A contínuos e picos de 760 A \cite{orion_vortex_r8}.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
-capacidade de 5200 mAh e taxa de descarga de 60C. (ESCLARECER QUE QUEM DITA A CORRENTE É O ESC)
+capacidade de 5200 mAh e taxa de descarga de 60C. Embora essa taxa admita correntes de
+até cerca de $312$ A, a corrente efetivamente drenada é ditada pelo ESC, cuja
+especificação de $120$ A contínuos é o limite do sistema, e não pela bateria.
 
 O comando de aceleração aplicado ao ESC
 pode ter duas origens, selecionadas por uma chave de comutação: o sinal
 proveniente do controle remoto, por meio do receptor de rádio; ou o sinal
 gerado por uma Raspberry Pi embarcada no veículo, com bateria própria e conversor
 \emph{step-down} para alimentação em 5 V. Ambos geram um pulso de modulação por largura de
-pulso (\emph{Pulse Width Modulation} — PWM), no qual a duração do nível lógico alto codifica o
-valor do comando. (VERIFICAR SE É ISSO MESMO)
+pulso (\emph{Pulse Width Modulation} — PWM), no qual a duração do nível lógico alto,
+entre $1$ e $2$ ms em período de cerca de $20$ ms, codifica o valor do comando.
 
 \section{Situação Atual e Estado da Arte}
 \label{sec:estadoarte}
