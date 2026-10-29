@@ -4,12 +4,11 @@
 Este trabalho apresenta a instrumentação eletrônica de um automodelo radiocontrolado,
 desenvolvida com o propósito de caracterizar a dinâmica do seu sistema de propulsão e, a
 partir dela, fornecer ferramentas experimentais para implementar o controle em malha fechada.
-Ensaios de tração estática com o veículo imobilizado validaram a relação entre corrente e
-torque na região de aderência, e os modelos identificados sustentaram o projeto e a
-avaliação, em simulação, de uma malha de controle de torque em cascata com limitação de
-aderência.
+Os ensaios de tração estática com o veículo imobilizado validaram a relação entre corrente e
+torque na região de operação e os modelos identificados foram simulados em uma malha de 
+controle em cascata com limitação de aderência.
 
-Na configuração original do veículo, o automodelo opera em malha aberta, pois o comando de
+A configuração original é operada em malha aberta, pois o comando de
 aceleração é aplicado sem qualquer conhecimento sobre o resultado efetivamente alcançado pelo
 sistema. Um controlador em malha fechada, por sua vez, é capaz de ajustar continuamente esse
 comando a partir de medições obtidas do próprio sistema para aproximar o comportamento
@@ -28,7 +27,7 @@ alimentação elétrica do sistema.
 O Departamento de Engenharia Eletrônica (DELT) da Universidade Federal de Minas Gerais
 (UFMG) oferece a disciplina de Veículos Autônomos, que proporciona aos estudantes
 de engenharia a oportunidade de desenvolver e experimentar soluções de controle, percepção e
-robótica em veículos reais. Este trabalho utiliza como objeto experimental o
+robótica em veículos reais \cite{delt_site}. Este trabalho utiliza como objeto experimental o
 automodelo elétrico radiocontrolado Kyosho Mad Force Kruiser 2.0 VE, empregado nas atividades da disciplina.
 
 Por operar em malha aberta, o automodelo responde de forma imprevisível a fatores externos ao
@@ -37,34 +36,16 @@ pista ou a queda de tensão da bateria ao longo do uso. Essas variações consti
 perturbações que o PRP deveria rejeitar e que, quando não compensadas, comprometem também o
 PSR.
 
-Além disso, variações abruptas de aceleração geram picos de esforço mecânico que aceleram o
-desgaste do sistema de propulsão, reduzindo sua vida útil e a disponibilidade do automodelo
-para as aulas práticas da disciplina. A instrumentação eletrônica proposta neste trabalho
-fornece os dados necessários para caracterizar a dinâmica do sistema de propulsão,
-o que fundamenta o desenvolvimento futuro de um controle em malha fechada capaz de monitorar o
-esforço exigido do automodelo e atenuar picos de aceleração, pois comandos excessivos desgastam
-precocemente o sistema.
-
-A contribuição do trabalho está no método, e não em um componente. A medição direta do
-torque exigiria um torquímetro embarcado de custo elevado, e a instrumentação permanente do
-veículo para as aulas práticas precisa ser simples e acessível. O caminho adotado estima o
-torque indiretamente, a partir da corrente elétrica do ramo de alimentação, e o calibra com a
-força de tração medida em ensaio estático por uma balança de baixo custo. Ao final, a
-disciplina dispõe de um método reproduzível com os recursos do próprio laboratório, do
-sensor instalado ao programa de análise.
-
 \section{Objetivos do Projeto}
 \label{sec:objetivos}
 
 O objetivo geral é instrumentar o automodelo para
-caracterizar a dinâmica do seu sistema de propulsão, de modo a viabilizar o desenvolvimento de
+avaliar o seu sistema de propulsão, de modo a viabilizar o desenvolvimento de
 um controle do torque do propulsor em malha fechada. Como objetivos específicos, busca-se
 selecionar e instalar a instrumentação eletrônica necessária à aquisição de dados do sistema,
-desenvolver um método experimental para caracterizar a dinâmica do sistema de propulsão,
-validar os dados obtidos por comparação com um modelo teórico do sistema e
-quantificar os erros associados e as incertezas do método de medição proposto. Todos os
-objetivos foram alcançados, e a malha de controle projetada sobre os modelos identificados
-teve seu desempenho avaliado por simulação, conforme o Capítulo 4.
+propor a estrutura de controle em malha fechada, desenvolver um método experimental para 
+caracterizar a dinâmica, validar os dados obtidos e
+quantificar as incertezas associadas à escolha do projeto.
 
 \section{Local de Realização}
 \label{sec:local}
@@ -73,15 +54,19 @@ Este projeto é desenvolvido no Laboratório de Sistemas Inteligentes (LSI), loc
 Sala 2515 do Bloco 1 da Escola de Engenharia da Universidade Federal de Minas Gerais. O LSI é
 um laboratório pluridisciplinar e compartilhado, com infraestrutura voltada à montagem e ao
 teste de circuitos eletrônicos, no qual pesquisadores do Departamento de Engenharia Eletrônica
-atuam no desenvolvimento de sistemas embarcados, de automação, robótica e controle.
+atuam no desenvolvimento de sistemas embarcados, de automação, robótica e controle
+\cite{delt_site}.
 
 \section{Estrutura da Monografia}
 \label{sec:estrutura}
 
 O restante deste trabalho está organizado em quatro capítulos. O Capítulo 2 descreve o
-sistema de propulsão do automodelo e a instrumentação eletrônica escolhida para a aquisição
-de dados. O Capítulo 3 apresenta a metodologia experimental adotada para a caracterização da
-dinâmica do sistema de propulsão, incluindo a montagem do ensaio. O Capítulo 4 expõe os
-resultados obtidos, o tratamento das incertezas de medição e o desempenho da malha de
-controle projetada sobre os modelos identificados. O Capítulo 5 fecha o trabalho com as
-conclusões e as propostas de continuação.
+sistema de propulsão do automodelo, compara as alternativas de medição de corrente e de
+torque, apresenta a instrumentação escolhida e fecha com o estimador de torque e a
+proposta da estrutura de controle. O Capítulo 3 constrói a metodologia experimental, do
+processamento e da aquisição dos dados aos ensaios em bancada, em vazio e de tração,
+passando pela implementação bloco a bloco da malha no código da simulação e pelo
+orçamento de incertezas. O Capítulo 4 apresenta os resultados, das regiões de operação à
+curva característica e à dinâmica identificadas, seguidos da sintonia dos controladores,
+do desempenho da malha em simulação e do efeito da bateria nos ensaios. O Capítulo 5
+fecha o trabalho com as conclusões e as propostas de continuação.
