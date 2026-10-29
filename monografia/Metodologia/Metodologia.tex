@@ -7,8 +7,46 @@ sensor de corrente ACS758ECB-200B e a balança de gancho. O ensaio em vazio mede
 pelo conjunto sem carga mecânica, enquanto o ensaio de tração
 de corrente versus força relaciona, degrau a degrau, a corrente à força de
 tração medida pela balança. Para cada escolha, indicam-se os critérios utilizados, as alternativas
-consideradas e as escolhas definidas.
+consideradas e as escolhas definidas. O capítulo abre com o método de ajuste das
+retas comum a todos os ensaios, segue pela cadeia de aquisição, pelo teste em
+bancada e pelos ensaios com o veículo, e fecha com o orçamento de incertezas.
 
+\section{O Processamento dos Dados e Ajuste das Retas}
+\label{sec:processamento}
+
+Todos os ajustes dos ensaios são retas obtidas pelo método dos mínimos quadrados, o mesmo
+procedimento empregado na calibração de instrumentos \cite{braga_instr_calibracao}. O método
+escolhe os coeficientes que minimizam a soma dos quadrados dos resíduos, isto é, das
+diferenças entre cada valor medido e o valor que a reta prevê para ele. Para a reta
+$y = a + b\,x$, a soma $S = \sum_i (y_i - a - b\,x_i)^2$ é mínima quando suas derivadas em
+relação a $a$ e a $b$ se anulam, condição que fornece a solução fechada
+\begin{equation}\label{eq:mq}
+b = \frac{\sum_i (x_i - \bar{x})(y_i - \bar{y})}{\sum_i (x_i - \bar{x})^2},
+\qquad
+a = \bar{y} - b\,\bar{x},
+\end{equation}
+em que $\bar{x}$ e $\bar{y}$ são as médias dos dados. Para a reta forçada pela origem,
+$y = g\,x$, minimiza-se a mesma soma apenas em $g$, o que resulta em
+\begin{equation}\label{eq:mq_origem}
+g = \frac{\sum_i x_i\,y_i}{\sum_i x_i^2}.
+\end{equation}
+
+A qualidade de cada ajuste é quantificada pelo coeficiente de determinação,
+\begin{equation}\label{eq:r2}
+r^2 = 1 - \frac{\sum_i (y_i - \hat{y}_i)^2}{\sum_i (y_i - \bar{y})^2},
+\end{equation}
+fração da variância dos dados, medida em torno de sua média $\bar{y}$, que a reta explica.
+
+Os tratamentos foram implementados em scripts dedicados, que leem os arquivos de dados
+brutos e geram as figuras e tabelas do Capítulo~\ref{chap:resultados}. O script da
+caracterização estática lê a planilha de anotações do ensaio de tração de corrente versus
+força e o registro do ensaio em vazio, ajusta a corrente de perdas e o coeficiente da curva
+característica e produz as figuras correspondentes. O script da dinâmica lê o ensaio de
+tração de corrente, ancora as respostas ao degrau no seu início elétrico e ajusta a
+constante de tempo da planta. O script da simulação executa a malha de controle e produz a
+figura de desempenho. A divisão segue os modelos que o controlador consome, o modelo
+estático construído pelo primeiro script a partir de dois ensaios e o modelo dinâmico
+identificado pelo segundo a partir do ensaio de tração de corrente.
 
 \section{Aquisição e registro de dados}
 \label{sec:registro}
@@ -137,7 +175,8 @@ fio vermelho do ramo de potência interrompido para a inserção do multímetro 
 
 O confronto entre as medidas de corrente segue o procedimento clássico de calibração
 estática, no qual a reta de ajuste entre os valores de referência e os indicados é obtida
-por mínimos quadrados \cite{braga_instr_calibracao}. Os resultados da verificação, a
+pelo método dos mínimos quadrados da Seção~\ref{sec:processamento}
+\cite{braga_instr_calibracao}. Os resultados da verificação, a
 regressão da cadeia de corrente e o tratamento do desvio são apresentados na Seção
 \ref{sec:resbancada}.
 
@@ -459,7 +498,9 @@ em que $\sigma_A(F)$ é o valor típico da repetibilidade da faixa e $T = F\,r_\
 
 \section{Resumo do Capítulo}
 
-Este capítulo construiu o ensaio da montagem ao orçamento de incertezas. A balança de gancho
+Este capítulo construiu o ensaio da montagem ao orçamento de incertezas. A abertura fixou
+o método dos mínimos quadrados, comum a todos os ajustes do trabalho, e os scripts que
+o implementam. A balança de gancho
 foi adotada como padrão de força, e a montagem ancora o automodelo, convertendo a tração em
 tensão mensurável, com a geometria do cabo quantificada e o raio efetivo medido em
 $0{,}0751$ m. A corrente é adquirida por um sensor de efeito Hall instalado por adaptação
