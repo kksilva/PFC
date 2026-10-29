@@ -9,6 +9,10 @@ limpar processos orfaos (pkill) antes de cada disparo.
 Uso: python3 rodar_ensaio_cego.py
 
 Gera os dados do ensaio de tracao de corrente (sem anotacao de forca).
+
+REQUISITOS DE BANCADA: Arduino com o firmware do sensor de corrente na
+PORTA_SERIAL e Raspberry Pi do automodelo acessivel pela rede. Sem esse
+hardware o script nao executa (e interativo e depende de serial/rede).
 """
 
 # ---------------------------------------------------------------------------
@@ -25,7 +29,7 @@ import time
 from collections import deque
 from serial import Serial
 
-from rodar_ensaio import (BAUD, DURACAO_S, INICIO_JANELA_S,
+from rodar_ensaio import (BAUD, DURACAO_S,
                           LOCK_PATH, MM_SEGUNDOS, NEUTRO_GRAUS, PORTA_SERIAL,
                           enviar_comando, extrair_corrente, garantir_neutro,
                           instancia_unica, limpar_pi, log, media,
@@ -148,7 +152,10 @@ def disparar_e_medir(ser, csv_writer, angulo, t_ensaio0, gravar_por_segundo=Fals
         print(f"  t={seg_ant}s | I={m_seg:.2f} A | MM={media(mm_seg):.2f} A",
               flush=True)
 
-    garantir_neutro() if medir_latencia() is not None else enviar_comando(NEUTRO_GRAUS, 2)
+    if medir_latencia() is not None:
+        garantir_neutro()          # rede viva: confirma o retorno ao neutro
+    else:
+        enviar_comando(NEUTRO_GRAUS, 2)  # rede morta: manda neutro no escuro
     resumo_degrau(angulo, leituras)
     return True
 

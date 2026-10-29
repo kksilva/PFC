@@ -35,7 +35,7 @@ PASTA_FIGURAS = Path(__file__).resolve().parent
 # (na pasta reprodutibilidade, as figuras saem junto aos scripts)
 
 PLANILHA_DADOS = PASTA_ENSAIOS / "ensaio_tracao_corrente_versus_forca.xlsx"
-ABA_PLANILHA = "P\xe1gina1"
+ABA_PLANILHA = "Página1"
 
 DEGRAU_MINIMO = 100          # faixa de ajuste: regiao de aderencia (descida)
 DEGRAU_MAXIMO = 113

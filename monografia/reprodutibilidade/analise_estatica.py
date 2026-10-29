@@ -84,8 +84,9 @@ def carregar_tracao():
     # A planilha de anotacoes tem as 4 repeticoes empilhadas em linhas; cada
     # par de colunas e um degrau. A forca vem em kgf e e convertida para N.
     planilha = openpyxl.load_workbook(PASTA_DADOS / "ensaio_tracao_corrente_versus_forca.xlsx", data_only=True)
-    pagina = planilha.worksheets[0]
-    degraus = [int(pagina.cell(row=1, column=c).value) for c in range(2, 44, 2)]
+    pagina = planilha["Página1"]
+    degraus = [int(pagina.cell(row=1, column=c).value) for c in range(2, 44, 2)
+               if pagina.cell(row=1, column=c).value is not None]
     tracao = {"SUBIDA": {a: [] for a in degraus}, "DESCIDA": {a: [] for a in degraus}}
     for linha in pagina.iter_rows(min_row=3, values_only=True):
         if linha[0] not in tracao:

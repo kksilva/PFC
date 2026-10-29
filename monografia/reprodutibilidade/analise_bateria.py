@@ -14,22 +14,20 @@ LE:
   bateria boa, mesmo formato; usa a corrida principal de 100 a 114 graus)
 
 GERA:
-- Figuras/bateria_sag.png (300 dpi): painel (a) com a mediana de corrente
-  por degrau das duas sessoes, evidenciando o colapso nas retomadas do
-  degrau de 114 graus da sessao degradada; painel (b) com a forma de onda
-  a 100 Hz do degrau colapsado ao lado do degrau saudavel de referencia.
+- Figuras/bateria_sag.png (300 dpi): mediana de corrente por degrau das duas
+  sessoes, com o ponto colapsado das retomadas do degrau de 114 graus da
+  sessao degradada destacado e anotado.
 
 Uso:  python3 analise_bateria.py
 """
 
 # ---------------------------------------------------------------------------
 # MAPA
-# 1) Constantes e leitura dos CSVs (linhas 40-60)
-# 2) Separacao dos blocos de degrau e estatisticas por bloco (linhas 63-90)
-# 3) Selecao das corridas: boa (subida principal) e antiga (descida) (linhas 93-120)
-# 4) Deteccao dos ciclos de corte do ESC no bloco colapsado (linhas 123-140)
-# 5) Figura bateria_sag.png (linhas 143-210)
-# 6) Impressao dos numeros-chave para o texto da monografia (linhas 213-245)
+# 1) Constantes e leitura dos CSVs (linhas 46-66)
+# 2) Separacao dos blocos de degrau e estatisticas por bloco (linhas 69-96)
+# 3) Selecao das corridas: boa (subida principal) e antiga (descida) (linhas 99-124)
+# 4) Deteccao dos ciclos de corte do ESC no bloco colapsado (linhas 127-144)
+# 5) Figura bateria_sag.png e numeros-chave impressos (linhas 147-178)
 # ---------------------------------------------------------------------------
 
 import csv

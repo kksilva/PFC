@@ -107,6 +107,7 @@ def media_movel(serie, janela):
 def main():
     blocos = carregar_sessao_rapida()
     usados = [b for b in blocos if DEGRAU_MINIMO <= b[0][1] <= DEGRAU_MAXIMO]
+    assert len(usados) == 10  # dez bordas 100-109: usados[0/3/6/9] dependem disso
     print(f"bordas usadas: {[int(b[0][1]) for b in usados]}")
 
     # constante de tempo sobre a media das respostas normalizadas
