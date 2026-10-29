@@ -373,6 +373,51 @@ controlador. A consequência prática se manifesta também no protocolo da forç
 decorridos $7$ s do comando, a corrente está em regime há pelo menos $5$ s, margem
 ampla sobre a constante de tempo de $0{,}18$ s da planta.
 
+\section{O Efeito da Bateria nos Ensaios}
+\label{sec:bateria}
+
+O estado da bateria mostrou-se uma condição de ensaio tão decisiva quanto a massa e o
+piso, e os registros das sessões com as baterias antigas do laboratório, uma delas
+estufada, permitem quantificar o efeito. O estudo compara a sessão de referência, conduzida
+com a bateria em bom estado, a uma sessão antiga cuja primeira passagem ainda executava os
+degraus e às retomadas do comando de $114^\circ$, onde o colapso se manifestou. O
+processamento segue o mesmo protocolo do ensaio de tração de corrente e é reproduzido pelo
+script \texttt{analise\_bateria.py} (Ap\^endice A.5).
+
+Na sessão de referência, a mediana da corrente cresce de $4{,}3$ A em $100^\circ$ a
+$29{,}4$ A em $114^\circ$, sem amostras nulas em nenhum degrau. Na primeira passagem da
+sessão antiga, os degraus ainda executam, com medianas de $19$ a $28$ A, porém com $10\%$
+a $22\%$ de amostras nulas, sinal precoce da fraqueza da bateria. Nas retomadas do
+$114^\circ$, a mediana do bloco cai para $15{,}2$ A, $48\%$ abaixo dos $29{,}4$ A do
+mesmo degrau na sessão de referência, e $45\%$ das amostras permanecem em zero, com o
+motor, quando ligado, drenando mediana de $20{,}5$ A.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.95\textwidth]{Figuras/bateria_sag.png}
+\caption{Efeito da bateria nos ensaios: mediana de corrente por degrau na sessão de
+referência e na sessão antiga, forma de onda das retomadas de $114^\circ$ com os ciclos
+de corte, platô estável de $113^\circ$ na sessão de referência e detalhe de um ciclo
+ligado--corte--religamento.}
+\label{fig:bateria}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O padrão das retomadas, forma de onda na Figura~\ref{fig:bateria}, é o ciclo de corte por
+subtensão, detectados quatro religamentos, com o motor ligado por cerca de $8$ s, cortado
+por cerca de $7$ s, até que a terceira retomada, após $0{,}1$ s, não sustenta a partida e
+a corrente permanece nula até o fim do bloco, a bateria sem carga suficiente para
+religar o ESC. O colapso é específico das retomadas, e não da sessão, pois degraus
+vizinhos da mesma corrida executam normalmente, $117^\circ$ com $28{,}2$ A e $118^\circ$
+com $25{,}9$ A, de forma que o efeito se concentra onde a exigência de corrente se
+acumula em blocos repetidos. A interpretação é direta, sob alta corrente a tensão da
+bateria degradada cai abaixo do limiar de proteção do ESC, o corte interrompe o motor, a
+tensão se recupera e o ciclo recomeça, o mesmo mecanismo registrado na região de
+saturação da caracterização. O ensino prático, que motivou a regra de validação dos
+consolidados, é que sessões com baterias degradadas executam degraus altos com corrente de
+degraus menores, e que o estado da bateria deve constar do \emph{checklist} do ensaio e
+das regras de validação, conforme adotado neste trabalho.
+
 \section{A Sintonia dos Controladores}
 \label{sec:projeto_controladores}
 
@@ -466,3 +511,54 @@ Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K
 \hline
 \end{tabular}
 \end{table}
+
+\section{O Desempenho da Malha em Simulação}
+\label{sec:ressimulacao}
+
+A malha sintonizada na Seção~\ref{sec:projeto_controladores} tem seu desempenho avaliado
+por simulação não-linear sobre os modelos identificados neste capítulo, executada em tempo
+discreto de $10$ ms pelo script da simulação (Ap\^endice A.3), que reproduz a curva
+estática da corrente, a corrente de perdas, a divisão pelo comando, o seletor e as
+saturações. Quatro cenários cobrem a operação, um degrau de referência de $1{,}6$ para
+$3{,}0$ N$\cdot$m (PSR), uma perturbação de afundamento de tensão de $20\%$ somada a um
+deslocamento de $0{,}3$ A na corrente de perdas (PRP), um retorno de referência a $1{,}6$
+N$\cdot$m e um degrau para além do limiar do seletor.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{Figuras/simulacao_cascata.png}
+\caption{Desempenho da malha em simulação: resposta ao degrau de referência (PSR),
+rejeição da perturbação de afundamento de tensão e deslocamento das perdas (PRP), retorno
+de referência e atuação do seletor de aderência.}
+\label{fig:simulacao}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+No PSR, o torque acompanha o degrau com pico de $3{,}35$ N$\cdot$m, sobressinal de
+$25\%$, e assenta no valor pedido. Na PRP, a perturbação produz desvio máximo de
+$1{,}04$ N$\cdot$m, com retorno ao regime de $3{,}347$ N$\cdot$m sobre a referência de
+$3{,}0$ N$\cdot$m, residual compatível com o deslocamento imposto às perdas. No retorno,
+o torque acompanha a referência de $1{,}6$ N$\cdot$m com valor de $1{,}541$ N$\cdot$m
+na amostra avalizada. No último cenário, o degrau para além do limiar é cortado pelo
+seletor, e o torque estabiliza em $3{,}35$ N$\cdot$m, o teto do estimador, sem patinagem
+comandada. A malha, assim, segue a referência dentro da região validada, rejeita a
+perturbação elétrica e respeita o limiar de aderência.
+
+\section{Resumo do Capítulo}
+\label{sec:resumo}
+
+Este capítulo apresentou os resultados dos ensaios, na ordem em que foram conduzidos. A
+verificação em bancada quantificou os desvios dos instrumentos, a cadeia de corrente com
+$7{,}42\%$ de leitura alta, corrigível em \emph{software}, e a balança com desvio
+sistemático de $2\%$, declarado como incerteza. O ensaio em vazio forneceu a corrente de
+perdas $I_0(u)$, linear sobre o comando e parâmetro do estimador e do \emph{feedforward}.
+O ensaio de tração de corrente versus força construiu a curva característica, validada na
+descida com $G_F = 0{,}372$ N/(A/u) e coeficiente de determinação $0{,}79$, delimitou a
+região de aderência e o coeficiente de atrito aparente de $0{,}80$, e registrou o corte por
+subtensão do ESC nos degraus mais altos. O ensaio de tração de corrente identificou a
+planta $G_2(s) = 111/(0{,}18\,s + 1)$, sem atraso apreciável, e o estudo das sessões
+antigas quantificou o efeito da bateria degradada, o colapso das retomadas de $114^\circ$
+com mediana de $15{,}2$ A contra $29{,}4$ A na sessão de referência. Sobre esses modelos, a
+sintonia pelo método de modelo interno fixou os ganhos das duas malhas, e a simulação
+confirmou o seguimento de referência, a rejeição da perturbação elétrica e o respeito ao
+limiar do seletor de aderência.
