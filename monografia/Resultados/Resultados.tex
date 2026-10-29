@@ -8,6 +8,65 @@ operação são definidas na Seção \ref{sec:regioes}, já que o comportamento 
 dados, as figuras e tabelas geradas e a análise do que
 mostram.
 
+\section{Testes em Bancada}
+\label{sec:resbancada}
+
+A verificação em bancada, cuja motivação e circuito estão na metodologia, fornece os
+desvios sistemáticos dos instrumentos que alimentam o orçamento de incertezas da Seção
+\ref{sec:incertezas}, e esta seção registra os valores obtidos.
+(FALAR QUE O TESTE EM BANCADA E O TESTE NA PROTOBOARD E DO CARRINHO APRESENTARAM RESULTADOS SIMILARES. 
+FALE SOBRE A DIFEREÇA ENTRE AS CONEXOES DO SENSOR E SE AS MUDANÇAS INFLUENCIAM NO RESULTADO)
+A cadeia de corrente foi confrontada com um multímetro de referência, com a fonte ajustável
+percorrendo a faixa de $0$ a $6$ A, sendo que os dados consolidados estão na Tabela~\ref{tab:bancada} e a reta ajustada
+forçada pela origem é mostrada na Equação~\eqref{eq:mq_origem}
+
+\begin{table}[htb]
+\centering
+\caption{Verificação da cadeia de corrente: pares de leituras do multímetro de referência
+($x$) e do sistema ($y$), em amperes.}
+\label{tab:bancada}
+\footnotesize
+\begin{tabular}{c c}
+\hline
+$x$ (A) & $y$ (A) \\
+\hline
+0,81 & 1,11 \\
+1,03 & 1,27 \\
+1,19 & 1,35 \\
+1,29 & 1,51 \\
+1,47 & 1,67 \\
+1,60 & 1,80 \\
+1,72 & 1,92 \\
+1,92 & 2,15 \\
+\hline
+\end{tabular}
+\end{table} 
+
+O resultado,
+\[
+y = 1{,}0742\,x,
+\]
+indica que o sistema lê $7{,}42\%$ acima do multímetro, desvio quase constante em toda a
+faixa e sempre no mesmo sentido. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
+resposta ideal.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.55\textwidth]{Figuras/bancada_calibracao.png}
+\caption{Verificação da cadeia de corrente: ajuste $y = 1{,}0742\,x$ sobre a resposta
+ideal $y = x$.}
+\label{fig:bancada_cal}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+O desvio é o caso favorável em termos de correção, pois um único fator multiplicativo em
+\emph{software}, faz a compensação sem distorcer a forma do sinal.
+
+A balança foi verificada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg, e
+as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático e
+cresce linearmente com a carga, somando $10$ g para cada $0{,}5$ kg, proporção constante nos
+três pontos verificados.  (ACHEI MUITA COISA DESNECESSARIA. EXPLIQUE O MOTIVO DA RESOLUÇÃO SER SISTEMATICA)
+
 \section{Regiões de operação}
 \label{sec:regioes}
 
@@ -43,8 +102,11 @@ consolida as faixas observadas em cada um.
 Ensaio & Zona morta & Região de aderência & Região de saturação \\
 \hline
 Ensaio em vazio & $97$--$99$ & --\textsuperscript{a} & Não observada nos degraus 97-117 (CORRIGIR LATEX) \\
+\hline
 Tração de corrente & $97$--$99$ & $100$--$109$ & A partir de $110$\textsuperscript{d} \\
+\hline
 Tração corrente versus força (subida) & $97$--$99$ & $100$--$110$\textsuperscript{b} & não observada na escala \\
+\hline
 Tração corrente versus força (descida) & $99$ & $100$--$113$ & $114$--$117$\textsuperscript{c} \\
 \hline
 \multicolumn{4}{l}{\textsuperscript{a}\footnotesize{Rodas suspensas, sem tração.}}\\
@@ -60,78 +122,19 @@ dentro da escala percorrida. Já na descida, os dois últimos comandos são toma
 do ESC. A identificação da dinâmica emprega apenas os comandos de $100^\circ$ a $109^\circ$,
 pois acima de $110^\circ$ a resposta já nasce contaminada pela patinagem.
 
-\section{Testes em Bancada}
-\label{sec:resbancada}
-
-A verificação em bancada, cuja motivação e circuito estão na metodologia, fornece os
-desvios sistemáticos dos instrumentos que alimentam o orçamento de incertezas da Seção
-\ref{sec:incertezas}, e esta seção registra os valores obtidos.
-
-A cadeia de corrente foi confrontada com um multímetro de referência, com a fonte ajustável
-percorrendo a faixa de $0$ a $6$ A. Cada par de leituras, a do multímetro ($x$) e a do
-sistema ($y$), está consolidado na Tabela~\ref{tab:bancada} e foi ajustado por uma reta
-forçada pela origem, obtida por mínimos quadrados,
-pois corrente nula deve corresponder a leitura nula. O resultado,
-\[
-y = 1{,}0742\,x,
-\]
-indica que o sistema lê $7{,}42\%$ acima do multímetro, desvio quase constante em toda a
-faixa e sempre no mesmo sentido. A Figura \ref{fig:bancada_cal} confronta o ajuste com a
-resposta ideal.
-
-\begin{table}[htb]
-\centering
-\caption{Verificação da cadeia de corrente: pares de leituras do multímetro de referência
-($x$) e do sistema ($y$), em amperes.}
-\label{tab:bancada}
-\footnotesize
-\begin{tabular}{c c | c c | c c | c c}
-\hline
-$x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) & $x$ (A) & $y$ (A) \\
-\hline
-0,818 & 1,118 & 1,475 & 1,677 & 2,177 & 2,418 & 3,554 & 3,708 \\
-1,033 & 1,272 & 1,605 & 1,803 & 2,437 & 2,616 & 4,470 & 4,575 \\
-1,196 & 1,355 & 1,722 & 1,929 & 2,924 & 3,162 & 4,867 & 5,220 \\
-1,299 & 1,510 & 1,924 & 2,153 & 3,236 & 3,455 & 5,268 & 5,652 \\
-\hline
-\end{tabular}
-\end{table}
-
-\begin{figure}[htb]
-\centering
-\includegraphics[width=0.55\textwidth]{Figuras/bancada_calibracao.png}
-\caption{Verificação da cadeia de corrente: ajuste $y = 1{,}0742\,x$ sobre a resposta
-ideal $y = x$.}
-\label{fig:bancada_cal}
-\footnotesize{Fonte: elaborada pela autora (2026).}
-\end{figure}
-
-O desvio é o caso favorável em termos de correção, pois um único fator multiplicativo em
-\emph{software}, o próprio $1/1{,}0742$, o compensa sem distorcer a forma do sinal. A
-cadeia fica calibrada, e o resíduo da correção entra como componente de incerteza.
-
-A balança foi verificada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,}500$ kg, e
-as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático e
-cresce linearmente com a carga, somando $10$ g para cada $0{,}5$ kg, proporção constante nos
-três pontos verificados e correspondente a $2\%$ da leitura na faixa do ensaio. Na balança,
-a leitura é a própria grandeza de referência da caracterização, e o display não possui saída
-elétrica, de modo que não há canal de correção em \emph{software} e o desvio é declarado
-como componente sistemática, junto com a resolução de $10$ g. Em ambos os instrumentos, a
-linearidade verificada justifica o tratamento dos desvios como sistemáticos simples, e
-nenhum precisou ser descartado.
-
 \section{Ensaio em Vazio}
 \label{sec:resvazio}
 
 O ensaio em vazio forneceu a corrente de perdas $I_0(u)$ que o estimador desconta de cada
-leitura e que a pré-alimentação soma a cada referência, funções discutidas na metodologia. O ensaio testa, ainda, a hipótese estrutural do modelo, pois, com
+leitura e que a pré-alimentação soma a cada referência, como discutido anteriormente. O ensaio 
+testa a hipótese estrutural do modelo, pois, com
 o veículo parado, a corrente de perdas é essencialmente a própria corrente de fase média,
 que se relaciona ao \emph{duty cycle} conforme a Equação \eqref{eq:corrente_bateria}, de
 modo que um ajuste não linear de $I_0(u)$ invalidaria a representação da corrente de fase
 pelo quociente $I/u$.
 
 O script da caracterização estática agrupa as leituras por comando, calcula a média de cada
-grupo e ajusta a reta sobre essas médias por mínimos quadrados, imprimindo a Tabela
+grupo e ajusta a reta sobre essas médias pela Equação~\eqref{eq:mq}, imprimindo a Tabela
 \ref{tab:vazio}, com os valores que alimentam o ajuste.
 
 \begin{table}[htb]
@@ -155,14 +158,15 @@ $\alpha$ (graus) & $u$ & $I_0$ (A) & $\alpha$ (graus) & $u$ & $I_0$ (A) & $\alph
 \end{table}
 
 Na zona morta, de $97^\circ$ a $99^\circ$, a corrente de perdas permanece abaixo de
-$1{,}2$ A. Na faixa intermediária, de $100^\circ$ a $110^\circ$, situa-se em torno de
-$1{,}3$ A, com pouca variação. A partir de $111^\circ$, o crescimento se torna sustentado, e
+$1{,}2$ A; na zona de aderência, de $100^\circ$ a $110^\circ$, situa-se em torno de
+$1{,}3$ A, com pouca variação; a partir de $111^\circ$, o crescimento se torna sustentado, e
 a corrente atinge $2{,}35$ A no último comando. O ajuste linear sobre as médias da Tabela
+
 \ref{tab:vazio},
 \[
 I_0(u) = 0{,}53 + 6{,}70\,u,
 \]
-apresenta coeficiente de determinação $r^2 = 0{,}85$, representado na Figura \ref{fig:i0}. O
+apresenta coeficiente de determinação $r^2 = 0{,}85$ (Equação~\eqref{eq:r2}), representado na Figura \ref{fig:i0}. O
 crescimento concentrado nos comandos altos explica a inclinação da reta, que representa uma
 média do comportamento sobre toda a escala.
 
@@ -289,7 +293,7 @@ motor, o rendimento do caminho elétrico--mecânico, a redução e o raio efetiv
 conhecer cada fator isoladamente não é necessário ao controlador, que trabalha com o
 produto. O critério de validação decorre da própria forma do modelo, pois, se a Equação
 \eqref{eq:curva_caracteristica} é válida, os pontos medidos devem alinhar-se sobre uma reta
-que passa pela origem, com inclinação $G_F$, e o coeficiente de determinação mede o
+que passa pela origem, com inclinação $G_F$, e o coeficiente de determinação (Equação~\eqref{eq:r2}) mede o
 alinhamento, testando o modelo inteiro de uma vez, com todos os seus pressupostos, a
 linearidade do ESC, o desconto das perdas, a conversão pela razão cíclica e a constância do
 coeficiente do conjunto.
