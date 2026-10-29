@@ -9,8 +9,7 @@ malha fechada, as vantagens e as limitações, de modo a fundamentar as decisõe
 \section{O Sistema de Propulsão}
 \label{sec:automodelo}
 
-O automodelo Kyosho Mad Force Kruiser 2.0 VE, de escala 1/8, isto é, com dimensões
-lineares oito vezes menores que as do veículo real que reproduz, é equipado com um motor
+O automodelo Kyosho Mad Force Kruiser 2.0 VE, de escala 1/8, é equipado com um motor
 brushless Orion NEON 8BL (Ori28188), cuja
 constante de velocidade é de \(2100\,\mathrm{rpm/V}\) -- rotações por minuto por volt aplicado,
 em condições próximas à operação sem carga mecânica significativa.
@@ -44,7 +43,6 @@ A alimentação do sistema é realizada por uma bateria de polímero de lítio (
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
 preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. 
 
-%VERIFICAR SE VAI SER ADICIONADO CAP SOBRE BATERIA%
 
 O comando de aceleração aplicado ao ESC
 pode ter duas origens, selecionadas por uma chave de comutação, sendo a primeira o sinal
@@ -76,14 +74,14 @@ e de preferência afastada de fontes intensas de vibração e protegida contra i
 
 O torque produzido pelo motor \(T_{\mathrm{motor}}\) é transmitido às rodas pelo sistema de transmissão, 
 resultando em um torque nas rodas \(T_{\mathrm{roda}}\) que se relaciona com a redução da transmissão \(i\) e o 
-rendimento mecânico \(\eta\) por:
+rendimento mecânico \(\eta\),
 
 \begin{equation*}
 T_{\mathrm{roda}} = i\,\eta\,T_{\mathrm{motor}}.
 \end{equation*}
 
 Nas rodas, o torque é convertido em força de tração \(F_{\text{tra\c{c}\~{a}o}}\), que atua sobre o solo e impulsiona 
-o veículo. Considerando o raio efetivo \(r_efetivo\) da roda e desprezando perdas no contato pneu-solo:
+o veículo. Considerando o raio efetivo \(r_{\mathrm{ef}}\) da roda e desprezando perdas no contato pneu-solo,
 
 \begin{equation*}
 F_{\text{tra\c{c}\~{a}o}} = \frac{T_{\mathrm{roda}}}{r}.
@@ -224,7 +222,7 @@ proteção contra sobrecorrente por limiar não pode ser implementada com esse s
 ação preventiva disponível é a limitação da taxa de variação do comando, que suaviza a
 excitação do motor, sem garantia efetiva contra sobrecorrente.
 
-Em síntese, o SS41F mede a velocidade com robustez e simplicidade de interface, porém só
+No conjunto, o SS41F mede a velocidade com robustez e simplicidade de interface, porém só
 se aproxima do torque depois de identificadas as variáveis do conjunto. Ele tem baixo custo,
 robustez mecânica e velocidade de comutação superior a $100$ kHz, com interface digital
 simples, compatível com a leitura por interrupção em microcontroladores comuns, e fornece a
@@ -307,14 +305,13 @@ resistivo.}
 Em malha fechada, a corrente medida permite agir diretamente sobre o torque do propulsor e
 implementar a proteção contra sobrecorrente por limiar. No sistema de controle, a variável de
 processo é a corrente do propulsor, relacionada ao torque pela constante $K_t$ do motor, e a
-variável manipulada é o comando de aceleração $u$, aplicado ao ESC. A referência de torque
-desejado é convertida na corrente correspondente e comparada à medida, e o controlador ajusta
-o comando até anular o erro, usando a estrutura de realimentação. As
+variável manipulada é o comando de aceleração $u$, aplicado ao ESC. A cadeia de malha fechada que leva a corrente ao torque é a mesma do sensor de efeito Hall
+da Seção~\ref{sec:acshall}, onde se fecha a instrumentação do processo. As
 perturbações são as variações da carga mecânica que exigem mais corrente para um mesmo torque
-na roda, como a inclinação do terreno e a perda de aderência. Por medir a corrente
-diretamente, o arranjo viabiliza a proteção do sistema contra sobrecorrente por limiar.
+na roda, como a inclinação do terreno e a perda de aderência, e medir a corrente
+diretamente viabiliza a proteção do sistema contra sobrecorrente por limiar.
 
-Em síntese, o arranjo com shunt e INA240 privilegia a precisão e o baixo custo em troca
+Dessa forma, o arranjo com shunt e INA240 privilegia a precisão e o baixo custo em troca
 da simplicidade de instalação, o que o torna adequado como referência de bancada, mas não
 como sensor embarcado. Ele proporciona uma medida direta da corrente, com boa linearidade e
 ampla largura de banda a baixo custo, e a rejeição a transientes de modo comum preserva o

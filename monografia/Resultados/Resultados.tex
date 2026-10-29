@@ -63,7 +63,7 @@ A balança foi verificada com pesos padrão de $0{,}500$ kg, $1{,}000$ kg e $1{,
 as indicações foram $0{,}490$ kg, $0{,}980$ kg e $1{,}470$ kg. O desvio é sistemático e
 de resolução proporcional, $10$ g para cada $0{,}5$ kg, proporção constante nos três
 pontos, o que o caracteriza como um desvio multiplicativo da leitura declarado como
-componente de incerteza sem correção, conforme a Seção~\ref{sec:incertezas}.
+componente de incerteza sem correção, conforme a Seção~\ref{sec:incertezas}. (MELHORE TEXTO)
 
 \section{Regiões de operação}
 \label{sec:regioes}
@@ -78,15 +78,14 @@ erro.
 
 A \textbf{região de aderência}, de $100^\circ$ a $113^\circ$, é aquela em que a roda
 permanece girando, sem patinagem, e toda a tração se transfere ao cabo. A força passa
-a depender apenas do torque do motor, que por sua vez decorre da corrente, sendo essa a
-única região em que o modelo é válido, a dinâmica identificada representa a planta e todo o
-projeto do controlador se apoia.
+a depender apenas do torque do motor, que é estimado pelos valores medidos corrente, sendo essa a
+única região em que o modelo é válido.
 
 Acima de $113^\circ$--$114^\circ$ inicia-se a \textbf{região de saturação}, em que a
-aderência se esgota, ocorre patinagem ou o corte por subtensão do ESC, proteção de fábrica
-que interrompe o motor quando a tensão da bateria cai sob carga, e a
+aderência se esgota, ocorrendo patinagem  das rodas ou o corte por subtensão do ESC, que é a proteção de 
+fábrica que interrompe o motor quando a tensão da bateria cai sob carga (MELHORE A FRASE). A
 força deixa de ser determinada pela corrente, pois acima desse ponto o comando produz
-apenas deslizamento, delimitando a faixa útil do atuador.
+apenas deslizamento, delimitando a faixa útil do atuador. 
 
 Os limites exatos dessas regiões variam de ensaio para ensaio, e a Tabela \ref{tab:zonas}
 consolida as faixas observadas em cada um.
@@ -99,13 +98,9 @@ consolida as faixas observadas em cada um.
 \begin{tabular}{l c c c}
 \hline
 Ensaio & Zona morta & Região de aderência & Região de saturação \\
-\hline
-Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & Não observada nos degraus $97$--$117$ \\
-\hline
+Ensaio em vazio & $97$--$99$ & ---\textsuperscript{a} & Não observada na escala \\
 Tração de corrente & $97$--$99$ & $100$--$109$ & A partir de $110$\textsuperscript{d} \\
-\hline
-Tração corrente versus força (subida) & $97$--$99$ & $100$--$110$\textsuperscript{b} & não observada na escala \\
-\hline
+Tração corrente versus força (subida) & $97$--$99$ & $100$--$110$\textsuperscript{b} & Não observada na escala \\
 Tração corrente versus força (descida) & $99$ & $100$--$113$ & $114$--$117$\textsuperscript{c} \\
 \hline
 \multicolumn{4}{l}{\textsuperscript{a}\footnotesize{Rodas suspensas, sem tração.}}\\
@@ -116,10 +111,10 @@ Tração corrente versus força (descida) & $99$ & $100$--$113$ & $114$--$117$\t
 \end{table}
 
 Na subida, a força retoma o crescimento acima de $110^\circ$ e atinge em $117^\circ$ o
-mesmo máximo da descida, e o limiar de aderência não se manifesta na subida
-dentro da escala percorrida. Já na descida, os dois últimos comandos são tomados pelo corte
-do ESC. A identificação da dinâmica emprega apenas os comandos de $100^\circ$ a $109^\circ$,
-pois acima de $110^\circ$ a resposta já nasce contaminada pela patinagem.
+mesmo máximo da descida, porém sem atingir o limiar de aderência dentro da escala percorrida. 
+Já na descida, os dois últimos comandos são tomados pelo corte do ESC, assim, a identificação da dinâmica
+emprega apenas os comandos de $100^\circ$ a $109^\circ$,
+pois acima de $110^\circ$ a resposta é contaminada pela patinagem.
 
 \section{Ensaio em Vazio}
 \label{sec:resvazio}
@@ -472,3 +467,53 @@ Ganhos & $K_{p2} \approx 6{,}5\times10^{-3}$ u/A & $K_{p1}(u) = \lambda_2 u / (K
 \hline
 \end{tabular}
 \end{table}
+
+\section{O Desempenho da Malha em Simulação}
+\label{sec:ressimulacao}
+
+A malha sintonizada na Seção~\ref{sec:projeto_controladores} tem seu desempenho avaliado
+por simulação não-linear sobre os modelos identificados neste capítulo, executada em tempo
+discreto de $10$ ms pelo script da simulação (Apêndice A.3), que reproduz a curva estática
+da corrente, a corrente de perdas, a divisão pelo comando, o seletor e as saturações. Quatro
+cenários cobrem a operação, um degrau de referência de $1{,}6$ para $3{,}0$ N$\cdot$m
+(PSR), uma perturbação de afundamento de tensão de $20\%$ somada a um deslocamento de
+$0{,}3$ A na corrente de perdas (PRP), um retorno de referência a $1{,}6$ N$\cdot$m e um
+degrau para além do limiar do seletor.
+
+\begin{figure}[htb]
+\centering
+\includegraphics[width=0.9\textwidth]{Figuras/simulacao_cascata.png}
+\caption{Desempenho da malha em simulação: resposta ao degrau de referência (PSR),
+rejeição da perturbação de afundamento de tensão e deslocamento das perdas (PRP), retorno
+de referência e atuação do seletor de aderência.}
+\label{fig:simulacao}
+\footnotesize{Fonte: elaborada pela autora (2026).}
+\end{figure}
+
+No PSR, o torque acompanha o degrau com pico de $3{,}35$ N$\cdot$m, sobressinal de $25\%$,
+e assenta no valor pedido. Na PRP, a perturbação produz desvio máximo de $1{,}04$
+N$\cdot$m, com retorno ao regime de $3{,}347$ N$\cdot$m sobre a referência de $3{,}0$
+N$\cdot$m, residual compatível com o deslocamento imposto às perdas. No retorno, o torque
+acompanha a referência de $1{,}6$ N$\cdot$m com valor de $1{,}541$ N$\cdot$m na amostra
+avaliada. No último cenário, o degrau para além do limiar é cortado pelo seletor, e o
+torque estabiliza em $3{,}35$ N$\cdot$m, o teto do estimador, sem patinagem comandada. A
+malha, assim, segue a referência dentro da região validada, rejeita a perturbação elétrica
+e respeita o limiar de aderência, comportamento que fecha a caracterização e projeta a
+implementação embarcada como continuação.
+
+\section{Resumo do Capítulo}
+\label{sec:resumo}
+
+Este capítulo apresentou os resultados dos ensaios, na ordem em que foram conduzidos. A
+verificação em bancada quantificou os desvios dos instrumentos, a cadeia de corrente com
+$7{,}42\%$ de leitura alta, corrigível em \emph{software}, e a balança com desvio
+sistemático de $2\%$, declarado como incerteza. O ensaio em vazio forneceu a corrente de
+perdas $I_0(u)$, linear sobre o comando e parâmetro do estimador e do \emph{feedforward}. O
+ensaio de tração de corrente versus força construiu a curva característica, validada na
+descida com $G_F = 0{,}372$ N/(A/u) e coeficiente de determinação $0{,}79$, delimitou a
+região de aderência e o coeficiente de atrito aparente de $0{,}80$, e registrou o corte por
+subtensão do ESC nos degraus mais altos. O ensaio de tração de corrente identificou a
+planta $G_2(s) = 111/(0{,}18\,s + 1)$, sem atraso apreciável. Sobre esses modelos, a
+sintonia pelo método de modelo interno fixou os ganhos das duas malhas, e a simulação
+confirmou o seguimento de referência, a rejeição da perturbação elétrica e o respeito ao
+limiar do seletor de aderência.
