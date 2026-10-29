@@ -452,7 +452,9 @@ que o entrega, e os passos abaixo definem cada variável empregada.
     \end{equation}
     em que $K_p$ é o ganho proporcional do controlador e $T_i$ o seu tempo integral.
     \item \textbf{Ajuste da malha escrava.} Com a escolha $\lambda_2 = \tau = 0{,}18$ s,
-    que fecha a malha tão rápido quanto a dinâmica permite, e $\theta_a \approx 0$, a
+    que fecha a malha tão rápido quanto a dinâmica permite, e $\theta_a \approx 0$,
+    hipótese válida para o comando local embarcado, pois a identificação já ancorou o
+    início elétrico e excluiu o atraso do protocolo de disparo, a
     Equação~\eqref{eq:pi_imc} fornece $T_{i2} = 0{,}18$ s e $K_{p2} = 0{,}18/(153
     \times 0{,}18) \approx 6{,}5\times10^{-3}$ u/A.
     \item \textbf{Ajuste da malha mestra.} O mestre vê uma planta composta pela escrava
@@ -507,7 +509,10 @@ permanente do cenário anterior, com margem de várias constantes de tempo. Quat
 cobrem a operação, um degrau de referência de $1{,}6$ para
 $3{,}0$ N$\cdot$m (PSR), uma perturbação de afundamento de tensão de $20\%$ somada a um
 deslocamento de $0{,}3$ A na corrente de perdas (PRP), um retorno de referência a $1{,}6$
-N$\cdot$m e um degrau para além do limiar do seletor.
+N$\cdot$m e um degrau para além do limiar do seletor. O programa atualiza todos os
+estados no mesmo período de amostragem, sem atraso de um período entre a leitura e a
+aplicação do comando, simplificação cuja influência é desprezível frente à constante de
+tempo de $0{,}18$ s.
 
 \begin{figure}[htb]
 \centering
@@ -525,13 +530,24 @@ atuação do seletor de aderência, e evidencia que a malha respeita o limiar de
 em todos eles.
 
 No PSR, o torque acompanha o degrau com pico de $3{,}35$ N$\cdot$m, sobressinal de
-$25\%$, e assenta no valor pedido. Na PRP, a perturbação produz desvio máximo de
+$25\%$, e assenta no valor pedido. O sobressinal decorre de dois caminhos que o modelo
+de sintonia não contempla, o pré-posicionamento do \emph{feedforward}, alimentado pela
+referência antes da rampa, e o filtro do estimador de $0{,}6$ s na realimentação, e o
+pico é contido pelo teto da faixa validada, sem comprometer o regime. Na PRP, a
+perturbação produz desvio máximo de
 $1{,}13$ N$\cdot$m, com retorno ao regime de $3{,}318$ N$\cdot$m sobre a referência de
-$3{,}0$ N$\cdot$m, residual compatível com o deslocamento imposto às perdas. No retorno,
+$3{,}0$ N$\cdot$m, residual compatível com o deslocamento imposto às perdas. O cenário
+exercita ainda o desajuste de modelo, pois a perturbação age na planta enquanto o
+estimador permanece nominal, condição representativa das variações de bateria e de
+temperatura que não têm sensor no veículo. No retorno,
 o torque acompanha a referência de $1{,}6$ N$\cdot$m com valor de $1{,}542$ N$\cdot$m
 na amostra avalizada. No último cenário, o degrau para além do limiar é cortado pelo
 seletor, e o torque estabiliza em torno de $3{,}3$ N$\cdot$m, o limiar do seletor, sem
-patinagem comandada. A malha segue a referência dentro da região validada, rejeita a
+patinagem comandada. O limiar adota margem de cerca de $15\%$ sob o torque máximo
+transferível medido, $52$ N na roda, equivalentes a $3{,}9$ N$\cdot$m, o que mantém a
+referência cortada abaixo da
+fronteira de aderência e abaixo do teto do estimador. A malha segue a referência dentro
+da região validada, rejeita a
 perturbação elétrica e respeita o limiar de aderência.
 
 \section{O Efeito da Bateria nos Ensaios}

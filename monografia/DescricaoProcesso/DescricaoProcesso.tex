@@ -3,7 +3,7 @@
 
 Este capítulo apresenta o sistema de propulsão do automodelo utilizado como objeto de estudo
 e discute as abordagens de instrumentação consideradas para a caracterização de sua dinâmica.
-Para cada abordagem, são apresentados o princípio de funcionamento, a proposta de controle em
+Para cada uma, são apresentados o princípio de funcionamento, a proposta de controle em
 malha fechada, as vantagens e as limitações, de modo a fundamentar as decisões do projeto.
 
 \section{O Sistema de Propulsão}
@@ -38,7 +38,7 @@ posição a partir da força contraeletromotriz (\emph{back-EMF}) -- a tensão i
 permitindo ao controlador estimar os instantes adequados para a próxima etapa. Dessa forma, o ESC mantém o campo do estator
 sincronizado com o movimento do rotor, possibilitando a conversão contínua da energia elétrica em energia mecânica.
 
-O ESC empregado é especificado para 120 A contínuos e picos de 760 A.
+O ESC empregado é especificado para 120 A contínuos e picos de 760 A \cite{orion_vortex_r8}.
 A alimentação do sistema é realizada por uma bateria de polímero de lítio (LiPo) de duas células, com tensão nominal de 7,4 V,
 capacidade de 5200 mAh e taxa de descarga de 60C. Ao longo do trabalho, também são empregadas baterias
 preexistentes, com anos de uso, cujo efeito sobre os ensaios será analisado. 
@@ -538,7 +538,10 @@ corrente esperada
 I_{\mathrm{ff}} = I_0(u) + \frac{u\,T_{\mathrm{ref,ef}}}{K_T},
 \end{equation}
 
-e o comando equivalente $u_{\mathrm{ff}}$ é o valor que resolve essa equação. A saída
+e o comando equivalente $u_{\mathrm{ff}}$ é o valor que resolve essa equação. Na
+implementação, a corrente esperada é calculada com o comando efetivo vigente
+$u_{\mathrm{ef}}$, a variável que equilibra corrente e torque na amostra, e o comando
+equivalente atua como pré-posicionamento somado à saída do PI escravo. A saída
 do controlador mestre, a correção de corrente $\Delta I$, responde pelo que a
 pré-alimentação não previu, e o somador forma a referência da malha interna
 $I_{\mathrm{ref}} = I_{\mathrm{ff}} + \Delta I$. Dessa forma, a pré-alimentação age antes do
@@ -618,7 +621,7 @@ integrador acumule o
 erro em excesso enquanto a saturação persiste.
 
 No projeto emprega-se o \emph{clamping} no integrador do controlador escravo, ajustado
-para que a saída fique exatamente no limite, em vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da saturação imediatamente. Duas
+para que a saída fique exatamente no limite, em vez de simplesmente congelar. Com isso, qualquer reversão do erro tira a saída da saturação imediatamente. A correção de corrente $\Delta I$, saída do mestre, não possui saturação própria, pois o seletor limita a referência e a integração condicionada à não saturação do escravo contém o seu crescimento. Duas
 proteções completam a estrutura sobre o comando, sendo a primeira a limitação à região de aderência
 validada, fronteira que mantém o modelo, o estimador e o controlador válidos.
 A segunda é a proteção contra sobrecorrente por limiar, que reduz a excitação sempre que a
